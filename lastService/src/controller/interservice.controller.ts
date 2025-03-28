@@ -4,7 +4,7 @@ import { oldUserInterfacelet } from "../interfaces/interface.interface"
 import { AppDataSource } from "../data-source"
 import { User } from "../entity/User"
 import { Wallet } from "../entity/Wallet"
-import { response } from "../util/response.model"
+import { responseModel } from "../util/response.model"
 import { Invoice } from "../entity/Invoice"
 import { EstimateTransactions } from "../entity/EstimateTransactions"
 import { goldPrice } from "../entity/goldPrice"
@@ -48,12 +48,12 @@ export default class interServiceController{
             await queryRunner.manager.save(user.wallet)
             let wallet = await queryRunner.manager.save(user)
             await queryRunner.commitTransaction()
-            return next(new response(req, res, '' ,'internal service', 200, null, wallet))
+            return next(new responseModel(req, res, '' ,'internal service', 200, null, wallet))
 
         } catch (error) {
             console.log('error in erroooooooor' , `${error}`)
             await queryRunner.rollbackTransaction()
-            return next(new response(req, res, '' ,'internal service', 500, `${error}`, null))
+            return next(new responseModel(req, res, '' ,'internal service', 500, `${error}`, null))
 
         }finally {
             await queryRunner.release()
@@ -75,11 +75,11 @@ export default class interServiceController{
             
             if (phoneExist.length || nationalExist.length){
                 console.log('t2')
-                return next(new response(req, res,  '' ,'internal service', 429 , 'این کاربر در لیست کاربران جدید موجود است', null))
+                return next(new responseModel(req, res,  '' ,'internal service', 429 , 'این کاربر در لیست کاربران جدید موجود است', null))
             }
             let newUser = this.userRepository.create({...userBody , verificationStatus : 0})
             let savedUser = await this.userRepository.save(newUser)
-            return next(new response(req, res, '' ,'internal service', 200, null, savedUser))
+            return next(new responseModel(req, res, '' ,'internal service', 200, null, savedUser))
         } catch (error) {
             console.log('error>>>' , `${error}`)
         }
