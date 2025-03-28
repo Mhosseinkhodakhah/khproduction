@@ -78,6 +78,8 @@ export class UserController {
             accessed.push(access[i])
         }
 
+        console.log(menu)
+
         let final = {...menu , ...access}
 
         let lastFinal = []
