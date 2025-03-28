@@ -19,9 +19,9 @@ AppDataSource.initialize().then(async () => {
     app.use(bodyParser.json())
     config()
 
-app.use(cors())
-app.use(helmet())
-app.use(hpp())
+    app.use(cors())
+    app.use(helmet())
+    app.use(hpp())
 
 
 

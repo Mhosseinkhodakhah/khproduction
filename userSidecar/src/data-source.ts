@@ -13,12 +13,14 @@ import { EstimateTransactions } from "./entity/EstimateTransactions"
 import { config } from "dotenv"
 import { transportInvoice } from "./entity/transport"
 
+config()
+
 
 export const AppDataSource = new DataSource({
     type: "postgres",
     host: "localhost",
     port: 5432,
-    password: 'qazZAQ!@#',
+    password: process.env.DB_PASS,
     username: 'postgres',
     database: 'gold_home', // Database name
     synchronize: true,

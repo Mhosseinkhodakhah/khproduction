@@ -6,13 +6,17 @@ import { InvoiceType } from "./entity/InvoiceType"
 import { Wallet } from "./entity/wallet"
 import { WalletTransaction } from "./entity/WalletTransaction"
 import { Otp } from "./entity/Otp"
+import { config } from "dotenv"
 
+
+
+config()
 
 export const AppDataSource = new DataSource({
     type: "postgres",
     host: "localhost",
     port: 5432,
-    password: 'qazZAQ!@#',
+    password: process.env.DB_PASS,
     username: 'postgres',
     database: "kh_old-user",
     synchronize: true,

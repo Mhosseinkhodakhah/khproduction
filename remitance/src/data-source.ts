@@ -4,12 +4,16 @@ import { User } from "./entity/User"
 import { Remmitance } from "./entity/Remmitance"
 import { Wallet } from "./entity/wallet"
 import { WalletTransaction } from "./entity/WalletTransaction"
+import { config } from "process"
+
+
+// config()
 
 export const AppDataSource = new DataSource({
     type: "postgres",
     host: "localhost",
     port: 5432,
-    password: 'qazZAQ!@#',
+    password: process.env.DB_PASS,
     username: 'postgres',
     database: "kh_remmitance",
     synchronize: true,
