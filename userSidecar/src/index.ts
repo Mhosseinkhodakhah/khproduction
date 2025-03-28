@@ -20,24 +20,20 @@ import { createLogger, format, transports } from 'winston'
 import monitor from "./responseModel/statusMonitor"
 import { startCronJob } from "../analyzor"
 import { goldPrice } from "./entity/goldPrice"
-import priceHistory from "../goldhistory"
+import axios from "axios"
 
 const { combine, timestamp, label, prettyPrint } = format;
 
 AppDataSource.initialize().then(async () => {
 
 
+      let all = await axios.get("https://khaneetala.ir/api/test/09123460671")
         let goldPrice2 = AppDataSource.getRepository(goldPrice)
-        console.log('Cron job started');
-        let all = priceHistory.history
-        
-        let dataMaker = []
-        all.forEach((elem)=>{
-            let data = {
-                Geram18 :  (+(elem.max.replaceAll(',' , '')) / 10).toString(),
-                Date : (elem.jDate.replaceAll('\/' , '/'))
-            }
-            dataMaker.push(data)
+        let dataMaker = []  
+        all.data.forEach((elem)=>{
+            delete elem.id
+            
+            dataMaker.push(elem)
             // console.log(data)
         })
         let datas = goldPrice2.create(dataMaker)
