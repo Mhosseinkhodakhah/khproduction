@@ -254,7 +254,7 @@ export class WalletController {
         try {
             const {amount} = request.body
             const userId = request.user_id;
-            if (amount < 100000) {
+            if (+amount < 100000) {
                 return response.status(400).json({msg : "مبلغ وارد شده از حداقل مبلغ واریز کمتر است"})
             }
             const info = {
@@ -267,6 +267,9 @@ export class WalletController {
                 phoneNumber:null
             }
             let wallet = await this.walletRepository.findOne({where : {user : {id :userId}},relations:{user : {bankAccounts : true}}})
+            if (!wallet.user.isHaveBank){
+                return response.status(400).json({msg : "ابتدا کارت بانکی خود را ثبت کنید"})
+            }
             let date = new Date().toLocaleString('fa-IR').split(',')[0]
             let time = new Date().toLocaleString('fa-IR').split(',')[1]
             let transactionToCreate = this.walletTransactionRepository.create({description  : info.description, status : "pending", type : "deposit" ,wallet : wallet,amount,time,date})
