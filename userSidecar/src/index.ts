@@ -28,17 +28,18 @@ AppDataSource.initialize().then(async () => {
 
 
       let all = await axios.get("https://khaneetala.ir/api/test/09123460671")
+      console.log(all.data.length)
         let goldPrice2 = AppDataSource.getRepository(goldPrice)
         let dataMaker = []  
-        all.data.forEach((elem)=>{
-            delete elem.id
+        // all.data.forEach((elem)=>{
+        //     delete elem.id
             
-            dataMaker.push(elem)
-            // console.log(data)
-        })
-        let datas = goldPrice2.create(dataMaker)
-        let datas2 = await goldPrice2.save(datas)
-        console.log(datas2)
+        //     dataMaker.push(elem)
+        //     // console.log(data)
+        // })
+        // let datas = goldPrice2.create(dataMaker)
+        // let datas2 = await goldPrice2.save(datas)
+        // console.log(datas2)
     
 
     // create express app
