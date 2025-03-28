@@ -28,7 +28,6 @@ export const changeInpersonStatus=[
 export const createBuyTransAction=[
     body('goldPrice').notEmpty().isNumeric().withMessage('قیمت ورودی نامعتبر است'),
     body('goldWeight').notEmpty().isString().withMessage('حجم ورودی نا معتبر'),
-    body('invoiceId').notEmpty().isString().withMessage(' شماره پیگیری تراکنش نا معتبر است'),
     body('nationalCode').notEmpty().isString().withMessage('کد ملی  نا معتبر است'),
     body('totalPrice').notEmpty().withMessage(' قیمت کل نا معتبر است'),
 ]
@@ -37,7 +36,6 @@ export const createBuyTransAction=[
 export const creatSellTransAction=[
     body('goldPrice').notEmpty().isNumeric().withMessage('قیمت ورودی نامعتبر است'),
     body('goldWeight').notEmpty().isString().withMessage('حجم ورودی نا معتبر'),
-    body('invoiceId').notEmpty().isString().withMessage(' شماره پیگیری تراکنش نا معتبر است'),
     body('nationalCode').notEmpty().isString().withMessage('کد ملی  نا معتبر است'),
     body('totalPrice').notEmpty().withMessage(' قیمت کل نا معتبر است'),
 ]
