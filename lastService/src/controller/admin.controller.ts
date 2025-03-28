@@ -29,7 +29,7 @@ export default class adminController {
     private goldPriceService = new GoldPriceService()
     private esitmate = AppDataSource.getRepository(EstimateTransactions)
     private loggerService = new logger()
-    
+
 
     /**
      * this function is for getting all users
@@ -264,9 +264,13 @@ export default class adminController {
 
         let weights = await this.esitmate.findOne({where : {date : 'localeDate'}})
         console.log('all weights' , weights)
-        allBuy = +weights.boughtGold;
-        allSell = +weights.soldGold;
+        if (!weights){
+            allBuy = 0;
+            allSell = 0;
+        }
 
+        allBuy = 0;
+        allSell = 0
 
         console.log('all buy>>>', allBuy)
         console.log('all sell>>>', allSell)
