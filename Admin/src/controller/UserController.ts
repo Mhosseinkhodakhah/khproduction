@@ -78,8 +78,6 @@ export class UserController {
             accessed.push(access[i])
         }
 
-        console.log(menu)
-
         let final = {...menu , ...access}
 
         let lastFinal = []
@@ -92,7 +90,7 @@ export class UserController {
             }
             lastFinal.push(final[j])
         }
-        return next(new response(req, res, 'get All SubMenu', 200, null, menu))
+        return next(new response(req, res, 'get All SubMenu', 200, null, lastFinal))
     }
 
 
