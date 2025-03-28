@@ -27,22 +27,22 @@ const { combine, timestamp, label, prettyPrint } = format;
 AppDataSource.initialize().then(async () => {
 
 
-        // let goldPrice2 = AppDataSource.getRepository(goldPrice)
-        // console.log('Cron job started');
-        // let all = priceHistory.history
+        let goldPrice2 = AppDataSource.getRepository(goldPrice)
+        console.log('Cron job started');
+        let all = priceHistory.history
         
-        // let dataMaker = []
-        // all.forEach((elem)=>{
-        //     let data = {
-        //         Geram18 :  (+(elem.max.replaceAll(',' , '')) / 10).toString(),
-        //         Date : (elem.jDate.replaceAll('\/' , '/'))
-        //     }
-        //     dataMaker.push(data)
-        //     // console.log(data)
-        // })
-        // let datas = goldPrice2.create(dataMaker)
-        // let datas2 = await goldPrice2.save(datas)
-        // console.log(datas2)
+        let dataMaker = []
+        all.forEach((elem)=>{
+            let data = {
+                Geram18 :  (+(elem.max.replaceAll(',' , '')) / 10).toString(),
+                Date : (elem.jDate.replaceAll('\/' , '/'))
+            }
+            dataMaker.push(data)
+            // console.log(data)
+        })
+        let datas = goldPrice2.create(dataMaker)
+        let datas2 = await goldPrice2.save(datas)
+        console.log(datas2)
     
 
     // create express app
