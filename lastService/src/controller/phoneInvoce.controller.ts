@@ -442,10 +442,10 @@ export class PhoneInvoiceController {
     async createSellCall (req: Request, res: Response, next : NextFunction){
         let { goldPrice, goldWeight, totalPrice , userId  ,description ,invoiceId} = req.body;
         const accounterId=`${req.user.id}-${req.user.firstName}-${req.user.lastName}`;
-        const error = validationResult(req)
-        if (!error.isEmpty()) {
-            return next(new responseModel(req, res, error['errors'][0].msg , 'create call sell invoice', 400, error['errors'][0].msg, null))
-        } 
+        // const error = validationResult(req)
+        // if (!error.isEmpty()) {
+        //     return next(new responseModel(req, res, error['errors'][0].msg , 'create call sell invoice', 400, error['errors'][0].msg, null))
+        // } 
         
         const { user, systemUser } = await this.fetchUsers(this.userRepository, userId);
 

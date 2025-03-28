@@ -49,7 +49,6 @@ export default class interServiceController{
             let wallet = await queryRunner.manager.save(user)
             await queryRunner.commitTransaction()
             return next(new responseModel(req, res, '' ,'internal service', 200, null, wallet))
-
         } catch (error) {
             console.log('error in erroooooooor' , `${error}`)
             await queryRunner.rollbackTransaction()

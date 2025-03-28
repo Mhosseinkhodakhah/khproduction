@@ -561,7 +561,7 @@ export const Routes = [{
     route: "/callsell/create",
     controller: PhoneInvoiceController,
     action: "createSellCall",
-    middlwares: [adminMiddleware,createSellPhone]
+    middlwares: [adminMiddleware]
 },
 
 {
