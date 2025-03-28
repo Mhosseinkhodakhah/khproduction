@@ -201,12 +201,9 @@ class walletTransActionsFilter():
         response = requests.get(self.walletUrl)
         print(type , status , nationalCode)
         data = response.json()
-        if (data['data'] == []):
-            return 'error'
         # print(data['data'][0])
-        else:
-            typeFilter = self.__filter1(type , status , nationalCode , startDate , endDate , startTime , endTime , data['data'])
-        # print(typeFilter)
-            return typeFilter
+        typeFilter = self.__filter1(type , status , nationalCode , startDate , endDate , startTime , endTime , data['data'])
+        print(typeFilter)
+        return typeFilter
 
             
