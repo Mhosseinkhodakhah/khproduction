@@ -90,7 +90,7 @@ export class UserController {
             }
             lastFinal.push(final[j])
         }
-        return next(new response(req, res, 'get All SubMenu', 200, null, lastFinal))
+        return next(new response(req, res, 'get All SubMenu', 200, null, menu))
     }
 
 
