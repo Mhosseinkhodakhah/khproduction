@@ -49,19 +49,19 @@ export class BankAccountController {
     async save(request: Request, response: Response, next: NextFunction) {
         const { cardNumber } = request.body;
         let ownerId = request.user_id
+        console.log(ownerId)
         if ( !cardNumber || !ownerId) {
             return response.status(400).json({ msg: "فیلد شماره کارت نمیتواند خالی باشد" });
         }
 
         try {
             const owner = await this.userRepository.findOneBy({ id: ownerId });
-
+            console.log(owner)
             if (!owner) {
                 return response.status(404).json({ error: "Owner not found" });
             }
-
             const bankAccount = this.bankAccountRepository.create({
-                cardNumber,
+                cardNumber, 
                 owner,
                 isVerified: false
             });
@@ -69,7 +69,8 @@ export class BankAccountController {
                 nationalCode : owner.nationalCode , 
                 birthDate : owner.birthDate
                 }
-                let isMatch = await  this.shahkarController.checkMatchPhoneNumberAndCartNumber(info)
+                console.log(info)
+                let isMatch = await this.shahkarController.checkMatchPhoneNumberAndCartNumber(info)
                 bankAccount.isVerified = isMatch;
                 
                 if (isMatch) {
