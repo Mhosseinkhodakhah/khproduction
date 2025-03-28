@@ -31,12 +31,13 @@ AppDataSource.initialize().then(async () => {
       console.log(all.data[0])
         let goldPrice2 = AppDataSource.getRepository(goldPrice)
         let dataMaker = []  
-        // all.data.forEach((elem)=>{
-        //     delete elem.id
-            
-        //     dataMaker.push(elem)
-        //     // console.log(data)
-        // })
+        all.data.forEach((elem)=>{
+            delete elem.id
+            // console.log(elem)
+            dataMaker.push(elem)
+            // console.log(data)
+        })
+        console.log(dataMaker[10])
         // let datas = goldPrice2.create(dataMaker)
         // let datas2 = await goldPrice2.save(datas)
         // console.log(datas2)
