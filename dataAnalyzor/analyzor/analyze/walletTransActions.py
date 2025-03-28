@@ -67,7 +67,7 @@ class walletTransActionsFilter():
         'authority' : 'شماره پیگیری درگاه' ,'admin' : 'ادمین فعال در تراکنش','adminDescription' : 'توضیحات ادمین', 'description' : 'توضیحات تراکنش' , 'accounterDescription' : 'توضیحات حسابدار'  }, inplace=True)
         # print (df)
         df.to_excel(f'/etc/report/walletTransActions-{name}-{number}.xlsx')   
-        return [f'https://excell.khaneetala.ir/walletTransActions-{name}-{number}.xlsx' , f'واریز برداشت-{name}-{number}']
+        return [f'https://excell.khanetala.ir/walletTransActions-{name}-{number}.xlsx' , f'واریز برداشت-{name}-{number}']
     
     ###this private method is for filtering
     def __filter1(self , type  , status , user , startDate , endDate , startTime , endTime , data):
@@ -201,9 +201,12 @@ class walletTransActionsFilter():
         response = requests.get(self.walletUrl)
         print(type , status , nationalCode)
         data = response.json()
+        if (data['data'] == []):
+            return 'error'
         # print(data['data'][0])
-        typeFilter = self.__filter1(type , status , nationalCode , startDate , endDate , startTime , endTime , data['data'])
-        print(typeFilter)
-        return typeFilter
+        else:
+            typeFilter = self.__filter1(type , status , nationalCode , startDate , endDate , startTime , endTime , data['data'])
+        # print(typeFilter)
+            return typeFilter
 
             

@@ -62,7 +62,7 @@ class datamaker2():
         'buyer' : 'خریدار'  , 'seller' : 'فروشنده', 'authority' : 'شماره پیگیری درگاه' , 'adminId' : 'ادمین ثبت کننده' , 'accounterId' : 'حسابدار مربوط' , 'description' : 'توضیحات ادمین' , 'accounterDescription' : 'توضیحات حسابدار'  }, inplace=True)
         print (df)
         df.to_excel(f'/etc/report/invoice-{name}-{number}.xlsx') 
-        return [f'https://excell.khaneetala.ir/invoice-{name}-{number}.xlsx' , f'معاملات-{name}-{number}']
+        return [f'https://excell.khanetala.ir/invoice-{name}-{number}.xlsx' , f'معاملات-{name}-{number}']
         
         
     

@@ -154,7 +154,7 @@ class userFilter():
         'nationalCode' : 'کد ملی' ,'fullName' : 'نام کامل','createdAt' : 'تاریخ ثبت نام', 'createTime' : 'ساعت ثبت نام' , 'accounterDescription' : 'توضیحات حسابدار'  }, inplace=True)
         # print (df)
         df.to_excel(f'/etc/report/userdatas-{name}-{number}.xlsx')   
-        return [f'https://excell.khaneetala.ir/userdatas-{name}-{number}.xlsx' , f'کاربران-{name}-{number}']
+        return [f'https://excell.khanetala.ir/userdatas-{name}-{number}.xlsx' , f'کاربران-{name}-{number}']
     
     ###this private method is for filtering
     def __filter1(self , status ,startDate , endDate , startTime , endTime , data):
