@@ -254,7 +254,7 @@ export class WalletController {
         try {
             const {amount} = request.body
             const userId = request.user_id;
-            if (amount < 1000000) {
+            if (amount < 100000) {
                 return response.status(400).json({msg : "مبلغ وارد شده از حداقل مبلغ واریز کمتر است"})
             }
             const info = {
@@ -341,6 +341,11 @@ export class WalletController {
             if (+amount == 0){
                 return response.status(400).json({msg : "مقدار برداشت نمیتواند صفر باشد"})
             }
+
+            if (+amount <= 100000){
+                return response.status(400).json({msg : "مقدار برداشت نمیتواند صفر باشد"})
+            }
+
             if (wallet && parseFloat(wallet.balance.toString()) < +amount) {
                 return response.status(400).json({msg : "مقدار برداشت نمی تواند از موجودی کیف پول بیشتر باشد"})
             }

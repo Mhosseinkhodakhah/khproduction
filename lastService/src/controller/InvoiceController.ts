@@ -15,6 +15,7 @@ import {v4 as uuidv4} from 'uuid';
 import { EstimateTransactions } from "../entity/EstimateTransactions";
 import { time } from "console";
 import { validationResult } from "express-validator";
+import { goldPrice } from "../entity/goldPrice";
 
 
 export class InvoiceController {
@@ -25,6 +26,7 @@ export class InvoiceController {
     private zpService = new ZarinPalService()
     private paymentInfoRepository = AppDataSource.getRepository(PaymentInfo)
     private smsService = new SmsService()
+    private goldPriceRepo = AppDataSource.getRepository(goldPrice)
     private estimate = AppDataSource.getRepository(EstimateTransactions)
     private remmitanceService=new RemmitanceService()
 
@@ -185,7 +187,7 @@ export class InvoiceController {
         
         let transactionsToday =await invoiceRepository.createQueryBuilder('invoice')
         .leftJoinAndSelect('invoice.buyer' , 'buyer')
-        .where('invoice.fromGateway = :bool AND status != :status' , {bool : true , status : 'init'})
+        .where('invoice.fromGateway = :bool AND status != :status AND invoice.createdAt >= :today' , {bool : true , status : 'init' ,  today : today})
         .andWhere('buyer.id = :id' , {id : userId})
         .getMany()
 
@@ -196,7 +198,8 @@ export class InvoiceController {
             console.log('its for limitation weight' , totalGoldToday)
         });
 
-
+        console.log(transactionsToday.length)
+        
 
         // const transactionsToday = await invoiceRepository.count({
         //     where: [
@@ -224,7 +227,21 @@ export class InvoiceController {
         let { goldPrice, goldWeight, type, totalPrice } = request.body;
         
         try {
-            console.log('total' , totalPrice , typeof(totalPrice))
+            let realGoldPrice = await this.goldPriceRepo.find({order : {createdAt : 'DESC'}})
+            const realGoldPrice2 = +realGoldPrice[0].Geram18
+            console.log('price>>>' , realGoldPrice2 , (+goldPrice))
+            if (realGoldPrice2 - (+goldPrice) >= 10000){
+                console.log('condition1')
+                goldPrice = realGoldPrice2
+                // return response.status(400).json({ msg: 'امکان ثبت معامله در این قیمت وجود ندارد' });
+            }
+            if (((realGoldPrice2*(+goldWeight)) - (+totalPrice)) >= (10*(+goldWeight))){
+                console.log('condition2')
+                totalPrice = realGoldPrice2*(+goldWeight)
+                // return response.status(400).json({ msg: 'امکان ثبت معامله در این قیمت وجود ندارد' });
+            }   
+            console.log('weight>>>' , (realGoldPrice2*(+goldWeight)) , totalPrice)
+            // console.log('total' , totalPrice , typeof(totalPrice))
             if ((totalPrice.toString()).split('').length > 10){
                 return response.status(400).json({ msg: 'مبلغ بیش از حد مجاز' });
             }
