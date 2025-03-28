@@ -119,13 +119,13 @@ export class UserController {
                 phoneNumber: req.body.phoneNumber
             },relations : ['accessPoints']
         })
-        let newAccessPoints = ['Dashboard']
-        for (let i of admin.accessPoints){
-            newAccessPoints.push(i.englishName)
-        }
         if (!admin) {
             console.log('its here')
             return next(new response(req, res, 'login admin', 403, 'account not found!', null))
+        }
+        let newAccessPoints = ['Dashboard']
+        for (let i of admin.accessPoints){
+            newAccessPoints.push(i.englishName)
         }
         if (admin.isBlocked) {
             console.log('its here222')
