@@ -346,7 +346,7 @@ export class WalletController {
             }
 
             if (+amount <= 100000){
-                return response.status(400).json({msg : "مقدار برداشت نمیتواند صفر باشد"})
+                return response.status(400).json({msg : "حداق میزان برداشت 100 هزارتومن است"})
             }
 
             if (wallet && parseFloat(wallet.balance.toString()) < +amount) {
