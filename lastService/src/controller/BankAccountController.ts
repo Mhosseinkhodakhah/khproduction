@@ -4,6 +4,7 @@ import { BankAccount } from "../entity/BankAccount";
 import { User } from "../entity/User";
 import { ShahkarController } from "./ShahkarController";
 import { SmsService } from "../services/sms-service/message-service";
+import logger from "../services/interservice/logg.service";
 
 export class BankAccountController {
 
@@ -11,6 +12,9 @@ export class BankAccountController {
     private userRepository = AppDataSource.getRepository(User);
     private shahkarController = new ShahkarController()
     private smsService = new SmsService()
+    private checkCard = new logger()
+
+
     async all(request: Request, response: Response, next: NextFunction) {
         try {
             let userId = request['user_id']
@@ -70,7 +74,8 @@ export class BankAccountController {
                 birthDate : owner.birthDate
                 }
                 console.log(info)
-                let isMatch = await this.shahkarController.checkMatchPhoneNumberAndCartNumber(info)
+                let isMatch = await this.checkCard.checkCardNuber(info)
+                console.log('its returned data>>>' , isMatch)
                 bankAccount.isVerified = isMatch;
                 
                 if (isMatch) {

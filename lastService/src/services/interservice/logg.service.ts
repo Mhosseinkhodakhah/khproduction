@@ -22,6 +22,18 @@ export default class logger{
         }
     }
 
+
+
+    async checkCardNuber(info){
+        try {
+            let response = await axios.post('https://khaneetala.ir/api/card/check' , info)
+            console.log('returned data' , response.data)
+            return response.data.isMatch;
+        } catch (error) {
+            return false;
+        }
+    }
+
     async addNewAdminLog(user:adminLoggInterface , title : string , description : string , action : {} , status : number):Promise<boolean>{
         try {
             let data = {

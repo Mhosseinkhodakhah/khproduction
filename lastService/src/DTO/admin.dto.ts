@@ -22,7 +22,7 @@ export const verifyIdentityInperson=[
 export const changeInpersonStatus=[
     body('status').notEmpty().isNumeric().withMessage(' وضعیت نامشخص نا معتبر است'),
     body('id').notEmpty().withMessage('   ای دی نا معتبر است'),
-]
+]   
 
 
 export const createBuyTransAction=[
