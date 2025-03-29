@@ -216,10 +216,10 @@ export class PhoneInvoiceController {
     async createPhoneBuyInvoice(req: Request, res: Response, next : NextFunction){
         console.log('req.body>>>>' , req.body)
         let { goldPrice, goldWeight, totalPrice , userId  ,description , invoiceId} = req.body;
-         const error = validationResult(req)
-                if (!error.isEmpty()) {
-                    return next(new responseModel(req, res, error['errors'][0].msg , 'create call buy invoice', 400, error['errors'][0].msg, null))
-                }
+        //  const error = validationResult(req)
+        //         if (!error.isEmpty()) {
+        //             return next(new responseModel(req, res, error['errors'][0].msg , 'create call buy invoice', 400, error['errors'][0].msg, null))
+        //         }
         if(goldPrice==0 || goldWeight==0 || totalPrice==0){
             return next(new responseModel(req, res, 'مقدار نمیتواند صفر باشد','create call buy invoice', 400 , "مقدار نمی تواند صفر باشد", null))
         }
@@ -286,10 +286,10 @@ export class PhoneInvoiceController {
 
     async approvePhoneBuyInvoice (req: Request, res: Response, next : NextFunction){
         const invoiceId=+req.params.id
-        const error = validationResult(req)
-        if (!error.isEmpty()) {
-            return next(new responseModel(req, res, error['errors'][0].msg , 'approve call buy invoice', 400, error['errors'][0].msg, null))
-        }
+        // const error = validationResult(req)
+        // if (!error.isEmpty()) {
+        //     return next(new responseModel(req, res, error['errors'][0].msg , 'approve call buy invoice', 400, error['errors'][0].msg, null))
+        // }
         const accounterId=`${req.user.id}-${req.user.firstName}-${req.user.lastName}`;
         const {description}=req.body
 
@@ -355,10 +355,10 @@ export class PhoneInvoiceController {
 
     async rejectPhoneBuyInvocie(req: Request, res: Response, next : NextFunction){
         const invoiceId=+req.params.id
-        const error = validationResult(req)
-        if (!error.isEmpty()) {
-            return next(new responseModel(req, res, error['errors'][0].msg , 'reject call buy invoice', 400, error['errors'][0].msg, null))
-        }
+        // const error = validationResult(req)
+        // if (!error.isEmpty()) {
+        //     return next(new responseModel(req, res, error['errors'][0].msg , 'reject call buy invoice', 400, error['errors'][0].msg, null))
+        // }
         const accounterId=`${req.user.id}-${req.user.firstName}-${req.user.lastName}`;
         const {description}=req.body
 
@@ -397,10 +397,10 @@ export class PhoneInvoiceController {
     async updatePhoneInvoice(req: Request, res: Response, next : NextFunction){
         let { goldPrice, goldWeight, totalPrice } = req.body;
         const invoiceId=req.params.id
-        const error = validationResult(req)
-        if (!error.isEmpty()) {
-            return next(new responseModel(req, res, error['errors'][0].msg , 'update call buy invoice', 400, error['errors'][0].msg, null))
-        }
+        // const error = validationResult(req)
+        // if (!error.isEmpty()) {
+        //     return next(new responseModel(req, res, error['errors'][0].msg , 'update call buy invoice', 400, error['errors'][0].msg, null))
+        // }
         // if(goldPrice==0 || goldWeight==0 || totalPrice==0){
         //     return next(new responseModel(req, res, 'update call buy invoce', 400 , "مقدار نمی تواند صفر باشد", null))
         // }

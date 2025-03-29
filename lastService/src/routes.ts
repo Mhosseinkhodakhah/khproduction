@@ -502,21 +502,21 @@ export const Routes = [{
     route: "/call/create",
     controller: PhoneInvoiceController,
     action: "createPhoneBuyInvoice",
-    middlwares: [adminMiddleware,createBuyPhone]
+    middlwares: [adminMiddleware]
 },
 {
     method: "put",
     route: "/call/approve/:id",
     controller: PhoneInvoiceController,
     action: "approvePhoneBuyInvoice",
-    middlwares: [adminMiddleware,approveBuyPhone]
+    middlwares: [adminMiddleware]
 },
 {
     method: "put",
     route: "/call/reject/:id",
     controller: PhoneInvoiceController,
     action: "rejectPhoneBuyInvocie",
-    middlwares: [adminMiddleware,rejectBuyPhone]
+    middlwares: [adminMiddleware]
 },
 {
     method: "get",
@@ -530,7 +530,7 @@ export const Routes = [{
     route: "/call/update/:id",
     controller: PhoneInvoiceController,
     action: "updatePhoneInvoice",
-    middlwares: [adminMiddleware,updatePhoneInvoice]
+    middlwares: [adminMiddleware]
 },
 
 {
