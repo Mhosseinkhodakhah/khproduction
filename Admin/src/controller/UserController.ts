@@ -196,9 +196,11 @@ export class UserController {
 
 
     async updateAdmin(req: Request, res: Response, next: NextFunction){
-        let adminId = req.params.adminId || req.user.userId;
+        let adminId = req.params.adminId;
         let admin = await this.adminRepository.findOne({where : {id : +adminId}})
-        admin = {...admin , ...req.body}
+        req.body.password = await bcrypt.hash(req.body.password, 10)
+        // admin = {...admin , ...req.body}
+        admin.password = req.body.password;
         await this.adminRepository.save(admin)
         return next(new response(req, res, 'update admin', 200, null, admin))
     }
