@@ -388,6 +388,10 @@ export default class inPersonController {
 
 
 
+
+
+
+    
     /**
      * its for creating the buy transAction and make it pending for approvation admin with inPerson true
      * here just create the invoice and make it ready for accountant approvations

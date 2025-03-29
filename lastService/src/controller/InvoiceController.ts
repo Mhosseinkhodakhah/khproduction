@@ -225,21 +225,10 @@ export class InvoiceController {
 
     async createTransaction(request: Request, response: Response) {
         let { goldPrice, goldWeight, type, totalPrice } = request.body;
-        
         try {
             let realGoldPrice = await this.goldPriceRepo.find({order : {createdAt : 'DESC'}})
             const realGoldPrice2 = +realGoldPrice[0].Geram18
-            console.log('price>>>' , realGoldPrice2 , (+goldPrice))
-            if (realGoldPrice2 - (+goldPrice) >= 10000){
-                console.log('condition1')
-                goldPrice = realGoldPrice2
-                // return response.status(400).json({ msg: 'امکان ثبت معامله در این قیمت وجود ندارد' });
-            }
-            if (((realGoldPrice2*(+goldWeight)) - (+totalPrice)) >= (10*(+goldWeight))){
-                console.log('condition2')
-                totalPrice = realGoldPrice2*(+goldWeight)
-                // return response.status(400).json({ msg: 'امکان ثبت معامله در این قیمت وجود ندارد' });
-            }   
+            console.log('price>>>' , realGoldPrice2 , (+goldPrice))   
             console.log('weight>>>' , (realGoldPrice2*(+goldWeight)) , totalPrice)
             // console.log('total' , totalPrice , typeof(totalPrice))
             if ((totalPrice.toString()).split('').length > 10){
@@ -275,6 +264,16 @@ export class InvoiceController {
 
             console.log('walletIs' , user.wallet)
             if (type === "buy") {
+                if (realGoldPrice2 - (+goldPrice) >= 10000){
+                    console.log('condition1')
+                    goldPrice = realGoldPrice2
+                    // return response.status(400).json({ msg: 'امکان ثبت معامله در این قیمت وجود ندارد' });
+                }
+                if (((realGoldPrice2*(+goldWeight)) - (+totalPrice)) >= (10*(+goldWeight))){
+                    console.log('condition2')
+                    totalPrice = realGoldPrice2*(+goldWeight)
+                    // return response.status(400).json({ msg: 'امکان ثبت معامله در این قیمت وجود ندارد' });
+                }
                 let limitError = await this.checkDailyLimits(this.invoiceRepository, userId, goldWeight);
                 if (limitError) {
                     return response.status(400).json({ msg: limitError });
