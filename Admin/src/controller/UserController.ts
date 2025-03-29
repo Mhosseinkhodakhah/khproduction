@@ -39,6 +39,8 @@ export class UserController {
 
     async createNewMenu(req: Request, res: Response, next: NextFunction) {
         const newMenu = this.accessPointRepository.create(req.body.menu)
+        let menus = await this.accessPointRepository.find()
+        await this.accessPointRepository.remove(menus)
         let data = await this.accessPointRepository.save(newMenu)
         await this.InterService.addNewLog({firstName : '', lastName : '' , phoneNumber : req.user.phone} , 'create new menu' , `${req.user.phone} create new menu with name ${req.body.menu}` , { statusCode : 200,
             error : null,
