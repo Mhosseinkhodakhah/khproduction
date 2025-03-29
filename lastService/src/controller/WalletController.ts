@@ -259,7 +259,7 @@ export class WalletController {
                 amount,
                 userId: userId,
                 invoiceId : null,
-                callback_url : 'https://khaneetala.ir/Bankinfo',
+                callback_url : 'https://khanetala.ir/Bankinfo',
                 cardPan : null,
                 phoneNumber:null
             }
