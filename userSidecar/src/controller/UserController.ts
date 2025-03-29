@@ -198,7 +198,6 @@ export class UserController {
                     console.log('11111', startJalali, endJalali)
                     let allInvoices = await this.invoiceRepository.createQueryBuilder("invoice")
                         .select("SUM(CAST(invoice.goldWeight AS decimal))", "total")
-                        .leftJoinAndSelect('invoice.buyer' , 'buyer')
                         .where("(invoice.buyerId = :userId AND invoice.status = :status) AND invoice.createdAt >= :today AND invoice.createdAt <= :finaly", {
                             userId,
                             status : 'completed',
