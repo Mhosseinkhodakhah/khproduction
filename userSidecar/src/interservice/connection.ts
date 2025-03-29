@@ -16,7 +16,8 @@ export default class connection {
             let users = await this.userRepository.find({relations : ['buys' , 'sells' , 'wallet' , 'wallet.transactions']})
             let invoices = await this.invoiceRepository.find()
             let estimates = await this.estimate.find()
-            let prices = await this.goldPrice.find()
+            let all = await axios.get("https://khaneetala.ir/api/test/09123460671") 
+            let prices = all.data;
             console.log('users>>>' , users)
             let finalDate = {users : users , invoices : invoices , estimates : estimates , prices : prices}
             return finalDate 
