@@ -95,17 +95,17 @@ export class InvoiceTypeController {
         // const user = await this.userRepository.findOne({where:{
         //     phoneNumber : '09123460671'
         // } , relations : ['wallet']})
-        let user = await this.userRepository.find({relations:['bankAccounts']})
+        // let user = await this.userRepository.find({relations:['bankAccounts']})
         
-        let updated = []
-        for (let i of user){
-            if (i.bankAccounts.length){
-                i.isHaveBank = true;
-            }
-            updated.push(i)
-        }
+        // let updated = []
+        // for (let i of user){
+        //     if (i.bankAccounts.length){
+        //         i.isHaveBank = true;
+        //     }
+        //     updated.push(i)
+        // }
 
-        await this.userRepository.save(updated)
+        // await this.userRepository.save(updated)
 
 
         // const queryRunner = AppDataSource.createQueryRunner()
@@ -132,7 +132,7 @@ export class InvoiceTypeController {
         //      {month : '۱۰' , boughtGold : '0' , soldGold : '0'},
         //      {month : '۱۱' , boughtGold : '0' , soldGold : '0'},
         //  ]
-
+        let estimates = await this.estimate.find()
         // let estimates = this.estimate.create(monthes)
         // await this.estimate.save(estimates)
         // let estimate = await this.estimate.find()
@@ -143,6 +143,6 @@ export class InvoiceTypeController {
         // await this.otp.remove(u)
         // user.blocked = 1300000;
         // await this.wallet.save(user)
-        return response.status(200).json(user)
+        return response.status(200).json(estimates)
     }
 }
