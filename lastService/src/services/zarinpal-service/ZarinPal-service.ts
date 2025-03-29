@@ -24,7 +24,7 @@ export class ZarinPalService {
           // });
           const response = await axios.post('https://payment.zarinpal.com/pg/v4/payment/request.json', {
             merchant_id: '3de1e8f6-7992-4707-82d7-ace38372d4d9',
-            amount: amount,
+            amount: amount*10,
             callback_url: callback_url,
             description: description,
             metadata: {
@@ -61,7 +61,7 @@ export class ZarinPalService {
             try {
               console.log('after verification of transAction' , paymentInfo.amount);
               const response = await this.zarinpal.verifications.verify({
-                amount: Math.floor(paymentInfo.amount),
+                amount: Math.floor(paymentInfo.amount)*10,
                 authority: paymentInfo.authority,
               });
               console.log('after the verifying the payment data' , response)

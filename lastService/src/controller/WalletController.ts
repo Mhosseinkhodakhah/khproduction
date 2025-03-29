@@ -199,9 +199,6 @@ export class WalletController {
                 relations: { wallet: { user: true } }, order : {updatedAt : 'DESC'} 
             });
 
-            
-
-
             response.status(200).json(transactions);
         } catch (error) {
             console.error("Error fetching wallet transactions:", error);
