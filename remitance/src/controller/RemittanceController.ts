@@ -5,6 +5,7 @@ import { Remmitance } from "../entity/Remmitance"
 import { response } from "../responseModel/response.model";
 import { LastService } from "../services/intrnal-service/lastService-serivce";
 import { Wallet } from "../entity/wallet";
+import { SmsService } from "../services/sms-service/sms-service";
 
 
 export class RemittanceController {
@@ -12,6 +13,7 @@ export class RemittanceController {
     private userRepository = AppDataSource.getRepository(User)
     private interservice = new LastService()
     private walletRepository = AppDataSource.getRepository(Wallet)
+    private smsService = new SmsService()
     private async generateInvoice() {
         return (new Date().getTime()).toString()
     }
@@ -81,6 +83,7 @@ export class RemittanceController {
             await queryRunner.commitTransaction()
             let savedRemmitance2 = await this.remittanceRepository.findOne({ where: { id: savedRemitance1.id }, relations: ['buyer', 'buyer.wallet'] })
             console.log('saved remmitance>>>', savedRemmitance2)
+            await this.smsService.sendGeneralMessage(user.phoneNumber, "sellcall", user.firstName, goldWeight, totalPrice)
             return next(new response(req, res, 'create buy remmitance ', 200, null, savedRemmitance2))
 
         }
@@ -137,6 +140,7 @@ export class RemittanceController {
             let savedRemitance1 = await queryRunner.manager.save(createRemmitance)
             console.log('after creations', savedRemitance1)
             await queryRunner.commitTransaction()
+            await this.smsService.sendGeneralMessage(user.phoneNumber, "selldasti", user.firstName, goldPrice, totalPrice)
             let savedRemmitance2 = await this.remittanceRepository.findOne({ where: { id: savedRemitance1.id }, relations: ['seller', 'seller.wallet'] })
             return next(new response(req, res, 'create sell remmitance ', 200, null, savedRemmitance2))
         }
@@ -220,6 +224,7 @@ export class RemittanceController {
             }
             await queryRunner.manager.save(remmitance)
             await queryRunner.commitTransaction()
+            await this.smsService.sendGeneralMessage(remmitance.buyer.phoneNumber, "buy", remmitance.buyer.firstName,remmitance.goldWeight ,remmitance.totalPrice )
             return next(new response(req, res, 'approve remmitance ', 200, null, remmitance))
         }
         catch (err) {
@@ -238,7 +243,7 @@ export class RemittanceController {
         const remmitanceId = req.params.id
         const {description} = req.body
         const accounterId = `${req.user.id}-${req.user.firstName}-${req.user.lastName}`;
-        const remmitance = await this.remittanceRepository.findOne({ where: { id: remmitanceId } })
+        const remmitance = await this.remittanceRepository.findOne({ where: { id: remmitanceId } , relations : ['buyer' , 'seller']})
         const queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
@@ -250,6 +255,7 @@ export class RemittanceController {
             remmitance.accounterDescription = description;
             await queryRunner.manager.save(remmitance)
             await queryRunner.commitTransaction()
+            await this.smsService.sendGeneralMessage(remmitance.buyer.phoneNumber, "rejectcall", remmitance.buyer.firstName, remmitance.goldWeight ,remmitance.totalPrice )
             return next(new response(req, res, 'reject remmitance ', 200, null, remmitance))
         }
         catch (err) {

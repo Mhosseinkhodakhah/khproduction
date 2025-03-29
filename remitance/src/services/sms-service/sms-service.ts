@@ -34,7 +34,7 @@ export class SmsService{
                     });
                 } catch (error) {
                     console.log(error);
-                    return {success : false ,msg : "خطای داخلی سیستم"}
+                    return {success : false ,msg : "خطای ارسال پیامک از سمت کاوه نگار"}
                 }
             }
 
