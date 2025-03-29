@@ -4,12 +4,14 @@ import { User } from "../entity/User"
 import { Remmitance } from "../entity/Remmitance"
 import { response } from "../responseModel/response.model";
 import { LastService } from "../services/intrnal-service/lastService-serivce";
+import { Wallet } from "../entity/wallet";
 
 
 export class RemittanceController {
     private remittanceRepository = AppDataSource.getRepository(Remmitance)
     private userRepository = AppDataSource.getRepository(User)
     private interservice = new LastService()
+    private walletRepository = AppDataSource.getRepository(Wallet)
     private async generateInvoice() {
         return (new Date().getTime()).toString()
     }
@@ -99,10 +101,18 @@ export class RemittanceController {
         const adminId=`${req.user.id}-${req.user.firstName}-${req.user.lastName}`;
         const { goldPrice, goldWeight, totalPrice , phoneNumber  ,description ,date , destCardPan , originCardPan,time} = req.body;
         console.log(phoneNumber);
-        
-        const user=await this.userRepository.findOneBy({phoneNumber})
+
+    
+
+        const user=await this.userRepository.findOne({where : {phoneNumber : phoneNumber} , relations : ['wallet']})
+        console.log('wallet>>>' , user.wallet)
         if(!user){
             return next(new response(req, res, 'create buy remmitance ',422,"کاربر وجود ندارد",null))
+        }
+
+
+        if (+user.wallet.goldWeight < +goldWeight){
+            return next(new response(req, res, 'create buy remmitance ',422,"موجودی صندوق طلای کاربر کافی نمیباشد",null))
         }
 
         const queryRunner = AppDataSource.createQueryRunner()

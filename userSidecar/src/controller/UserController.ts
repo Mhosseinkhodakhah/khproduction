@@ -135,6 +135,7 @@ export class UserController {
 
 
 
+    
      /**
      * its here for home charts in application
      * @param request 

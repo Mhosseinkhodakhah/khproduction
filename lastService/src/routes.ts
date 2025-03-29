@@ -532,7 +532,6 @@ export const Routes = [{
     action: "updatePhoneInvoice",
     middlwares: [adminMiddleware]
 },
-
 {
     method: "get",
     route: "/call/status/:status",
@@ -540,7 +539,6 @@ export const Routes = [{
     action: "getBuyPhoneInvoice",
     middlwares: [adminMiddleware]
 },
-
 {
     method: "get",
     route: "/call/user",

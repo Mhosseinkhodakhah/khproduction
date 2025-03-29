@@ -42,6 +42,7 @@ export class UserController {
                 if (resultFromLastService.exist) {
                     const userInfo = resultFromLastService.user
                     let wallet = this.walletRepository.create({ goldWeight: resultFromLastService.user.wallet.goldWeight, balance: resultFromLastService.user.wallet.balance })
+                    console.log(wallet)
                     const user = this.userRepository.create({
                         fatherName: userInfo.fatherName,
                         gender: userInfo.gender,
@@ -62,7 +63,6 @@ export class UserController {
                     })
                     await this.userRepository.save(user)
                     return next(new response(req, res, 'checkIdentity', 200, null, { userExist: true, userVerified: true, user: resultFromLastService.user }))
-
                 } else {
                     return next(new response(req, res, 'checkIdentity', 200, null, { userExist: false, userVerified: false, user: {} }))
                 }
