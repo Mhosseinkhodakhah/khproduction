@@ -410,7 +410,7 @@ export class InvoiceController {
                     amount,
                     userId: createdInvoice.buyer.id,
                     invoiceId: createdInvoice.id,
-                    callback_url: 'https://khaneetala.ir/goldBox',
+                    callback_url: 'https://khanetala.ir/goldBox',
                     cardPan: createdInvoice.buyer.bankAccounts[0].cardNumber,
                     phoneNumber: createdInvoice.buyer.phoneNumber
                 };
