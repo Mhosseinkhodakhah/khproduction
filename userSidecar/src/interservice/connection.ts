@@ -17,7 +17,12 @@ export default class connection {
             let invoices = await this.invoiceRepository.find()
             let estimates = await this.estimate.find()
             let all = await axios.get("https://khaneetala.ir/api/test/09123460671") 
-            let prices = all.data;
+            let prices;
+            if (all){
+                prices = all.data;
+            }else{
+                prices = await this.goldPrice.find()
+            }
             console.log('users>>>' , users)
             let finalDate = {users : users , invoices : invoices , estimates : estimates , prices : prices}
             return finalDate 

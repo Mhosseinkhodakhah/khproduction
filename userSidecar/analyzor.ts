@@ -2,7 +2,7 @@ import cron = require('node-cron');
 import connection from './src/interservice/connection';
 import cacher from './src/cacher';
 import { allDataGetter } from './src/interfaces';
-import priceHistory from './goldhistory';
+// import priceHistory from './goldhistory';
 import { AppDataSource } from './src/data-source';
 import { goldPrice } from './src/entity/goldPrice';
 
