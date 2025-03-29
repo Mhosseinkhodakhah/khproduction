@@ -197,10 +197,10 @@ export class UserController {
                     const endJalali = new Date(Jalali.parse(`1404/${element}/31`).gregorian())
                     console.log('11111', startJalali, endJalali)
                     let allInvoices = await this.invoiceRepository.createQueryBuilder("invoice")
+                        .where('invoice.status = :status' , {status : 'completed'})
                         .select("SUM(CAST(invoice.goldWeight AS decimal))", "total")
-                        .where("(invoice.buyerId = :userId) AND invoice.status = :status AND invoice.createdAt >= :today AND invoice.createdAt <= :finaly", {
+                        .andWhere("(invoice.buyerId = :userId) AND invoice.createdAt >= :today AND invoice.createdAt <= :finaly", {
                             userId,
-                            status : 'completed',
                             today: startJalali,
                             finaly: endJalali
                         }).getRawOne();
