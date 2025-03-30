@@ -132,8 +132,8 @@ export class InvoiceTypeController {
         //      {month : '۱۰' , boughtGold : '0' , soldGold : '0'},
         //      {month : '۱۱' , boughtGold : '0' , soldGold : '0'},
         //  ]
-        let newEstimate = this.estimate.create({date : 'localDate' , boughtGold : '0' , soldGold : '0'})
-        await this.estimate.save(newEstimate)
+        // let newEstimate = this.estimate.create({date : 'localDate' , boughtGold : '0' , soldGold : '0'})
+        // await this.estimate.save(newEstimate)
         let estimates = await this.estimate.find()
         // let estimates = this.estimate.create(monthes)
         // await this.estimate.save(estimates)
