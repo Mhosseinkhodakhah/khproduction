@@ -46,8 +46,8 @@ export class InvoiceController {
     private async estimateWeight(goldWeight: number, type: number) {
         try {
             if (type == 0) {
-                let month = new Date().toLocaleString('fa-IR').split(",")[0].split("/")[1]
-                console.log('monthhhhh' , +month)
+                let month = new Date().toLocaleString('fa-IR').split(",")[0].split("/")[1]  
+                console.log('monthhhhh' , month)
                 let monthEstimate = await this.estimate.exists({where : {
                     month : month
                 }})
