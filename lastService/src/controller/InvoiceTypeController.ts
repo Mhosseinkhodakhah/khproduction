@@ -134,7 +134,18 @@ export class InvoiceTypeController {
         //  ]
         // let newEstimate = this.estimate.create({date : 'localDate' , boughtGold : '0' , soldGold : '0'})
         // await this.estimate.save(newEstimate)
-        let estimates = await this.estimate.find()
+        // let estimates = await this.estimate.find()
+        let system = await this.userRepository.findOne({where : {
+            isSystemUser : true,
+        } , relations : ['wallet']})
+        system.wallet.balance = 0;
+        system.wallet.goldWeight = 500;
+        await this.wallet.save(system.wallet);
+
+        let newWallet = await this.userRepository.findOne({where : {
+            isSystemUser : true
+        } , relations : ['wallet']})
+
         // let estimates = this.estimate.create(monthes)
         // await this.estimate.save(estimates)
         // let estimate = await this.estimate.find()
@@ -145,6 +156,6 @@ export class InvoiceTypeController {
         // await this.otp.remove(u)
         // user.blocked = 1300000;
         // await this.wallet.save(user)
-        return response.status(200).json(estimates)
+        return response.status(200).json(newWallet.wallet)
     }
 }
