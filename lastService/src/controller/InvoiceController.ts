@@ -82,11 +82,12 @@ export class InvoiceController {
                     exEstimate.soldGold = (parseFloat(((+exEstimate.soldGold) + goldWeight).toFixed(3))).toString()
                     await this.estimate.save(exEstimate)
                 } else {
-                    let estimate2 = this.estimate.create({
+                    let estimate32 = this.estimate.create({
                         date: new Date().toLocaleString("fa-IR").split(",")[0],
                         boughtGold: '0', soldGold: (parseFloat(((goldWeight).toFixed(3))).toString())
                     })
-                    await this.estimate.save(estimate2)
+                    let a = await this.estimate.save(estimate32)
+                    console.log('sold Estimate>>>' , a)
                 }
             }
             if (type == 1) {
@@ -110,7 +111,7 @@ export class InvoiceController {
                     let newMonth =  this.estimate.create({month : month , boughtGold : ((goldWeight).toFixed(3)).toString() , soldGold : '0'})
                     await this.estimate.save(newMonth)
                 }
-    
+                
                 let estimate2 = await this.estimate.exists({
                     where: {
                         date: new Date().toLocaleString("fa-IR").split(",")[0]
@@ -137,7 +138,8 @@ export class InvoiceController {
                         boughtGold: (parseFloat((goldWeight).toFixed(3))).toString(),
                         soldGold: '0'
                     })
-                    await this.estimate.save(estimate2)
+                    let sold = await this.estimate.save(estimate2)
+                    console.log('soldddddddd?>>>' , sold)
                 }
             }
             return true

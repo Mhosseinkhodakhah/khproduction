@@ -18,9 +18,6 @@ import { responseModel } from "../util/response.model"
 
 
 
-
-
-
 export default class invoiceConvertorController{
     private userRepository = AppDataSource.getRepository(User)
     private walletRepository = AppDataSource.getRepository(Wallet)
