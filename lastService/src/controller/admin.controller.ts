@@ -262,7 +262,7 @@ export default class adminController {
 
         let allSell ;
 
-        let weights = await this.esitmate.findOne({where : {date : 'localeDate'}})
+        let weights = await this.esitmate.findOne({where : {date : 'localDate'}})
         console.log('all weights' , weights)
         if (!weights){
             allBuy = 0;
