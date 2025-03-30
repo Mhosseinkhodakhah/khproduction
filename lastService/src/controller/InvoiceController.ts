@@ -68,7 +68,7 @@ export class InvoiceController {
                 })
                 let totalEstimate = await this.estimate.findOne({
                     where: {
-                        date: 'localeDate'
+                        date: 'localDate'
                     }
                 })
                 totalEstimate.soldGold = (parseFloat(((+totalEstimate.soldGold) + goldWeight).toFixed(3))).toString()
@@ -119,7 +119,7 @@ export class InvoiceController {
                 })
                 let totalEstimate = await this.estimate.findOne({
                     where: {
-                        date: 'localeDate'
+                        date: 'localDate'
                     }
                 })
                 totalEstimate.boughtGold = (parseFloat(((+totalEstimate.boughtGold) + goldWeight).toFixed(3))).toString()
