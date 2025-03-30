@@ -94,7 +94,7 @@ export class BankAccountController {
                     return response.status(200).json({bank: createBankAccount , msg : "کارت با موفقیت ایجاد شد"});                
                     
                 }
-                response.status(500).json({ msg: "کارت نامعتبر است" });
+                response.status(400).json({ msg: "کارت نامعتبر است" });
             } catch (error) {
                 console.log("Error in creating bank account", error);
                 return response.status(500).json({msg : "خطا در ثبت کارت بانکی"})
