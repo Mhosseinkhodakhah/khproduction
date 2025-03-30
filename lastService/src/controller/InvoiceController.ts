@@ -261,7 +261,6 @@ export class InvoiceController {
                     return response.status(400).json({ msg: "برای انجام معامله ابتدا کارت بانکی خود را ثبت کنید" });
                 }
             }
-
             console.log('walletIs' , user.wallet)
             if (type === "buy") {
                 if (realGoldPrice2 - (+goldPrice) >= 10000){

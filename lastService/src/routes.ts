@@ -18,6 +18,7 @@ import { approveWithdrawalDTO, changeInpersonStatus, createBuyTransAction, creat
 import {createBuyPhone,createSellPhone,approveBuyPhone,rejectBuyPhone,updatePhoneInvoice} from "./DTO/phoneInvoice.dto"
 import inPersonController from "./controller/inPerson.controller";
 import { createNewUser } from "./DTO/applicationDTo";
+import invoiceConvertorController from "./controller/inpersonConvert.controller";
 
 
 export const Routes = [{
@@ -546,6 +547,15 @@ export const Routes = [{
     action: "getAllPhoneTransactionForUser",
     middlwares: [authenticate]
 },
+
+{
+    method: "post",
+    route: "/inperson/convert/create",
+    controller: invoiceConvertorController,
+    action: "createTransAction",
+    middlwares: [adminMiddleware]
+},
+
 
 
 

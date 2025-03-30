@@ -3,5 +3,5 @@ export enum TradeType{
     PHONE,
     INPERSON,
     REMMITANCE,
-    INOERSONCONVERT
+    INPERSONCONVERT
 }

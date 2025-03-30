@@ -19,10 +19,10 @@ export class productList {
     title : string
 
     @Column({type : 'int' , nullable : true})
-    num : number;
+    num : number;   
 
     @Column({type : 'numeric' , nullable : true})
-    weight : string
+    weight : number
 
     @Column({type : 'numeric' , nullable : true})
     wage : number
@@ -31,11 +31,11 @@ export class productList {
     // @Column({nullable : true})
     // status : string 
     
-    @Column()
-    date : string
+    // @Column()
+    // date : string
 
-    @Column()
-    time : string
+    // @Column()
+    // time : string
 
     // @ManyToOne(()=> InvoiceType , (invoiceType)=> invoiceType.invoices)
     // type : InvoiceType

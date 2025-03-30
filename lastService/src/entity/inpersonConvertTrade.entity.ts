@@ -22,7 +22,7 @@ export class convertTradeInvoice {
     goldWeight : number
 
     @Column({ type: "numeric", precision: 10, scale: 0,default : 0 })
-    totalPrice : number
+    totalInvoicePrice : number
 
     @Column({nullable : true})
     authority : string
@@ -30,9 +30,15 @@ export class convertTradeInvoice {
     @Column({nullable : true})
     invoiceId : string
 
-    @Column({type : 'int' , nullable : true})
-    paymentMethod : number                       // 0 : naghd     1 : naghd va sandoogh     2 : sandoogh
+    @Column({type : 'int' , nullable : true })
+    paymentMethod : number                      
+
+
+    @Column({type : 'int' , nullable : true })
+    paymentType : number                       // 0 : naghd     1 : naghd va sandoogh     2 : sandoogh
+
     
+
     @Column({nullable : true})
     status : string 
     
@@ -60,18 +66,15 @@ export class convertTradeInvoice {
     @Column({nullable:true,default:""})
     accounterId:string
 
-    // @Column({nullable:true,default:null})
-    // paymentMethod :  number           //0 : gateway   1 :transport   2 :inperson   3 : cash   4 : phisicalGold         
-
     @Column({  default: "", type: "varchar" })
     originCardPan: string
-
+    
     @Column({  default: "", type: "varchar" })
     destCardPan: string
     
     @Column({nullable:true,default:"",type:"varchar"})
     description:string
-
+    
     @Column({nullable:true,default:"",type:"varchar"})
     accounterDescription:string
     @Column({
