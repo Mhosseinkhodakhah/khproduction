@@ -271,7 +271,7 @@ export default class adminController {
 
         allBuy = 0;
         allSell = 0
-
+        
         console.log('all buy>>>', allBuy)
         console.log('all sell>>>', allSell)
 

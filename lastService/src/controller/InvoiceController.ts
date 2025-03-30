@@ -16,6 +16,7 @@ import { EstimateTransactions } from "../entity/EstimateTransactions";
 import { time } from "console";
 import { validationResult } from "express-validator";
 import { goldPrice } from "../entity/goldPrice";
+import monitor from "../util/statusMonitor";
 
 
 export class InvoiceController {
@@ -144,6 +145,7 @@ export class InvoiceController {
             }
             return true
         } catch (error) {
+            monitor.error.push(`${error}`)
             console.log('error>>>>' , error)
             return false
         }
@@ -309,6 +311,7 @@ export class InvoiceController {
                     wallet: user.wallet,
                 });
             } catch (error) {
+                monitor.error.push(`${error}`)
                 console.log('transaction failed>>>>>>' , error)
                 await queryRunner.rollbackTransaction()
                 return response.status(503).json({
@@ -323,6 +326,7 @@ export class InvoiceController {
             }
 
         } catch (error) {
+            monitor.error.push(`${error}`)
             console.error("Transaction creation error:", error);
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
@@ -393,6 +397,7 @@ export class InvoiceController {
                         isFromWallet,
                     });
                 } catch (error) {
+                    monitor.error.push(`${error}`)
                     console.log('error occured in database . . .')
                     await queryRunner.rollbackTransaction()
                     return response.status(200).json({
@@ -436,6 +441,7 @@ export class InvoiceController {
                         isFromWallet,
                     });
                 } catch (error) {
+                    monitor.error.push(`${error}`)
                     await queryRunner.rollbackTransaction()
                     console.log('transACtion failed in database in part complete transACtion>>>' , updated)
                     return response.status(502).json({
@@ -450,6 +456,7 @@ export class InvoiceController {
                 }
             }
         } catch (error) {
+            monitor.error.push(`${error}`)
             console.error("Error in complete transaction:", error);
             // const createdInvoice = await this.invoiceRepository.findOne({
             //     where: { id: request.body.invoiceId },
@@ -536,6 +543,7 @@ export class InvoiceController {
                     transaction: savedTransaction,
                 });
             } catch (error) {
+                monitor.error.push(`${error}`)
                 await queryRunner.rollbackTransaction()
                 console.log('the sell transAction failed and rolled back' , error)
                 return response.status(502).json({
@@ -548,6 +556,7 @@ export class InvoiceController {
                 
             }
         } catch (error) {
+            monitor.error.push(`${error}`)
             const createdInvoice = await this.invoiceRepository.findOne({
                 where: { id: invoiceId },
                 relations: { seller: { wallet: true }, buyer: { wallet: true } },
@@ -630,6 +639,7 @@ export class InvoiceController {
                     return response.status(200).json({ msg: "پرداخت موفق", transaction: updatedtransaction, bank: res.data.card_pan, referenceID: res.data?.ref_id })
                 }
             } catch (error) {
+                monitor.error.push(`${error}`)
                 console.log('here is heppend caust we catched error . . .', `${error}`)
                 // let savedTransaction = await this.invoiceRepository.findOne({where:{ id : paymentInfo.invoiceId}})
                 // savedTransaction.status = "pending";
@@ -640,6 +650,7 @@ export class InvoiceController {
                 return response.status(500).json({ msg: "خطای داخلی سیستم" });
             }
         } catch (error) {
+            monitor.error.push(`${error}`)
             console.log("error in verify transaction", error);
             // let savedTransaction = await this.invoiceRepository.findOne({where : { id : paymentInfo.invoiceId} , relations : { seller : {wallet : true},buyer : {wallet : true, bankAccounts : true}}})
             // console.log('after catching error in verification>>>>' , savedTransaction)
@@ -659,6 +670,7 @@ export class InvoiceController {
                 transactions
             );
         } catch (error) {
+            monitor.error.push(`${error}`)
             console.error("Fetch transactions error:", error);
             response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
@@ -677,6 +689,7 @@ export class InvoiceController {
                 transactions
             );
         } catch (error) {
+            monitor.error.push(`${error}`)
             console.error("Fetch transactions error:", error);
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
@@ -727,6 +740,7 @@ export class InvoiceController {
         
             response.status(200).json(all);
         } catch (error) {
+            monitor.error.push(`${error}`)
             console.error("Fetch transactions error:", error);
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
@@ -781,6 +795,7 @@ export class InvoiceController {
 
             response.status(200).json(all);
         } catch (error) {
+            monitor.error.push(`${error}`)
             console.error("Fetch transactions error:", error);
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
