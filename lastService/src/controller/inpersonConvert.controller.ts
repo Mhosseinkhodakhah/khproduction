@@ -43,7 +43,7 @@ export default class invoiceConvertorController{
     }
     
     async createTransAction(req : Request , res : Response , next  : NextFunction){
-        // let admin = `${req.user.firstName}-${req.user.lastName}`;
+        let admin = `${req.user.firstName}-${req.user.lastName}`;
         console.log('bodyyyy>>>>>>>>>>>' , req.body)
         let nationalCode = req.body.nationalCode;
         let user = await this.userRepository.findOne({where : {
@@ -65,6 +65,7 @@ export default class invoiceConvertorController{
                 time : new Date().toLocaleString('fa-IR').split(',')[1],
                 invoiceId : await this.generateInvoice(),
                 totalInvoicePrice : +req.body.totalInvoicePrice,
+                adminId : admin,
                 status : 'init',
                 description : '',
                 tradeType : TradeType.INPERSONCONVERT,

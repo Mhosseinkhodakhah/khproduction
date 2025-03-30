@@ -556,13 +556,9 @@ export const Routes = [{
     middlwares: [adminMiddleware]
 },
 
-
-
-
-
 /**
  * sell call
- */
+*/
 
 {
     method: "post",
