@@ -135,12 +135,12 @@ export class InvoiceTypeController {
         // let newEstimate = this.estimate.create({date : 'localDate' , boughtGold : '0' , soldGold : '0'})
         // await this.estimate.save(newEstimate)
         // let estimates = await this.estimate.find()
-        let system = await this.userRepository.findOne({where : {
-            isSystemUser : true,
-        } , relations : ['wallet']})
-        system.wallet.balance = 0;
-        system.wallet.goldWeight = 500;
-        await this.wallet.save(system.wallet);
+        // let system = await this.userRepository.findOne({where : {
+        //     isSystemUser : true,
+        // } , relations : ['wallet']})
+        // system.wallet.balance = 0;
+        // system.wallet.goldWeight = 500;
+        // await this.wallet.save(system.wallet);
 
         let newWallet = await this.userRepository.findOne({where : {
             isSystemUser : true

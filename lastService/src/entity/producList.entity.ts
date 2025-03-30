@@ -19,7 +19,7 @@ export class productList {
     title : string
 
     @Column({type : 'int' , nullable : true})
-    num : number;   
+    num : number
 
     @Column({type : 'numeric' , nullable : true})
     weight : number

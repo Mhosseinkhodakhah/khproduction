@@ -16,6 +16,8 @@ import { trackIdInterface } from "../interfaces/interface.interface"
 import { internalDB } from "../services/selfDB/saveDATA.service"
 import { JwtService } from "../services/jwt-service/jwt-service"
 import { query, validationResult } from "express-validator"
+import monitor from "../util/statusMonitor"
+import { EstimateTransactions } from "../entity/EstimateTransactions"
 
 
 
@@ -29,9 +31,122 @@ export default class inPersonController {
     private walletTransactionRepository = AppDataSource.getRepository(WalletTransaction);
     private paymentInfoRepository = AppDataSource.getRepository(PaymentInfo);
     private otpRepository = AppDataSource.getRepository(Otp)
+    private estimate = AppDataSource.getRepository(EstimateTransactions)
     private smsService = new SmsService()
     private interservice = new logger()
     private jwtService = new JwtService()
+
+
+
+    private async estimateWeight(goldWeight: number, type: number) {
+        try {
+            if (type == 0) {
+                let month = new Date().toLocaleString('fa-IR').split(",")[0].split("/")[1]  
+                console.log('monthhhhh' , month)
+                let monthEstimate = await this.estimate.exists({where : {
+                    month : month
+                }})
+                if (monthEstimate){
+                    let exEstimate1 =  await this.estimate.findOne({where : {
+                        month : month
+                    }})
+                    exEstimate1.soldGold = (parseFloat(((+exEstimate1.soldGold) + goldWeight).toFixed(3))).toString()
+                    await this.estimate.save(exEstimate1)
+                }else{
+                    let newMonth = this.estimate.create({month : month , boughtGold : '0' , soldGold : ((goldWeight).toFixed(3)).toString()})
+                    await this.estimate.save(newMonth)
+                }
+                let estimate2 = await this.estimate.exists({
+                    where: {
+                        date: new Date().toLocaleString("fa-IR").split(",")[0]
+                    }
+                })
+                let totalEstimate = await this.estimate.findOne({
+                    where: {
+                        date: 'localDate'
+                    }
+                })
+                totalEstimate.soldGold = (parseFloat(((+totalEstimate.soldGold) + goldWeight).toFixed(3))).toString()
+                await this.estimate.save(totalEstimate)
+                if (estimate2) {
+                    let exEstimate = await this.estimate.findOne({
+                        where: {
+                            date: new Date().toLocaleString("fa-IR").split(",")[0]
+                        }
+                    })
+                    exEstimate.soldGold = (parseFloat(((+exEstimate.soldGold) + goldWeight).toFixed(3))).toString()
+                    await this.estimate.save(exEstimate)
+                } else {
+                    let estimate32 = this.estimate.create({
+                        date: new Date().toLocaleString("fa-IR").split(",")[0],
+                        boughtGold: '0', soldGold: (parseFloat(((goldWeight).toFixed(3))).toString())
+                    })
+                    let a = await this.estimate.save(estimate32)
+                    console.log('sold Estimate>>>' , a)
+                }
+            }
+            if (type == 1) {
+                let month = new Date().toLocaleString('fa-IR').split(",")[0].split("/")[1]
+                let monthEstimate = await this.estimate.exists({where : {
+                    month : month
+                }})
+                console.log('month for creation' , monthEstimate)
+                
+                if (monthEstimate){
+                console.log('month for creation 1')
+
+                    let monthT = await this.estimate.findOne({where : {
+                        month : month
+                    }})
+                    monthT.boughtGold = (parseFloat(((+monthT.boughtGold) + goldWeight).toFixed(3))).toString()
+                    await this.estimate.save(monthT)
+                }else{
+                console.log('month for creation2')
+
+                    let newMonth =  this.estimate.create({month : month , boughtGold : ((goldWeight).toFixed(3)).toString() , soldGold : '0'})
+                    await this.estimate.save(newMonth)
+                }
+                
+                let estimate2 = await this.estimate.exists({
+                    where: {
+                        date: new Date().toLocaleString("fa-IR").split(",")[0]
+                    }
+                })
+                let totalEstimate = await this.estimate.findOne({
+                    where: {
+                        date: 'localDate'
+                    }
+                })
+                totalEstimate.boughtGold = (parseFloat(((+totalEstimate.boughtGold) + goldWeight).toFixed(3))).toString()
+                await this.estimate.save(totalEstimate)
+                if (estimate2) {
+                    let exEstimate = await this.estimate.findOne({
+                        where: {
+                            date: new Date().toLocaleString("fa-IR").split(",")[0]
+                        }
+                    })
+                    exEstimate.boughtGold = (parseFloat(((+exEstimate.boughtGold) + goldWeight).toFixed(3))).toString()
+                    await this.estimate.save(exEstimate)
+                } else {
+                    let estimate2 = this.estimate.create({
+                        date: new Date().toLocaleString("fa-IR").split(",")[0],
+                        boughtGold: (parseFloat((goldWeight).toFixed(3))).toString(),
+                        soldGold: '0'
+                    })
+                    let sold = await this.estimate.save(estimate2)
+                    console.log('soldddddddd?>>>' , sold)
+                }
+            }
+            return true
+        } catch (error) {
+            monitor.error.push(`${error}`)
+            console.log('error>>>>' , error)
+            return false
+        }
+    }
+
+
+
 
     async checkMatchOfPhoneAndNationalCode(body) {
         let { phoneNumber, nationalCode } = body
@@ -507,6 +622,7 @@ export default class inPersonController {
             await queryRunner.manager.save(user.wallet)
             let createdInvoice = await queryRunner.manager.save(newInvoice)
             console.log('passed')
+            let rr = await this.estimateWeight(+createdInvoice.goldWeight , 0)
             await queryRunner.commitTransaction()
             let finalInvoice = await this.invoicesRepository.findOne({ where: { id: createdInvoice.id }, relations: ['buyer', 'seller', 'seller.wallet'] })
             let logRespons = await this.interservice.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , '' , ` را ایجاد کرد ${user.firstName} تراکنش فروش حضوری مربوط به کاربر ${req.user.firstName} کارشناس` , {
@@ -642,7 +758,7 @@ export default class inPersonController {
         await queryRunner.connect()
         await queryRunner.startTransaction()
         try {
-            if (status == 0) {                                // if reject the transActions
+            if (status == 0) {                               // if reject the transActions
                 inPersonTransAction.status = 'failed';
                 inPersonTransAction.accounterDescription = description;
                 inPersonTransAction.accounterId = accountant;
@@ -653,7 +769,7 @@ export default class inPersonController {
                 } , 1)
                 this.smsService.sendGeneralMessage(inPersonTransAction.buyer.phoneNumber, "rejectcall", inPersonTransAction.buyer.firstName, inPersonTransAction.goldWeight, inPersonTransAction.totalPrice)
                 return next(new responseModel(req, res, 'این تراکنش با موفقیت رد شد' ,'admin service', 200, null, savedTransActions))
-            } else if (status == 1) {                           // if approved the transActions
+            } else if (status == 1) {                          // if approved the transActions
                 console.log('level1')
                 inPersonTransAction.status = 'completed';
                 inPersonTransAction.accounterDescription = description;
@@ -668,6 +784,7 @@ export default class inPersonController {
                 await queryRunner.manager.save(inPersonTransAction.buyer.wallet)
                 await queryRunner.manager.save(inPersonTransAction.seller.wallet)
                 let savedTransActions = await queryRunner.manager.save(inPersonTransAction)
+                await this.estimateWeight(+inPersonTransAction.goldWeight, 1)
                 await queryRunner.commitTransaction()
                 let logRespons = await this.interservice.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , '' , ` را تایید کرد ${inPersonTransAction.buyer.firstName} تراکنش خرید حضوری مربوط به کاربر ${req.user.firstName} حسابدار` , {
                     action : ` را تایید کرد ${inPersonTransAction.buyer.firstName} تراکنش خرید حضوری مربوط به کاربر ${req.user.firstName} حسابدار`
