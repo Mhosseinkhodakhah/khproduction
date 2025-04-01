@@ -26,6 +26,7 @@ export default class logger{
 
     async checkCardNuber(info){
         try {
+            console.log('its hereeeeeeeee>>>>>>>>>>')
             let response = await axios.post('https://khaneetala.ir/api/card/check' , info)
             console.log('returned data' , response.data)
             return response.data.isMatch;

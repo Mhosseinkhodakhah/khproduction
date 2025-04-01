@@ -190,7 +190,7 @@ export class InvoiceController {
         
         let transactionsToday =await invoiceRepository.createQueryBuilder('invoice')
         .leftJoinAndSelect('invoice.buyer' , 'buyer')
-        .where('invoice.fromGateway = :bool AND status != :status AND invoice.createdAt >= :today' , {bool : true , status : 'init' ,  today : today})
+        .where('invoice.fromGateway = :bool AND status = :status AND invoice.createdAt >= :today' , {bool : true , status : 'completed' ,  today : today})
         .andWhere('buyer.id = :id' , {id : userId})
         .getMany()
 
@@ -389,6 +389,11 @@ export class InvoiceController {
             const { invoiceId, amount, isFromWallet } = request.body;
             const validationError = this.validateRequiredFields({ invoiceId, amount, isFromWallet });
             if (validationError) {
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  400,
+                    error : 'ارور اعتبار سنجی در اتمام فرایند خرید'
+                })
                 return response.status(400).json({ msg: validationError });
             }
             const createdInvoice = await this.invoiceRepository.findOne({
@@ -396,6 +401,11 @@ export class InvoiceController {
                 relations: { seller: { wallet: true }, buyer: { wallet: true, bankAccounts: true } },
             });
             if (!createdInvoice) {
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  400,
+                    error : 'سند یافت نشد'
+                })
                 return response.status(404).json({ err: "سند یافت نشد" });
             }
 
@@ -409,6 +419,11 @@ export class InvoiceController {
                 console.log('check check check ...............', typeof (createdInvoice.totalPrice), createdInvoice.totalPrice)
                 if (+createdInvoice.buyer.wallet.balance < +createdInvoice.totalPrice) {
                     // should we failed the transaction???
+                    monitor.addStatus({
+                        scope : 'invoice controller',
+                        status :  400,
+                        error : 'موجودی کیف پول کافی نیست'
+                    })
                     return response.status(400).json({ msg: "موجودی کیف پول کافی نیست" });
                 }
                 const queryRunner = AppDataSource.createQueryRunner()
@@ -442,13 +457,23 @@ export class InvoiceController {
                     await queryRunner.commitTransaction()
                     console.log('coomplete buy from wallet', savedTransaction)
                     await this.estimateWeight(invoiceGoldWeight, 1)
+                    monitor.addStatus({
+                        scope : 'invoice controller',
+                        status :  200,
+                        error : null
+                    })
                     return response.status(200).json({
                         msg: "معامله با موفقیت انجام شد.",
                         transaction: savedTransaction,
                         isFromWallet,
                     });
                 } catch (error) {
-                    monitor.error.push(`${error}`)
+                    monitor.addStatus({
+                        scope : 'invoice controller',
+                        status :  500,
+                        error : `${error}`
+                    })
+                    // monitor.error.push(`${error}`)
                     console.log('error occured in database . . .')
                     await queryRunner.rollbackTransaction()
                     return response.status(200).json({
@@ -485,6 +510,11 @@ export class InvoiceController {
                     updated = await queryRunner.manager.save(createdInvoice);
                     await queryRunner.commitTransaction()
                     console.log('coomplete buy from zarinpal', updated)
+                    monitor.addStatus({
+                        scope : 'invoice controller',
+                        status :  200,
+                        error : null
+                    })
                     return response.status(200).json({
                         msg: "Redirecting to payment gateway...",
                         paymentUrl: url.url,
@@ -492,7 +522,12 @@ export class InvoiceController {
                         isFromWallet,
                     });
                 } catch (error) {
-                    monitor.error.push(`${error}`)
+                    monitor.addStatus({
+                        scope : 'invoice controller',
+                        status :  500,
+                        error : `${error}`
+                    })
+                    // monitor.error.push(`${error}`)
                     await queryRunner.rollbackTransaction()
                     console.log('transACtion failed in database in part complete transACtion>>>' , updated)
                     return response.status(502).json({
@@ -507,7 +542,12 @@ export class InvoiceController {
                 }
             }
         } catch (error) {
-            monitor.error.push(`${error}`)
+            monitor.addStatus({
+                scope : 'invoice controller',
+                status :  500,
+                error : `${error}`
+            })
+            // monitor.error.push(`${error}`)
             console.error("Error in complete transaction:", error);
             // const createdInvoice = await this.invoiceRepository.findOne({
             //     where: { id: request.body.invoiceId },
@@ -524,6 +564,11 @@ export class InvoiceController {
             const userId = request.user_id;
             const validationError = this.validateRequiredFields({ invoiceId });
             if (validationError) {
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  400,
+                    error : 'مشکل اعتبار سنجی در اتمام تراکنش فروش'
+                })
                 return response.status(400).json({ msg: validationError });
             }
             const createdInvoice = await this.invoiceRepository.findOne({
@@ -537,6 +582,11 @@ export class InvoiceController {
                 createdInvoice.status = 'failed';
                 let updated = await this.invoiceRepository.save(createdInvoice)
                 console.log('after failed in complete sell>>>', updated)
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  400,
+                    error : 'موجودی صندوق طلا کافی نیست'
+                })
                 return response.status(400).json({
                     code: "1102",
                     msg: "موجودی صندوق طلا کافی نیست.",
@@ -589,12 +639,22 @@ export class InvoiceController {
                 //  }
                 await queryRunner.commitTransaction()
                 console.log('after failed in complete sell and transaction commited . . .>>>', savedTransaction)
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  200,
+                    error : null
+                })
                 return response.status(200).json({
                     msg: "معامله با موفقیت ثبت شد",
                     transaction: savedTransaction,
                 });
             } catch (error) {
-                monitor.error.push(`${error}`)
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  500,
+                    error : `${error}`
+                })
+                // monitor.error.push(`${error}`)
                 await queryRunner.rollbackTransaction()
                 console.log('the sell transAction failed and rolled back' , error)
                 return response.status(502).json({
@@ -607,7 +667,12 @@ export class InvoiceController {
                 
             }
         } catch (error) {
-            monitor.error.push(`${error}`)
+            monitor.addStatus({
+                scope : 'invoice controller',
+                status :  500,
+                error : `${error}`
+            })
+            // monitor.error.push(`${error}`)
             const createdInvoice = await this.invoiceRepository.findOne({
                 where: { id: invoiceId },
                 relations: { seller: { wallet: true }, buyer: { wallet: true } },
@@ -636,6 +701,11 @@ export class InvoiceController {
                 let savedTransaction = await this.invoiceRepository.findOne({ where: { id: paymentInfo.invoiceId }, relations: { seller: { wallet: true }, buyer: { wallet: true, bankAccounts: true } } })
                 if (savedTransaction.status != "pending") {
                     console.log('the status was not pending . . .', savedTransaction)
+                    monitor.addStatus({
+                        scope : 'invoice controller',
+                        status :  400,
+                        error : 'تراکنش قبلا اعتبار سنجی شده است'
+                    })
                     return response.status(400).json({ msg: "تراکنش قبلا اعتبارسنجی شده است" })
                 }
                 if (!res.status) {
@@ -643,6 +713,11 @@ export class InvoiceController {
                     savedTransaction.status = "failed";                                     // just here is for failed . . .
                     let updatedtransaction = await this.invoiceRepository.save(savedTransaction);
                     console.log('after failed the transaction buy zarinpal>>>', updatedtransaction)
+                    monitor.addStatus({
+                        scope : 'invoice controller',
+                        status :  200,
+                        error : null
+                    })
                     return response.status(200).json({ msg: "پرداخت ناموفق", transaction: updatedtransaction, bank: savedTransaction.buyer.bankAccounts[0].cardNumber })
                 }
                 else if (res.status && res.code == 100) {
@@ -687,10 +762,20 @@ export class InvoiceController {
                     //         soldGold : '0'})
                     //     await this.estimate.save(estimate2)
                     //  }
+                    monitor.addStatus({
+                        scope : 'invoice controller',
+                        status :  200,
+                        error : null
+                    })
                     return response.status(200).json({ msg: "پرداخت موفق", transaction: updatedtransaction, bank: res.data.card_pan, referenceID: res.data?.ref_id })
                 }
             } catch (error) {
-                monitor.error.push(`${error}`)
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  500,
+                    error : `${error}`
+                })
+                // monitor.error.push(`${error}`)
                 console.log('here is heppend caust we catched error . . .', `${error}`)
                 // let savedTransaction = await this.invoiceRepository.findOne({where:{ id : paymentInfo.invoiceId}})
                 // savedTransaction.status = "pending";
@@ -701,6 +786,11 @@ export class InvoiceController {
                 return response.status(500).json({ msg: "خطای داخلی سیستم" });
             }
         } catch (error) {
+            monitor.addStatus({
+                scope : 'invoice controller',
+                status :  500,
+                error : `${error}`
+            })
             monitor.error.push(`${error}`)
             console.log("error in verify transaction", error);
             // let savedTransaction = await this.invoiceRepository.findOne({where : { id : paymentInfo.invoiceId} , relations : { seller : {wallet : true},buyer : {wallet : true, bankAccounts : true}}})
@@ -717,11 +807,21 @@ export class InvoiceController {
                 where: [{ seller: { id: userId } }, { buyer: { id: userId } }, type],
                 relations: ["seller", "buyer", "type"],
             });
+            monitor.addStatus({
+                scope : 'invoice controller',
+                status :  200,
+                error : null
+            })
             response.status(200).json(
                 transactions
             );
         } catch (error) {
-            monitor.error.push(`${error}`)
+            monitor.addStatus({
+                scope : 'invoice controller',
+                status :  500,
+                error : `${error}`
+            })
+            // monitor.error.push(`${error}`)
             console.error("Fetch transactions error:", error);
             response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
@@ -734,13 +834,28 @@ export class InvoiceController {
                 relations: ["seller", "buyer", "type"],
             });
             if (!transactions) {
-                response.status(404).json({ msg: "invoice with this id not found" })
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  400,
+                    error : 'تراکنش یافت نشد'
+                })
+                response.status(400).json({ msg: "invoice with this id not found" })
             }
+            monitor.addStatus({
+                scope : 'invoice controller',
+                status :  200,
+                error : null
+            })
             response.status(200).json(
                 transactions
             );
         } catch (error) {
-            monitor.error.push(`${error}`)
+            monitor.addStatus({
+                scope : 'invoice controller',
+                status :  500,
+                error :`${error}`
+            })
+            // monitor.error.push(`${error}`)
             console.error("Fetch transactions error:", error);
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
@@ -752,6 +867,11 @@ export class InvoiceController {
             const { status } = request.body;
             const error = validationResult(request)
             if (!error.isEmpty()) {
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  400,
+                    error : error['errors'][0].msg
+                })
                 return response.status(400).json({ msg: error['errors'][0].msg  });
             }
             console.log(status)
@@ -760,13 +880,11 @@ export class InvoiceController {
             let remmitance
             console.log("typeInstance for sell", typeInstance);
  
-            
-
+        
             const queryBuilder = this.invoiceRepository.createQueryBuilder('invoice')
                 .leftJoinAndSelect('invoice.seller', 'seller')
                 .leftJoinAndSelect('invoice.type', 'type')
                 .where('seller.id = :userId AND type.id = :id', { userId, id: typeInstance.id });
-
 
             if (status) {
                 remmitance=await this.remmitanceService.getSellRmmitanceForUser(user.phoneNumber,"completed")
@@ -788,7 +906,11 @@ export class InvoiceController {
                 
             const all=[...transactions,...remmitance]
 
-        
+            monitor.addStatus({
+                scope : 'invoice controller',
+                status :  400,
+                error : error['errors'][0].msg
+            })  
             response.status(200).json(all);
         } catch (error) {
             monitor.error.push(`${error}`)
