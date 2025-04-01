@@ -76,7 +76,7 @@ AppDataSource.initialize().then(async () => {
     const systemService = new SystemService();                   // what the fuck?????
     await systemService.initializeSystemUser();
     await systemService.initializeTransactionTypes();
-
+    
     app.listen(3000)
 
 

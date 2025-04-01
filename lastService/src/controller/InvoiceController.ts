@@ -39,7 +39,6 @@ export class InvoiceController {
         return null;
     }
 
-
     private async generateInvoice(){
         return (new Date().getTime()).toString()
     }
@@ -239,21 +238,46 @@ export class InvoiceController {
                 return response.status(400).json({ msg: 'مبلغ بیش از حد مجاز' });
             }
             if ( +goldWeight < 0.01){
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  400,
+                    error : 'میزان طلای درخاستی نمیتواند کمتر از 0.01 باشد'
+                })
                 return response.status(400).json({ msg: 'میزان طلای درخاستی نمی تواند کمتر از 0.01 باشد' });
             }
             if (+goldWeight > 10){
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  400,
+                    error : 'حداکثر میزان مجاز خرید در هر روز 10 گرم می باشد'
+                })
                 return response.status(400).json({ msg: 'حداکثر میزان مجاز خرید در هر روز 10 گرم میباشد' });
             }
             if (goldWeight == '0' || goldPrice == '0' || totalPrice == '0' ){
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  400,
+                    error : 'ورود مقادیر نادرست'
+                })
                 return response.status(400).json({ msg: 'لطفا مقادیر درست را وارد کنید' });
             }
             const userId = request.user_id;
             const validationError = this.validateRequiredFields({ goldPrice, goldWeight, type });
             // برای انجام معامله ابتدا کارت بانکی خود را ثبت کنید
             if (validationError) {
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  400,
+                    error : 'مقادیر نادرست'
+                })
                 return response.status(400).json({ msg: validationError });
             }
             if (!["buy", "sell"].includes(type)) {
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  400,
+                    error : 'ورود نادرست تایپ ایجاد تراکنش'
+                })
                 return response.status(400).json({ msg: "Invalid transaction type." });
             }
             const { user, systemUser } = await this.fetchUsers(this.userRepository, userId);
@@ -262,6 +286,11 @@ export class InvoiceController {
             if (!user.isHaveBank && (user.bankAccounts || user.bankAccounts.length > 0)) {
                 const hasVerifiedAccount = user.bankAccounts.some(account => account.isVerified);
                 if (!hasVerifiedAccount) {
+                    monitor.addStatus({
+                        scope : 'invoice controller',
+                        status :  400,
+                        error : 'تلاش برای ثبت معامله بدون ثبت کارت بانکی'
+                    })
                     return response.status(400).json({ msg: "برای انجام معامله ابتدا کارت بانکی خود را ثبت کنید" });
                 }
             }
@@ -270,15 +299,22 @@ export class InvoiceController {
                 if (realGoldPrice2 - (+goldPrice) >= 10000){
                     console.log('condition1')
                     goldPrice = realGoldPrice2
+                    monitor.error.push('تلاش برای ایجاد تراکنش در قیمتی پایین تر از قیمت بازار')
                     // return response.status(400).json({ msg: 'امکان ثبت معامله در این قیمت وجود ندارد' });
                 }
                 if (((realGoldPrice2*(+goldWeight)) - (+totalPrice)) >= (10*(+goldWeight))){
                     console.log('condition2')
+                    monitor.error.push('تلاش برای ثبت معامله در اپ با قیمتی متفاوت از حجم طلای ورودی')
                     totalPrice = realGoldPrice2*(+goldWeight)
                     // return response.status(400).json({ msg: 'امکان ثبت معامله در این قیمت وجود ندارد' });
                 }
                 let limitError = await this.checkDailyLimits(this.invoiceRepository, userId, goldWeight);
                 if (limitError) {
+                    monitor.addStatus({
+                        scope : 'invoice controller',
+                        status :  400,
+                        error : 'عبور از مرز حد حجم خرید روزانه'
+                    })
                     return response.status(400).json({ msg: limitError });
                 }
             }
@@ -305,13 +341,23 @@ export class InvoiceController {
                 });
                 savedTransaction = await queryRunner.manager.save(transaction)
                 await queryRunner.commitTransaction()
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  200,
+                    error : null
+                })
                 return response.status(201).json({
                     msg: "Transaction created successfully",
                     transactionId: savedTransaction.id,
                     wallet: user.wallet,
                 });
             } catch (error) {
-                monitor.error.push(`${error}`)
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  500,
+                    error : `${error}`
+                })
+                // monitor.error.push(`${error}`)
                 console.log('transaction failed>>>>>>' , error)
                 await queryRunner.rollbackTransaction()
                 return response.status(503).json({
@@ -326,7 +372,12 @@ export class InvoiceController {
             }
 
         } catch (error) {
-            monitor.error.push(`${error}`)
+            monitor.addStatus({
+                scope : 'invoice controller',
+                status :  500,
+                error : `${error}`
+            })
+            // monitor.error.push(`${error}`)
             console.error("Transaction creation error:", error);
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }

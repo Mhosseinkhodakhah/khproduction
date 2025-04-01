@@ -5,6 +5,7 @@ import { User } from "../entity/User";
 import { ShahkarController } from "./ShahkarController";
 import { SmsService } from "../services/sms-service/message-service";
 import logger from "../services/interservice/logg.service";
+import monitor from "../util/statusMonitor";
 
 export class BankAccountController {
 
@@ -19,8 +20,19 @@ export class BankAccountController {
         try {
             let userId = request['user_id']
             const bankAccounts = await this.bankAccountRepository.find({where :{owner :{ id : userId}}, relations: ["owner"] });
+            monitor.addStatus({
+                scope : 'bank account controller',
+                status : 200,
+                error: null
+            })
             response.status(200).json(bankAccounts);
         } catch (error) {
+            monitor.addStatus({
+                scope : 'bank account controller',
+                status : 500,
+                error: `${error}`
+            })
+
             console.log("Error in finding all bank accounts", error);
             return response.status(500).json({msg : "خطای داخلی سیستم"})
         }
@@ -30,6 +42,11 @@ export class BankAccountController {
         const id = parseInt(request.params.id);
 
         if (isNaN(id)) {
+            monitor.addStatus({
+                scope : 'bank account controller',
+                status : 400,
+                error: `invalid bank account id`
+            })
             return response.status(400).json({ error: "Invalid bank account ID" }); 
         }
 
@@ -40,11 +57,25 @@ export class BankAccountController {
             });
 
             if (!bankAccount) {
-                return response.status(404).json({ error: "Bank account not found" });
+                monitor.addStatus({
+                    scope : 'bank account controller',
+                    status : 400,
+                    error: `حساب بانکی یافت نشد`
+                })
+                return response.status(400).json({ error: "Bank account not found" });
             }
-
+            monitor.addStatus({
+                scope : 'bank account controller',
+                status : 200,
+                error: null
+            })
             response.status(200).json(bankAccount);
         } catch (error) {
+            monitor.addStatus({
+                scope : 'bank account controller',
+                status : 500,
+                error: `${error}`
+            })
             console.log("Error in finding bank account by id", error);
             return response.status(500).json({msg : "خطای داخلی سیستم"})
         }
@@ -55,6 +86,11 @@ export class BankAccountController {
         let ownerId = request.user_id
         console.log(ownerId)
         if ( !cardNumber || !ownerId) {
+            monitor.addStatus({
+                scope : 'bank account controller',
+                status : 400,
+                error: `وارد کردن شماره کارت الزامی`
+            })
             return response.status(400).json({ msg: "فیلد شماره کارت نمیتواند خالی باشد" });
         }
 
@@ -62,7 +98,12 @@ export class BankAccountController {
             const owner = await this.userRepository.findOneBy({ id: ownerId });
             console.log(owner)
             if (!owner) {
-                return response.status(404).json({ error: "Owner not found" });
+                monitor.addStatus({
+                    scope : 'bank account controller',
+                    status : 400,
+                    error: `مالک شماره کارت یافت نشد`
+                })
+                return response.status(400).json({ error: "Owner not found" });
             }
             const bankAccount = this.bankAccountRepository.create({
                 cardNumber, 
@@ -90,12 +131,26 @@ export class BankAccountController {
                     await this.userRepository.save(owner)
                     const createBankAccount = await this.bankAccountRepository.save(bankAccount);
                     await this.smsService.sendGeneralMessage(owner.phoneNumber,"verifyCart" , bankAccount.cardNumber,null,null)
-
+                    monitor.addStatus({
+                        scope : 'bank account controller',
+                        status : 200,
+                        error: null
+                    })
                     return response.status(200).json({bank: createBankAccount , msg : "کارت با موفقیت ایجاد شد"});                
                     
                 }
+                monitor.addStatus({
+                    scope : 'bank account controller',
+                    status : 400,
+                    error: `کارت نامعتبر `
+                })
                 response.status(400).json({ msg: "کارت نامعتبر است" });
             } catch (error) {
+                monitor.addStatus({
+                    scope : 'bank account controller',
+                    status : 500,
+                    error: `${error}`
+                })
                 console.log("Error in creating bank account", error);
                 return response.status(500).json({msg : "خطا در ثبت کارت بانکی"})
             }
