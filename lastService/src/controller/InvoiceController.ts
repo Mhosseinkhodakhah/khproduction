@@ -908,8 +908,8 @@ export class InvoiceController {
 
             monitor.addStatus({
                 scope : 'invoice controller',
-                status :  400,
-                error : error['errors'][0].msg
+                status :  200,
+                error : null
             })  
             response.status(200).json(all);
         } catch (error) {
