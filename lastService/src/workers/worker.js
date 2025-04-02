@@ -27,16 +27,17 @@ class GoldPriceService {
     }
 
 
-    async  setGoldPrice() {
+    async setGoldPrice() {
         try {
             console.log('its here for test haaa. . . .')
-           
+            
             let newApiToken = this.#token
             let newRespons = await axios.get('https://web.zarbaha-co.ir/api/Price_V2', {
                 headers: {
                     'Authorization': newApiToken
                 },
             })
+            console.log('response >>>>> ' , newRespons.data)
             console.log( 'testestesetes>>>>>>', newRespons.status)            
             this.#lastGoldPrice = newRespons.data.data.Geram18
             this.#allData = newRespons.data.data
