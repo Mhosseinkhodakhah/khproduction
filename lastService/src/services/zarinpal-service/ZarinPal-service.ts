@@ -62,6 +62,7 @@ export class ZarinPalService {
           if (paymentInfo) {
             try {
               console.log('after verification of transAction' , paymentInfo.amount);
+              console.log(Math.floor(paymentInfo.amount)*10)
               const response = await this.zarinpal.verifications.verify({
                 amount: Math.floor(paymentInfo.amount)*10,
                 authority: paymentInfo.authority,
@@ -118,7 +119,7 @@ export class ZarinPalService {
         try {
           console.log('after verification of transAction' , paymentInfo.amount);
           const response = await this.zarinpal.verifications.verify({
-            amount: Math.floor(paymentInfo.amount),
+            amount: Math.floor(paymentInfo.amount)*10,
             authority: paymentInfo.authority,
           });
           console.log('after the verifying the payment data' , response)
