@@ -7,6 +7,7 @@ import { Wallet } from "../entity/Wallet";
 import { Otp } from "../entity/Otp";
 import { Invoice } from "../entity/Invoice";
 import { EstimateTransactions } from "../entity/EstimateTransactions";
+import monitor from "../util/statusMonitor";
 
 export class InvoiceTypeController {
 
@@ -21,8 +22,18 @@ export class InvoiceTypeController {
     async all(request: Request, response: Response, next: NextFunction) {
         try {
             const types = await this.typeRepository.find();
+            monitor.addStatus({
+                scope: 'invoice type controller',
+                status: 1,
+                error: null
+            })
             response.status(200).json(types);
         } catch (error) {
+            monitor.addStatus({
+                scope: 'invoice type controller',
+                status: 0,
+                error: `${error}`
+            })
             console.log("Error in finding types", error);
             return response.status(500).json({msg : "خطای داخلی سیستم"})
         }
@@ -32,6 +43,12 @@ export class InvoiceTypeController {
         const id = parseInt(request.params.id);
 
         if (isNaN(id)) {
+            monitor.addStatus({
+                scope: 'invoice type controller',
+                status: 0,
+                error: 'invalid type id'
+            })
+
             return response.status(400).json({ error: "Invalid type ID" }); 
         }
 
@@ -43,9 +60,20 @@ export class InvoiceTypeController {
             if (!type) {
                 return response.status(404).json({ error: "type not found" });
             }
+            monitor.addStatus({
+                scope: 'invoice type controller',
+                status: 1,
+                error: null
+            })
 
             response.status(200).json(type);
         } catch (error) {
+            monitor.addStatus({
+                scope: 'invoice type controller',
+                status: 0,
+                error: `${error}`
+            })
+
             console.log("Error in type by id", error);
             return response.status(500).json({msg : "خطای داخلی سیستم"})
         }
@@ -60,10 +88,22 @@ export class InvoiceTypeController {
                 title
             });
             const createBankAccount = await this.typeRepository.save(typeToCreate);
+            monitor.addStatus({
+                scope: 'invoice type controller',
+                status: 1,
+                error: null
+            })
+
             return response.status(200).json({bank: createBankAccount , msg : "تایپ با موفقیت ساخته شد"});                
 
             } catch (error) {
                 console.log("Error in creating type", error);
+                monitor.addStatus({
+                    scope: 'invoice type controller',
+                    status: 0,
+                    error: `${error}`
+                })
+    
                 return response.status(500).json({msg : "خطای داخلی سیستم"})
             }
         }
@@ -72,6 +112,12 @@ export class InvoiceTypeController {
         const id = parseInt(request.params.id);
 
         if (isNaN(id)) {
+            monitor.addStatus({
+                scope: 'invoice type controller',
+                status: 0,
+                error: `invalid type id`
+            })
+
             return response.status(400).json({ msg: "Invalid type ID" });
         }
 

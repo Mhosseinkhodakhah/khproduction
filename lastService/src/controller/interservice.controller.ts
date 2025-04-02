@@ -20,13 +20,28 @@ export default class interServiceController{
     private goldPrice = AppDataSource.getRepository(goldPrice)
 
     async getStatus(req : Request , res : Response , next : NextFunction){
-        let data = {
-            all :  monitor.requestCount,
-            statusCount : monitor.status,
-            error : monitor.error
+        try {
+            let data = {
+                all :  monitor.requestCount,
+                statusCount : monitor.status,
+                error : monitor.error
+            }
+            console.log('status data till here . . .' , data)
+            monitor.addStatus({
+                scope : 'interservice controller',
+                status :  1,
+                error : null
+            })
+            return res.status(200).json(data)
+        } catch (error) {
+            monitor.addStatus({
+                scope : 'interservice controller',
+                status :  0,
+                error : `${error}`
+            })
+            console.log(error)
+            return res.status(500).json({success : false})
         }
-        console.log('status data till here . . .' , data)
-        return res.status(200).json(data)
     }
 
 
@@ -48,8 +63,18 @@ export default class interServiceController{
             await queryRunner.manager.save(user.wallet)
             let wallet = await queryRunner.manager.save(user)
             await queryRunner.commitTransaction()
+            monitor.addStatus({
+                scope : 'interservice controller',
+                status :  1,
+                error : null
+            })
             return next(new responseModel(req, res, '' ,'internal service', 200, null, wallet))
         } catch (error) {
+            monitor.addStatus({
+                scope : 'interservice controller',
+                status :  0,
+                error : `${error}`
+            })
             console.log('error in erroooooooor' , `${error}`)
             await queryRunner.rollbackTransaction()
             return next(new responseModel(req, res, '' ,'internal service', 500, `${error}`, null))
@@ -81,6 +106,7 @@ export default class interServiceController{
             return next(new responseModel(req, res, '' ,'internal service', 200, null, savedUser))
         } catch (error) {
             console.log('error>>>' , `${error}`)
+            return next(new responseModel(req, res, '' ,'internal service', 500, null, null))
         }
     }
 

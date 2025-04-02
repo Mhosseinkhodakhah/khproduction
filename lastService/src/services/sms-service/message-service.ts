@@ -1,3 +1,4 @@
+import monitor from "../../util/statusMonitor";
 
 const  Kavenegar = require('kavenegar')
 
@@ -16,6 +17,7 @@ export class SmsService{
                             }
                         });
                     } catch (error) {
+                        monitor.error.push(`error in sending otp sms in kavenegar :: ${error}`)
                         console.log(error);
                         reject({ success: false, msg: "خطای داخلی سیستم" });
                     }
@@ -29,10 +31,12 @@ export class SmsService{
                         if (status == 200 && correctStatuses.includes(res[0].status)) {
                             return {success : true , msg :'پیامک ارسال شد'}                 
                         }else{
+                            monitor.error.push(`error in sending message to user in kavenegar :: ${res}`)
                             return {success : false ,msg : "خطا در ارسال پیامک"}
                         }
                     });
                 } catch (error) {
+                    monitor.error.push(`error in sending message to user in kavenegar :: ${error}`)
                     console.log(error);
                     return {success : false ,msg : "خطای داخلی سیستم"}
                 }

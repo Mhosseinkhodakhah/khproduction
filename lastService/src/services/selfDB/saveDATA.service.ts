@@ -1,5 +1,6 @@
 import { trackIdInterface } from "../../interfaces/interface.interface";
 import fs from "fs";
+import monitor from "../../util/statusMonitor";
 
 export class internalDB{
     file;
@@ -11,6 +12,7 @@ export class internalDB{
             console.log('file is >>>>>>' , this.file)
         } catch (error) {
             // this.file = 
+            monitor.error.push(`error in saving shahkar track id in the file :: ${error}`)
             console.log(error)
         }
     }
@@ -22,9 +24,9 @@ export class internalDB{
             let write = fs.writeFileSync('/etc/backup/ShahkarTrackId/trackIdDatas.json' , JSON.stringify(this.file))
             return true
         } catch (error) {
+            monitor.error.push(`error in saving shahkar track id in the file :: ${error}`)
             console.log(error)
             return false            
         }
-
     }
 }

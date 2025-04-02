@@ -1,5 +1,6 @@
 import axios from 'axios'
 import NodeCache = require('node-cache')
+import monitor from '../../util/statusMonitor';
 export class GoldPriceService{
     private lastGoldPrice 
     private lastPriceChange
@@ -15,6 +16,7 @@ export class GoldPriceService{
                 {key: "lastPriceChange", val: this.lastPriceChange},
             ])            
        } catch (error) {
+           monitor.error.push(` error in goldPrice service set goldPrice :: ${error}`)
            console.log(error.response.data);
        } finally{
          return {price :this.lastGoldPrice , change : this.lastPriceChange}
@@ -32,6 +34,7 @@ export class GoldPriceService{
             }
             return{price,change}
         } catch (error) {
+           monitor.error.push(` error in goldPrice service set goldPrice :: ${error}`)
             console.log("error in get gold price" , error);
         }
     }

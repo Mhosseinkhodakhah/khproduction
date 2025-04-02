@@ -1,5 +1,6 @@
 
 import * as jwt from "jsonwebtoken";
+import monitor from "../util/statusMonitor";
 
 export  function authenticate (req, res, next) {
 {
@@ -10,6 +11,7 @@ export  function authenticate (req, res, next) {
     next();
 
   } catch {
+    monitor.error.push(`invalid user token`)
     res.status(401).json({
       error: "Unauthorized request"
     });

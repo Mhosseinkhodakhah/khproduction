@@ -1,5 +1,6 @@
 import axios from "axios"
 import { adminLoggInterface, userLoggInterface } from "../../interfaces/interface.interface"
+import monitor from "../../util/statusMonitor"
 // import fetch from 'fetch'
 
 
@@ -17,6 +18,7 @@ export default class logger{
             console.log('response of the logger' ,rawRespons.data)
             return true
         } catch (error) {
+           monitor.error.push(` error in interservice add new log :: ${error}`)
             console.log(error)
             return false            
         }
@@ -31,6 +33,8 @@ export default class logger{
             console.log('returned data' , response.data)
             return response.data.isMatch;
         } catch (error) {
+           monitor.error.push(` error in checkcardnumber :: ${error}`)
+
             return false;
         }
     }
@@ -48,6 +52,8 @@ export default class logger{
             console.log('response of the logger' ,rawRespons.data)
             return true
         } catch (error) {
+           monitor.error.push(` error in add new admin log interservice :: ${error}`)
+
             console.log(error)
             return false            
         }
@@ -61,6 +67,8 @@ export default class logger{
             console.log(resss.data)
             return resss.data.users;
         } catch (error) {
+           monitor.error.push(` error in get all oldUser interservice request:: ${error}`)
+
             console.log('eror in interservice' , `${error}`)
             return 0
         }
@@ -73,6 +81,8 @@ export default class logger{
             console.log(resss.data)
             return resss.data;
         } catch (error) {
+           monitor.error.push(` error in get chart data from usersidecar:: ${error}`)
+
             console.log('error in get all chart from sidecar' , error)
             return null
         }
@@ -84,6 +94,8 @@ export default class logger{
             console.log(resss.data)
             return resss.data;
         } catch (error) {
+           monitor.error.push(` error in get app chart data from usersidecar:: ${error}`)
+            
             console.log('error in get all chart from sidecar' , error)
             return null
         }
@@ -97,6 +109,7 @@ export default class logger{
             console.log(resss.data)
             return resss.data;
         } catch (error) {
+           monitor.error.push(` error in check user from oldUser interservice :: ${error}`)
             console.log('error in get all chart from sidecar' , error)
             return error.response.data
         }
@@ -109,6 +122,8 @@ export default class logger{
             console.log(resss.data)
             return resss.data;
         } catch (error) {
+           monitor.error.push(` error in change user status in interserivce :: ${error}`)
+
             console.log('error in get all chart from sidecar' , error)
             return error.response
         }

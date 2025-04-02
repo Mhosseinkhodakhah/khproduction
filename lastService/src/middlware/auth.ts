@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { responseModel } from '../util/response.model';
 import { jwtGeneratorInterface } from '../interfaces/interface.interface';
+import monitor from '../util/statusMonitor';
 
 
 declare global {
@@ -32,6 +33,7 @@ export const adminMiddleware = async (req: Request, res: Response, next: NextFun
         }
         next();
     } catch (error) {
+        monitor.error.push(`${error}`)
         console.error(error);
         return next(new responseModel(req, res, 'توکن نا معتبر می باشد' ,'admin service', 401, 'Invalid token', null))
     }

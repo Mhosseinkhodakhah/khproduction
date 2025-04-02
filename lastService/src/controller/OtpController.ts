@@ -8,6 +8,7 @@ const  Kavenegar = require('kavenegar')
 import azios from "axios"
 import { SmsService } from "../services/sms-service/message-service"
 import logger from "../services/interservice/logg.service"
+import monitor from "../util/statusMonitor"
  
 
 export class OtpController {
@@ -48,6 +49,12 @@ export class OtpController {
                     console.log('saved transActions2222' , saved)
                 }
                 await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , `getting otp code succeed for user : ${phoneNumber}` , otpExist , 1) 
+                monitor.addStatus({
+                    scope: 'otp controller controller',
+                    status: 1,
+                    error: null
+                })
+                
                 response.status(200).json({ msg: res.msg });
             } else {
                 await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , `getting otp code failed for user : ${phoneNumber}` , {
@@ -55,10 +62,21 @@ export class OtpController {
                     error : 'kavenegar error . . .',
                     msg : res.msg
                 } , 0) 
+                monitor.addStatus({
+                    scope: 'otp  controller',
+                    status: 0,
+                    error: `${res.msg}`
+                })
+    
                 return response.status(500).json({ msg: res.msg });
             }
         } catch (error) {
             console.log(error);
+            monitor.addStatus({
+                scope: 'otp  controller',
+                status: 0,
+                error: `${error}`
+            })
             await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , `getting otp code failed for user : ${phoneNumber}` , {
                 statusCode : 500,
                 error : 'internal error . . .',
@@ -76,6 +94,11 @@ export class OtpController {
                     error: 'bad request',
                     msg: `Phone number and OTP are required`
                 }, 0) 
+                monitor.addStatus({
+                    scope: 'otp controller',
+                    status: 0,
+                    error: `مقادیر لازم را وارد کنید`
+                })
             return response.status(400).json({ msg: 'Phone number and OTP are required' });
         }
         try {
@@ -87,10 +110,21 @@ export class OtpController {
             // console.log()
             if (currentTime > otpExpirationTime) {
                 // await this.otpRepository.delete({ phoneNumber });
+                monitor.addStatus({
+                    scope: 'otp controller',
+                    status: 0,
+                    error: `کد وارد شده منقضی شده است`
+                })
                 return response.status(400).json({ msg: 'کد تایید منقضی شده است ' });
             }
     
             if (foundUserOtp.otp !== otp) {
+                monitor.addStatus({
+                    scope: 'otp controller',
+                    status: 0,
+                    error: `کد وارد شده نادرست است`
+                })
+
                 return response.status(400).json({ msg: 'کد تایید صحیح نیست .لطفا دوباه تلاش کنید.' });
             }
             
@@ -98,6 +132,12 @@ export class OtpController {
     
             if (!user || user.verificationStatus !== VerificationStatus.SUCCESS) {
                 // await this.otpRepository.delete({ phoneNumber });
+                monitor.addStatus({
+                    scope: 'otp controller',
+                    status: 1,
+                    error: null
+                })
+
                 return response.status(200).json({ 
                     msg: 'با موفقیت وارد شدید', 
                     userVerificationStatus: "FAILED" 
@@ -106,7 +146,12 @@ export class OtpController {
             
             const token = await this.jwtService.generateToken(user);
             // await this.otpRepository.delete({ phoneNumber });
-    
+            
+            monitor.addStatus({
+                scope: 'otp controller',
+                status: 1,
+                error: null
+            })
             return response.status(200).json({ 
                 token, 
                 msg: 'با موفقیت وارد شدید', 
@@ -114,6 +159,11 @@ export class OtpController {
             });
     
         } catch (error) {
+            monitor.addStatus({
+                scope: 'otp controller',
+                status: 0,
+                error:`${error}`
+            })
             console.error('Error in OTP verification:', error);
             return response.status(500).json({ msg: 'An error occurred during verification' });
         }

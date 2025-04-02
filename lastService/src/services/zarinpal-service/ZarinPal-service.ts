@@ -2,6 +2,7 @@ import ZarinPal from 'zarinpal-node-sdk';
 import axios from 'axios';
 import { AppDataSource } from '../../data-source';
 import { PaymentInfo } from '../../entity/PaymentInfo';
+import monitor from '../../util/statusMonitor';
 export class ZarinPalService {
     private paymentInfoRepository = AppDataSource.getRepository(PaymentInfo)
     private zarinpal = new ZarinPal({
@@ -49,6 +50,7 @@ export class ZarinPalService {
           console.log('redirect url' , url)
           return {url : url , authority : response.data.data.authority , invoiceId : invoiceId}
         } catch (error){
+          monitor.error.push(`error in initiate payment in zarinpal :: ${error}`)
           console.error(error);
         }
       }
@@ -81,6 +83,7 @@ export class ZarinPalService {
                 return {status  : false , data : response.data}
               }
             } catch (error) {
+              monitor.error.push(`error in verifying payment :: ${error}`)
               console.error('Payment Verification Failed:', error.response.data.errors);
               return {status  : false }
 
@@ -133,6 +136,7 @@ export class ZarinPalService {
             return {status  : false , data : response.data}
           }
         } catch (error) {
+          monitor.error.push(`error in handle verifying:: ${error}`)
           console.error('Payment Verification Failed:', error.response.data.errors);
           return {status  : false  , data : {message : 'خطای داخلی سیستم'}}
         }

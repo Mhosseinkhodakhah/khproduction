@@ -9,6 +9,7 @@ import { Wallet } from "../entity/Wallet";
 import { SmsService } from "../services/sms-service/message-service";
 import { trackIdInterface } from "../interfaces/interface.interface";
 import { internalDB } from "../services/selfDB/saveDATA.service";
+import monitor from "../util/statusMonitor";
 config();
 export class ShahkarController {
     private userRepository  = AppDataSource.getRepository(User)
@@ -23,6 +24,11 @@ export class ShahkarController {
         let isMatch = false
         let token = await this.getToken()
         if (token == null || token == undefined) {
+            monitor.addStatus({
+                scope: 'shahkar controller',
+                status: 0,
+                error: 'error from get token in shahkar get token checkMatchOfPhoneAndNationalCode endPoint'
+            })
             return response.status(500).json({ err : "error get token from server"} )
         }
         axios.post(checkMatchationUrl , {mobileNumber : phoneNumber
@@ -40,7 +46,12 @@ export class ShahkarController {
                 let trackIdService = new internalDB()
                 let DBStatus = await trackIdService.saveData(trackIdData)
                 console.log('returned db status>>>>' , DBStatus)
-                return  response.json({ isMatch , msg : "number and national code matched successfully"})                
+                monitor.addStatus({
+                    scope: 'shahkar controller',
+                    status: 1,
+                    error: null
+                })
+                return response.json({ isMatch , msg : "number and national code matched successfully"})                
             }else{
                 let trackIdData : trackIdInterface = {
                     trackId : res.headers['track-code'],
@@ -53,10 +64,20 @@ export class ShahkarController {
                 let trackIdService = new internalDB()
                 let DBStatus = await trackIdService.saveData(trackIdData)
                 console.log('returned db status>>>>' , DBStatus)
-              return  response.status(404).json({ isMatch , msg : "there is no match between number and national code"})
+                monitor.addStatus({
+                    scope: 'shahkar controller',
+                    status: 0,
+                    error: `there is no match between number and national code`
+                })
+                return  response.status(404).json({ isMatch , msg : "there is no match between number and national code"})
             }
                 
         }).catch((err)=>{
+            monitor.addStatus({
+                scope: 'shahkar controller',
+                status: 0,
+                error: `${err}`
+            })
             return  response.status(500).json({ err : err.message , msg : "there is an error "} )
         })
     }
@@ -67,11 +88,21 @@ export class ShahkarController {
         if (nationalCode) { 
             let user = await this.userRepository.findOneBy({nationalCode})
             if (user) {
+                monitor.addStatus({
+                    scope: 'shahkar controller',
+                    status: 0,
+                    error: `کاربر قبلا با شماره دیگری ثبت نام کرده`
+                })
                return  response.status(500).json({msg : "کاربر قبلا با شماره دیگری در سامانه خانه طلا ثبت نام کرده است"})
             }
         }
         let shahkarToken = await this.getToken()
         if (shahkarToken == null || shahkarToken == undefined) {
+            monitor.addStatus({
+                scope: 'shahkar controller',
+                status: 0,
+                error: `error from get token in shahkar get token identityInformationOfUser endPoint`
+            })
             return response.status(500).json({ err : "error get token from server"} )
         }else{
         let body = {birthDate : birthDate , nationalCode : nationalCode}
@@ -127,7 +158,12 @@ export class ShahkarController {
                 // let nameFamily = firstName + ' ' + lastName
                 this.smsService.sendGeneralMessage(wallet.user.phoneNumber,"identify" ,firstName ,null ,null)
                 
-                return  response.json({ user :savedUser , msg : "ثبت نام شما با موفقیت انجام شد", token})    
+                monitor.addStatus({
+                    scope: 'shahkar controller',
+                    status: 1,
+                    error: null
+                })
+                return response.json({ user :savedUser , msg : "ثبت نام شما با موفقیت انجام شد", token})    
 
             }else if(res.status == 400){
                 console.log('track id>>>>' , res.headers['track-code'])
@@ -142,11 +178,23 @@ export class ShahkarController {
                 let trackIdService = new internalDB()
                 let DBStatus = await trackIdService.saveData(trackIdData)
                 console.log('returned db status>>>>' , DBStatus)
-                return  response.status(500).json({ err : res.data.details , msg : "خطا در احراز هویت کاربر"} )            
+                
+                monitor.addStatus({
+                    scope: 'shahkar controller',
+                    status: 0,
+                    error: 'خطا در احراز هویت کاربر در اند پوینت شاهکار'
+                })
+                return response.status(500).json({ err : res.data.details , msg : "خطا در احراز هویت کاربر"} )            
             }
         } catch (error) {
             // console.log(error.response.data.error);
             console.log(error)
+
+            monitor.addStatus({
+                scope: 'shahkar controller',
+                status: 0,
+                error: `${error}`
+            })
             let trackIdData : trackIdInterface = {
                 trackId : error.response.headers['track-code'],
                 // firstName : firstName,
@@ -199,6 +247,7 @@ export class ShahkarController {
                 return false
               }
         } catch (error) {
+            monitor.error.push(`${error}`)
             console.log("error in checkMatchPhoneNumberAndCartNumber" , error);
             return false
         }
@@ -217,6 +266,7 @@ export class ShahkarController {
                 return null
             }
         } catch (error) {
+            monitor.error.push(`${error}`)
             console.log('error in convert to sheba' , error.message);
             return null
         }
@@ -230,6 +280,7 @@ export class ShahkarController {
             return token
             
         } catch (error) {
+            monitor.error.push(`${error}`)
             console.log("error in getToken ShahkarController   " + error);
             return null
         }

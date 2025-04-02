@@ -195,7 +195,8 @@ export default class inPersonController {
             }
         } catch (error) {
             console.log('error>>>>>' , `${error}`)
-            console.log('error in ismatch national code', `${error}`)
+            monitor.error.push(`error in check card and national code of userssss ${error}`)
+            // console.log('error in ismatch national code', `${error}`)
             return false
         }
     }
@@ -210,8 +211,9 @@ export default class inPersonController {
             return token
 
         } catch (error) {
+            monitor.error.push(`error in get token from shahkar ${error}`)
             console.log('error>>>>>' , `${error}`)
-            console.log("error in getToken ShahkarController   " + error);
+            // console.log("error in getToken ShahkarController   " + error);
             return null
         }
     }
@@ -299,58 +301,62 @@ export default class inPersonController {
      * @returns 
      */
     async verifyOtp(req: Request, res: Response, next: NextFunction) {
-        let { otp, phoneNumber } = req.body;
-        const error = validationResult(req)
-        if (!error.isEmpty()) {
-            return next(new responseModel(req, res, error['errors'][0].msg , 'admin service', 400, error['errors'][0].msg, null))
-        }
-        let otpData = await this.otpRepository.findOne({
-            where: {
-                phoneNumber: phoneNumber
+        try {
+            let { otp, phoneNumber } = req.body;
+            const error = validationResult(req)
+            if (!error.isEmpty()) {
+                return next(new responseModel(req, res, error['errors'][0].msg , 'admin service', 400, error['errors'][0].msg, null))
             }
-        })
-
-        let userExist = await this.userRepository.exists({
-            where: {
-                phoneNumber: phoneNumber
+            let otpData = await this.otpRepository.findOne({
+                where: {
+                    phoneNumber: phoneNumber
+                }
+            })
+    
+            let userExist = await this.userRepository.exists({
+                where: {
+                    phoneNumber: phoneNumber
+                }
+            })
+    
+            if (otpData.otp.toString() != otp.toString()) {
+                return next(new responseModel(req, res, '' ,'admin service', 412, `کد وارد شده نادرست است`, null))
             }
-        })
-
-        if (otpData.otp.toString() != otp.toString()) {
-            return next(new responseModel(req, res, '' ,'admin service', 412, `کد وارد شده نادرست است`, null))
-        }
-        let timeNow = new Date().getTime()
-
-        if (timeNow - (+otpData.time) > 2.1 * 60 * 1000) {
-            return next(new responseModel(req, res, '' ,'admin service', 412, `کد وارد شده منقضی شده است`, null))
-        }
-
-        // اگر کاربر در لیست کاربران جدید باشد
-        // اگر کاربر در لیست کاربران قدیمی باشد
-
-        let isVerified: number = 0;           // not verified user            
-        let data = null
-        if (userExist) {             // if user exists in the main database;
-            let user = await this.userRepository.findOne({ where: { phoneNumber: phoneNumber }, relations: ['wallet'] })
-            if (user.verificationStatus == 0) {
-                console.log('user is approved in the new user database')
-                isVerified = 1;                    // verified user
-                data = user;
+            let timeNow = new Date().getTime()
+    
+            if (timeNow - (+otpData.time) > 2.1 * 60 * 1000) {
+                return next(new responseModel(req, res, '' ,'admin service', 412, `کد وارد شده منقضی شده است`, null))
             }
-        } else {                         // if user didnt exists in the main database
-            let oldUser = await this.interservice.checkUser(phoneNumber)     // check the oldService database
-            if (oldUser.success == true) {                // if user was exist in oldUser database 
-                console.log('this user is in the oldUsers')
-                isVerified = 2                 // is oldUser and not verified
-                data = oldUser.data;
-            } else {
-                console.log('this user is not in the oldUsers')
+    
+            // اگر کاربر در لیست کاربران جدید باشد
+            // اگر کاربر در لیست کاربران قدیمی باشد
+    
+            let isVerified: number = 0;           // not verified user            
+            let data = null
+            if (userExist) {             // if user exists in the main database;
+                let user = await this.userRepository.findOne({ where: { phoneNumber: phoneNumber }, relations: ['wallet'] })
+                if (user.verificationStatus == 0) {
+                    console.log('user is approved in the new user database')
+                    isVerified = 1;                    // verified user
+                    data = user;
+                }
+            } else {                         // if user didnt exists in the main database
+                let oldUser = await this.interservice.checkUser(phoneNumber)     // check the oldService database
+                if (oldUser.success == true) {                // if user was exist in oldUser database 
+                    console.log('this user is in the oldUsers')
+                    isVerified = 2                 // is oldUser and not verified
+                    data = oldUser.data;
+                } else {
+                    console.log('this user is not in the oldUsers')
+                }
             }
+            let logRespons = await this.interservice.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , '' , ` را شروع کرد  ${phoneNumber} فرایند   خرید تلفنی مربوط به  ${req.user.firstName} کارشناس` , {
+                action : ` را ایجاد کرد ${data?.firstName} تراکنش خرید حضوری مربوط به کاربر ${req.user.firstName} حسابدار`
+            } , 1) 
+            return next(new responseModel(req, res, '' ,'admin service', 200, null, { isVerified: isVerified, ...data }))
+        } catch (error) {
+            return next(new responseModel(req, res, '' ,'admin service', 500, `حطای داخلی سیستم`, null))            
         }
-        let logRespons = await this.interservice.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , '' , ` را شروع کرد  ${phoneNumber} فرایند   خرید تلفنی مربوط به  ${req.user.firstName} کارشناس` , {
-            action : ` را ایجاد کرد ${data?.firstName} تراکنش خرید حضوری مربوط به کاربر ${req.user.firstName} حسابدار`
-        } , 1) 
-        return next(new responseModel(req, res, '' ,'admin service', 200, null, { isVerified: isVerified, ...data }))
     }
 
 

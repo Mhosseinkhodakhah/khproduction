@@ -2,6 +2,7 @@ import { AppDataSource } from "../data-source";
 import { Wallet } from "../entity/Wallet";
 import { GoldPriceService } from "../services/gold-price-service/gold-price-service";
 import { NextFunction, Request, Response } from "express";
+import monitor from "../util/statusMonitor";
 
 export class GoldPriceController {
 
@@ -19,9 +20,18 @@ export class GoldPriceController {
                 buyPrice : parseInt(result.price) + ((result.price * buyFee) / 100),
                 change : result.change,
             }
+            monitor.addStatus({
+                scope: 'goldPrice controller',
+                status: 1,
+                error: null
+            })
             return response.json(data)
-
         } catch (error) {
+            monitor.addStatus({
+                scope: 'goldPrice controller',
+                status: 0,
+                error: `${error}`
+            })
             console.log(error);
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
@@ -42,9 +52,18 @@ export class GoldPriceController {
             sellPrice : parseInt(result.Geram18) - ((parseInt(result.Geram18) * sellFee) / 100),
             buyPrice : parseInt(result.Geram18) + ((parseInt(result.Geram18 )* buyFee) / 100),
         }
-
+        monitor.addStatus({
+            scope: 'goldPrice controller',
+            status: 1,
+            error: null
+        })
         return response.status(200).json(data)
     }catch(err){
+        monitor.addStatus({
+            scope: 'goldPrice controller',
+            status: 0,
+            error: `${err}`
+        })
         console.log(err);
         response.status(500).json({ msg: "خطای داخلی سیستم" })
         

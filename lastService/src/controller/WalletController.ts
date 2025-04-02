@@ -8,6 +8,7 @@ import { WalletTransaction } from "../entity/WalletTransaction";
 import { GoldPriceService } from "../services/gold-price-service/gold-price-service";
 import { SmsService } from "../services/sms-service/message-service";
 import { transportInvoice } from "../entity/transport";
+import monitor from "../util/statusMonitor";
 
 export class WalletController {
     private walletRepository = AppDataSource.getRepository(Wallet);
@@ -28,7 +29,7 @@ export class WalletController {
         let firstRandomoe = Math.random()
         if (firstRandomoe<0.1){
             firstRandomoe = firstRandomoe*100000
-        }else{
+        }else{      
             firstRandomoe = firstRandomoe*10000
         }
         return Math.floor(firstRandomoe)
@@ -54,7 +55,7 @@ export class WalletController {
         }})
 
         if (+user.wallet.goldWeight < +goldWeight ){
-            return res.status(404).json({ msg: "موجودی کیف پول شما برای انتقال کافی نیست." });
+            return res.status(400).json({ msg: "موجودی کیف پول شما برای انتقال کافی نیست." });
         }
 
         let otpCode = await this.generateOtp()
@@ -164,6 +165,11 @@ export class WalletController {
                 relations: ["wallet"],
             });            
             if (!user || !user.wallet) {
+                monitor.addStatus({
+                    scope : 'wallet controller',
+                    status :  0,
+                    error : 'کیف پول یافت نشد'
+                })    
                 return response.status(404).json({ msg: "Wallet not found." });
             }
             let result : any = await this.goldPriceService.getGoldPrice()
@@ -173,8 +179,19 @@ export class WalletController {
             
             const totalAssets = goldWeight * result.price + balance;
             wallet.totalAssets = parseFloat(totalAssets.toFixed(2));
+            monitor.addStatus({
+                scope : 'wallet controller',
+                status :  1,
+                error : null
+            })
             response.status(200).json(wallet);
         } catch (error) {
+            monitor.addStatus({
+                scope : 'wallet controller',
+                status :  0,
+                error :`${error}`
+            })
+
             console.error("Error fetching wallet:", error);
             return response.status(500).json({msg : "خطای داخلی سیستم"})
         }
@@ -198,9 +215,18 @@ export class WalletController {
                 where: whereClause,
                 relations: { wallet: { user: true } }, order : {updatedAt : 'DESC'} 
             });
-
+            monitor.addStatus({
+                scope : 'wallet controller',
+                status :  1,
+                error : null
+            })
             response.status(200).json(transactions);
         } catch (error) {
+            monitor.addStatus({
+                scope : 'wallet controller',
+                status :  0,
+                error :`${error}`
+            })
             console.error("Error fetching wallet transactions:", error);
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
@@ -210,6 +236,11 @@ export class WalletController {
         try {
             const userId = parseInt(request.body.userId);
             if (isNaN(userId)) {
+                monitor.addStatus({
+                    scope : 'wallet controller',
+                    status :  0,
+                    error : 'ورودی نادرست در اپدیت کیف پول'
+                })    
                 return response.status(400).json({ msg: "Invalid user ID" });
             }
 
@@ -217,6 +248,11 @@ export class WalletController {
             const balanceAmount = parseFloat(request.body.balance) || 0;
 
             if (goldAmount <= 0 && balanceAmount <= 0) {
+                monitor.addStatus({
+                    scope : 'wallet controller',
+                    status :  0,
+                    error : 'مقدار نامناسب در اپدیت ولت'
+                })    
                 return response.status(400).json({ msg: "Invalid amount" });
             }
 
@@ -226,6 +262,12 @@ export class WalletController {
             });
 
             if (!user) {
+                monitor.addStatus({
+                    scope : 'wallet controller',
+                    status :  0,
+                    error : 'کاربر یافت نشد در اپدیت کیف پول'
+                })
+    
                 return response.status(404).json({ msg: "User not found" });
             }
 
@@ -239,9 +281,20 @@ export class WalletController {
             wallet.balance += balanceAmount;
 
             await this.walletRepository.save(wallet);
+            monitor.addStatus({
+                scope : 'wallet controller',
+                status :  1,
+                error : null
+            })
 
             response.status(200).json({ msg: "Wallet updated successfully", wallet });
         } catch (error) {
+            monitor.addStatus({
+                scope : 'wallet controller',
+                status :  0,
+                error : `${error}`
+            })
+
             console.error("Error updating wallet:", error);
             return response.status(500).json({msg : "خطای داخلی سیستم"})
         }
@@ -252,6 +305,12 @@ export class WalletController {
             const {amount} = request.body
             const userId = request.user_id;
             if (+amount < 100000) {
+                monitor.addStatus({
+                    scope : 'wallet controller',
+                    status :  0,
+                    error : 'مبلغ وارد شده برای واریزی باید حداقل 100 هزارتومن باشد.'
+                })
+    
                 return response.status(400).json({msg : "مبلغ وارد شده از حداقل مبلغ واریز کمتر است"})
             }
             const info = {
@@ -265,6 +324,11 @@ export class WalletController {
             }
             let wallet = await this.walletRepository.findOne({where : {user : {id :userId}},relations:{user : {bankAccounts : true}}})
             if (!wallet.user.isHaveBank){
+                monitor.addStatus({
+                    scope : 'wallet controller',
+                    status :  0,
+                    error : 'تلاش برای واریز قبل از ثبت کارت بانکی'
+                })    
                 return response.status(400).json({msg : "ابتدا کارت بانکی خود را ثبت کنید"})
             }
             let date = new Date().toLocaleString('fa-IR').split(',')[0]
@@ -280,8 +344,19 @@ export class WalletController {
             transAction.invoiceId = await this.generateInvoice();
             let addedAuthority = await this.walletTransactionRepository.save(transAction)
             console.log('added authority >>>>' , addedAuthority)
+            monitor.addStatus({
+                scope : 'wallet controller',
+                status :  1,
+                error : null
+            })
             return response.status(200).json({msg : "انتقال به درگاه پرداخت" , url : url.url})
         } catch (error) {
+            monitor.addStatus({
+                scope : 'wallet controller',
+                status :  0,
+                error : `error in transfer to gateway zarinpal ::: ${error}`
+            })
+
             console.error("Error charge wallet:", error);
             return response.status(500).json({msg : "خطای داخلی سیستم"})
         }
@@ -299,6 +374,11 @@ export class WalletController {
             const paymentInfo = await this.paymentInfoRepository.findOneByOrFail({authority : info.authority})
             const savedTransaction = await this.walletTransactionRepository.findOneBy({id : paymentInfo.invoiceId})
             if (savedTransaction.status != "pending") {
+                monitor.addStatus({
+                    scope : 'wallet controller',
+                    status :  0,
+                    error : 'واریزی قبلا اعتبار سنچی شده است'
+                })    
                 return response.status(400).json({msg : "تراکنش قبلا اعتبارسنجی شده است"})
             }
             const user = await this.userRepository.findOne({where : {id : paymentInfo.userId},relations : {wallet : true,bankAccounts : true}})
@@ -306,6 +386,11 @@ export class WalletController {
                 if (!res.status) {
                     savedTransaction.status = "failed";
                     let updatedtransaction = await this.walletTransactionRepository.save(savedTransaction);
+                    monitor.addStatus({
+                        scope : 'wallet controller',
+                        status :  1,
+                        error : null
+                    })
                     return response.status(200).json({msg : "پرداخت ناموفق", transaction : savedTransaction , bank : user.bankAccounts[0].cardNumber})
                 }else if(res.status && res.code == 100 ){
                 const currentBalance = +user.wallet.balance;
@@ -317,17 +402,32 @@ export class WalletController {
                 let updatedtransaction = await this.walletTransactionRepository.save(savedTransaction);
                 // let nameFamily = user.firstName +' '+  user.lastName
                 this.smsService.sendGeneralMessage(user.phoneNumber,"deposit" ,user.firstName ,paymentAmount/10 ,null)
+                monitor.addStatus({
+                    scope : 'wallet controller',
+                    status :  1,
+                    error : null
+                })    
                 return response.status(200).json({msg : "پرداخت موفق" , transaction : updatedtransaction , bank : res.data.card_pan,referenceId : res.data.ref_id})
             }
             } catch (error) {
                 let savedTransaction = await this.walletTransactionRepository.findOne({where:{ id : paymentInfo.invoiceId}})
                 savedTransaction.status = "failed";
                 await this.walletTransactionRepository.save(savedTransaction);
+                monitor.addStatus({
+                    scope : 'wallet controller',
+                    status :  0,
+                    error : `${error}`
+                })    
                 console.log("error in save transaction status" , error);
                 return response.status(500).json({ msg: "خطای داخلی سیستم" });
             }
            
         } catch (error) {
+            monitor.addStatus({
+                scope : 'wallet controller',
+                status :  0,
+                error :`${error}`
+            })
             console.log("error in verify transaction" , error);
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
@@ -339,14 +439,31 @@ export class WalletController {
             const userId = request.user_id;
             let wallet = await this.walletRepository.findOne({where : {user : {id :userId}},relations : {user : {bankAccounts : true}}})
             if (+amount == 0){
+                monitor.addStatus({
+                    scope : 'wallet controller',
+                    status :  0,
+                    error : 'برداشت مبلغ صفر'
+                })
+    
                 return response.status(400).json({msg : "مقدار برداشت نمیتواند صفر باشد"})
             }
 
             if (+amount < 99000){
+                monitor.addStatus({
+                    scope : 'wallet controller',
+                    status :  0,
+                    error : 'برداشت کمتر از 100 هزارتومن'
+                })    
                 return response.status(400).json({msg : "حداق میزان برداشت 100 هزارتومن است"})
             }
 
             if (wallet && parseFloat(wallet.balance.toString()) < +amount) {
+                monitor.addStatus({
+                    scope : 'wallet controller',
+                    status :  0,
+                    error : 'برداشت بیشتر از مبلغ موجودی'
+                })
+    
                 return response.status(400).json({msg : "مقدار برداشت نمی تواند از موجودی کیف پول بیشتر باشد"})
             }
             const withdrawAmount = +amount
@@ -361,8 +478,20 @@ export class WalletController {
             let transactionToCreate = this.walletTransactionRepository.create({description  : "برداشت از کیف پول",date,time, status : "pending", type : "withdraw" ,wallet : wallet , amount})
             let savedTransaction = await this.walletTransactionRepository.save(transactionToCreate)
             await this.smsService.sendGeneralMessage(wallet.user.phoneNumber,"withdraw" ,withdrawAmount/10 ,wallet.user.bankAccounts[0].cardNumber ,wallet.balance)
+            monitor.addStatus({
+                scope : 'wallet controller',
+                status :  1,
+                error : null
+            })
+
             return response.json(savedTransaction)
         } catch (error) {
+            monitor.addStatus({
+                scope : 'wallet controller',
+                status :  0,
+                error : `${error}`
+            })
+
             console.log(error);
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }

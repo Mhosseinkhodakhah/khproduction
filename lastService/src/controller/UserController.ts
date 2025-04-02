@@ -9,6 +9,7 @@ import { goldPrice } from "../entity/goldPrice"
 import logger from "../services/interservice/logg.service"
 import { Jalali } from 'jalali-ts';
 import { validationResult } from "express-validator"
+import monitor from "../util/statusMonitor"
 
 
 export class UserController {
@@ -19,9 +20,21 @@ export class UserController {
     async all(request: Request, response: Response, next: NextFunction) {
         try {
             let users = await this.userRepository.find()
+            monitor.addStatus({
+                scope : 'user controller',
+                status :  1,
+                error : null
+            })
+
             response.json(users).status(200)
 
         } catch (error) {
+            monitor.addStatus({
+                scope : 'user controller',
+                status :  0,
+                error : `${error}`
+            })
+
             console.log("error in find all of users", error);
             response.sttus(500).json({ err: "error in find all of users" })
         }
@@ -34,6 +47,12 @@ export class UserController {
                 where: { id: Equal(userId) }, relations: ['bankAccounts' , 'wallet']})
 
             if (!user) {
+                monitor.addStatus({
+                    scope : 'user controller',
+                    status :  0,
+                    error :'account not found in user controller profile'
+                })
+    
                 return response.status(404).json({ err: "User with this id not found" })
             }
             if (!user.isHaveBank && (user.bankAccounts || user.bankAccounts.length > 0)) {
@@ -43,9 +62,21 @@ export class UserController {
                 }
             }
             // return response.sta
+            monitor.addStatus({
+                scope : 'user controller',
+                status :  1,
+                error : null
+            })
+
             return response.json(user).status(200)
 
         } catch (error) {
+            monitor.addStatus({
+                scope : 'user controller',
+                status :  0,
+                error : `${error}`
+            })
+
             console.log("error in find user by id ", error);
             return response.status(500).json({ err: "error in find user by id" })
         }
@@ -60,11 +91,29 @@ export class UserController {
             })
 
             if (!user) {
+                monitor.addStatus({
+                    scope : 'user controller',
+                    status :  0,
+                    error : 'user not found'
+                })
+    
                 return response.status(404).json({ err: "User with this id not found" })
             }
+            monitor.addStatus({
+                scope : 'user controller',
+                status :  1,
+                error : null
+            })
+
             return response.json(user).status(200)
 
         } catch (error) {
+            monitor.addStatus({
+                scope : 'user controller',
+                status :  0,
+                error : `${error}`
+            })
+
             console.log("error in find user by id ", error);
             return response.status(500).json({ err: "error in find user by id" })
         }
@@ -76,12 +125,30 @@ export class UserController {
         
         try {
             if (!firstName || !lastName || !fatherName || !gender || !identityNumber || !identitySerial || !identitySeri || !officeName || !liveStatus || !phoneNumber || !nationalCode) {
+                monitor.addStatus({
+                    scope : 'user controller',
+                    status :  0,
+                    error : 'invalid input in save user controller'
+                })
+    
                 return response.status(400).json({ err: "fields (firstName lastName fatherName gender identityNumber identitySerial identitySeri officeName liveStatus phoneNumber nationalCode  are required" })
             }
             let userForCreate = this.userRepository.create({ age, buys, email, fatherName, firstName, gender, identityNumber, identitySeri, identitySerial, lastName, liveStatus, nationalCode, officeName, password, phoneNumber })
             let savedUser = this.userRepository.save(userForCreate)
+            monitor.addStatus({
+                scope : 'user controller',
+                status :  1,
+                error : null
+            })
+
             response.json(savedUser)
         } catch (error) {
+            monitor.addStatus({
+                scope : 'user controller',
+                status :  0,
+                error : `${error}`
+            })
+
             console.log("error in creating user ", error);
             response.status(500).json({ err: "error in creating user" })
         }
@@ -94,14 +161,31 @@ export class UserController {
             let userToRemove = await this.userRepository.findOneBy({ id })
 
             if (!userToRemove) {
+                monitor.addStatus({
+                    scope : 'user controller',
+                    status :  0,
+                    error : 'account not found in remove user controller'
+                })
+    
                 return response.status(404).json({ err: "User with this id not found" })
             }
 
             await this.userRepository.remove(userToRemove)
+            monitor.addStatus({
+                scope : 'user controller',
+                status :  1,
+                error : null
+            })
 
             return response.json({ msg: "user has been removed" })
 
         } catch (error) {
+            monitor.addStatus({
+                scope : 'user controller',
+                status :  0,
+                error : `${error}`
+            })
+
             console.log("error in deleting user ", error);
             response.status(500).json({ err: "error in deleting user" })
         }
@@ -198,6 +282,11 @@ export class UserController {
         //     console.log('error occured in data aggregation in buy in month', error)
         // }
         console.log( 'allChartsssssssssssssss', allCharts)
+        monitor.addStatus({
+            scope : 'user controller',
+            status :  1,
+            error : null
+        })
         return response.status(200).json(allCharts)
     }
 }

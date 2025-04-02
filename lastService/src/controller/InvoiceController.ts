@@ -240,7 +240,7 @@ export class InvoiceController {
             if ( +goldWeight < 0.01){
                 monitor.addStatus({
                     scope : 'invoice controller',
-                    status :  400,
+                    status :  0,
                     error : 'میزان طلای درخاستی نمیتواند کمتر از 0.01 باشد'
                 })
                 return response.status(400).json({ msg: 'میزان طلای درخاستی نمی تواند کمتر از 0.01 باشد' });
@@ -248,7 +248,7 @@ export class InvoiceController {
             if (+goldWeight > 10){
                 monitor.addStatus({
                     scope : 'invoice controller',
-                    status :  400,
+                    status :  0,
                     error : 'حداکثر میزان مجاز خرید در هر روز 10 گرم می باشد'
                 })
                 return response.status(400).json({ msg: 'حداکثر میزان مجاز خرید در هر روز 10 گرم میباشد' });
@@ -256,7 +256,7 @@ export class InvoiceController {
             if (goldWeight == '0' || goldPrice == '0' || totalPrice == '0' ){
                 monitor.addStatus({
                     scope : 'invoice controller',
-                    status :  400,
+                    status :  0,
                     error : 'ورود مقادیر نادرست'
                 })
                 return response.status(400).json({ msg: 'لطفا مقادیر درست را وارد کنید' });
@@ -267,7 +267,7 @@ export class InvoiceController {
             if (validationError) {
                 monitor.addStatus({
                     scope : 'invoice controller',
-                    status :  400,
+                    status :  0,
                     error : 'مقادیر نادرست'
                 })
                 return response.status(400).json({ msg: validationError });
@@ -275,7 +275,7 @@ export class InvoiceController {
             if (!["buy", "sell"].includes(type)) {
                 monitor.addStatus({
                     scope : 'invoice controller',
-                    status :  400,
+                    status :  0,
                     error : 'ورود نادرست تایپ ایجاد تراکنش'
                 })
                 return response.status(400).json({ msg: "Invalid transaction type." });
@@ -288,7 +288,7 @@ export class InvoiceController {
                 if (!hasVerifiedAccount) {
                     monitor.addStatus({
                         scope : 'invoice controller',
-                        status :  400,
+                        status :  0,
                         error : 'تلاش برای ثبت معامله بدون ثبت کارت بانکی'
                     })
                     return response.status(400).json({ msg: "برای انجام معامله ابتدا کارت بانکی خود را ثبت کنید" });
@@ -312,7 +312,7 @@ export class InvoiceController {
                 if (limitError) {
                     monitor.addStatus({
                         scope : 'invoice controller',
-                        status :  400,
+                        status :  0,
                         error : 'عبور از مرز حد حجم خرید روزانه'
                     })
                     return response.status(400).json({ msg: limitError });
@@ -343,7 +343,7 @@ export class InvoiceController {
                 await queryRunner.commitTransaction()
                 monitor.addStatus({
                     scope : 'invoice controller',
-                    status :  200,
+                    status :  1,
                     error : null
                 })
                 return response.status(201).json({
@@ -354,7 +354,7 @@ export class InvoiceController {
             } catch (error) {
                 monitor.addStatus({
                     scope : 'invoice controller',
-                    status :  500,
+                    status :  0,
                     error : `${error}`
                 })
                 // monitor.error.push(`${error}`)
@@ -374,7 +374,7 @@ export class InvoiceController {
         } catch (error) {
             monitor.addStatus({
                 scope : 'invoice controller',
-                status :  500,
+                status :  0,
                 error : `${error}`
             })
             // monitor.error.push(`${error}`)
@@ -391,7 +391,7 @@ export class InvoiceController {
             if (validationError) {
                 monitor.addStatus({
                     scope : 'invoice controller',
-                    status :  400,
+                    status :  0,
                     error : 'ارور اعتبار سنجی در اتمام فرایند خرید'
                 })
                 return response.status(400).json({ msg: validationError });
@@ -403,10 +403,10 @@ export class InvoiceController {
             if (!createdInvoice) {
                 monitor.addStatus({
                     scope : 'invoice controller',
-                    status :  400,
+                    status :  0,
                     error : 'سند یافت نشد'
                 })
-                return response.status(404).json({ err: "سند یافت نشد" });
+                return response.status(400).json({ err: "سند یافت نشد" });
             }
 
             const systemUser = await this.userRepository.findOne({            //  what is system user
@@ -421,7 +421,7 @@ export class InvoiceController {
                     // should we failed the transaction???
                     monitor.addStatus({
                         scope : 'invoice controller',
-                        status :  400,
+                        status :  0,
                         error : 'موجودی کیف پول کافی نیست'
                     })
                     return response.status(400).json({ msg: "موجودی کیف پول کافی نیست" });
@@ -459,7 +459,7 @@ export class InvoiceController {
                     await this.estimateWeight(invoiceGoldWeight, 1)
                     monitor.addStatus({
                         scope : 'invoice controller',
-                        status :  200,
+                        status :  1,
                         error : null
                     })
                     return response.status(200).json({
@@ -470,7 +470,7 @@ export class InvoiceController {
                 } catch (error) {
                     monitor.addStatus({
                         scope : 'invoice controller',
-                        status :  500,
+                        status :  0,
                         error : `${error}`
                     })
                     // monitor.error.push(`${error}`)
@@ -512,7 +512,7 @@ export class InvoiceController {
                     console.log('coomplete buy from zarinpal', updated)
                     monitor.addStatus({
                         scope : 'invoice controller',
-                        status :  200,
+                        status :  1,
                         error : null
                     })
                     return response.status(200).json({
@@ -524,7 +524,7 @@ export class InvoiceController {
                 } catch (error) {
                     monitor.addStatus({
                         scope : 'invoice controller',
-                        status :  500,
+                        status :  0,
                         error : `${error}`
                     })
                     // monitor.error.push(`${error}`)
@@ -544,7 +544,7 @@ export class InvoiceController {
         } catch (error) {
             monitor.addStatus({
                 scope : 'invoice controller',
-                status :  500,
+                status :  0,
                 error : `${error}`
             })
             // monitor.error.push(`${error}`)
@@ -566,7 +566,7 @@ export class InvoiceController {
             if (validationError) {
                 monitor.addStatus({
                     scope : 'invoice controller',
-                    status :  400,
+                    status :  0,
                     error : 'مشکل اعتبار سنجی در اتمام تراکنش فروش'
                 })
                 return response.status(400).json({ msg: validationError });
@@ -584,7 +584,7 @@ export class InvoiceController {
                 console.log('after failed in complete sell>>>', updated)
                 monitor.addStatus({
                     scope : 'invoice controller',
-                    status :  400,
+                    status :  0,
                     error : 'موجودی صندوق طلا کافی نیست'
                 })
                 return response.status(400).json({
@@ -641,7 +641,7 @@ export class InvoiceController {
                 console.log('after failed in complete sell and transaction commited . . .>>>', savedTransaction)
                 monitor.addStatus({
                     scope : 'invoice controller',
-                    status :  200,
+                    status :  1,
                     error : null
                 })
                 return response.status(200).json({
@@ -651,7 +651,7 @@ export class InvoiceController {
             } catch (error) {
                 monitor.addStatus({
                     scope : 'invoice controller',
-                    status :  500,
+                    status :  0,
                     error : `${error}`
                 })
                 // monitor.error.push(`${error}`)
@@ -669,7 +669,7 @@ export class InvoiceController {
         } catch (error) {
             monitor.addStatus({
                 scope : 'invoice controller',
-                status :  500,
+                status :  0,
                 error : `${error}`
             })
             // monitor.error.push(`${error}`)
@@ -703,7 +703,7 @@ export class InvoiceController {
                     console.log('the status was not pending . . .', savedTransaction)
                     monitor.addStatus({
                         scope : 'invoice controller',
-                        status :  400,
+                        status :  0,
                         error : 'تراکنش قبلا اعتبار سنجی شده است'
                     })
                     return response.status(400).json({ msg: "تراکنش قبلا اعتبارسنجی شده است" })
@@ -715,7 +715,7 @@ export class InvoiceController {
                     console.log('after failed the transaction buy zarinpal>>>', updatedtransaction)
                     monitor.addStatus({
                         scope : 'invoice controller',
-                        status :  200,
+                        status :  1,
                         error : null
                     })
                     return response.status(200).json({ msg: "پرداخت ناموفق", transaction: updatedtransaction, bank: savedTransaction.buyer.bankAccounts[0].cardNumber })
@@ -764,7 +764,7 @@ export class InvoiceController {
                     //  }
                     monitor.addStatus({
                         scope : 'invoice controller',
-                        status :  200,
+                        status :  1,
                         error : null
                     })
                     return response.status(200).json({ msg: "پرداخت موفق", transaction: updatedtransaction, bank: res.data.card_pan, referenceID: res.data?.ref_id })
@@ -772,7 +772,7 @@ export class InvoiceController {
             } catch (error) {
                 monitor.addStatus({
                     scope : 'invoice controller',
-                    status :  500,
+                    status :  0,
                     error : `${error}`
                 })
                 // monitor.error.push(`${error}`)
@@ -788,7 +788,7 @@ export class InvoiceController {
         } catch (error) {
             monitor.addStatus({
                 scope : 'invoice controller',
-                status :  500,
+                status :  0,
                 error : `${error}`
             })
             monitor.error.push(`${error}`)
@@ -809,7 +809,7 @@ export class InvoiceController {
             });
             monitor.addStatus({
                 scope : 'invoice controller',
-                status :  200,
+                status : 1,
                 error : null
             })
             response.status(200).json(
@@ -818,7 +818,7 @@ export class InvoiceController {
         } catch (error) {
             monitor.addStatus({
                 scope : 'invoice controller',
-                status :  500,
+                status :  0,
                 error : `${error}`
             })
             // monitor.error.push(`${error}`)
@@ -836,14 +836,14 @@ export class InvoiceController {
             if (!transactions) {
                 monitor.addStatus({
                     scope : 'invoice controller',
-                    status :  400,
+                    status :  0,
                     error : 'تراکنش یافت نشد'
                 })
                 response.status(400).json({ msg: "invoice with this id not found" })
             }
             monitor.addStatus({
                 scope : 'invoice controller',
-                status :  200,
+                status :  0,
                 error : null
             })
             response.status(200).json(
@@ -852,7 +852,7 @@ export class InvoiceController {
         } catch (error) {
             monitor.addStatus({
                 scope : 'invoice controller',
-                status :  500,
+                status :  0,
                 error :`${error}`
             })
             // monitor.error.push(`${error}`)
@@ -869,7 +869,7 @@ export class InvoiceController {
             if (!error.isEmpty()) {
                 monitor.addStatus({
                     scope : 'invoice controller',
-                    status :  400,
+                    status :  0,
                     error : error['errors'][0].msg
                 })
                 return response.status(400).json({ msg: error['errors'][0].msg  });
@@ -908,7 +908,7 @@ export class InvoiceController {
 
             monitor.addStatus({
                 scope : 'invoice controller',
-                status :  200,
+                status :  1,
                 error : null
             })  
             response.status(200).json(all);
@@ -965,10 +965,19 @@ export class InvoiceController {
 
         //   console.log("allllll",all);
            console.log("remi",remmitance);
-
+            monitor.addStatus({
+                scope: 'invoice controller',
+                status: 1,
+                error: null
+            })
             response.status(200).json(all);
         } catch (error) {
-            monitor.error.push(`${error}`)
+            monitor.addStatus({
+                scope: 'invoice controller',
+                status: 0,
+                error: `${error}`
+            })
+            // monitor.error.push(`${error}`)
             console.error("Fetch transactions error:", error);
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }

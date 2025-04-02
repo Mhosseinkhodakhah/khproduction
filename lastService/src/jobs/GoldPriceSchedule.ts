@@ -1,5 +1,6 @@
 import cron = require('node-cron');
 import { GoldPriceService } from '../services/gold-price-service/gold-price-service';
+import monitor from '../util/statusMonitor';
 let gpService = new GoldPriceService()
 export function startCronJob() {
     try {
@@ -11,6 +12,7 @@ export function startCronJob() {
         console.log('Cron job started');
         
     } catch (error) {
+        monitor.error.push(`${error}`)
         console.log("error in runing job", error);     
     }
 }

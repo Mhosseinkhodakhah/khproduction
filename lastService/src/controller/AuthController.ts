@@ -20,7 +20,7 @@ export class AuthController {
         if (!phoneNumber || !password) {
             monitor.addStatus({
                 scope : 'authController',
-                status : 400,
+                status : 0,
                 error : 'شماره همراه و پسوورد اشتباه وارد شده'
             })
             // return next(new responseModel(request, response, 'Phone number and password are required.' ,'admin service', 200, , null))
@@ -32,7 +32,7 @@ export class AuthController {
             if (existingUser) {
                 monitor.addStatus({
                     scope : 'authController',
-                    status : 400,
+                    status : 0,
                     error : 'شماره تلفن قبلا ثبت نام کرده'
                 })
                 return response.status(400).json({ message: "Phone number already registered." });
@@ -43,14 +43,14 @@ export class AuthController {
             await this.userRepository.save(user);
             monitor.addStatus({
                 scope : 'authController',
-                status : 200,
+                status : 1,
                 error : null
             })
             return response.status(201).json({ message: "User registered successfully." });
         } catch (error) {
             monitor.addStatus({
                 scope : 'authController',
-                status : 500,
+                status : 0,
                 error : `${error}`
             })
             console.error("Registration error:", error);
@@ -66,7 +66,7 @@ export class AuthController {
             if (!user) {
                 monitor.addStatus({
                     scope : 'authController',
-                    status : 401,
+                    status : 0,
                     error : 'حساب کاربری یافت نشد'
                 })
                 return response.status(401).json({ message: "Invalid credentials." });
@@ -76,7 +76,7 @@ export class AuthController {
             if (!isPasswordValid) {
                 monitor.addStatus({
                     scope : 'authController',
-                    status : 401,
+                    status : 0,
                     error : 'رمز عبور نادرست است'
                 })
                 return response.status(401).json({ message: "Invalid credentials." });
@@ -85,7 +85,7 @@ export class AuthController {
             const token = jwt.sign({ userId: user.id}, "your_secret_key", { expiresIn: "7d" });
             monitor.addStatus({
                 scope : 'authController',
-                status : 200,
+                status : 1,
                 error : null
             })
             return response.status(200).json({ token });
@@ -93,7 +93,7 @@ export class AuthController {
             console.error("Login error:", error);
             monitor.addStatus({
                 scope : 'authController',
-                status : 500,
+                status : 0,
                 error :`${error}`
             })
             return response.status(500).json({ message: "Internal Server Error" });

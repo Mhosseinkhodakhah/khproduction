@@ -22,14 +22,14 @@ export class BankAccountController {
             const bankAccounts = await this.bankAccountRepository.find({where :{owner :{ id : userId}}, relations: ["owner"] });
             monitor.addStatus({
                 scope : 'bank account controller',
-                status : 200,
+                status : 1,
                 error: null
             })
             response.status(200).json(bankAccounts);
         } catch (error) {
             monitor.addStatus({
                 scope : 'bank account controller',
-                status : 500,
+                status : 0,
                 error: `${error}`
             })
 
@@ -44,7 +44,7 @@ export class BankAccountController {
         if (isNaN(id)) {
             monitor.addStatus({
                 scope : 'bank account controller',
-                status : 400,
+                status : 0,
                 error: `invalid bank account id`
             })
             return response.status(400).json({ error: "Invalid bank account ID" }); 
@@ -59,21 +59,21 @@ export class BankAccountController {
             if (!bankAccount) {
                 monitor.addStatus({
                     scope : 'bank account controller',
-                    status : 400,
+                    status : 0,
                     error: `حساب بانکی یافت نشد`
                 })
                 return response.status(400).json({ error: "Bank account not found" });
             }
             monitor.addStatus({
                 scope : 'bank account controller',
-                status : 200,
+                status : 1,
                 error: null
             })
             response.status(200).json(bankAccount);
         } catch (error) {
             monitor.addStatus({
                 scope : 'bank account controller',
-                status : 500,
+                status : 0,
                 error: `${error}`
             })
             console.log("Error in finding bank account by id", error);
@@ -88,7 +88,7 @@ export class BankAccountController {
         if ( !cardNumber || !ownerId) {
             monitor.addStatus({
                 scope : 'bank account controller',
-                status : 400,
+                status : 0,
                 error: `وارد کردن شماره کارت الزامی`
             })
             return response.status(400).json({ msg: "فیلد شماره کارت نمیتواند خالی باشد" });
@@ -100,7 +100,7 @@ export class BankAccountController {
             if (!owner) {
                 monitor.addStatus({
                     scope : 'bank account controller',
-                    status : 400,
+                    status : 0,
                     error: `مالک شماره کارت یافت نشد`
                 })
                 return response.status(400).json({ error: "Owner not found" });
@@ -119,8 +119,7 @@ export class BankAccountController {
                 console.log('its returned data>>>' , isMatch)
                 bankAccount.isVerified = isMatch;
                 
-                if (isMatch) {
-
+                if (isMatch) {                    
                     let res =  await this.shahkarController.convertCardToSheba(cardNumber)
                     if (res) {
                         bankAccount.shebaNumber = res.ibanInfo.iban
@@ -133,22 +132,21 @@ export class BankAccountController {
                     await this.smsService.sendGeneralMessage(owner.phoneNumber,"verifyCart" , bankAccount.cardNumber,null,null)
                     monitor.addStatus({
                         scope : 'bank account controller',
-                        status : 200,
+                        status : 1,
                         error: null
                     })
-                    return response.status(200).json({bank: createBankAccount , msg : "کارت با موفقیت ایجاد شد"});                
-                    
+                    return response.status(200).json({bank: createBankAccount , msg : "کارت با موفقیت ایجاد شد"});
                 }
                 monitor.addStatus({
                     scope : 'bank account controller',
-                    status : 400,
+                    status : 0,
                     error: `کارت نامعتبر `
                 })
                 response.status(400).json({ msg: "کارت نامعتبر است" });
             } catch (error) {
                 monitor.addStatus({
                     scope : 'bank account controller',
-                    status : 500,
+                    status : 0,
                     error: `${error}`
                 })
                 console.log("Error in creating bank account", error);
@@ -160,13 +158,23 @@ export class BankAccountController {
         const id = parseInt(request.params.id);
 
         if (isNaN(id)) {
+            monitor.addStatus({
+                scope : 'bank account controller',
+                status : 0,
+                error: `Invalid bank account ID`
+            })
             return response.status(400).json({ msg: "Invalid bank account ID" });
         }
 
         try {
             const bankAccount = await this.bankAccountRepository.findOne({where :{ id} , relations : ['owner'] });
             if (!bankAccount) {
-                return response.status(404).json({ msg: "کارت بانکی یافت نشد" });
+                monitor.addStatus({
+                    scope : 'bank account controller',
+                    status : 0,
+                    error: `کارت بانکی یافت نشد`
+                })
+                return response.status(400).json({ msg: "کارت بانکی یافت نشد" });
             }
             let info = {cardNumber : bankAccount.cardNumber , 
             nationalCode : bankAccount.owner.nationalCode , 
@@ -176,12 +184,27 @@ export class BankAccountController {
             if (isMatch != null && isMatch != undefined) {
                 bankAccount.isVerified = isMatch;
                 const updatedBankAccount = await this.bankAccountRepository.save(bankAccount);
+                monitor.addStatus({
+                    scope : 'bank account controller',
+                    status : 1,
+                    error: null
+                })
                 response.status(200).json(updatedBankAccount);                
             }else{
+                monitor.addStatus({
+                    scope : 'bank account controller',
+                    status : 0,
+                    error: `خطا در اعتبار سنجی کارت بانکی`
+                })
                 response.status(500).json({ msg: "خطا در اعتبارسنجی کارت بانکی" });
             }
         } catch (error) {
             console.log("Error in verifying bank account", error);
+            monitor.addStatus({
+                scope : 'bank account controller',
+                status : 0,
+                error: `${error}`
+            })
             return response.status(500).json({msg : "خطا در اعتبارسنجی کارت بانکی"})
         }
     }
@@ -190,6 +213,11 @@ export class BankAccountController {
         const id = parseInt(request.params.id);
 
         if (isNaN(id)) {
+            monitor.addStatus({
+                scope : 'bank account controller',
+                status : 0,
+                error: `Invalid bank account ID`
+            })
             return response.status(400).json({ msg: "Invalid bank account ID" });
         }
 
@@ -197,13 +225,28 @@ export class BankAccountController {
             const bankAccountToRemove = await this.bankAccountRepository.findOneBy({ id });
 
             if (!bankAccountToRemove) {
+                monitor.addStatus({
+                    scope : 'bank account controller',
+                    status : 0,
+                    error: `کارت بانکی یافت نشد`
+                })
                 return response.status(404).json({ msg: "کارت بانکی یافت نشد" });
             }
 
             await this.bankAccountRepository.remove(bankAccountToRemove);
+            monitor.addStatus({
+                scope : 'bank account controller',
+                status : 1,
+                error: null
+            })
             response.status(200).json({ msg: "کارت بانکی با موفقیت حذف شد" });
         } catch (error) {
             console.log("Error in deleting bank account", error);
+            monitor.addStatus({
+                scope : 'bank account controller',
+                status : 0,
+                error: `${error}`
+            })
             return response.status(500).json({msg :"خطا در حذف کارت بانکی"})
         }
     }
