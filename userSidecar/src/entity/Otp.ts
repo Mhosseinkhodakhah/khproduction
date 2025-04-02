@@ -6,7 +6,7 @@ export class Otp {
     @PrimaryGeneratedColumn()
     id: string
     
-    @Column()
+    @Column({nullable : true})
     otp: string
 
     @Column()

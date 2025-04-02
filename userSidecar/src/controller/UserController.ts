@@ -133,8 +133,6 @@ export class UserController {
         }
     }
 
-
-
     
      /**
      * its here for home charts in application
@@ -148,7 +146,7 @@ export class UserController {
         let queryBuilder = this.userRepository.createQueryBuilder('user')
             .leftJoinAndSelect('user.buys', 'buys')
             .where('user.id = :id', { id: +userId })
-
+            
         let user = await this.userRepository.findOne({ where: { id: +userId }, relations: ['wallet'] })
         // let buyInMonthData = queryBuilder.andWhere('invoice.createdAt BETWEEN :start AND :end' , {})
 
@@ -168,7 +166,7 @@ export class UserController {
         let balance = +user.wallet.balance
         console.log(gram, gold, balance)
         console.log((gram * gold) + balance)
-        let topBoxes = { balance: user.wallet.balance, goldWeight: user.wallet.goldWeight, monthlyProfit: 30, totalBalance: (gram * gold) + balance }
+        let topBoxes = { balance: user.wallet.balance, goldWeight: user.wallet.goldWeight, monthlyProfit: 0, totalBalance: (gram * gold) + balance }
 
         let assets = {
             label: ['دارایی ریالی', 'دارایی طلایی'],

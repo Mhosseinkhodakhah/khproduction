@@ -18,7 +18,7 @@ export class Wallet {
 
     @Column({ type: "int" , nullable : true })
     goldBlock: number;
-
+    
     @Column({ type: "numeric", precision: 10, scale: 0, default: 0 })
     balance: number;
     
@@ -27,7 +27,7 @@ export class Wallet {
 
     @OneToMany(()=> WalletTransaction , (wt)=> wt.wallet)
     transactions: WalletTransaction[];
-    
+
     @CreateDateColumn()
     createdAt : Date;
 

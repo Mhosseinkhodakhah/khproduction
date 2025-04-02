@@ -72,13 +72,12 @@ export class User {
 
     @OneToOne(() => Wallet, (wallet) => wallet.user, { cascade: true })
     wallet: Wallet;
-
+    
     @OneToMany(() => BankAccount , (bankAccount)=> bankAccount.owner , {nullable : true,cascade: true})
     bankAccounts : BankAccount[]
 
     @Column({nullable : true , default : '' , type : 'varchar'})
     identityTraceCode : string;
-
 
     @Column({ default: false })
     isSystemUser : boolean
