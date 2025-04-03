@@ -328,8 +328,8 @@ export class InvoiceController {
             try {
                 const invoiceType = await this.invoiceTypeRepository.findOneBy({ title: type });
                 const transaction = this.invoiceRepository.create({                                    // here is the making the transActions
-                    goldPrice: parseFloat(goldPrice),
-                    goldWeight: parseFloat(goldWeight),
+                    goldPrice: +goldPrice,
+                    goldWeight: +goldWeight,
                     totalPrice: Math.floor(+totalPrice),
                     seller: type === "buy" ? systemUser : user,
                     buyer: type === "buy" ? user : systemUser,
