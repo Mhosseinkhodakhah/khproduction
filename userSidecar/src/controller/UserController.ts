@@ -10,6 +10,7 @@ import { goldPrice } from "../entity/goldPrice"
 import { Jalali } from 'jalali-ts';
 import { WalletTransaction } from "../entity/WalletTransaction"
 import { Between, MoreThan } from "typeorm"
+import profitService from "../services/makeProfit.service"
 
 
 export class UserController {
@@ -20,7 +21,7 @@ export class UserController {
     private readonly goldPrice = AppDataSource.getRepository(goldPrice)
     private readonly walletTransActions = AppDataSource.getRepository(WalletTransaction)
     private interservice = new connection()
-
+    private profitService = new profitService()
     async getAllInvoicesForDjango(req : Request , res : Response , next : NextFunction){
         let invoices = await this.invoiceRepository.find({relations : ['type' , 'buyer' , 'seller'  ] , order : {createdAt : 'DESC'}})
         return next(new response(req, res, 'internal service', 200 , null , invoices))
@@ -175,6 +176,21 @@ export class UserController {
 
         let georgianMonth = []
 
+
+        // const startJalali = new Date(Jalali.parse(`1404/${element}/1`).gregorian())
+        // const endJalali = new Date(Jalali.parse(`1404/${element}/31`).gregorian())
+        const jalali = Jalali.now()
+        console.log( 'time in jalali for test . . . .' , jalali)
+
+        let invoiceForProfit = await this.invoiceRepository.createQueryBuilder("invoice")
+        .leftJoinAndSelect('invoice.buyer' , 'buyer')
+        .leftJoinAndSelect('invoice.seller' , 'seller')
+        .where(' (buyer.id = :userId OR seller.id = :userId) AND invoice.status = :status' , {status : 'completed' , userId})
+        .getMany()
+
+        let profit = await this.profitService.makeProfit(invoiceForProfit , (user.wallet.goldWeight).toString() , gram.toString())
+        console.log('user profit till here . . . ')
+
         let monthes = ['01',
             '02',
             '03',
@@ -227,6 +243,7 @@ export class UserController {
         console.log('app charts is ready . . .')
         return response.status(200).json({ buyInMonth, monthlyPrice: monthlyPrice.priceChart, assets, topBoxes })
     }
+
 
 
 
