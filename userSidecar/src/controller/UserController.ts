@@ -185,6 +185,7 @@ export class UserController {
         let invoiceForProfit = await this.invoiceRepository.createQueryBuilder("invoice")
         .leftJoinAndSelect('invoice.buyer' , 'buyer')
         .leftJoinAndSelect('invoice.seller' , 'seller')
+        .leftJoinAndSelect('invoice.type' , 'type')
         .where(' (buyer.id = :userId OR seller.id = :userId) AND invoice.status = :status' , {status : 'completed' , userId})
         .getMany()
 
