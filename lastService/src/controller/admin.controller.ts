@@ -137,13 +137,13 @@ export default class adminController {
 
         let transActions;
         if (type == 0) {
-            transActions = await queryBuilder.where('invoice.status = :status AND type.title = :title AND invoice.fromPhone = :boolean AND tradeType = :trade', { status: 'failed', title: 'buy' , boolean : false , trade : 0}).getMany()
+            transActions = await queryBuilder.where('invoice.status = :status AND type.title = :title AND invoice.fromPhone = :boolean AND invoice.tradeType = :trade', { status: 'failed', title: 'buy' , boolean : false , trade : 0}).getMany()
         } else if (type == 1) {
-            transActions = await queryBuilder.where('invoice.status = :status AND type.title = :title AND invoice.fromPhone = :boolean AND tradeType = :trade', { status: 'completed', title: 'buy' , boolean : false , trade : 0}).getMany()
+            transActions = await queryBuilder.where('invoice.status = :status AND type.title = :title AND invoice.fromPhone = :boolean AND invoice.tradeType = :trade', { status: 'completed', title: 'buy' , boolean : false , trade : 0}).getMany()
         } else if (type == 2) {
-            transActions = await queryBuilder.where('invoice.status = :status AND type.title = :title AND invoice.fromPhone = :boolean AND tradeType = :trade', { status: 'pending', title: 'buy' , boolean :  false, trade : 0}).getMany()
+            transActions = await queryBuilder.where('invoice.status = :status AND type.title = :title AND invoice.fromPhone = :boolean AND invoice.tradeType = :trade', { status: 'pending', title: 'buy' , boolean :  false, trade : 0}).getMany()
         }else if(type == 3){
-            transActions = await queryBuilder.where('invoice.status = :status AND type.title = :title AND invoice.fromPhone = :boolean AND tradeType = :trade', { status: 'init', title: 'buy' , boolean : false , trade : 0}).getMany()
+            transActions = await queryBuilder.where('invoice.status = :status AND type.title = :title AND invoice.fromPhone = :boolean AND invoice.tradeType = :trade', { status: 'init', title: 'buy' , boolean : false , trade : 0}).getMany()
         }else{
             return next(new responseModel(req, res,'' ,'admin service', 400 , 'bad request', null))
         }
