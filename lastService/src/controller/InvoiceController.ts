@@ -297,13 +297,13 @@ export class InvoiceController {
             console.log('walletIs' , user.wallet)
             if (type === "buy") {
                 if (realGoldPrice2 - (+goldPrice) >= 10000){
-                    console.log('condition1')
+                    console.log('condition1' , realGoldPrice2 - (+goldPrice))
                     goldPrice = realGoldPrice2
                     monitor.error.push('تلاش برای ایجاد تراکنش در قیمتی پایین تر از قیمت بازار')
                     // return response.status(400).json({ msg: 'امکان ثبت معامله در این قیمت وجود ندارد' });
                 }
-                if (((realGoldPrice2*(+goldWeight)) - (+totalPrice)) >= (10*(+goldWeight))){
-                    console.log('condition2')
+                if (((realGoldPrice2*(+goldWeight)) - (+totalPrice)) >= 10000){
+                    console.log('condition2' , ((realGoldPrice2*(+goldWeight)) - (+totalPrice)))
                     monitor.error.push('تلاش برای ثبت معامله در اپ با قیمتی متفاوت از حجم طلای ورودی')
                     totalPrice = realGoldPrice2*(+goldWeight)
                     // return response.status(400).json({ msg: 'امکان ثبت معامله در این قیمت وجود ندارد' });
