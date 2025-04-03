@@ -20,10 +20,10 @@ export default class profitService {
         let percent = 0;
         console.log('after don all data >>>' , newInvoices)
         newInvoices.forEach((element)=>{
-            if (element.type == 0){
-                console.log("type1111")
-                percent -= (+element.percent)
-            }
+            // if (element.type == 0){
+            //     console.log("type1111")
+            //     percent -= (+element.percent)
+            // }
             if (element.type == 1){
                 console.log('type2222')
                 percent += (+element.percent)
