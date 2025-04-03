@@ -8,7 +8,7 @@ export default class profitService {
 
     async makeProfit(invoices: any[], wallet: string, livePrice: string) {
         let newInvoices = []
-        console.log('test for invoices?????' , invoices)
+        console.log('test for invoices?????' , wallet , livePrice)
         for (let i = 0; i < invoices.length; i++) {
             let data = {
                 percent: ((((+livePrice) - (+invoices[i].goldPrice)) / (+livePrice)) * 100) / (+invoices[i]) / (+wallet),
