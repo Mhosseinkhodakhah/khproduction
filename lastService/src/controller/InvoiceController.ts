@@ -321,6 +321,7 @@ export class InvoiceController {
                     return response.status(400).json({ msg: limitError });
                 }
             }
+            goldWeight = formatGoldWeight(goldWeight)
             console.log('body>>>>>' , goldPrice, goldWeight, type, totalPrice )
             const queryRunner = AppDataSource.createQueryRunner()
             await queryRunner.connect()
