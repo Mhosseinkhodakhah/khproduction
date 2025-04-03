@@ -295,6 +295,9 @@ export class InvoiceController {
                 }
             }
             console.log('walletIs' , user.wallet)
+            // goldWeight = formatGoldWeight(goldWeight)
+            totalPrice = realGoldPrice2*(+goldWeight)
+            console.log('start the transaction',goldWeight , totalPrice)
             if (type === "buy") {
                 if (realGoldPrice2 - (+goldPrice) >= 10000){
                     console.log('condition1' , realGoldPrice2 - (+goldPrice))
@@ -319,8 +322,6 @@ export class InvoiceController {
                 }
             }
             console.log('body>>>>>' , goldPrice, goldWeight, type, totalPrice )
-            goldWeight = formatGoldWeight(goldWeight)
-            console.log('start the transaction',goldWeight)
             const queryRunner = AppDataSource.createQueryRunner()
             await queryRunner.connect()
             await queryRunner.startTransaction()
