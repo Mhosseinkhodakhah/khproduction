@@ -11,7 +11,9 @@ export default class profitService {
         console.log('test for invoices?????' , wallet , livePrice)
         let allWeight = 0;
         invoices.forEach((elem=>{
-            allWeight += (+elem.goldWeight)
+            if (elem.type.title == 'buy'){
+                allWeight += (+elem.goldWeight)
+            }
         }))
         for (let i = 0; i < invoices.length; i++) {
             let data = {
