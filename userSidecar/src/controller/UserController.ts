@@ -187,7 +187,7 @@ export class UserController {
         .leftJoinAndSelect('invoice.buyer' , 'buyer')
         .leftJoinAndSelect('invoice.seller' , 'seller')
         .leftJoinAndSelect('invoice.type' , 'type')
-        .where('(buyer.id = :userId OR seller.id = :userId) AND invoice.status = :status AND invoice.createdAt >= :today AND invoice.createdAt <= :finaly' , {status : 'completed' , userId , today : start , finally : now})
+        .where('(buyer.id = :userId OR seller.id = :userId) AND invoice.status = :status' , {status : 'completed' , userId })
         .getMany()
 
         let profit = await this.profitService.makeProfit(invoiceForProfit , (user.wallet.goldWeight).toString() , gram.toString())
