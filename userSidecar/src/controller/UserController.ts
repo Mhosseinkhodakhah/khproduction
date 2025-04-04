@@ -176,17 +176,18 @@ export class UserController {
 
         let georgianMonth = []
 
-        
-        // const startJalali = new Date(Jalali.parse(`1404/${element}/1`).gregorian())
-        // const endJalali = new Date(Jalali.parse(`1404/${element}/31`).gregorian())
+
         const jalali = Jalali.now()
-        console.log( 'time in jalali for test . . . .' , jalali)
+        const now = new Date(jalali.valueOf())
+        const start = new Date((jalali.valueOf()) - (30*24*60*60*1000))
+        console.log('now time>>>' , now)
+        console.log('start time>>>' , now)
 
         let invoiceForProfit = await this.invoiceRepository.createQueryBuilder("invoice")
         .leftJoinAndSelect('invoice.buyer' , 'buyer')
         .leftJoinAndSelect('invoice.seller' , 'seller')
         .leftJoinAndSelect('invoice.type' , 'type')
-        .where(' (buyer.id = :userId OR seller.id = :userId) AND invoice.status = :status' , {status : 'completed' , userId})
+        .where('(buyer.id = :userId OR seller.id = :userId) AND invoice.status = :status AND invoice.createdAt >= :today AND invoice.createdAt <= :finaly' , {status : 'completed' , userId , today : start , finally : now})
         .getMany()
 
         let profit = await this.profitService.makeProfit(invoiceForProfit , (user.wallet.goldWeight).toString() , gram.toString())
