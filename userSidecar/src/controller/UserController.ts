@@ -181,7 +181,7 @@ export class UserController {
         const now = new Date(jalali.valueOf())
         const start = new Date((jalali.valueOf()) - (30*24*60*60*1000))
         console.log('now time>>>' , now)
-        console.log('start time>>>' , now)
+        console.log('start time>>>' , start)
 
         let invoiceForProfit = await this.invoiceRepository.createQueryBuilder("invoice")
         .leftJoinAndSelect('invoice.buyer' , 'buyer')
