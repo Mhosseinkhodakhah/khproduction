@@ -228,7 +228,7 @@ export class InvoiceController {
 
     async createTransaction(request: Request, response: Response) {
         let { goldPrice, goldWeight, type, totalPrice } = request.body;
-        if (totalPrice.includes(',')){
+        if (totalPrice.toString().includes(',')){
             totalPrice  = totalPrice.replaceAll(',' , '')
             console.log('new totalPrice , ' , totalPrice)
         }
