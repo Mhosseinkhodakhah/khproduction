@@ -38,7 +38,7 @@ export default class profitService {
         })
 
         console.log('the percent is >>>>>' , percent)
-        return percent;
+        return percent.toFixed(2);
     }
 
 }

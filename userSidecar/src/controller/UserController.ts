@@ -189,10 +189,10 @@ export class UserController {
         .leftJoinAndSelect('invoice.type' , 'type')
         .where('(buyer.id = :userId OR seller.id = :userId) AND invoice.status = :status AND invoice.createdAt >= :today AND invoice.createdAt <= :finaly' , {status : 'completed' , userId , today : start , finaly : now})
         .getMany()
-
+        
         let profit = await this.profitService.makeProfit(invoiceForProfit , (user.wallet.goldWeight).toString() , gram.toString())
         console.log('user profit till here . . . ')
-
+        
         let monthes = ['01',
             '02',
             '03',
