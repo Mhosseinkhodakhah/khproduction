@@ -65,7 +65,7 @@ export class ShahkarController {
                 let DBStatus = await trackIdService.saveData(trackIdData)
                 console.log('returned db status>>>>' , DBStatus)
                 monitor.addStatus({
-                    scope: 'shahkar controller',
+                    scope: 'shahkar controller',    
                     status: 0,
                     error: `there is no match between number and national code`
                 })
@@ -193,7 +193,7 @@ export class ShahkarController {
             monitor.addStatus({
                 scope: 'shahkar controller',
                 status: 0,
-                error: `${error}`
+                error: `${error.response}`
             })
             let trackIdData : trackIdInterface = {
                 trackId : error.response.headers['track-code'],
@@ -247,7 +247,7 @@ export class ShahkarController {
                 return false
               }
         } catch (error) {
-            monitor.error.push(`${error}`)
+            monitor.error.push(`error in checkMatchPhoneNumberAndCartNumber :: ${error.response}`)
             console.log("error in checkMatchPhoneNumberAndCartNumber" , error);
             return false
         }
@@ -266,7 +266,8 @@ export class ShahkarController {
                 return null
             }
         } catch (error) {
-            monitor.error.push(`${error}`)
+            // console.log(error.response)
+            monitor.error.push(`error in convertCardToSheba :: ${error.response}`)
             console.log('error in convert to sheba' , error.message);
             return null
         }
@@ -280,7 +281,7 @@ export class ShahkarController {
             return token
             
         } catch (error) {
-            monitor.error.push(`${error}`)
+            monitor.error.push(`error in get token shahkar :: ${error.response}`)
             console.log("error in getToken ShahkarController   " + error);
             return null
         }

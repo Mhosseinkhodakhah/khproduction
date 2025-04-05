@@ -12,7 +12,7 @@ export function startCronJob() {
         console.log('Cron job started');
         
     } catch (error) {
-        monitor.error.push(`${error}`)
+        monitor.error.push(`error in startCron job :::: ${error}`)
         console.log("error in runing job", error);     
     }
 }
