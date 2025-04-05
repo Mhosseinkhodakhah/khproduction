@@ -6,7 +6,6 @@ from persiantools.jdatetime import JalaliDate
 import datetime
 
 
-
 class datamaker2():
     def __init__(self):
         self.url = 'http://localhost:3001/interservice/invoice/all'
@@ -42,7 +41,6 @@ class datamaker2():
                 i['status'] = 'نا موفق'
             elif (i['status'] == 'init'):
                 i['status'] = 'پرداخت نشده'
-                
                 
             i['type'] = 'خرید' if i['type'] == 'buy' else 'فروش'
             if (i['fromPhone'] == True):
@@ -94,16 +92,16 @@ class datamaker2():
         if (byPhone != 'all'):
             if (byPhone == 'fromPhone'):
                 for i in firstFilter:
-                    if (i['fromPhone'] == True):
+                    if (i['tradeType'] == 1):
                         secondFilter.append(i)
             elif(byPhone == 'fromGateway'):
                 for i in firstFilter:
-                    if (i['fromGateway'] == True):
+                    if (i['tradeType'] == 0):
                         secondFilter.append(i)
             elif(byPhone == 'inPerson'):
                 for i in firstFilter:
                     print(i)
-                    if (i['inPerson'] == True):
+                    if (i['tradeType'] == 2):
                         secondFilter.append(i)
         else:
             secondFilter = firstFilter
