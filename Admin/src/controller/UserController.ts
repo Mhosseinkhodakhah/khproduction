@@ -97,11 +97,11 @@ export class UserController {
 
 
     async addNewAdmin(req: Request, res: Response, next: NextFunction) {
-        const admin = req.user.role
-        console.log('')
-        if (admin == 0) {
-            return next(new response(req, res, 'create new admin', 403, 'permision denied!', null))
-        }
+        // const admin = req.user.role
+        // console.log('')
+        // if (admin == 0) {
+        //     return next(new response(req, res, 'create new admin', 403, 'permision denied!', null))
+        // }
         req.body.password = await bcrypt.hash(req.body.password, 10)
         console.log(req.body)
         let newAdmin = this.adminRepository.create(req.body)

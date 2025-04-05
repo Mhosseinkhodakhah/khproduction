@@ -41,7 +41,7 @@ export const Routes = [{
     method: "patch",
     route: "/update/:adminId",
     controller: UserController,
-    middleware: [],
+    middleware: [authMiddleware],
     action: "updateAdmin"
 }, {
     method: "get",
