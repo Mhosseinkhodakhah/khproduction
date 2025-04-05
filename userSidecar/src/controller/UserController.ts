@@ -167,22 +167,21 @@ export class UserController {
         let balance = +user.wallet.balance
         console.log(gram, gold, balance)
         console.log((gram * gold) + balance)
-        let topBoxes = { balance: user.wallet.balance, goldWeight: user.wallet.goldWeight, monthlyProfit: 0, totalBalance: (gram * gold) + balance }
-
+        
         let assets = {
             label: ['دارایی ریالی', 'دارایی طلایی'],
             data: [user.wallet.balance, (user.wallet.goldWeight * gram)]
         }
-
+        
         let georgianMonth = []
-
-
+        
+        
         const jalali = Jalali.now()
         const now = new Date(jalali.valueOf())
         const start = new Date((jalali.valueOf()) - (30*24*60*60*1000))
         console.log('now time>>>' , now)
         console.log('start time>>>' , start)
-
+        
         let invoiceForProfit = await this.invoiceRepository.createQueryBuilder("invoice")
         .leftJoinAndSelect('invoice.buyer' , 'buyer')
         .leftJoinAndSelect('invoice.seller' , 'seller')
@@ -191,7 +190,9 @@ export class UserController {
         .getMany()
         
         let profit = await this.profitService.makeProfit(invoiceForProfit , (user.wallet.goldWeight).toString() , gram.toString())
-        console.log('user profit till here . . . ')
+        console.log('user profit till here . . . ' , profit)
+        
+        let topBoxes = { balance: user.wallet.balance, goldWeight: user.wallet.goldWeight, monthlyProfit: profit, totalBalance: (gram * gold) + balance }
         
         let monthes = ['01',
             '02',
