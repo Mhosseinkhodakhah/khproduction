@@ -17,7 +17,7 @@ let workerStarter = new workerRunner()
 
 AppDataSource.initialize().then(async () => {
 
-    workerStarter.startWorker()
+    // workerStarter.startWorker()
 
     // create express app
     const app = express()
