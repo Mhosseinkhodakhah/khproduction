@@ -76,7 +76,7 @@ export const Routes = [{
     controller: UserController,
     middleware: [createCooprationRequests],
     action: "createCooprationRequests"
-},{
+}, {
     method: "get",
     route: "/coorporation/all",
     controller: UserController,
