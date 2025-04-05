@@ -100,6 +100,7 @@ import { adminMiddleware } from './auth/auth.middleware'
 //proxeing
 // app.use('/' , routing.proxy(`http://localhost:3000`))     // proxing to product service
 app.use('/v1/main' , routing.proxy(`http://localhost:3000`))     // proxing to django for report service
+app.use('/v1/secondmain' , routing.proxy(`http://localhost:3002`))     // proxing to django for report service
 app.use('/v1/admin' , routing.proxy(`http://localhost:5005`))     // proxing to admin service
 app.use('/v1/logger' , routing.proxy(`http://localhost:5010`))     // proxing to admin service
 app.use('/v1/old' , routing.proxy(`http://localhost:5004`))     // proxing to oldusers service
