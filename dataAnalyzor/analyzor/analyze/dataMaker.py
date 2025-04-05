@@ -206,17 +206,17 @@ class datamaker2():
         
         ###six filter
         
-        if (startTime != 'all' and endTime != 'all'):
-            timeStart = {'hour' : int(startTime.split(':')[0]) , 'minute' : int(startTime.split(':')[1]) , 'second' : int(startTime.split(':')[2])}
-            print( 'start', start)
-            timeEnd = {'hour' : int(endTime.split(':')[0]) , 'minute' : int(endTime.split(':')[1]) , 'second' : int(endTime.split(':')[2])}
-            for i in fifthFilter:
-                timeFull = {'hour' : int(i['time'].split(':')[0]) , 'minute' : int(i['time'].split(':')[1]) , 'second' : int(i['time'].split(':')[2])}
-                if ((timeFull['hour'] >= timeStart['hour'] and timeFull['hour'] <= timeEnd['hour']) and (timeFull['minute'] >= timeStart['minute'] and timeFull['minute'] <= timeEnd['minute'])and(timeFull['second'] >= timeStart['second'] and timeFull['second'] <= timeEnd['second'])):
-                    sixFilter.append(i)
+        # if (startTime != 'all' and endTime != 'all'):
+        #     timeStart = {'hour' : int(startTime.split(':')[0]) , 'minute' : int(startTime.split(':')[1]) , 'second' : int(startTime.split(':')[2])}
+        #     print( 'start', start)
+        #     timeEnd = {'hour' : int(endTime.split(':')[0]) , 'minute' : int(endTime.split(':')[1]) , 'second' : int(endTime.split(':')[2])}
+        #     for i in fifthFilter:
+        #         timeFull = {'hour' : int(i['time'].split(':')[0]) , 'minute' : int(i['time'].split(':')[1]) , 'second' : int(i['time'].split(':')[2])}
+        #         if ((timeFull['hour'] >= timeStart['hour'] and timeFull['hour'] <= timeEnd['hour']) and (timeFull['minute'] >= timeStart['minute'] and timeFull['minute'] <= timeEnd['minute'])and(timeFull['second'] >= timeStart['second'] and timeFull['second'] <= timeEnd['second'])):
+        #             sixFilter.append(i)
              
-        else:
-            sixFilter = fifthFilter
+        # else:
+        sixFilter = fifthFilter
         
         path = self.__excellGeneratedTransActions(sixFilter)
         return [path[1] , path[0]]
