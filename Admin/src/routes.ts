@@ -66,7 +66,7 @@ export const Routes = [{
     method: "get",
     route: "/monitor/all",
     controller: interServiceController,
-    middleware: [authMiddleware],
+    middleware: [],
     action: "getLoggs"
 },
 /** these routes is for coporation requests from users */
