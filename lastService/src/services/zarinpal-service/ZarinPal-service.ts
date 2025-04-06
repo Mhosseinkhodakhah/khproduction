@@ -168,7 +168,7 @@ export class ZarinPalService {
         authority: authority,
       });
       monitor.error.push(`error in handle verifying:: ${error}`)
-      console.error('Payment Verification Failed:', error.response);
+      console.error('Payment Verification Failed:', error.response.data.errors);
       return { status: false, data: { message:'خطای داخلی سیستم'}}
     }
   }
