@@ -14,6 +14,7 @@ import { validationResult } from "express-validator";
 import logger from "../services/interservice/logg.service";
 import { EstimateTransactions } from "../entity/EstimateTransactions";
 import cacher from "../services/cacher";
+import instance from "../util/tradePerision";
 
 
 
@@ -51,19 +52,17 @@ export default class adminController {
 
 
     async getTradePermision(req: Request, res: Response, next: NextFunction){
-        let tradePerimision = await cacher.getter('tradePermision')
+        // let tradePerimision = await cacher.getter('tradePermision')
+        let tradePerimision = await instance.getter()
         console.log( 'trade permision is >>>>', tradePerimision)
         return next(new responseModel(req, res,'' ,'admin service', 200, null, tradePerimision))
     }
 
     async tradePermision(req: Request, res: Response, next: NextFunction){
-        let tradePerimision = await cacher.getter('tradePermision')
-        if (tradePerimision == 0){
-            await cacher.setter('tradePermision' , 1)
-        }else if(tradePerimision == 1){
-            await cacher.setter('tradePermision' , 0)
-        }
-        tradePerimision = await cacher.getter('tradePermision')
+        // let tradePerimision = await cacher.getter('tradePermision')
+        // let tradePerimision = await instance.getter()
+        await instance.setter()
+        let tradePerimision = await instance.getter()
         console.log(tradePerimision)
         return next(new responseModel(req, res,'' ,'admin service', 200, null, tradePerimision))
     }
