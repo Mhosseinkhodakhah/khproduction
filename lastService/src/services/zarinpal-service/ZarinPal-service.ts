@@ -85,8 +85,12 @@ export class ZarinPalService {
               }
             } catch (error) {
               monitor.error.push(error)
-              console.error('Payment Verification Failed:', error.response.data.errors);
-              return {status  : false }
+              if (error.response.data.errors){
+                console.error('Payment Verification Failed:', error.response.data.errors);
+                return {status  : false }
+              }else{
+                return {status : 'unknown'}
+              }
 
             }
           } else {

@@ -454,63 +454,78 @@ export default class adminController {
                 console.log(error)
                 return next(new responseModel(req, res ,'' ,'admin service', 400, error['errors'][0].msg, null))
             }
-            console.log('its first entry . . .' , authority)
-            let info = { status : 'OK', authority }
-            let res2 = await this.zpService.verifyPayment(info)
-            const paymentInfo = await this.paymentInfoRepository.findOneByOrFail({ authority: info.authority })
-            let queryRunner = AppDataSource.createQueryRunner()
-            await queryRunner.connect()
-            await queryRunner.startTransaction()
-            const savedTransaction = await this.walletTransactionRepository.findOneBy({ id: paymentInfo.invoiceId })
-            if (savedTransaction.status != "pending") {
-                await queryRunner.release()
-                return res.status(400).json({ msg: "تراکنش قبلا اعتبارسنجی شده است" })
+            let statusOfTransAction = await this.zpService.getTransActionStatus(authority)
+            if (statusOfTransAction.status == 'IN_BANK') {
+                return next(new responseModel(req, res, 'تراکنش در درگاه میباشد', 'admin service', 400, 'تراکنش در درگاه میباشد', null))
             }
-            let updatedtransaction;
-            try {
-                const user = await this.userRepository.findOne({ where: { id: paymentInfo.userId }, relations: { wallet: true, bankAccounts: true } })
-                if (!res2.status) {
-                    savedTransaction.status = "failed";                                // set failed transaction status
-                    updatedtransaction = await queryRunner.manager.save(savedTransaction)        // save the trasnaction
-                    await queryRunner.commitTransaction()
-                    await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , 
-                        'تایید برداشت' , ` ${req.user.firstName} واریز را به صورت دستی اعتبار سنجی کرد` , {
-                        userName : user.firstName,
-                        lastName : user.lastName,
-                        amount : savedTransaction.amount,
-                        balance : user.wallet.balance
-                    } , 1) 
-
-                    return res.status(200).json({ msg: "تراکنش از جانب بانک رد شد و به لیست تراکنش های نا موفق منتقل شد", transaction: savedTransaction, bank: user.bankAccounts[0].cardNumber })
-                } else if ((res2.status && res2.code == 100 )|| (res2.status && res2.code == 101)) {
-                    const currentBalance = +user.wallet.balance;
-                    const paymentAmount = +paymentInfo.amount;
-                    user.wallet.balance = Math.round(currentBalance + paymentAmount);
-                    await queryRunner.manager.save(user.wallet)
-                    // await this.walletRepository.save([user.wallet]);
-                    savedTransaction.status = "completed";                         // make status completed
-                    savedTransaction.invoiceId = res2.data.ref_id
-                    updatedtransaction = await queryRunner.manager.save(savedTransaction)
-                    // let updatedtransaction = await this.walletTransactionRepository.save(savedTransaction);
-                    // let nameFamily = user.firstName +' '+  user.lastName
-                    await queryRunner.commitTransaction()
-                    // this.smsService.sendGeneralMessage(user.phoneNumber, "deposit", user.firstName, paymentAmount / 10, null)
-                    await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , 
-                        'تایید برداشت' , ` ${req.user.firstName} واریز را به صورت دستی اعتبار سنجی کرد` , {
-                        userName : user.firstName,
-                        lastName : user.lastName,
-                        amount : paymentAmount,
-                        balance : user.wallet.balance
-                    } , 1) 
-                    
-                    return res.status(200).json({ msg: "تراکنش از سمت بانک تایید شد و به لیست تراکنش های موفق اضافه شد.", transaction: updatedtransaction, bank: res2.data.card_pan, referenceId: res2.data.ref_id })
+            else if (statusOfTransAction.status == 'VERIFIED') {
+                return next(new responseModel(req, res, 'تراکنش قبلا اعتبار سنجی شده است', 'admin service', 400, 'تراکنش قبلا اعتبار سنجی شده است', null))
+            } else if (statusOfTransAction.status == 'REVERSED') {
+                return next(new responseModel(req, res, 'تراکنش از سمت درگاه برگشت خورده است', 'admin service', 400, 'تراکنش از سمت درگاه برگشت خورده است', null))
+            } else if (statusOfTransAction.status == 'PAID' || statusOfTransAction.status == 'FAILED') {
+                console.log('its first entry . . .' , authority)
+                let info = { status : 'OK', authority }
+                let res2 = await this.zpService.verifyPayment(info)
+                const paymentInfo = await this.paymentInfoRepository.findOneByOrFail({ authority: info.authority })
+                let queryRunner = AppDataSource.createQueryRunner()
+                await queryRunner.connect()
+                await queryRunner.startTransaction()
+                const savedTransaction = await this.walletTransactionRepository.findOneBy({ id: paymentInfo.invoiceId })
+                if (savedTransaction.status != "pending") {
+                    await queryRunner.release()
+                    return res.status(400).json({ msg: "تراکنش قبلا اعتبارسنجی شده است" })
                 }
-            } catch (error) {
-                await queryRunner.rollbackTransaction()
-                console.log("error in save transaction status", error);
-                return res.status(500).json({ msg: "خطای داخلی سیستم" });
-            } finally {
-                await queryRunner.release()
+                if (res2.status == 'unknown'){
+                    return res.status(400).json({msg : 'سیستم قادر به اعتبار سنجی تراکنش نمیباشد'})
+                }
+                let updatedtransaction;
+                try {
+                    const user = await this.userRepository.findOne({ where: { id: paymentInfo.userId }, relations: { wallet: true, bankAccounts: true } })
+                    if (!res2.status) {
+                        savedTransaction.status = "failed";                                // set failed transaction status
+                        updatedtransaction = await queryRunner.manager.save(savedTransaction)        // save the trasnaction
+                        await queryRunner.commitTransaction()
+                        await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , 
+                            'تایید برداشت' , ` ${req.user.firstName} واریز را به صورت دستی اعتبار سنجی کرد` , {
+                            userName : user.firstName,
+                            lastName : user.lastName,
+                            amount : savedTransaction.amount,
+                            balance : user.wallet.balance
+                        } , 1) 
+    
+                        return res.status(200).json({ msg: "تراکنش از جانب بانک رد شد و به لیست تراکنش های نا موفق منتقل شد", transaction: savedTransaction, bank: user.bankAccounts[0].cardNumber })
+                    } else if ((res2.status && res2.code == 100 )|| (res2.status && res2.code == 101)) {
+                        const currentBalance = +user.wallet.balance;
+                        const paymentAmount = +paymentInfo.amount;
+                        user.wallet.balance = Math.round(currentBalance + paymentAmount);
+                        await queryRunner.manager.save(user.wallet)
+                        // await this.walletRepository.save([user.wallet]);
+                        savedTransaction.status = "completed";                         // make status completed
+                        savedTransaction.invoiceId = res2.data.ref_id
+                        updatedtransaction = await queryRunner.manager.save(savedTransaction)
+                        // let updatedtransaction = await this.walletTransactionRepository.save(savedTransaction);
+                        // let nameFamily = user.firstName +' '+  user.lastName
+                        await queryRunner.commitTransaction()
+                        // this.smsService.sendGeneralMessage(user.phoneNumber, "deposit", user.firstName, paymentAmount / 10, null)
+                        await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , 
+                            'تایید برداشت' , ` ${req.user.firstName} واریز را به صورت دستی اعتبار سنجی کرد` , {
+                            userName : user.firstName,
+                            lastName : user.lastName,
+                            amount : paymentAmount,
+                            balance : user.wallet.balance
+                        } , 1) 
+                        
+                        return res.status(200).json({ msg: "تراکنش از سمت بانک تایید شد و به لیست تراکنش های موفق اضافه شد.", transaction: updatedtransaction, bank: res2.data.card_pan, referenceId: res2.data.ref_id })
+                    }
+                } catch (error) {
+                    await queryRunner.rollbackTransaction()
+                    console.log("error in save transaction status", error);
+                    return res.status(500).json({ msg: "خطای داخلی سیستم" });
+                } finally {
+                    await queryRunner.release()
+                }
+            }else{
+                return next(new responseModel(req, res, 'سیستم قادر به تعیین وضعیت تراکنش نیست', 'admin service', 400, 'سیستم قادر به تعیین وضعیت تراکنش نیست', null))
             }
         } catch (error) {
             console.log("error in verify transaction", error);
