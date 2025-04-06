@@ -554,8 +554,11 @@ export default class adminController {
                     let savedTransaction = await this.invoicesRepository.findOne({ where: { id: paymentInfo.invoiceId }, relations: { seller: { wallet: true }, buyer: { wallet: true, bankAccounts: true } } }) // get the transaction that saved in database
                     if (savedTransaction.status != "pending") {
                         console.log('the status was not pending . . .', savedTransaction)
-                        await queryRunner.release()
+                        // await queryRunner.release()
                         return res.status(400).json({ msg: "تراکنش قبلا اعتبارسنجی شده است" })
+                    }
+                    if (res2.status == 'unknown'){
+                        return res.status(400).json({ msg: "سیستم قادر به اعتبار سنجی تراکنش نمیباشد." })
                     }
                     if (!res2.status) {                                              //!!! if the zarinpal failed the transActions !!!//
                         console.log('the zarinpal failed the transaction', res2)

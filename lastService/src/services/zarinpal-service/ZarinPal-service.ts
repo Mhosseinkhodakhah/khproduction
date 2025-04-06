@@ -169,7 +169,11 @@ export class ZarinPalService {
       });
       monitor.error.push(`error in handle verifying:: ${error}`)
       console.error('Payment Verification Failed:', error.response.data.errors);
-      return { status: false, data: { message:'خطای داخلی سیستم'}}
+      if (error.response.data.errors){
+        return { status: false, data: { message:'خطای داخلی سیستم'}}
+      }else{
+        return {status : 'unknown'}
+      }
     }
   }
 
