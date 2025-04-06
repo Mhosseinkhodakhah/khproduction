@@ -36,8 +36,7 @@ export class cooperation {
     motivation : string;
 
     @Column({type : 'varchar' , nullable : true})
-    howToKnow : string;              // 0 : website   1:instagram   2 : telegram    3 : friends   4 : other
-
+    howToKnow : string;           
     @Column({type : 'varchar' ,  nullable : true })
     interests : string;
 
