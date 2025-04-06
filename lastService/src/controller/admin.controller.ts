@@ -63,7 +63,7 @@ export default class adminController {
             await cacher.setter('tradePermision' , 0)
         }
         tradePerimision = await cacher.getter('tradePermision')
-
+        console.log(tradePerimision)
         return next(new responseModel(req, res,'' ,'admin service', 200, null, tradePerimision))
     }
 
