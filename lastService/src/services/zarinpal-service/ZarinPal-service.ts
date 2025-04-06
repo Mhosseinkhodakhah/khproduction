@@ -121,12 +121,16 @@ export class ZarinPalService {
         authority: authority,
       });
       const inquiryResult2 = await this.zarinpal.inquiries.inquire({
-        authority: 'A0000000000000000000000000005q3evxz1',
+        authority: 'A000000000000000000000000000qywqnr2r',
       });
       console.log('test for failed>>>>', inquiryResult2)
       if (inquiryResult.data.status == 'IN_BANK') {
         return { status: 'IN_BANK' }
       }
+      if (inquiryResult.data.status == 'FAILED'){
+        return { status: false}
+      }
+
       const response = await this.zarinpal.verifications.verify({
         amount: Math.floor(paymentInfo.amount) * 10,
         authority: paymentInfo.authority,
