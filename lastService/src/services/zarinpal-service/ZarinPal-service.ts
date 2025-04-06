@@ -186,5 +186,4 @@ export class ZarinPalService {
       }
     }
   }
-
 }
