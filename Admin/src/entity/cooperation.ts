@@ -27,16 +27,16 @@ export class cooperation {
     city : string;
 
     @Column({type : 'varchar'})
-    municipalArea : string;
+    province : string;
 
-    @Column({type : 'varchar' , nullable : true , default : ''})
-    relevantExperience : string
+    @Column({type : 'bool' , nullable : true , default : true})
+    relevantExperience : boolean
 
     @Column({type : 'varchar' , nullable : true , default : ''})
     motivation : string;
 
-    @Column({type : 'int'})
-    howToKnow : number;             // 0 : website   1:instagram   2 : telegram    3 : friends   4 : other
+    @Column({type : 'varchar' , nullable : true})
+    howToKnow : string;              // 0 : website   1:instagram   2 : telegram    3 : friends   4 : other
 
     @Column({type : 'varchar'})
     interests : string;
