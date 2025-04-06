@@ -168,8 +168,8 @@ export class ZarinPalService {
         authority: authority,
       });
       monitor.error.push(`error in handle verifying:: ${error}`)
-      console.error('Payment Verification Failed:', error);
-      return { status: false, data: { message: 'خطای داخلی سیستم' } }
+      console.error('Payment Verification Failed:', error.response.data.error);
+      return { status: false, data: { message:'خطای داخلی سیستم'}}
     }
   }
 
