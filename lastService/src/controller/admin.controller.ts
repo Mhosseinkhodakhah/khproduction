@@ -535,6 +535,9 @@ export default class adminController {
                 return next(new responseModel(req, res , '' ,'admin service', 400, error['errors'][0].msg, null))
             }
             let res2 = await this.zpService.handledVerify(authority)           // verify in zarinpal
+            if (res2.status == 'IN_BANK'){
+                return next(new responseModel(req, res , 'تراکنش در درگاه میباشد' ,'admin service', 400, 'تراکنش در درگاه میباشد', null))
+            }
             const paymentInfo = await this.paymentInfoRepository.findOneByOrFail({ authority: authority })   // find the paymentInfo
             const queryRunner = AppDataSource.createQueryRunner()
             await queryRunner.connect()

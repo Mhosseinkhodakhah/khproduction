@@ -117,13 +117,21 @@ export class ZarinPalService {
         }
         
         try {
+         
           console.log('after verification of transAction' , paymentInfo.amount);
+          const inquiryResult = await this.zarinpal.inquiries.inquire({
+            authority: authority,
+          });
+          const inquiryResult2 = await this.zarinpal.inquiries.inquire({
+            authority: 'A000000000000000000000000000000000',
+          });
+          console.log('test for failed>>>>' , inquiryResult2)
+          if (inquiryResult.data.status == 'IN_BANK'){
+            return {status : 'IN_BANK'}
+          }
           const response = await this.zarinpal.verifications.verify({
             amount: Math.floor(paymentInfo.amount)*10,
             authority: paymentInfo.authority,
-          });
-          const inquiryResult = await this.zarinpal.inquiries.inquire({
-            authority: authority,
           });
           const unverifiedPayments = await this.zarinpal.unverified.list();
           console.log('Unverified Payments:', unverifiedPayments);
