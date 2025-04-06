@@ -50,7 +50,7 @@ export class ZarinPalService {
           console.log('redirect url' , url)
           return {url : url , authority : response.data.data.authority , invoiceId : invoiceId}
         } catch (error){
-          monitor.error.push(`error in initiate payment in zarinpal :: ${error}`)
+          monitor.error.push(error)
           console.error(error);
         }
       }
@@ -84,7 +84,7 @@ export class ZarinPalService {
                 return {status  : false , data : response.data}
               }
             } catch (error) {
-              monitor.error.push(`error in verifying payment :: ${error}`)
+              monitor.error.push(error)
               console.error('Payment Verification Failed:', error.response.data.errors);
               return {status  : false }
 
@@ -122,7 +122,12 @@ export class ZarinPalService {
             amount: Math.floor(paymentInfo.amount)*10,
             authority: paymentInfo.authority,
           });
-          console.log('after the verifying the payment data' , response)
+          const inquiryResult = await this.zarinpal.inquiries.inquire({
+            authority: authority,
+          });
+          const unverifiedPayments = await this.zarinpal.unverified.list();
+          console.log('Unverified Payments:', unverifiedPayments);
+          console.log('after the verifying the payment data' , inquiryResult)
           if (response.data.code === 100) {
             console.log('Payment Verified:');
             // console.log('Reference ID:', response.data.ref_id);
