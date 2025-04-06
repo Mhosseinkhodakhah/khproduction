@@ -165,10 +165,10 @@ export class UserController {
         if (!bodyValidation.isEmpty()){
             return next(new response(req, res, 'update accessPoints admin', 400, bodyValidation['errors'][0].msg, null))
         }
-        let adminRole = req.user.role;
-        if (adminRole == 0){
-            return next(new response(req, res, 'update accessPoints admin', 403, 'شما اجازه تغییرات دسرسی کارشناسان را ندارید' , null))
-        } 
+        // let adminRole = req.user.role;
+        // if (adminRole == 0){
+        //     return next(new response(req, res, 'update accessPoints admin', 403, 'شما اجازه تغییرات دسرسی کارشناسان را ندارید' , null))
+        // } 
         let admin = await this.adminRepository.findOne({
             where: {
                 id: +req.params.userId
