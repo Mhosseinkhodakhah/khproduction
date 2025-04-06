@@ -267,7 +267,7 @@ export class ShahkarController {
             }
         } catch (error) {
             // console.log(error.response)
-            monitor.error.push(error)
+            monitor.error.push(`error in convertCardToSheba :: ${error.response}`)
             console.log('error in convert to sheba' , error.message);
             return null
         }
@@ -282,7 +282,7 @@ export class ShahkarController {
             
         } catch (error) {
             // monitor.error.push(`error in get token shahkar :: ${error.response}`)
-            monitor.error.push(error)
+            monitor.error.push(`error in get token shahkar :: ${error}`)
             console.log("error in getToken ShahkarController   " + error);
             return null
         }
