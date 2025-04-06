@@ -239,8 +239,8 @@ export class UserController {
                 console.log(error)
                 return next(new response(req, res , 'admin service', 400, error['errors'][0].msg, null))
             }
-            let all = await this.cooperationRepository.find()
-            await this.cooperationRepository.remove(all)
+            // let all = await this.cooperationRepository.find()
+            // await this.cooperationRepository.remove(all)
             let existance = await this.cooperationRepository.exists({where : [{phoneNumber : req.body.phoneNumber} , {nationalCode : req.body.nationalCode}]})
             if (existance){
                 return res.status(400).json({
