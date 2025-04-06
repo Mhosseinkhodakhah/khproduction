@@ -8,25 +8,25 @@ export class cooperation {
     @PrimaryGeneratedColumn()
     id : number;
 
-    @Column({type : 'varchar'})
+    @Column({type : 'varchar' , nullable : true })
     firstName : string;
 
-    @Column({type : 'varchar'})
+    @Column({type : 'varchar' ,  nullable : true })
     lastName : string;
 
-    @Column({type : 'varchar'})
+    @Column({type : 'varchar' , nullable : true })
     nationalCode : string;
 
-    @Column({type : 'varchar'})
+    @Column({type : 'varchar' ,  nullable : true })
     phoneNumber : string;
 
-    @Column({type : 'varchar'})
+    @Column({type : 'varchar' ,  nullable : true })
     birthDate : string;
 
-    @Column({type : 'varchar'})
+    @Column({type : 'varchar' ,  nullable : true })
     city : string;
 
-    @Column({type : 'varchar'})
+    @Column({type : 'varchar' ,  nullable : true })
     province : string;
 
     @Column({type : 'bool' , nullable : true , default : true})
@@ -38,7 +38,7 @@ export class cooperation {
     @Column({type : 'varchar' , nullable : true})
     howToKnow : string;              // 0 : website   1:instagram   2 : telegram    3 : friends   4 : other
 
-    @Column({type : 'varchar'})
+    @Column({type : 'varchar' ,  nullable : true })
     interests : string;
 
     @CreateDateColumn()
