@@ -97,11 +97,11 @@ export class UserController {
 
 
     async addNewAdmin(req: Request, res: Response, next: NextFunction) {
-        // const admin = req.user.role
-        // console.log('')
-        // if (admin == 0) {
-        //     return next(new response(req, res, 'create new admin', 403, 'permision denied!', null))
-        // }
+        const admin = req.user.role
+        console.log('admin role >>>' , admin)
+        if (admin == 0) {
+            return next(new response(req, res, 'create new admin', 403, 'permision denied!', null))
+        }
         req.body.password = await bcrypt.hash(req.body.password, 10)
         console.log(req.body)
         let newAdmin = this.adminRepository.create(req.body)
@@ -123,7 +123,7 @@ export class UserController {
         })
         if (!admin) {
             console.log('its here')
-            return next(new response(req, res, 'login admin', 403, 'account not found!', null))
+            return next(new response(req, res, 'login admin', 403, 'حساب کاربری یافت نشد', null))
         }
         let newAccessPoints = ['Dashboard']
         for (let i of admin.accessPoints){
@@ -131,12 +131,12 @@ export class UserController {
         }
         if (admin.isBlocked) {
             console.log('its here222')
-            return next(new response(req, res, 'login admin', 403, 'permision denied!', null))
+            return next(new response(req, res, 'login admin', 403, 'دسترسی شما از سمت ادمین اصلی برداشته شده است', null))
         }
         const compare = await bcrypt.compare(req.body.password, admin.password)
         if (!compare) {
             console.log('its here password')
-            return next(new response(req, res, 'login', 403, 'password is incorrect!', null))
+            return next(new response(req, res, 'login', 403, 'رمز عبور نادرست است', null))
         }
         let accessPoints = await this.accessPointRepository.find({where : {
             Admin : admin
@@ -164,6 +164,10 @@ export class UserController {
         if (!bodyValidation.isEmpty()){
             return next(new response(req, res, 'update accessPoints admin', 400, bodyValidation['errors'][0].msg, null))
         }
+        let adminRole = req.user.role;
+        if (adminRole == 0){
+            return next(new response(req, res, 'update accessPoints admin', 403, 'شما اجازه تغییرات دسرسی کارشناسان را ندارید' , null))
+        } 
         let admin = await this.adminRepository.findOne({
             where: {
                 id: +req.params.userId
@@ -205,7 +209,7 @@ export class UserController {
         // // admin = {...admin , ...req.body}
         // admin.password = req.body.password;
         // await this.adminRepository.save(admin)
-        await this.adminRepository.remove(admin)
+        // await this.adminRepository.remove(admin)
         return next(new response(req, res, 'update admin', 200, null, admin))
     }
 

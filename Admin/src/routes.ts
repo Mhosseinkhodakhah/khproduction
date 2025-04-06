@@ -29,7 +29,7 @@ export const Routes = [{
     method: "post",
     route: "/create",
     controller: UserController,
-    middleware: [adminValidation],
+    middleware: [authMiddleware,adminValidation],
     action: "addNewAdmin"
 }, {
     method: "post",
@@ -59,14 +59,14 @@ export const Routes = [{
     method: "post",
     route: "/login",
     controller: UserController,
-    middleware: [],
+    middleware: [authMiddleware],
     action: "login"
 },
 {
     method: "get",
     route: "/monitor/all",
     controller: interServiceController,
-    middleware: [],
+    middleware: [authMiddleware],
     action: "getLoggs"
 },
 /** these routes is for coporation requests from users */
@@ -76,11 +76,11 @@ export const Routes = [{
     controller: UserController,
     middleware: [createCooprationRequests],
     action: "createCooprationRequests"
-}, {
+},{
     method: "get",
     route: "/coorporation/all",
     controller: UserController,
-    middleware: [],
+    middleware: [authMiddleware],
     action: "getAllCoorporation"
 },
 ]

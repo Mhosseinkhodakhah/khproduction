@@ -13,5 +13,4 @@ export const createCooprationRequests = [
     body('birthDate').isString().withMessage('فرمت تولد صحیح نمیباشد'),
     body('municipalArea').notEmpty().withMessage('فرمت منطقه صحیح نمیباشد'),
     body('municipalArea').isString().withMessage('فرمت منطقه صحیح نمیباشد'),
-    
 ]
