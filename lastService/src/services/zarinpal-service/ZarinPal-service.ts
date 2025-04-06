@@ -110,54 +110,63 @@ export class ZarinPalService {
       }
 
 
+  async getTransActionStatus(authority : string) {
+    const paymentInfo = await this.paymentInfoRepository.findOneByOrFail({ authority: authority })
+    if (!paymentInfo) {
+      return { status: false, data: { message: 'سند تراکنش یافت نشد' } }
+    }
+    console.log('after verification of transAction', paymentInfo.amount);
+    const inquiryResult = await this.zarinpal.inquiries.inquire({
+      authority: authority,
+    });
+    console.log('result of inquery', inquiryResult)
+    
+    if (inquiryResult.data.status == 'IN_BANK') {
+      return { status: 'IN_BANK' }
+    }
+
+    else if (inquiryResult.data.status == 'FAILED') {
+      return { status: 'FAILED' }
+    }
+
+    else if (inquiryResult.data.status == 'VERIFIED') {
+      return { status: 'VERIFIED' }
+    }
+
+    else if (inquiryResult.data.status == 'REVERSED') {
+      return { status: 'REVERSED' }
+    }else { 
+      return {status : 'unknown'}
+    }
+  }
+
   async handledVerify(authority: string) {
     const paymentInfo = await this.paymentInfoRepository.findOneByOrFail({ authority: authority })
     if (!paymentInfo) {
       return { status: false, data: { message: 'سند تراکنش یافت نشد' } }
     }
     try {
-      console.log('after verification of transAction', paymentInfo.amount);
-      const inquiryResult = await this.zarinpal.inquiries.inquire({
-        authority: authority,
-      });
-      const inquiryResult2 = await this.zarinpal.inquiries.inquire({
-        authority: 'A000000000000000000000000000qywqnr2r',
-      });
-      console.log('test for failed>>>>', inquiryResult2)
-      if (inquiryResult.data.status == 'IN_BANK') {
-        return { status: 'IN_BANK' }
-      }
-      if (inquiryResult.data.status == 'FAILED'){
-        return { status: false}
-      }
-
-      const response = await this.zarinpal.verifications.verify({
-        amount: Math.floor(paymentInfo.amount) * 10,
-        authority: paymentInfo.authority,
-      });
-      const unverifiedPayments = await this.zarinpal.unverified.list();
-      console.log('Unverified Payments:', unverifiedPayments);
-      console.log('after the verifying the payment data', inquiryResult)
-      if (response.data.code === 100) {
-        console.log('Payment Verified:');
-        // console.log('Reference ID:', response.data.ref_id);
-        // console.log('Card PAN:', response.data.card_pan);
-        // console.log('Fee:', response.data.fee);
-        return { status: true, code: 100, data: response.data }
-      } else if (response.data.code === 101) {
-        console.log('Payment already verified.');
-        return { status: true, code: 101, data: response.data }
-      } else {
-        console.log('Transaction failed with code:', response.data.code);
-        return { status: false, data: response.data }
-      }
+        const response = await this.zarinpal.verifications.verify({
+          amount: Math.floor(paymentInfo.amount) * 10,
+          authority: paymentInfo.authority,
+        });
+        if (response.data.code === 100) {
+          console.log('Payment Verified:');
+          // console.log('Reference ID:', response.data.ref_id);
+          // console.log('Card PAN:', response.data.card_pan);
+          // console.log('Fee:', response.data.fee);
+          return { status: true, code: 100, data: response.data }
+        } else if (response.data.code === 101) {
+          console.log('Payment already verified.');
+          return { status: true, code: 101, data: response.data }
+        } else {
+          console.log('Transaction failed with code:', response.data.code);
+          return { status: false, data: response.data }
+        }
     } catch (error) {
       const inquiryResult = await this.zarinpal.inquiries.inquire({
         authority: authority,
       });
-      const unverifiedPayments = await this.zarinpal.unverified.list();
-      console.log('Unverified Payments:', unverifiedPayments);
-      console.log('after the verifying the payment data', inquiryResult)
       monitor.error.push(`error in handle verifying:: ${error}`)
       console.error('Payment Verification Failed:', error);
       return { status: false, data: { message: 'خطای داخلی سیستم' } }
