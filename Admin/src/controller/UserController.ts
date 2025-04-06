@@ -239,7 +239,9 @@ export class UserController {
                 console.log(error)
                 return next(new response(req, res , 'admin service', 400, error['errors'][0].msg, null))
             }
-            let existance = await this.cooperationRepository.findOne({where : [{phoneNumber : req.body.phoneNumber} , {nationalCode : req.body.nationalCode}]})
+            let all = await this.cooperationRepository.find()
+            await this.cooperationRepository.remove(all)
+            let existance = await this.cooperationRepository.exists({where : [{phoneNumber : req.body.phoneNumber} , {nationalCode : req.body.nationalCode}]})
             if (existance){
                 return res.status(400).json({
                     msg : 'شما قبلا درخواست همکاری با خانه طلارا ثبت کرده اید.لطفا تا بررسی درخواست قبلی منتظر بمانید'
