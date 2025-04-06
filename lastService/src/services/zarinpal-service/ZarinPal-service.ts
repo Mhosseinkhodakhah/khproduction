@@ -86,6 +86,9 @@ export class ZarinPalService {
             } catch (error) {
               monitor.error.push(error)
               if (error.response.data.errors){
+                if (error.response.data.errors.message == 'Session is not valid, session is not active paid try.'){
+                  console.log('error.response.data.errors' , error.response.data.errors.code)
+                }
                 console.error('Payment Verification Failed:', error.response.data.errors);
                 return {status  : false }
               }else{
@@ -174,7 +177,10 @@ export class ZarinPalService {
       monitor.error.push(`error in handle verifying:: ${error}`)
       console.error('Payment Verification Failed:', error.response.data.errors);
       if (error.response.data.errors){
-        return { status: false, data: { message:'خطای داخلی سیستم'}}
+        if (error.response.data.errors.message == 'Session is not valid, session is not active paid try.'){
+          console.log('error.response.data.errors' , error.response.data.errors.code)
+        }
+        return { status: false, data: { message:error.response.data.errors.code}}
       }else{
         return {status : 'unknown'}
       }
