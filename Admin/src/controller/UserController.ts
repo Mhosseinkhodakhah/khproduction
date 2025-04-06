@@ -244,7 +244,7 @@ export class UserController {
             let existance = await this.cooperationRepository.exists({where : [{phoneNumber : req.body.phoneNumber} , {nationalCode : req.body.nationalCode}]})
             if (existance){
                 return res.status(400).json({
-                    msg : 'شما قبلا درخواست همکاری با خانه طلارا ثبت کرده اید.لطفا تا بررسی درخواست قبلی منتظر بمانید'
+                    error : 'شما قبلا درخواست همکاری با خانه طلارا ثبت کرده اید.لطفا تا بررسی درخواست قبلی منتظر بمانید'
                 })
             }
             let coorporation = this.cooperationRepository.create(req.body)
