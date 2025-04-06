@@ -20,6 +20,7 @@ AppDataSource.initialize().then(async () => {
 
     workerStarter.startWorker()
     await cacher.setter('tradePermision' , 1)
+    console.log(await cacher.getter('tradePermision'))
     // create express app
     const app = express()
     app.use(bodyParser.json())

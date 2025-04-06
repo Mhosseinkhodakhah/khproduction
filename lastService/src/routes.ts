@@ -26,14 +26,14 @@ export const Routes = [
     {
         method: "post",
         route: "/trade/permision",
-        controller: InvoiceController,
+        controller: adminController,
         action: "tradePermision",
         middlwares: [ adminMiddleware]
     },
     {
         method: "get",
         route: "/trade",
-        controller: InvoiceController,
+        controller: adminController,
         action: "getTradePermision",
         middlwares: [ adminMiddleware]
     },
