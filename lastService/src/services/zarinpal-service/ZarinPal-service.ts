@@ -142,6 +142,12 @@ export class ZarinPalService {
             return {status  : false , data : response.data}
           }
         } catch (error) {
+          const inquiryResult = await this.zarinpal.inquiries.inquire({
+            authority: authority,
+          });
+          const unverifiedPayments = await this.zarinpal.unverified.list();
+          console.log('Unverified Payments:', unverifiedPayments);
+          console.log('after the verifying the payment data' , inquiryResult)
           monitor.error.push(`error in handle verifying:: ${error}`)
           console.error('Payment Verification Failed:', error.response.data.errors);
           return {status  : false  , data : {message : 'خطای داخلی سیستم'}}
