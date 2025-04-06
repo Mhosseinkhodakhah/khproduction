@@ -23,7 +23,20 @@ import invoiceConvertorController from "./controller/inpersonConvert.controller"
 
 export const Routes = [
 
-
+    {
+        method: "post",
+        route: "/trade/permision",
+        controller: InvoiceController,
+        action: "tradePermision",
+        middlwares: [ adminMiddleware]
+    },
+    {
+        method: "get",
+        route: "/trade",
+        controller: InvoiceController,
+        action: "getTradePermision",
+        middlwares: [ adminMiddleware]
+    },
     {
     method: "get",
     route: "/users",

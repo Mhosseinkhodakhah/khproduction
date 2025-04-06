@@ -13,6 +13,7 @@ import { GoldPriceService } from "../services/gold-price-service/gold-price-serv
 import { validationResult } from "express-validator";
 import logger from "../services/interservice/logg.service";
 import { EstimateTransactions } from "../entity/EstimateTransactions";
+import cacher from "../services/cacher";
 
 
 
@@ -47,6 +48,24 @@ export default class adminController {
         let users = await queryBuilder.getMany()
         return next(new responseModel(req, res,'' ,'admin service', 200, null, users))
     }
+
+
+    async getTradePermision(req: Request, res: Response, next: NextFunction){
+        let tradePerimision = await cacher.getter('tradePermision')
+        return next(new responseModel(req, res,'' ,'admin service', 200, null, tradePerimision))
+    }
+
+    async tradePermision(req: Request, res: Response, next: NextFunction){
+        let tradePerimision = await cacher.getter('tradePermision')
+        if (tradePerimision == 0){
+            let newtradePerimision = await cacher.setter('tradePermision' , 1)
+        }else if(tradePerimision == 1){
+            let newtradePerimision = await cacher.setter('tradePermision' , 0)
+        }
+        return next(new responseModel(req, res,'' ,'admin service', 200, null, tradePerimision))
+    }
+
+
 
     /**
      * this function is for getting user info

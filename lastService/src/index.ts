@@ -12,13 +12,14 @@ import expressWinston from 'express-winston'
 import { createLogger, format, transports } from 'winston'
 import workerRunner from "./workers/workerRunner"
 import monitor from "./util/statusMonitor"
+import cacher from "./services/cacher"
 const { combine, timestamp, label, prettyPrint } = format;
 let workerStarter = new workerRunner()
 
 AppDataSource.initialize().then(async () => {
 
     workerStarter.startWorker()
-
+    await cacher.setter('tradePermision' , 1)
     // create express app
     const app = express()
     app.use(bodyParser.json())
