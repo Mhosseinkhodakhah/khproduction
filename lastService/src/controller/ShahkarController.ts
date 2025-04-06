@@ -76,7 +76,7 @@ export class ShahkarController {
             monitor.addStatus({
                 scope: 'shahkar controller',
                 status: 0,
-                error: `${err}`
+                error: err
             })
             return  response.status(500).json({ err : err.message , msg : "there is an error "} )
         })
@@ -193,7 +193,7 @@ export class ShahkarController {
             monitor.addStatus({
                 scope: 'shahkar controller',
                 status: 0,
-                error: `${error.response}`
+                error: error
             })
             let trackIdData : trackIdInterface = {
                 trackId : error.response.headers['track-code'],
@@ -247,7 +247,7 @@ export class ShahkarController {
                 return false
               }
         } catch (error) {
-            monitor.error.push(`error in checkMatchPhoneNumberAndCartNumber :: ${error.response}`)
+            monitor.error.push(error)
             console.log("error in checkMatchPhoneNumberAndCartNumber" , error);
             return false
         }
@@ -267,7 +267,7 @@ export class ShahkarController {
             }
         } catch (error) {
             // console.log(error.response)
-            monitor.error.push(`error in convertCardToSheba :: ${error.response}`)
+            monitor.error.push(error)
             console.log('error in convert to sheba' , error.message);
             return null
         }
@@ -281,7 +281,8 @@ export class ShahkarController {
             return token
             
         } catch (error) {
-            monitor.error.push(`error in get token shahkar :: ${error.response}`)
+            // monitor.error.push(`error in get token shahkar :: ${error.response}`)
+            monitor.error.push(error)
             console.log("error in getToken ShahkarController   " + error);
             return null
         }
