@@ -239,6 +239,12 @@ export class UserController {
                 console.log(error)
                 return next(new response(req, res , 'admin service', 400, error['errors'][0].msg, null))
             }
+            let existance = await this.cooperationRepository.findOne({where : [{phoneNumber : req.body.phoneNumber} , {nationalCode : req.body.nationalCode}]})
+            if (existance){
+                return res.status(400).json({
+                    msg : 'شما قبلا درخواست همکاری با خانه طلارا ثبت کرده اید.لطفا تا بررسی درخواست قبلی منتظر بمانید'
+                })
+            }
             let coorporation = this.cooperationRepository.create(req.body)
             await this.cooperationRepository.save(coorporation)
             return next(new response(req, res , 'admin service', 200, null, coorporation))    
