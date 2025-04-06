@@ -52,6 +52,7 @@ export default class adminController {
 
     async getTradePermision(req: Request, res: Response, next: NextFunction){
         let tradePerimision = await cacher.getter('tradePermision')
+        console.log( 'trade permision is >>>>', tradePerimision)
         return next(new responseModel(req, res,'' ,'admin service', 200, null, tradePerimision))
     }
 
