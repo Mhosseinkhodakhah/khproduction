@@ -10,14 +10,14 @@ export const Routes = [{
     method: "post",
     route: "/menu/create",
     controller: UserController,
-    middleware: [authMiddleware],
+    middleware: [],
     action: "createNewMenu",
 }, {
     method: "post",
     route: "/menu/create/:menuId",
     controller: UserController,
     action: "creatNewSubMenu",
-    middleware: [authMiddleware, menuValidation]
+    middleware: [ menuValidation]
 },
 {
     method: "get",

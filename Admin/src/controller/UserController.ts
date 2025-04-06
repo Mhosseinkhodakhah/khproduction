@@ -39,13 +39,14 @@ export class UserController {
 
     async createNewMenu(req: Request, res: Response, next: NextFunction) {
         const newMenu = this.accessPointRepository.create(req.body.menu)
-        let menus = await this.accessPointRepository.find()
-        await this.accessPointRepository.remove(menus)
+        // await this.accessPointRepository.remove(menus)
         let data = await this.accessPointRepository.save(newMenu)
-        await this.InterService.addNewLog({firstName : '', lastName : '' , phoneNumber : req.user.phone} , 'create new menu' , `${req.user.phone} create new menu with name ${req.body.menu}` , { statusCode : 200,
-            error : null,
-            msg : `creating new menu successfully done.`},
-            1)
+        let menus = await this.accessPointRepository.find()
+        console.log(menus)
+        // await this.InterService.addNewLog({firstName : '', lastName : '' , phoneNumber : req.user.phone} , 'create new menu' , `${req.user.phone} create new menu with name ${req.body.menu}` , { statusCode : 200,
+        //     error : null,
+        //     msg : `creating new menu successfully done.`},
+        //     1)
         return next(new response(req, res, 'create new menu', 200, null, data))
     }
 
