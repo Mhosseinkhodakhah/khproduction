@@ -157,7 +157,7 @@ export class ZarinPalService {
           console.log('Unverified Payments:', unverifiedPayments);
           console.log('after the verifying the payment data' , inquiryResult)
           monitor.error.push(`error in handle verifying:: ${error}`)
-          console.error('Payment Verification Failed:', error.response.data.errors);
+          console.error('Payment Verification Failed:', error);
           return {status  : false  , data : {message : 'خطای داخلی سیستم'}}
         }
       }
