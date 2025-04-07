@@ -144,6 +144,7 @@ export default class invoiceConvertorController{
                 } else if (payment == 2) {                                    // when the user wanted to pay checki
                     invoice.payment = +payment;
                     invoice.totalCash = totalCash;
+                    invoice.requiredToPay = ((invoice.totalInvoicePrice - (+totalCash))).toString()
                     // invoice.paymentMethod = +paymentMethod;     // how to pay the cash
                     invoice.creditCardId = creditCardId      // transaction id for paying cash
                     invoice.creditCard = creditCard;
@@ -181,6 +182,7 @@ export default class invoiceConvertorController{
                 } else if (payment == 2) {                                    // when the user wanted to pay checki
                     invoice.payment = +payment;
                     invoice.totalCash = totalCash;
+                    invoice.requiredToPay = ((invoice.totalInvoicePrice - (+totalCash)) - (+goldWeight * +invoice.goldPrice)).toString()
                     // invoice.paymentMethod = +paymentMethod;     // how to pay the cash
                     invoice.creditCard = creditCard;
                     invoice.transfer = transfer;

@@ -29,7 +29,7 @@ export class convertTradeInvoice {
 
     @Column({nullable : true})
     invoiceId : string
-
+    
     @Column({nullable : true})
     chequeNumber : string
 
