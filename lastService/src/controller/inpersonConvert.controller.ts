@@ -91,55 +91,121 @@ export default class invoiceConvertorController{
 
 
 
-    async setPayment(req : Request , res : Response , next  : NextFunction){
+    async setPayment(req: Request, res: Response, next: NextFunction) {
         let id = req.params.id;
-        let invoice = await this.convertInvoice.findOne({where : {
-            id : +id
-        }})
-        if (!invoice){
+        let invoice = await this.convertInvoice.findOne({
+            where: {
+                id: +id
+            }, relations: ['buyer', 'buyer.wallet']
+        })
+        if (!invoice) {
             return next(new responseModel(req, res, 'فاکتور یافت نشد', 'admin service', 400, 'فاکتور یافت نشد.', null))
         }
 
-        let {paymentType , paymentMethod , destCardPan} = req.body;
-        
+        let { paymentType,
+            paymentMethod,
+            destCardPan,
+            cash,
+            totalCash,
+            installmentType,
+            payment,
+            creditCard,
+            transfer,
+            checkNumber,
+            goldWeight,
+            creditCardId,
+            transferId
+        } = req.body;
+
         let queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
         try {
             invoice.paymentType = +paymentType;
-            if (paymentType == 0){      // when user wanted to pay cash
-                invoice.paymentMethod = +paymentMethod;
-                if (paymentMethod == 0){                // when the user wanted to pay ghesti
+            if (paymentType == 0) {      // when user wanted to pay cash
+                if (payment == 0) {                                         // when the user wanted to pay ghesti
+                    invoice.payment = +payment        
+                    invoice.totalCash = totalCash
+                    invoice.installmentType = installmentType;
+                    invoice.paymentMethod = +paymentMethod;     // how to pay the cash
+                    invoice.creditCard = creditCard;
+                    invoice.transfer = transfer;
+                    invoice.cash = cash,
+                    invoice.creditCardId = creditCardId      // transaction id for paying cash
+                    invoice.transferId = transferId
+                } else if (payment == 1) {                  // when the user wanted to pay whole cashe
+                    invoice.payment = +payment
                     invoice.paymentMethod = +paymentMethod;
-                    
-                }else if(paymentMethod == 1){           // when the user wanted to pay whole
-                    invoice.paymentMethod = +paymentMethod;
-
-                }else if (paymentMethod == 2){          // when the user wanted to pay checki
-                    invoice.paymentMethod = +paymentMethod;
-
-                }
-            if (paymentType == 1){                      // when user wanted to pay cash and goldBox
-                if (paymentMethod == 0){                // when the user wanted to pay ghesti
-                    invoice.paymentMethod = +paymentMethod;
-
-                }else if(paymentMethod == 1){           // when the user wanted to pay whole
-                    invoice.paymentMethod = +paymentMethod;
-
-                }else if (paymentMethod == 2){          // when the user wanted to pay checki
-                    invoice.paymentMethod = +paymentMethod;
-
+                    invoice.creditCard = creditCard;
+                    invoice.transfer = transfer;
+                    invoice.cash = cash,
+                    invoice.creditCardId = creditCardId      // transaction id for paying cash
+                    invoice.transferId = transferId
+                } else if (payment == 2) {                                    // when the user wanted to pay checki
+                    invoice.payment = +payment;
+                    invoice.totalCash = totalCash;
+                    invoice.paymentMethod = +paymentMethod;     // how to pay the cash
+                    invoice.creditCardId = creditCardId      // transaction id for paying cash
+                    invoice.creditCard = creditCard;
+                    invoice.transfer = transfer;
+                    invoice.cash = cash,
+                    invoice.transferId = transferId;      // transaction id for paying cash
+                    invoice.checkNumber = checkNumber;
                 }
             }
-            if (paymentType == 2){                      // when user wanted to pay just in goldBox
-                
+            if (paymentType == 1) {          // when user wanted to pay cash and goldBox
+                invoice.goldWeight = goldWeight;
+                if (+goldWeight > +invoice.buyer.wallet.goldWeight) {
+                    return next(new responseModel(req, res, 'موجودی صندوق طلا کافی نمیباشد', 'admin service', 400, 'موجودی صندوق طلا کافی نمیباشد.', null))
+                }
+                invoice.buyer.wallet.goldWeight = (+invoice.buyer.wallet.goldWeight) - (+goldWeight)
+                if (payment == 0) {                                         // when the user wanted to pay ghesti
+                    invoice.payment = +payment
+                    invoice.totalCash = totalCash
+                    invoice.installmentType = installmentType;
+                    invoice.paymentMethod = +paymentMethod;     // how to pay the cash
+                    invoice.creditCard = creditCard;
+                    invoice.transfer = transfer;
+                    invoice.cash = cash,
+                    invoice.creditCardId = creditCardId      // transaction id for paying cash
+                    invoice.transferId = transferId      // transaction id for paying cash
+                } else if (payment == 1) {                                    // when the user wanted to pay whole cashe
+                    invoice.payment = +payment
+                    invoice.paymentMethod = +paymentMethod;
+                    invoice.creditCard = creditCard;
+                    invoice.transfer = transfer;
+                    invoice.cash = cash,
+                    invoice.creditCardId = creditCardId      // transaction id for paying cash
+                    invoice.transferId = transferId
+                } else if (payment == 2) {                                    // when the user wanted to pay checki
+                    invoice.payment = +payment;
+                    invoice.totalCash = totalCash;
+                    invoice.paymentMethod = +paymentMethod;     // how to pay the cash
+                    invoice.creditCard = creditCard;
+                    invoice.transfer = transfer;
+                    invoice.cash = cash,
+                    invoice.creditCardId = creditCardId      // transaction id for paying cash
+                    invoice.transferId = transferId;      // transaction id for paying cash
+                    invoice.checkNumber = checkNumber;
+                }
             }
-        }
-    } catch (error) {
-            console.log('error occured in creating paymentmethod')
+            if (paymentType == 2) {                      // when user wanted to pay just in goldBox
+                invoice.goldWeight = goldWeight;
+                if (+goldWeight > +invoice.buyer.wallet.goldWeight) {
+                    return next(new responseModel(req, res, 'موجودی صندوق طلا کافی نمیباشد', 'admin service', 400, 'موجودی صندوق طلا کافی نمیباشد.', null))
+                }
+                invoice.buyer.wallet.goldWeight = (+invoice.buyer.wallet.goldWeight) - (+goldWeight)
+            }
+            invoice.status = 'pending'
+            let wallet = await queryRunner.manager.save(invoice.buyer.wallet)
+            let updatedInvoice = await queryRunner.manager.save(invoice)
+            await queryRunner.commitTransaction()
+            return next(new responseModel(req, res, 'فاکتور با موفقیت ایجاد شد', 'admin service', 200, null, updatedInvoice))
+        } catch (error) {
+            console.log('error occured in creating paymentmethod' , error)
             await queryRunner.rollbackTransaction()
             return next(new responseModel(req, res, 'مشکلی در ایجاد فاکتور نهایی بوجود آمده . . .لطفا مقادیر ورودی خود را چک کنید', 'admin service', 500, 'مشکلی در ایجاد فاکتور نهایی بوجود آمده . . .لطفا مقادیر ورودی خود را چک کنید.', null))
-        }finally{
+        } finally {
             console.log('transaction released >>>')
             await queryRunner.release()
         }

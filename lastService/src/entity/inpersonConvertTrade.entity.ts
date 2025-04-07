@@ -30,14 +30,38 @@ export class convertTradeInvoice {
     @Column({nullable : true})
     invoiceId : string
 
+    @Column({nullable : true})
+    checkNumber : string
+
     @Column({type : 'int' , nullable : true })
     paymentMethod : number                      
 
+    @Column({type : 'int' , nullable : true })
+    payment : number                      
 
     @Column({type : 'int' , nullable : true })
     paymentType : number                       // 0 : cash     1 : cash va sandoogh     2 : sandoogh
 
+    @Column({ type: "varchar", nullable : true})
+    cash : number
     
+    @Column({ type: "varchar", nullable : true})
+    creditCard : number
+
+    @Column({ type: "varchar", nullable : true})
+    transfer : number
+
+    @Column({ type: "varchar", nullable : true})
+    creditCardId : string
+
+    @Column({ type: "varchar", nullable : true})
+    transferId : string
+
+    @Column({ type: "numeric", precision: 10, scale: 0,default : 0 , nullable : true})
+    totalCash : number
+
+    @Column({ type: "int", default : 0 })
+    installmentType : number
 
     @Column({nullable : true})
     status : string 
@@ -77,6 +101,7 @@ export class convertTradeInvoice {
     
     @Column({nullable:true,default:"",type:"varchar"})
     accounterDescription:string
+
     @Column({
           type: "enum",
           enum: TradeType,

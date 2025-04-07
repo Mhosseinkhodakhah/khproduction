@@ -571,6 +571,13 @@ export const Routes = [
     action: "createTransAction",
     middlwares: [adminMiddleware]
 },
+{
+    method: "post",
+    route: "/inperson/convert/payment",
+    controller: invoiceConvertorController,
+    action: "setPayment",
+    middlwares: [adminMiddleware]
+},
 
 /**
  * sell call
