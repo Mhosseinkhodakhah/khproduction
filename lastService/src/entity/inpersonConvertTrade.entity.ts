@@ -31,7 +31,7 @@ export class convertTradeInvoice {
     invoiceId : string
 
     @Column({nullable : true})
-    checkNumber : string
+    chequeNumber : string
 
     @Column({type : 'varchar' , nullable : true  , default : 0})
     requiredToPay : string                      

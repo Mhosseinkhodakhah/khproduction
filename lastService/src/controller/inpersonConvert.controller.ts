@@ -109,7 +109,7 @@ export default class invoiceConvertorController{
             payment,
             creditCard,
             transfer,
-            checkNumber,
+            chequeNumber,
             goldWeight,
             creditCardId,
             transferId
@@ -149,7 +149,7 @@ export default class invoiceConvertorController{
                     invoice.transfer = transfer;
                     invoice.cash = cash,
                     invoice.transferId = transferId;      // transaction id for paying cash
-                    invoice.checkNumber = checkNumber;
+                    invoice.chequeNumber = chequeNumber;
                 }
             }
             if (paymentType == 1) {          // when user wanted to pay cash and goldBox
@@ -186,7 +186,7 @@ export default class invoiceConvertorController{
                     invoice.cash = cash,
                     invoice.creditCardId = creditCardId      // transaction id for paying cash
                     invoice.transferId = transferId;      // transaction id for paying cash
-                    invoice.checkNumber = checkNumber;
+                    invoice.chequeNumber = chequeNumber;
                 }
             }
             if (paymentType == 2) {                      // when user wanted to pay just in goldBox
