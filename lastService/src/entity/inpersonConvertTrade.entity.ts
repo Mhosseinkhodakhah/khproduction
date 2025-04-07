@@ -33,8 +33,8 @@ export class convertTradeInvoice {
     @Column({nullable : true})
     checkNumber : string
 
-    @Column({type : 'int' , nullable : true })
-    paymentMethod : number                      
+    @Column({type : 'varchar' , nullable : true  , default : 0})
+    requiredToPay : string                      
 
     @Column({type : 'int' , nullable : true })
     payment : number                      

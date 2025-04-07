@@ -126,8 +126,9 @@ export default class invoiceConvertorController{
                 if (payment == 0) {                                         // when the user wanted to pay ghesti
                     invoice.payment = +payment        
                     invoice.totalCash = totalCash
-                    invoice.installmentType = installmentType;
-                    invoice.paymentMethod = +paymentMethod;     // how to pay the cash
+                    invoice.installmentType = +installmentType;
+                    invoice.requiredToPay = ((+invoice.totalInvoicePrice - (+totalCash))).toString()
+                    // invoice.paymentMethod = +paymentMethod;     // how to pay the cash
                     invoice.creditCard = creditCard;
                     invoice.transfer = transfer;
                     invoice.cash = cash,
@@ -135,7 +136,7 @@ export default class invoiceConvertorController{
                     invoice.transferId = transferId
                 } else if (payment == 1) {                  // when the user wanted to pay whole cashe
                     invoice.payment = +payment
-                    invoice.paymentMethod = +paymentMethod;
+                    // invoice.paymentMethod = +paymentMethod;
                     invoice.creditCard = creditCard;
                     invoice.transfer = transfer;
                     invoice.cash = cash,
@@ -144,7 +145,7 @@ export default class invoiceConvertorController{
                 } else if (payment == 2) {                                    // when the user wanted to pay checki
                     invoice.payment = +payment;
                     invoice.totalCash = totalCash;
-                    invoice.paymentMethod = +paymentMethod;     // how to pay the cash
+                    // invoice.paymentMethod = +paymentMethod;     // how to pay the cash
                     invoice.creditCardId = creditCardId      // transaction id for paying cash
                     invoice.creditCard = creditCard;
                     invoice.transfer = transfer;
@@ -162,8 +163,9 @@ export default class invoiceConvertorController{
                 if (payment == 0) {                                         // when the user wanted to pay ghesti
                     invoice.payment = +payment
                     invoice.totalCash = totalCash
-                    invoice.installmentType = installmentType;
-                    invoice.paymentMethod = +paymentMethod;     // how to pay the cash
+                    invoice.installmentType = +installmentType;
+                    invoice.requiredToPay = ((invoice.totalInvoicePrice - (+totalCash)) - (+goldWeight * +invoice.goldPrice)).toString()
+                    // invoice.paymentMethod = +paymentMethod;     // how to pay the cash
                     invoice.creditCard = creditCard;
                     invoice.transfer = transfer;
                     invoice.cash = cash,
@@ -171,7 +173,7 @@ export default class invoiceConvertorController{
                     invoice.transferId = transferId      // transaction id for paying cash
                 } else if (payment == 1) {                                    // when the user wanted to pay whole cashe
                     invoice.payment = +payment
-                    invoice.paymentMethod = +paymentMethod;
+                    // invoice.paymentMethod = +paymentMethod;
                     invoice.creditCard = creditCard;
                     invoice.transfer = transfer;
                     invoice.cash = cash,
@@ -180,7 +182,7 @@ export default class invoiceConvertorController{
                 } else if (payment == 2) {                                    // when the user wanted to pay checki
                     invoice.payment = +payment;
                     invoice.totalCash = totalCash;
-                    invoice.paymentMethod = +paymentMethod;     // how to pay the cash
+                    // invoice.paymentMethod = +paymentMethod;     // how to pay the cash
                     invoice.creditCard = creditCard;
                     invoice.transfer = transfer;
                     invoice.cash = cash,
