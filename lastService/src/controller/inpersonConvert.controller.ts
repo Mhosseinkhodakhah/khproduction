@@ -103,8 +103,6 @@ export default class invoiceConvertorController{
         }
 
         let { paymentType,
-            paymentMethod,
-            destCardPan,
             cash,
             totalCash,
             installmentType,
@@ -213,5 +211,17 @@ export default class invoiceConvertorController{
         }
     }
 
+
+
+    async getAllConvertsInvoice(req: Request, res: Response, next: NextFunction){
+        let invoices = await this.convertInvoice.find({where : {status : 'pending'} , relations : ['buyer' , 'buyer.wallet']})
+        return next(new responseModel(req, res, '', 'admin service', 200, null, invoices))
+    }
+
+
+    async getSpecificConvertInvoice(req: Request, res: Response, next: NextFunction){
+        let invoice = await this.convertInvoice.findOne({where : {id : req.params.id}})
+        return next(new responseModel(req, res, '', 'admin service', 200, null, invoice))
+    }
 
 }

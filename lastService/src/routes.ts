@@ -578,6 +578,20 @@ export const Routes = [
     action: "setPayment",
     middlwares: [adminMiddleware]
 },
+{
+    method: "get",
+    route: "/inperson/convert/all",
+    controller: invoiceConvertorController,
+    action: "getAllConvertsInvoice",
+    middlwares: [adminMiddleware]
+},
+{
+    method: "get",
+    route: "/inperson/convert/:id",
+    controller: invoiceConvertorController,
+    action: "getSpecificConvertInvoice",
+    middlwares: [adminMiddleware]
+},
 
 /**
  * sell call
