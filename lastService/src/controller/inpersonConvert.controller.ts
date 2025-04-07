@@ -107,15 +107,28 @@ export default class invoiceConvertorController{
         await queryRunner.startTransaction()
         try {
             invoice.paymentType = +paymentType;
-            if (paymentType == 0){                      // when user wanted to pay cash
+            if (paymentType == 0){      // when user wanted to pay cash
                 invoice.paymentMethod = +paymentMethod;
-                if (paymentMethod != 2) {                        // cacsh
-                    invoice.destCardPan = destCardPan;
+                if (paymentMethod == 0){                // when the user wanted to pay ghesti
+                    invoice.paymentMethod = +paymentMethod;
+                    
+                }else if(paymentMethod == 1){           // when the user wanted to pay whole
+                    invoice.paymentMethod = +paymentMethod;
+
+                }else if (paymentMethod == 2){          // when the user wanted to pay checki
+                    invoice.paymentMethod = +paymentMethod;
+
                 }
             if (paymentType == 1){                      // when user wanted to pay cash and goldBox
-                invoice.paymentMethod = +paymentMethod;
-                if (paymentMethod != 2) {                        // cacsh
-                    invoice.destCardPan = destCardPan;
+                if (paymentMethod == 0){                // when the user wanted to pay ghesti
+                    invoice.paymentMethod = +paymentMethod;
+
+                }else if(paymentMethod == 1){           // when the user wanted to pay whole
+                    invoice.paymentMethod = +paymentMethod;
+
+                }else if (paymentMethod == 2){          // when the user wanted to pay checki
+                    invoice.paymentMethod = +paymentMethod;
+
                 }
             }
             if (paymentType == 2){                      // when user wanted to pay just in goldBox
