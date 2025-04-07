@@ -573,7 +573,7 @@ export const Routes = [
 },
 {
     method: "post",
-    route: "/inperson/convert/payment",
+    route: "/inperson/convert/payment/:id",
     controller: invoiceConvertorController,
     action: "setPayment",
     middlwares: [adminMiddleware]
