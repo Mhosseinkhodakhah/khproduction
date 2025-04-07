@@ -35,7 +35,7 @@ export class convertTradeInvoice {
 
 
     @Column({type : 'int' , nullable : true })
-    paymentType : number                       // 0 : naghd     1 : naghd va sandoogh     2 : sandoogh
+    paymentType : number                       // 0 : cash     1 : cash va sandoogh     2 : sandoogh
 
     
 

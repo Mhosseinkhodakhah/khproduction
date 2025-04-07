@@ -8,7 +8,6 @@
         return this.permision;
     }
 
-
     async setter(){
         if (this.permision ==1){
             this.permision = 0 ;
