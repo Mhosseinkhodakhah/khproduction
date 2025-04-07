@@ -93,6 +93,7 @@ export default class invoiceConvertorController{
 
     async setPayment(req: Request, res: Response, next: NextFunction) {
         let id = req.params.id;
+        console.log(req.body)
         let invoice = await this.convertInvoice.findOne({
             where: {
                 id: +id
@@ -126,11 +127,11 @@ export default class invoiceConvertorController{
                     invoice.totalCash = totalCash
                     invoice.installmentType = +installmentType;
                     invoice.requiredToPay = ((+invoice.totalInvoicePrice - (+totalCash))).toString()
-                    // invoice.paymentMethod = +paymentMethod;     // how to pay the cash
+                    // invoice.paymentMethod = +paymentMethod;              // how to pay the cash
                     invoice.creditCard = creditCard;
                     invoice.transfer = transfer;
                     invoice.cash = cash,
-                    invoice.creditCardId = creditCardId      // transaction id for paying cash
+                    invoice.creditCardId = creditCardId                   // transaction id for paying cash
                     invoice.transferId = transferId
                 } else if (payment == 1) {                  // when the user wanted to pay whole cashe
                     invoice.payment = +payment
