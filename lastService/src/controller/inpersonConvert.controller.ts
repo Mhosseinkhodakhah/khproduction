@@ -167,7 +167,7 @@ export default class invoiceConvertorController {
             }
             if (paymentType == 1) {          // when user wanted to pay cash and goldBox
                 if (!goldWeight || goldWeight == '' || goldWeight == 0) {
-                    return next(new responseModel(req, res, 'مقدار طلای صندوق طلا را وارد کنید', 'admin service', 400, 'موجودی صندوق طلا کافی نمیباشد.', null))
+                    return next(new responseModel(req, res, 'مقدار طلای صندوق طلا را وارد کنید', 'admin service', 400, 'مقدار طلای درخاستی از صندوق طلا را وارد کنید.', null))
                 }
                 if (+goldWeight > +invoice.buyer.wallet.goldWeight) {
                     return next(new responseModel(req, res, 'موجودی صندوق طلا کافی نمیباشد', 'admin service', 400, 'موجودی صندوق طلا کافی نمیباشد.', null))
@@ -191,7 +191,7 @@ export default class invoiceConvertorController {
                     invoice.cash = cash,
                     invoice.creditCardId = creditCardId      // transaction id for paying cash
                     invoice.transferId = transferId      // transaction id for paying cash
-                } else if (payment == 1) {                                    // when the user wanted to pay whole cashe
+                } else if (payment == 2) {                                    // when the user wanted to pay whole cashe
                     invoice.payment = +payment
                     // invoice.paymentMethod = +paymentMethod;
                     invoice.creditCard = creditCard;
@@ -199,7 +199,7 @@ export default class invoiceConvertorController {
                     invoice.cash = cash,
                     invoice.creditCardId = creditCardId      // transaction id for paying cash
                     invoice.transferId = transferId
-                } else if (payment == 2) {                                    // when the user wanted to pay checki
+                } else if (payment == 1) {                                    // when the user wanted to pay checki
                     invoice.payment = +payment;
                     if (totalCash == 0) {
                         totalCash = +creditCard + +transfer + +cash
