@@ -119,7 +119,8 @@ export default class invoiceConvertorController {
             creditCardId,
             transferId
         } = req.body;
-
+        payment = +payment;
+        paymentType = +paymentType
         let queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
@@ -196,7 +197,7 @@ export default class invoiceConvertorController {
                     invoice.creditCard = creditCard;
                     invoice.transfer = transfer;
                     invoice.cash = cash,
-                        invoice.creditCardId = creditCardId      // transaction id for paying cash
+                    invoice.creditCardId = creditCardId      // transaction id for paying cash
                     invoice.transferId = transferId
                 } else if (payment == 2) {                                    // when the user wanted to pay checki
                     invoice.payment = +payment;
