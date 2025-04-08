@@ -209,7 +209,7 @@ export const Routes = [
     route: "/goldPrice",
     controller: GoldPriceController,
     action: "getGoldPrice",
-    middlwares: []
+    middlwares: [authenticate]
 
 },
 {
