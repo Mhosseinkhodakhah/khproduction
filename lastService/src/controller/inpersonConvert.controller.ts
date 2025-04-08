@@ -97,6 +97,7 @@ export default class invoiceConvertorController {
 
     async setPayment(req: Request, res: Response, next: NextFunction) {
         let id = req.params.id;
+        console.log('test for git')
         console.log(req.body)
         let invoice = await this.convertInvoice.findOne({
             where: {
@@ -119,6 +120,8 @@ export default class invoiceConvertorController {
             creditCardId,
             transferId
         } = req.body;
+
+
         payment = +payment;
         paymentType = +paymentType
         let queryRunner = AppDataSource.createQueryRunner()
