@@ -36,6 +36,12 @@ export const Routes = [
         controller: adminController,
         action: "getTradePermision",
         middlwares: [ adminMiddleware]
+    }, {
+        method: "get",
+        route: "/token/check",
+        controller: UserController,
+        action: "checkToken",
+        middlwares: [ authenticate]
     },
     {
     method: "get",

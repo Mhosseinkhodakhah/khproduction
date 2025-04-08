@@ -40,6 +40,11 @@ export class UserController {
         }
     }
 
+
+    async checkToken(request: Request, response: Response, next: NextFunction){
+        return response.status(200).json('its done')
+    }
+
     async profile(request: Request, response: Response, next: NextFunction) {
         try {
             const userId = request['user_id']
