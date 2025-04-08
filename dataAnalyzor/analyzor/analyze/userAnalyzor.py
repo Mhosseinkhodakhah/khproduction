@@ -52,19 +52,7 @@ class userFilter():
             
             
             if ('verificationType' in i):
-                if (i['verificationType'] == 2):
-                    i['اطلاعات کاربر'] = 'بدون شماره همراه'
-                elif(i['verificationType'] == 3):
-                     i['اطلاعات کاربر'] = 'ناقص'
-             
-                elif(i['verificationType'] == 1):
-                     i['اطلاعات کاربر'] = 'بدون کد ملی'
-                     
-                elif(i['verificationType'] == 0):
-                     i['اطلاعات کاربر'] = 'کامل'
-                i.pop('verificationType')
-            else:
-                i['اطلاعات کاربر'] = 'کامل'
+               i.pop('verificationType')
                 
             
             
@@ -94,7 +82,7 @@ class userFilter():
                  i['وضعیت احراز هویت'] = 'کاربران تلفنی'
                
                                            
-            if(i['gender'] == 'True'):
+            if(i['gender'] == True):
                 i['جنسیت'] = 'مرد'
             elif(i['gender'] == False):
                 i['جنسیت'] ='زن'
@@ -125,7 +113,7 @@ class userFilter():
             # i.pop('createdAt')
             i.pop('updatedAt')
             i.pop('deletedAt')
-            i.pop('id')
+            # i.pop('id')
             i.pop('identityTraceCode')
             i.pop('isSystemUser')
             i.pop('age')
@@ -149,7 +137,7 @@ class userFilter():
             newData.append(i)
         
         df = pd.DataFrame.from_dict(newData)
-        df.rename(columns={'birthDate': 'تاریخ تولد' ,'firstName' : 'نام' ,'lastName' : 'نام خانوادگی' ,'fatherName':'نام پدر' , 'identitySerial' : 'شماره سریال شناسنامه' ,
+        df.rename(columns={ 'birthDate': 'تاریخ تولد' ,'firstName' : 'نام' ,'lastName' : 'نام خانوادگی' ,'fatherName':'نام پدر' , 'identitySerial' : 'شماره سریال شناسنامه' ,
         'identitySeri' : 'شماره سری شناسنامه' , 'officeName' : 'محل تولد' , 'phoneNumber' : 'شماره تلفن ' , 
         'nationalCode' : 'کد ملی' ,'fullName' : 'نام کامل','createdAt' : 'تاریخ ثبت نام', 'createTime' : 'ساعت ثبت نام' , 'accounterDescription' : 'توضیحات حسابدار'  }, inplace=True)
         # print (df)

@@ -27,6 +27,12 @@ class datamaker2():
                 i['نام فروشنده'] = f'{i['seller']['firstName']} {i['seller']['lastName']}'
                 i['کد ملی فروشنده'] = f'{i['seller']['nationalCode']}'
                 i['شماره همراه فروشنده'] = i['seller']['phoneNumber']
+            
+            i['totalPrice'] = int(i['totalPrice'])
+            i['goldPrice'] = int(i['goldPrice'])
+            
+            
+            i.pop('tradeType')    
             i.pop('buyer')
             i.pop('seller')
             i.pop('createdAt')
@@ -55,14 +61,13 @@ class datamaker2():
             newData.append(i)
         
         df = pd.DataFrame.from_dict(newData)
-        df.rename(columns={'goldPrice': 'قیمت طلا', 'goldWeight': 'حجم معامله', 'totalPrice': 'کل مبلغ معامله' , 'invoiceId':'شماره تراکنش' , 'status' : 'وضعیت معامله' ,
+        df.rename(columns={'originCardPan' : 'شماره کارت مبدا'  , 'destCardPan' : 'شماره کارت مقصد' , 'goldPrice': 'قیمت طلا', 'goldWeight': 'حجم معامله', 'totalPrice': 'کل مبلغ معامله' , 'invoiceId':'شماره تراکنش' , 'status' : 'وضعیت معامله' ,
         'date' : 'تاریخ ثبت معامله' , 'time' : 'ساعت ثبت معامله'  , 'type' : 'نوع معامله' , 
         'buyer' : 'خریدار'  , 'seller' : 'فروشنده', 'authority' : 'شماره پیگیری درگاه' , 'adminId' : 'ادمین ثبت کننده' , 'accounterId' : 'حسابدار مربوط' , 'description' : 'توضیحات ادمین' , 'accounterDescription' : 'توضیحات حسابدار'  }, inplace=True)
         print (df)
         df.to_excel(f'/etc/report/invoice-{name}-{number}.xlsx') 
         return [f'https://excell.khanetala.ir/invoice-{name}-{number}.xlsx' , f'معاملات-{name}-{number}']
-        
-        
+
     
 
     def __filter1(self , type , byPhone , status , user , startDate , endDate , startTime , endTime , data):

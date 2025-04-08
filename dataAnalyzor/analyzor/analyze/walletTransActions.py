@@ -28,7 +28,7 @@ class walletTransActionsFilter():
             i['شماره شبا کاربر'] = i['wallet']['user']['bankAccounts'][0]['shebaNumber']
             i['نام بانک کاربر'] = i['wallet']['user']['bankAccounts'][0]['name']
             i['موجودی صندوق طلای کارب'] = i['wallet']['goldWeight']
-            i['موجودی ریالی کاربر'] = i['wallet']['balance']
+            i['موجودی ریالی کاربر'] = int(i['wallet']['balance'])
             
             
             if (i['type'] == 'withdraw'):                
@@ -37,13 +37,14 @@ class walletTransActionsFilter():
 
             if (i['type'] == 'deposit'):
                 i.pop('withdrawalId')
-                        
+            
+            i['amount'] = int(i['amount'])
             
             i.pop('wallet')
             i.pop('createDate')
             i.pop('updatedAt')
             i.pop('deletedAt')
-            i.pop('id')
+            # i.pop('id')
             
             if (i['status'] == 'completed'):
                 i['status'] = 'موفق'
