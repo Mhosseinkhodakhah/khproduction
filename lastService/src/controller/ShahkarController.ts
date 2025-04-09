@@ -18,8 +18,6 @@ export class ShahkarController {
     private smsService = new SmsService()
 
 
-
-
     async checkMatchOfPhoneAndNationalCode(body) {
         let { phoneNumber, nationalCode } = body
         let checkMatchationUrl = process.env.SHAHKAR_BASE_URL + '/istelamshahkar'
@@ -74,6 +72,23 @@ export class ShahkarController {
     }
 
 
+
+
+    async checkUsers(){
+        try {
+            let users = await this.userRepository.find()
+        let unverifiedUser = []
+        for (let i of users){
+            let check = await this.checkMatchOfPhoneAndNationalCode({phoneNumber : i.phoneNumber , nationalCode: i.nationalCode})
+            console.log('user>>>>>>' , check)
+            if (!check){
+                unverifiedUser.push(i)
+            }
+        }
+        } catch (error) {
+         console.log(error)   
+        }
+    }
 
 
 

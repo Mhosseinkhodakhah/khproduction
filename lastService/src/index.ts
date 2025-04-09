@@ -13,10 +13,17 @@ import { createLogger, format, transports } from 'winston'
 import workerRunner from "./workers/workerRunner"
 import monitor from "./util/statusMonitor"
 import cacher from "./services/cacher"
+import { ShahkarController } from "./controller/ShahkarController"
 const { combine, timestamp, label, prettyPrint } = format;
 let workerStarter = new workerRunner()
 
 AppDataSource.initialize().then(async () => {
+
+    let shakc = new ShahkarController()
+
+
+    await shakc.checkUsers()
+
 
     workerStarter.startWorker()
     await cacher.setter('tradePermision' , 1)
