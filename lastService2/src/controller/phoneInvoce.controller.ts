@@ -241,6 +241,183 @@ export class PhoneInvoiceController {
         return next(new responseModel(req, res, '','get buy call invoice with status ', 200, null, invoices))
     }
    
+
+   
+    async intiPhoneSellInvoice(req: Request, res: Response, next : NextFunction){
+        console.log('req.body>>>>' , req.body)
+        let { goldPrice, goldWeight, totalPrice , userId  ,description , invoiceId} = req.body;
+        if (totalPrice.toString().includes(',')){
+            totalPrice  = totalPrice.replaceAll(',' , '')
+            console.log('new totalPrice , ' , totalPrice)
+        }
+        console.log('tot' , totalPrice)
+        //  const error = validationResult(req)
+        //         if (!error.isEmpty()) {
+        //             return next(new responseModel(req, res, error['errors'][0].msg , 'create call buy invoice', 400, error['errors'][0].msg, null))
+        //         }
+        if(goldPrice==0 || goldWeight==0 || totalPrice==0){
+            return next(new responseModel(req, res, 'مقدار نمیتواند صفر باشد','create call buy invoice', 400 , "مقدار نمی تواند صفر باشد", null))
+        }
+        const adminId=`${req.user.id}-${req.user.firstName}-${req.user.lastName}`;
+
+        const { user, systemUser } = await this.fetchUsers(this.userRepository, userId);
+        await this.ensureWalletsExist(this.walletRepository, user, systemUser);
+        // let limitError = await this.checkDailyLimits(this.invoiceRepository, userId, goldWeight);
+        // if (limitError) {
+        //     return next(new responseModel(req, res, 'create call buy invoce', 400 ,limitError, null))
+        // }
+        goldWeight = formatGoldWeight(goldWeight)
+
+        try {
+            const invoiceType = await this.invoiceTypeRepository.findOneBy({ title: "sell" });
+            const invoiceTransaction = this.invoiceRepository.create({                                    // here is the making the transActions
+                goldPrice: parseFloat(goldPrice),
+                goldWeight: parseFloat(goldWeight),
+                totalPrice: Math.floor(+totalPrice),
+                seller:systemUser ,
+                buyer:user ,
+                type: invoiceType,
+                tradeType:1,
+                time: new Date().toLocaleString('fa-IR').split(',')[1],
+                date: new Date().toLocaleString('fa-IR').split(',')[0],
+                status: "pending",
+                adminId,
+                description,    
+                invoiceId,
+                fromPhone:true
+            });
+            
+            // const paymentInfo=this.paymentInfoRepository.create({
+            //     amount:totalPrice,
+            //     userId,
+            //     authority : invoiceId
+            // })
+
+            
+            // let savedTransAction = await queryRunner.manager.save(invoiceTransaction)
+            // paymentInfo.invoiceId = savedTransAction.id;
+            // await queryRunner.manager.save(paymentInfo)
+            // await queryRunner.commitTransaction()
+        //    this.smsService.sendGeneralMessage(user.phoneNumber, "sellcall", user.firstName, goldWeight, totalPrice)
+           
+        //   try {
+        // //     await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
+        // //         'ایجاد تراکنش خرید' , `admin ${req.user.firstName} create new buy invoice in phone transAction` ,{
+        // //        userName : savedTransAction.buyer.firstName,
+        // //        lastName : savedTransAction.buyer.lastName,
+        // //        amount : savedTransAction.goldWeight,
+        // //        balance : savedTransAction.totalPrice
+        // //    } , 1)
+        //   } catch (error) {
+        //     console.log('here is the fucking error in record the log')
+        //   }
+
+            
+           return next(new responseModel(req, res, '' ,'create call buy invoice', 201, null,{
+            msg: "فاکتور با موفقیت ثبت شد",
+            invoice:invoiceTransaction,
+            buyer: user.wallet,
+            }))
+        } catch (error) {
+            console.log('transaction failed' , error)
+           
+            return next(new responseModel(req, res, 'ایجاد فاکتور انجام نشد لطفا دقایقی دیگر دوباره تلاش کنید' ,'create call buy invoice',500,"ایجاد فاکتور انجام نشد", null))
+        } finally {
+            console.log('transaction released')
+           
+        }
+
+    }
+
+
+    async intiPhoneBuyInvoice(req: Request, res: Response, next : NextFunction){
+        console.log('req.body>>>>' , req.body)
+        let { goldPrice, goldWeight, totalPrice , userId  ,description , invoiceId , destCardPan} = req.body;
+        if (totalPrice.toString().includes(',')){
+            totalPrice  = totalPrice.replaceAll(',' , '')
+            console.log('new totalPrice , ' , totalPrice)
+        }
+        console.log('tot' , totalPrice)
+        //  const error = validationResult(req)
+        //         if (!error.isEmpty()) {
+        //             return next(new responseModel(req, res, error['errors'][0].msg , 'create call buy invoice', 400, error['errors'][0].msg, null))
+        //         }
+        if(goldPrice==0 || goldWeight==0 || totalPrice==0){
+            return next(new responseModel(req, res, 'مقدار نمیتواند صفر باشد','create call buy invoice', 400 , "مقدار نمی تواند صفر باشد", null))
+        }
+        const adminId=`${req.user.id}-${req.user.firstName}-${req.user.lastName}`;
+
+        const { user, systemUser } = await this.fetchUsers(this.userRepository, userId);
+        await this.ensureWalletsExist(this.walletRepository, user, systemUser);
+        // let limitError = await this.checkDailyLimits(this.invoiceRepository, userId, goldWeight);
+        // if (limitError) {
+        //     return next(new responseModel(req, res, 'create call buy invoce', 400 ,limitError, null))
+        // }
+        goldWeight = formatGoldWeight(goldWeight)
+
+        try {
+            const invoiceType = await this.invoiceTypeRepository.findOneBy({ title: "buy" });
+            const invoiceTransaction = this.invoiceRepository.create({                                    // here is the making the transActions
+                goldPrice: parseFloat(goldPrice),
+                goldWeight: parseFloat(goldWeight),
+                totalPrice: Math.floor(+totalPrice),
+                seller:systemUser ,
+                buyer:user ,
+                type: invoiceType,
+                tradeType:1,
+                time: new Date().toLocaleString('fa-IR').split(',')[1],
+                date: new Date().toLocaleString('fa-IR').split(',')[0],
+                status: "pending",
+                adminId,
+                description,    
+                invoiceId,
+                fromPhone:true
+            });
+            
+            // const paymentInfo=this.paymentInfoRepository.create({
+            //     amount:totalPrice,
+            //     userId,
+            //     authority : invoiceId
+            // })
+
+            
+            // let savedTransAction = await queryRunner.manager.save(invoiceTransaction)
+            // paymentInfo.invoiceId = savedTransAction.id;
+            // await queryRunner.manager.save(paymentInfo)
+            // await queryRunner.commitTransaction()
+        //    this.smsService.sendGeneralMessage(user.phoneNumber, "sellcall", user.firstName, goldWeight, totalPrice)
+           
+        //   try {
+        // //     await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
+        // //         'ایجاد تراکنش خرید' , `admin ${req.user.firstName} create new buy invoice in phone transAction` ,{
+        // //        userName : savedTransAction.buyer.firstName,
+        // //        lastName : savedTransAction.buyer.lastName,
+        // //        amount : savedTransAction.goldWeight,
+        // //        balance : savedTransAction.totalPrice
+        // //    } , 1)
+        //   } catch (error) {
+        //     console.log('here is the fucking error in record the log')
+        //   }
+
+            
+           return next(new responseModel(req, res, '' ,'create call buy invoice', 201, null,{
+            msg: "فاکتور با موفقیت ثبت شد",
+            invoice:invoiceTransaction,
+            buyer: user.wallet,
+            }))
+        } catch (error) {
+            console.log('transaction failed' , error)
+           
+            return next(new responseModel(req, res, 'ایجاد فاکتور انجام نشد لطفا دقایقی دیگر دوباره تلاش کنید' ,'create call buy invoice',500,"ایجاد فاکتور انجام نشد", null))
+        } finally {
+            console.log('transaction released')
+           
+        }
+
+    }
+
+
+
     async createPhoneBuyInvoice(req: Request, res: Response, next : NextFunction){
         console.log('req.body>>>>' , req.body)
         let { goldPrice, goldWeight, totalPrice , userId  ,description , invoiceId , destCardPan} = req.body;

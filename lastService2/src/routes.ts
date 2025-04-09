@@ -527,6 +527,22 @@ export const Routes = [
     middlwares: [adminMiddleware]
 },
 {
+    method: "post",
+    route: "/call/initbuy",
+    controller: PhoneInvoiceController,
+    action: "intiPhoneBuyInvoice",
+    middlwares: [adminMiddleware]
+},
+{
+    method: "post",
+    route: "/call/initsell",
+    controller: PhoneInvoiceController,
+    action: "intiPhoneSellInvoice",
+    middlwares: [adminMiddleware]
+},
+
+
+{
     method: "put",
     route: "/call/approve/:id",
     controller: PhoneInvoiceController,
