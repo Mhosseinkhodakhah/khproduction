@@ -46,6 +46,7 @@ export class OtpController {
         let { phoneNumber, nationalCode } = body
         let checkMatchationUrl = process.env.SHAHKAR_BASE_URL + '/istelamshahkar'
         let isMatch = false
+        console.log(body)
         let token = await this.getToken()
         if (token == null || token == undefined) {
             console.log('token is not defined....')
@@ -232,7 +233,7 @@ export class OtpController {
                 status: 1,
                 error: null
             })
-            
+
             let isMatch = await this.checkMatchOfPhoneAndNationalCode({ phoneNumber : user.phoneNumber , nationalCode : user.nationalCode})
             if (!isMatch){
                 console.log(isMatch)
