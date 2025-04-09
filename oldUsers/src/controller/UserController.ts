@@ -73,33 +73,24 @@ export class UserController {
      */
     async checkIdentity(req: Request, res: Response, next: NextFunction) {
         const {phoneNumber}=req.body
+        const resultFromLastService=await this.lastServiceService.checkExistUserInLastService(phoneNumber)
         try{ let user = await this.userRepository.findOne({
             where: {
                 phoneNumber
             }
         })
-        if(user){
-           if(user.verificationStatus==1){
-               const resultFromLastService=await this.lastServiceService.checkExistUserInLastService(phoneNumber)
-               if(resultFromLastService.exist){
-                return next(new response(req, res, 'checkIdentity', 200, null, {userExist:true, userVerified: true ,user:resultFromLastService.user}))
-            }
-           }else{
-            return next(new response(req, res, 'checkIdentity', 200, null, {userExist:true,userVerified: false ,user:user }))
-           } 
-        }
-
-        const resultFromLastService=await this.lastServiceService.checkExistUserInLastService(phoneNumber)
-        
-        
         if(resultFromLastService.exist){
             return next(new response(req, res, 'checkIdentity', 200, null, {userExist:true, userVerified: true ,user:resultFromLastService.user}))
+        }else{
+            if(user){
+                return next(new response(req, res, 'checkIdentity', 200, null, {userExist:true,userVerified: false ,user:user }))
+
+            }else{
+
+                return next(new response(req, res, 'checkIdentity', 200, null, {userExist:false, userVerified: false,user:{}}))
+            }
         }
-
         
-        return next(new response(req, res, 'checkIdentity', 200, null, {userExist:false, userVerified: false,user:{}}))
-
-
     }
     catch(err){
             console.log(err);
