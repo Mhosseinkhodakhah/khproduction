@@ -129,7 +129,7 @@ export class OtpController {
             }
             
             const user = await this.userRepository.findOneBy({ phoneNumber });
-    
+            
             if (!user || user.verificationStatus !== VerificationStatus.SUCCESS) {
                 // await this.otpRepository.delete({ phoneNumber });
                 monitor.addStatus({
@@ -144,6 +144,8 @@ export class OtpController {
                 });
             }
             
+            
+
             const token = await this.jwtService.generateToken(user);
             // await this.otpRepository.delete({ phoneNumber });
             

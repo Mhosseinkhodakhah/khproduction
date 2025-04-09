@@ -698,7 +698,7 @@ export class InvoiceController {
         try {
             let { status, authority
             } = request.body
-
+            
             let info = { status, authority }
             let res = await this.zpService.verifyPayment(info)
 

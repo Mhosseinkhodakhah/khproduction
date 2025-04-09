@@ -244,6 +244,11 @@ export class PhoneInvoiceController {
     async createPhoneBuyInvoice(req: Request, res: Response, next : NextFunction){
         console.log('req.body>>>>' , req.body)
         let { goldPrice, goldWeight, totalPrice , userId  ,description , invoiceId} = req.body;
+        if (totalPrice.toString().includes(',')){
+            totalPrice  = totalPrice.replaceAll(',' , '')
+            console.log('new totalPrice , ' , totalPrice)
+        }
+        console.log('tot' , totalPrice)
         //  const error = validationResult(req)
         //         if (!error.isEmpty()) {
         //             return next(new responseModel(req, res, error['errors'][0].msg , 'create call buy invoice', 400, error['errors'][0].msg, null))
@@ -508,6 +513,11 @@ export class PhoneInvoiceController {
     async createSellCall (req: Request, res: Response, next : NextFunction){
         let { goldPrice, goldWeight, totalPrice , userId  ,description ,invoiceId} = req.body;
         const accounterId=`${req.user.id}-${req.user.firstName}-${req.user.lastName}`;
+        if (totalPrice.toString().includes(',')){
+            totalPrice  = totalPrice.replaceAll(',' , '')
+            console.log('new totalPrice , ' , totalPrice)
+        }
+        console.log(totalPrice)
         // const error = validationResult(req)
         // if (!error.isEmpty()) {
         //     return next(new responseModel(req, res, error['errors'][0].msg , 'create call sell invoice', 400, error['errors'][0].msg, null))
