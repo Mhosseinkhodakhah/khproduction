@@ -149,7 +149,7 @@ export class ShahkarController {
         let isMatch = await this.checkMatchOfPhoneAndNationalCode({phoneNumber, nationalCode})
         console.log(isMatch)
         if (!isMatch){
-            return response.status(400).json({msg : 'شماره کارت با شماره ملی مطابقت ندارد'})
+            return response.status(400).json({msg : 'شماره تلفن با شماره ملی مطابقت ندارد'})
         }
         if (nationalCode) { 
             let user = await this.userRepository.findOneBy({nationalCode})
