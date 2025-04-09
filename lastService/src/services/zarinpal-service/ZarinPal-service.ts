@@ -87,6 +87,8 @@ export class ZarinPalService {
                 return {status  : false , data : response.data}
               }
             } catch (error) {
+              console.log('zarinpal status >>>>>', error.response.status)
+
               monitor.error.push(error)
               if (error.response.data.errors){
                 if (error.response.data.errors.message == 'Session is not valid, session is not active paid try.'){
@@ -160,6 +162,8 @@ export class ZarinPalService {
           amount: Math.floor(paymentInfo.amount) * 10,
           authority: paymentInfo.authority,
         });
+        console.log('zarinpal status >>>>>' , response.status)
+
         if (response.data.code === 100) {
           console.log('Payment Verified:');
           // console.log('Reference ID:', response.data.ref_id);
@@ -174,6 +178,8 @@ export class ZarinPalService {
           return { status: false, data: response.data }
         }
     } catch (error) {
+      console.log('zarinpal status >>>>>' , error.response.status)
+
       const inquiryResult = await this.zarinpal.inquiries.inquire({
         authority: authority,
       });
