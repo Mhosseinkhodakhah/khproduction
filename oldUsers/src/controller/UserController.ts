@@ -260,7 +260,7 @@ export class UserController {
             return next(new response(req, res, 'approve old user', 400, "کاربر قبلا احراز شده است", user))
         }
              
-        const resultMatch=await this.shakarService.checkMatchOfPhoneAndNationalCode(phoneNumber,nationalCode)        
+        const resultMatch=await this.shakarService.checkMatchOfPhoneAndNationalCode({phoneNumber,nationalCode})        
         const isMatch=resultMatch? true : false 
         if(!isMatch){
             return next(new response(req, res, 'approve old user', 400, "شماره تلفن و شماره ملی باهم مطابقت ندارد", null))
@@ -326,8 +326,8 @@ export class UserController {
         }
         let {phoneNumber ,birthDate ,nationalCode,otp} = req.body
         console.log(req.body);
-            
-        try{
+        
+        try{    
             // const otpResult= await this.otpService.checkOtpVerification(phoneNumber,otp)  
             // if(!otpResult.success){
             //     return next(new response(req, res,'approve new User', 400,otpResult.msg, null))
@@ -338,7 +338,7 @@ export class UserController {
                 return next(new response(req, res, 'approve new User', 400, "کاربر در سیستم وجود دارد", exist))
             }
 
-            const resultMatch=await this.shakarService.checkMatchOfPhoneAndNationalCode(phoneNumber,nationalCode)        
+            const resultMatch=await this.shakarService.checkMatchOfPhoneAndNationalCode({phoneNumber,nationalCode})        
             const isMatch=resultMatch? true : false 
             console.log("isMatch",isMatch);
             

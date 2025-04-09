@@ -71,6 +71,10 @@ export class ZarinPalService {
              
               console.log('zarinpal status >>>>>' , response.status)
 
+              if (+response.status >= 500){
+                return {status  : false , code : 500}
+              }
+
               if (response.data.code === 100) {
                 console.log('Payment Verified:');
                 console.log('Reference ID:', response.data.ref_id);

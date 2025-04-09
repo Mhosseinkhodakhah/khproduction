@@ -218,7 +218,6 @@ export const Routes = [
     controller: GoldPriceController,
     action: "getGoldPriceForDate",
     middlwares: [adminMiddleware]
-
 },
 {
     method: "post",
