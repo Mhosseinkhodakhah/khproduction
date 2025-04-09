@@ -210,7 +210,7 @@ export class ShahkarController {
             }
         } catch (error) {
             // console.log(error.response.data.error);
-            console.log(error)
+            console.log(`${error}` , 'transAction rollback')
             await queryRunner.rollbackTransaction()
 
             monitor.addStatus({
@@ -233,6 +233,7 @@ export class ShahkarController {
             }
             return response.status(500).json({ msg : "خطای داخلی سیستم"})           
         }finally{
+            console.log('transaction released')
             await queryRunner.release()
         }
         }
