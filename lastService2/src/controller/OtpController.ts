@@ -9,14 +9,95 @@ import azios from "axios"
 import { SmsService } from "../services/sms-service/message-service"
 import logger from "../services/interservice/logg.service"
 import monitor from "../util/statusMonitor"
+import { internalDB } from "../services/selfDB/saveDATA.service"
+import { trackIdInterface } from "../interfaces/interface.interface"
+import axios from "axios"
+import { NotMatch } from "../entity/notMatch"
  
 
 export class OtpController {
     private otpRepository  = AppDataSource.getRepository(Otp)
     private userRepository  = AppDataSource.getRepository(User)
+    private notMatchRepo  = AppDataSource.getRepository(NotMatch)
     private jwtService = new JwtService()
     private smsService = new SmsService()
     private loggerService =new logger()
+
+
+    async getToken() {
+        let authUrl = process.env.AUTH_URL
+        try {
+            let res = await axios.post(authUrl, { username: "TLS_khanetalla", password: "1M@k8|H43O9S" })
+            let token = `Bearer ${res.data.access_token}`
+            console.log(res?.headers)
+            return token
+
+        } catch (error) {
+            console.log(error?.response?.headers)
+            // monitor.error.push(`error in get token shahkar :: ${error.response}`)
+            monitor.error.push(`error in get token shahkar :: ${error}`)
+            console.log("error in getToken ShahkarController   " + error);
+            return null
+        }
+    }
+
+
+    async checkMatchOfPhoneAndNationalCode(body) {
+        let { phoneNumber, nationalCode } = body
+        let checkMatchationUrl = process.env.SHAHKAR_BASE_URL + '/istelamshahkar'
+        let isMatch = false
+        console.log(body)
+        let token = await this.getToken()
+        if (token == null || token == undefined) {
+            console.log('token is not defined....')
+            return false
+        }
+        try {
+            let res = await axios.post(checkMatchationUrl, {
+                mobileNumber: phoneNumber
+                , nationalCode
+            }, { headers: { 'Authorization': token } })
+
+            isMatch = res.data.isMatched ? true : false
+
+            if (isMatch) {
+                let trackIdData: trackIdInterface = {
+                    trackId: res.headers['track-code'],
+                    // firstName : firstName,
+                    // lastName : lastName,
+                    // fatherName : fatherName,
+                    phoneNumber: phoneNumber,
+                    status: true
+                }
+                let trackIdService = new internalDB()
+                let DBStatus = await trackIdService.saveData(trackIdData)
+                console.log('returned db status>>>>', DBStatus)
+                console.log(isMatch)
+                return isMatch
+            } else {
+                let trackIdData: trackIdInterface = {
+                    trackId: res.headers['track-code'],
+                    // firstName : firstName,
+                    // lastName : lastName,
+                    // fatherName : fatherName,
+                    phoneNumber: phoneNumber,
+                    status: false
+                }
+                let trackIdService = new internalDB()
+                let DBStatus = await trackIdService.saveData(trackIdData)
+                console.log('returned db status>>>>', DBStatus)
+                console.log(isMatch)
+                return isMatch
+            }
+        } catch (error) {
+            console.log('error>>>>>', error)
+            monitor.error.push(`error in check card and national code of userssss ${error}`)
+            // console.log('error in ismatch national code', `${error}`)
+            return false
+        }
+    }
+
+
     async sendOtpMessage(request: Request, response: Response, next: NextFunction) {
         let {phoneNumber} = request.body
         try {
@@ -129,7 +210,7 @@ export class OtpController {
             }
             
             const user = await this.userRepository.findOneBy({ phoneNumber });
-    
+            
             if (!user || user.verificationStatus !== VerificationStatus.SUCCESS) {
                 // await this.otpRepository.delete({ phoneNumber });
                 monitor.addStatus({
@@ -137,13 +218,13 @@ export class OtpController {
                     status: 1,
                     error: null
                 })
-
                 return response.status(200).json({ 
                     msg: 'با موفقیت وارد شدید', 
                     userVerificationStatus: "FAILED" 
                 });
             }
             
+
             const token = await this.jwtService.generateToken(user);
             // await this.otpRepository.delete({ phoneNumber });
             
@@ -152,6 +233,19 @@ export class OtpController {
                 status: 1,
                 error: null
             })
+            
+            let isMatch = await this.checkMatchOfPhoneAndNationalCode({ phoneNumber : user.phoneNumber , nationalCode : user.nationalCode})
+            if (isMatch == false){
+                console.log(isMatch)
+                // let newNotMatch = this.notMatchRepo.create({
+                //     firstName : user.firstName,
+                //     lastName : user.lastName,
+                //     phoneNumber : user.phoneNumber,
+                //     nationalCode : user.nationalCode
+                // })
+                // await this.notMatchRepo.save(newNotMatch)
+            }
+
             return response.status(200).json({ 
                 token, 
                 msg: 'با موفقیت وارد شدید', 

@@ -13,6 +13,8 @@ import { GoldPriceService } from "../services/gold-price-service/gold-price-serv
 import { validationResult } from "express-validator";
 import logger from "../services/interservice/logg.service";
 import { EstimateTransactions } from "../entity/EstimateTransactions";
+import cacher from "../services/cacher";
+import instance from "../util/tradePerision";
 
 
 
@@ -47,6 +49,25 @@ export default class adminController {
         let users = await queryBuilder.getMany()
         return next(new responseModel(req, res,'' ,'admin service', 200, null, users))
     }
+
+
+    async getTradePermision(req: Request, res: Response, next: NextFunction){
+        // let tradePerimision = await cacher.getter('tradePermision')
+        let tradePerimision = await instance.getter()
+        console.log( 'trade permision is >>>>', tradePerimision)
+        return next(new responseModel(req, res,'' ,'admin service', 200, null, tradePerimision))
+    }
+        
+    async tradePermision(req: Request, res: Response, next: NextFunction){
+        // let tradePerimision = await cacher.getter('tradePermision')
+        // let tradePerimision = await instance.getter()
+        await instance.setter()
+        let tradePerimision = await instance.getter()
+        console.log(tradePerimision)
+        return next(new responseModel(req, res,'' ,'admin service', 200, null, tradePerimision))
+    }
+
+
 
     /**
      * this function is for getting user info
@@ -454,63 +475,78 @@ export default class adminController {
                 console.log(error)
                 return next(new responseModel(req, res ,'' ,'admin service', 400, error['errors'][0].msg, null))
             }
-            console.log('its first entry . . .' , authority)
-            let info = { status : 'OK', authority }
-            let res2 = await this.zpService.verifyPayment(info)
-            const paymentInfo = await this.paymentInfoRepository.findOneByOrFail({ authority: info.authority })
-            let queryRunner = AppDataSource.createQueryRunner()
-            await queryRunner.connect()
-            await queryRunner.startTransaction()
-            const savedTransaction = await this.walletTransactionRepository.findOneBy({ id: paymentInfo.invoiceId })
-            if (savedTransaction.status != "pending") {
-                await queryRunner.release()
-                return res.status(400).json({ msg: "تراکنش قبلا اعتبارسنجی شده است" })
+            let statusOfTransAction = await this.zpService.getTransActionStatus(authority)
+            if (statusOfTransAction.status == 'IN_BANK') {
+                return next(new responseModel(req, res, 'تراکنش در درگاه میباشد', 'admin service', 400, 'تراکنش در درگاه میباشد', null))
             }
-            let updatedtransaction;
-            try {
-                const user = await this.userRepository.findOne({ where: { id: paymentInfo.userId }, relations: { wallet: true, bankAccounts: true } })
-                if (!res2.status) {
-                    savedTransaction.status = "failed";                                // set failed transaction status
-                    updatedtransaction = await queryRunner.manager.save(savedTransaction)        // save the trasnaction
-                    await queryRunner.commitTransaction()
-                    await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , 
-                        'تایید برداشت' , ` ${req.user.firstName} واریز را به صورت دستی اعتبار سنجی کرد` , {
-                        userName : user.firstName,
-                        lastName : user.lastName,
-                        amount : savedTransaction.amount,
-                        balance : user.wallet.balance
-                    } , 1) 
-
-                    return res.status(200).json({ msg: "تراکنش از جانب بانک رد شد و به لیست تراکنش های نا موفق منتقل شد", transaction: savedTransaction, bank: user.bankAccounts[0].cardNumber })
-                } else if ((res2.status && res2.code == 100 )|| (res2.status && res2.code == 101)) {
-                    const currentBalance = +user.wallet.balance;
-                    const paymentAmount = +paymentInfo.amount;
-                    user.wallet.balance = Math.round(currentBalance + paymentAmount);
-                    await queryRunner.manager.save(user.wallet)
-                    // await this.walletRepository.save([user.wallet]);
-                    savedTransaction.status = "completed";                         // make status completed
-                    savedTransaction.invoiceId = res2.data.ref_id
-                    updatedtransaction = await queryRunner.manager.save(savedTransaction)
-                    // let updatedtransaction = await this.walletTransactionRepository.save(savedTransaction);
-                    // let nameFamily = user.firstName +' '+  user.lastName
-                    await queryRunner.commitTransaction()
-                    // this.smsService.sendGeneralMessage(user.phoneNumber, "deposit", user.firstName, paymentAmount / 10, null)
-                    await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , 
-                        'تایید برداشت' , ` ${req.user.firstName} واریز را به صورت دستی اعتبار سنجی کرد` , {
-                        userName : user.firstName,
-                        lastName : user.lastName,
-                        amount : paymentAmount,
-                        balance : user.wallet.balance
-                    } , 1) 
-                    
-                    return res.status(200).json({ msg: "تراکنش از سمت بانک تایید شد و به لیست تراکنش های موفق اضافه شد.", transaction: updatedtransaction, bank: res2.data.card_pan, referenceId: res2.data.ref_id })
+            else if (statusOfTransAction.status == 'VERIFIED') {
+                return next(new responseModel(req, res, 'تراکنش قبلا اعتبار سنجی شده است', 'admin service', 400, 'تراکنش قبلا اعتبار سنجی شده است', null))
+            } else if (statusOfTransAction.status == 'REVERSED') {
+                return next(new responseModel(req, res, 'تراکنش از سمت درگاه برگشت خورده است', 'admin service', 400, 'تراکنش از سمت درگاه برگشت خورده است', null))
+            } else if (statusOfTransAction.status == 'PAID' || statusOfTransAction.status == 'FAILED') {
+                console.log('its first entry . . .' , authority)
+                let info = { status : 'OK', authority }
+                let res2 = await this.zpService.verifyPayment(info)
+                const paymentInfo = await this.paymentInfoRepository.findOneByOrFail({ authority: info.authority })
+                let queryRunner = AppDataSource.createQueryRunner()
+                await queryRunner.connect()
+                await queryRunner.startTransaction()
+                const savedTransaction = await this.walletTransactionRepository.findOneBy({ id: paymentInfo.invoiceId })
+                if (savedTransaction.status != "pending") {
+                    await queryRunner.release()
+                    return res.status(400).json({ msg: "تراکنش قبلا اعتبارسنجی شده است" })
                 }
-            } catch (error) {
-                await queryRunner.rollbackTransaction()
-                console.log("error in save transaction status", error);
-                return res.status(500).json({ msg: "خطای داخلی سیستم" });
-            } finally {
-                await queryRunner.release()
+                if (res2.status == 'unknown'){
+                    return res.status(400).json({msg : 'سیستم قادر به اعتبار سنجی تراکنش نمیباشد'})
+                }
+                let updatedtransaction;
+                try {
+                    const user = await this.userRepository.findOne({ where: { id: paymentInfo.userId }, relations: { wallet: true, bankAccounts: true } })
+                    if (!res2.status) {
+                        savedTransaction.status = "failed";                                // set failed transaction status
+                        updatedtransaction = await queryRunner.manager.save(savedTransaction)        // save the trasnaction
+                        await queryRunner.commitTransaction()
+                        await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , 
+                            'تایید برداشت' , ` ${req.user.firstName} واریز را به صورت دستی اعتبار سنجی کرد` , {
+                            userName : user.firstName,
+                            lastName : user.lastName,
+                            amount : savedTransaction.amount,
+                            balance : user.wallet.balance
+                        } , 1) 
+    
+                        return res.status(200).json({ msg: "تراکنش از جانب بانک رد شد و به لیست تراکنش های نا موفق منتقل شد", transaction: savedTransaction, bank: user.bankAccounts[0].cardNumber })
+                    } else if ((res2.status && res2.code == 100 )|| (res2.status && res2.code == 101)) {
+                        const currentBalance = +user.wallet.balance;
+                        const paymentAmount = +paymentInfo.amount;
+                        user.wallet.balance = Math.round(currentBalance + paymentAmount);
+                        await queryRunner.manager.save(user.wallet)
+                        // await this.walletRepository.save([user.wallet]);
+                        savedTransaction.status = "completed";                         // make status completed
+                        savedTransaction.invoiceId = res2.data.ref_id
+                        updatedtransaction = await queryRunner.manager.save(savedTransaction)
+                        // let updatedtransaction = await this.walletTransactionRepository.save(savedTransaction);
+                        // let nameFamily = user.firstName +' '+  user.lastName
+                        await queryRunner.commitTransaction()
+                        // this.smsService.sendGeneralMessage(user.phoneNumber, "deposit", user.firstName, paymentAmount / 10, null)
+                        await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , 
+                            'تایید برداشت' , ` ${req.user.firstName} واریز را به صورت دستی اعتبار سنجی کرد` , {
+                            userName : user.firstName,
+                            lastName : user.lastName,
+                            amount : paymentAmount,
+                            balance : user.wallet.balance
+                        } , 1) 
+                        
+                        return res.status(200).json({ msg: "تراکنش از سمت بانک تایید شد و به لیست تراکنش های موفق اضافه شد.", transaction: updatedtransaction, bank: res2.data.card_pan, referenceId: res2.data.ref_id })
+                    }
+                } catch (error) {
+                    await queryRunner.rollbackTransaction()
+                    console.log("error in save transaction status", error);
+                    return res.status(500).json({ msg: "خطای داخلی سیستم" });
+                } finally {
+                    await queryRunner.release()
+                }
+            }else{
+                return next(new responseModel(req, res, 'سیستم قادر به تعیین وضعیت تراکنش نیست', 'admin service', 400, 'سیستم قادر به تعیین وضعیت تراکنش نیست', null))
             }
         } catch (error) {
             console.log("error in verify transaction", error);
@@ -526,85 +562,102 @@ export default class adminController {
      * @param response 
      * @returns 
      */
-    async handledVerify(req: Request, res: Response , next:NextFunction) {
+    async handledVerify(req: Request, res: Response, next: NextFunction) {
         try {
             let { authority } = req.body;
             const error = validationResult(req)
             if (!error.isEmpty()) {
                 console.log(error)
-                return next(new responseModel(req, res , '' ,'admin service', 400, error['errors'][0].msg, null))
+                return next(new responseModel(req, res, '', 'admin service', 400, error['errors'][0].msg, null))
             }
-            let res2 = await this.zpService.handledVerify(authority)           // verify in zarinpal
-            const paymentInfo = await this.paymentInfoRepository.findOneByOrFail({ authority: authority })   // find the paymentInfo
-            const queryRunner = AppDataSource.createQueryRunner()
-            await queryRunner.connect()
-            await queryRunner.startTransaction()               // start the transAction for database
-            let updatedtransaction: any;
-            try {
-                const systemUser = await this.userRepository.findOne({ where: { isSystemUser: true }, relations: ["wallet"] });     // get khazane tala
-                let savedTransaction = await this.invoicesRepository.findOne({ where: { id: paymentInfo.invoiceId }, relations: { seller: { wallet: true }, buyer: { wallet: true, bankAccounts: true } } }) // get the transaction that saved in database
-                if (savedTransaction.status != "pending") {
-                    console.log('the status was not pending . . .', savedTransaction)
-                    await queryRunner.release()
-                    return res.status(400).json({ msg: "تراکنش قبلا اعتبارسنجی شده است" })
-                }
-                if (!res2.status) {                                              //!!! if the zarinpal failed the transActions !!!//
-                    console.log('the zarinpal failed the transaction', res2)
-                    savedTransaction.status = "failed";                                     // just here is for failed . . .
-                    updatedtransaction = await queryRunner.manager.save(savedTransaction)       // save the transaction
-                    await queryRunner.commitTransaction()
-                    await queryRunner.release()                                        // release the transaction
-                    console.log('after failed the transaction buy zarinpal>>>', updatedtransaction)
-                    return res.status(200).json({ msg: "پرداخت ناموفق", transaction: updatedtransaction, bank: savedTransaction.buyer.bankAccounts[0].cardNumber, response: res2.data })
-                } else if (res2.code && res2.code == 100) {                                                   // if the zarinpal approve the transction
-                    const buyerGoldWeight = parseFloat(savedTransaction.buyer.wallet.goldWeight.toString());
-                    const transactionGoldWeight = parseFloat(savedTransaction.goldWeight.toString());
-                    const systemUserGoldWeight = parseFloat(systemUser.wallet.goldWeight.toString());
-                    const systemUserBalance = parseFloat(systemUser.wallet.balance.toString());
-                    const transactionTotalPrice = parseFloat(savedTransaction.totalPrice.toString());
-                    savedTransaction.buyer.wallet.goldWeight = parseFloat((buyerGoldWeight + transactionGoldWeight).toFixed(3)); // update the gold weight
-                    console.log('after updating the goldwaeight', savedTransaction.buyer.wallet.goldWeight)
-                    systemUser.wallet.goldWeight = parseFloat((systemUserGoldWeight - transactionGoldWeight).toFixed(3));   // update the system goldWeight
-                    console.log('after updating the goldwaeight222222', savedTransaction.buyer.wallet.goldWeight)
-                    systemUser.wallet.balance = parseFloat((systemUserBalance + transactionTotalPrice).toFixed(3));             // update the systemuser wallet balance
-                    console.log('beforrrrrrrrrrrrr', systemUserBalance)
-                    console.log('beforrrrrrrrrrrrr22222222222222', transactionTotalPrice)
-                    console.log('come till here . . .<<<<<<<>>>>>>>>>>>>>', systemUser.wallet.balance)
-                    await queryRunner.manager.save(savedTransaction.buyer.wallet)                // save the transactions
-                    await queryRunner.manager.save(systemUser.wallet)
-                    // await this.walletRepository.save([savedTransaction.buyer.wallet, systemUser.wallet]);
+            let statusOfTransAction = await this.zpService.getTransActionStatus(authority)
+            if (statusOfTransAction.status == 'IN_BANK') {
+                return next(new responseModel(req, res, 'تراکنش در درگاه میباشد', 'admin service', 400, 'تراکنش در درگاه میباشد', null))
+            }
+            else if (statusOfTransAction.status == 'VERIFIED') {
+                return next(new responseModel(req, res, 'تراکنش قبلا اعتبار سنجی شده است', 'admin service', 400, 'تراکنش قبلا اعتبار سنجی شده است', null))
+            } else if (statusOfTransAction.status == 'REVERSED') {
+                return next(new responseModel(req, res, 'تراکنش از سمت درگاه برگشت خورده است', 'admin service', 400, 'تراکنش از سمت درگاه برگشت خورده است', null))
+            } else if (statusOfTransAction.status == 'PAID' || statusOfTransAction.status == 'FAILED') {
+                let res2 = await this.zpService.handledVerify(authority)           // verify in zarinpal
+                const paymentInfo = await this.paymentInfoRepository.findOneByOrFail({ authority: authority })   // find the paymentInfo
+                const queryRunner = AppDataSource.createQueryRunner()
+                await queryRunner.connect()
+                await queryRunner.startTransaction()               // start the transAction for database
+                let updatedtransaction: any;
+                try {
+                    const systemUser = await this.userRepository.findOne({ where: { isSystemUser: true }, relations: ["wallet"] });     // get khazane tala
+                    let savedTransaction = await this.invoicesRepository.findOne({ where: { id: paymentInfo.invoiceId }, relations: { seller: { wallet: true }, buyer: { wallet: true, bankAccounts: true } } }) // get the transaction that saved in database
+                    if (savedTransaction.status != "pending") {
+                        console.log('the status was not pending . . .', savedTransaction)
+                        // await queryRunner.release()
+                        return res.status(400).json({ msg: "تراکنش قبلا اعتبارسنجی شده است" })
+                    }
+                    if (res2.status == 'unknown'){
+                        return res.status(400).json({ msg: "سیستم قادر به اعتبار سنجی تراکنش نمیباشد." })
+                    }
+                    if (!res2.status) {                                              //!!! if the zarinpal failed the transActions !!!//
+                        console.log('the zarinpal failed the transaction', res2)
+                        savedTransaction.status = "failed";                                     // just here is for failed . . .
+                        updatedtransaction = await queryRunner.manager.save(savedTransaction)       // save the transaction
+                        await queryRunner.commitTransaction()
+                        await queryRunner.release()                                        // release the transaction
+                        console.log('after failed the transaction buy zarinpal>>>', updatedtransaction)
+                        return res.status(200).json({ msg: "پرداخت ناموفق", transaction: updatedtransaction, bank: savedTransaction.buyer.bankAccounts[0].cardNumber, response: res2.data })
+                    } else if (res2.code && res2.code == 100) {                                                   // if the zarinpal approve the transction
+                        const buyerGoldWeight = parseFloat(savedTransaction.buyer.wallet.goldWeight.toString());
+                        const transactionGoldWeight = parseFloat(savedTransaction.goldWeight.toString());
+                        const systemUserGoldWeight = parseFloat(systemUser.wallet.goldWeight.toString());
+                        const systemUserBalance = parseFloat(systemUser.wallet.balance.toString());
+                        const transactionTotalPrice = parseFloat(savedTransaction.totalPrice.toString());
+                        savedTransaction.buyer.wallet.goldWeight = parseFloat((buyerGoldWeight + transactionGoldWeight).toFixed(3)); // update the gold weight
+                        console.log('after updating the goldwaeight', savedTransaction.buyer.wallet.goldWeight)
+                        systemUser.wallet.goldWeight = parseFloat((systemUserGoldWeight - transactionGoldWeight).toFixed(3));   // update the system goldWeight
+                        console.log('after updating the goldwaeight222222', savedTransaction.buyer.wallet.goldWeight)
+                        systemUser.wallet.balance = parseFloat((systemUserBalance + transactionTotalPrice).toFixed(3));             // update the systemuser wallet balance
+                        console.log('beforrrrrrrrrrrrr', systemUserBalance)
+                        console.log('beforrrrrrrrrrrrr22222222222222', transactionTotalPrice)
+                        console.log('come till here . . .<<<<<<<>>>>>>>>>>>>>', systemUser.wallet.balance)
+                        await queryRunner.manager.save(savedTransaction.buyer.wallet)                // save the transactions
+                        await queryRunner.manager.save(systemUser.wallet)
+                        // await this.walletRepository.save([savedTransaction.buyer.wallet, systemUser.wallet]);
 
-                    savedTransaction.status = "completed";                        // change transaction status
-                    savedTransaction.invoiceId = res2.data.ref_id
-                    await queryRunner.manager.save(savedTransaction)
-                    // updatedtransaction = await this.invoiceRepository.save(savedTransaction);
-                    // let nameFamily = savedTransaction.buyer.firstName +' '+ savedTransaction.buyer.lastName
-                    this.smsService.sendGeneralMessage(savedTransaction.buyer.phoneNumber, "buy", savedTransaction.buyer.firstName, transactionGoldWeight, transactionTotalPrice / 10)
-                    console.log('after completed the transactional db>>>', updatedtransaction)
-                    await queryRunner.commitTransaction()
-                    
-                    await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , 'اعتبار سنجی خرید از درگاه' , ` ${req.user.firstName} خرید انلاین را به صورت دستی اعتبار سنجی کرد` , {
-                        userName : savedTransaction.buyer.firstName,
-                        lastName : savedTransaction.buyer.lastName,
-                        amount : savedTransaction.goldWeight,
-                        balance : savedTransaction.buyer.wallet.goldWeight
-                    } , 1) 
-                    
-                    return res.status(200).json({ msg: "پرداخت موفق", transaction: updatedtransaction, bank: res2.data.card_pan, data: res2.data, referenceID: res2.data?.ref_id })
+                        savedTransaction.status = "completed";                        // change transaction status
+                        savedTransaction.invoiceId = res2.data.ref_id
+                        await queryRunner.manager.save(savedTransaction)
+                        // updatedtransaction = await this.invoiceRepository.save(savedTransaction);
+                        // let nameFamily = savedTransaction.buyer.firstName +' '+ savedTransaction.buyer.lastName
+                        this.smsService.sendGeneralMessage(savedTransaction.buyer.phoneNumber, "buy", savedTransaction.buyer.firstName, transactionGoldWeight, transactionTotalPrice / 10)
+                        console.log('after completed the transactional db>>>', updatedtransaction)
+                        await queryRunner.commitTransaction()
+
+                        await this.loggerService.addNewAdminLog({ firstName: req.user.firstName, lastName: req.user.lastName, phoneNumber: req.user.phoneNumber }, 'اعتبار سنجی خرید از درگاه', ` ${req.user.firstName} خرید انلاین را به صورت دستی اعتبار سنجی کرد`, {
+                            userName: savedTransaction.buyer.firstName,
+                            lastName: savedTransaction.buyer.lastName,
+                            amount: savedTransaction.goldWeight,
+                            balance: savedTransaction.buyer.wallet.goldWeight
+                        }, 1)
+
+                        return res.status(200).json({ msg: "پرداخت موفق", transaction: updatedtransaction, bank: res2.data.card_pan, data: res2.data, referenceID: res2.data?.ref_id })
+                    }
+                } catch (error) {    // if inner error occured . . .
+                    console.log('here is heppend caust we catched error . . .', `${error}`)
+                    await queryRunner.rollbackTransaction()            // role back
+                    // let savedTransaction = await this.invoiceRepository.findOne({where:{ id : paymentInfo.invoiceId}})
+                    // savedTransaction.status = "pending";
+                    // await this.invoiceRepository.save(savedTransaction);
+                    // let updatedTransAction = await this.invoiceRepository.findOne({ where: { id: paymentInfo.invoiceId }, relations: { seller: { wallet: true }, buyer: { wallet: true, bankAccounts: true } } })
+                    // console.log('after catching error in verification>>>>', updatedTransAction)
+                    console.log("error in save transaction status and transAction rolledBack  and relaesed . . .", error);
+                    return res.status(500).json({ msg: "خطای داخلی سیستم" });
+                } finally {
+                    await queryRunner.release()
                 }
-            } catch (error) {    // if inner error occured . . .
-                console.log('here is heppend caust we catched error . . .', `${error}`)
-                await queryRunner.rollbackTransaction()            // role back
-                // let savedTransaction = await this.invoiceRepository.findOne({where:{ id : paymentInfo.invoiceId}})
-                // savedTransaction.status = "pending";
-                // await this.invoiceRepository.save(savedTransaction);
-                // let updatedTransAction = await this.invoiceRepository.findOne({ where: { id: paymentInfo.invoiceId }, relations: { seller: { wallet: true }, buyer: { wallet: true, bankAccounts: true } } })
-                // console.log('after catching error in verification>>>>', updatedTransAction)
-                console.log("error in save transaction status and transAction rolledBack  and relaesed . . .", error);
-                return res.status(500).json({ msg: "خطای داخلی سیستم" });
-            } finally {
-                await queryRunner.release()
             }
+            else {
+                return next(new responseModel(req, res, 'سیستم قادر به تعیین وضعیت تراکنش نیست', 'admin service', 400, 'سیستم قادر به تعیین وضعیت تراکنش نیست', null))
+            }
+
         } catch (error) {                   // if outer error catched
             console.log("error in verify transaction", error);
             // let savedTransaction = await this.invoiceRepository.findOne({where : { id : paymentInfo.invoiceId} , relations : { seller : {wallet : true},buyer : {wallet : true, bankAccounts : true}}})

@@ -31,7 +31,7 @@ export class SmsService{
                         if (status == 200 && correctStatuses.includes(res[0].status)) {
                             return {success : true , msg :'پیامک ارسال شد'}                 
                         }else{
-                            monitor.error.push(`error in sending message to user in kavenegar :: ${res}`)
+                            monitor.error.push(`error in sending message to user in kavenegar :: ${res} for phoneNumber ${phoneNumber}  and message template ${template} `)
                             return {success : false ,msg : "خطا در ارسال پیامک"}
                         }
                     });

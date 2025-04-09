@@ -165,7 +165,6 @@ export default class inPersonController {
 
             isMatch = res.data.isMatched ? true : false
 
-
             if (isMatch) {
                 let trackIdData: trackIdInterface = {
                     trackId: res.headers['track-code'],
@@ -194,10 +193,27 @@ export default class inPersonController {
                 return isMatch
             }
         } catch (error) {
-            console.log('error>>>>>' , `${error}`)
+
+            if (error.response.headers['track-code']) {
+                let trackIdData: trackIdInterface = {
+                    trackId: error.response.headers['track-code'],
+                    // firstName : firstName,
+                    // lastName : lastName,
+                    // fatherName : fatherName,
+                    phoneNumber: phoneNumber,
+                    status: false
+                }
+                let trackIdService = new internalDB()
+                let DBStatus = await trackIdService.saveData(trackIdData)
+                console.log('data base saver result>>>', DBStatus)
+                if (+error.response.status >= 500) {
+                    return 500
+                }
+            }
+            console.log('error>>>>>', `${error}`)
             monitor.error.push(`error in check card and national code of userssss ${error}`)
             // console.log('error in ismatch national code', `${error}`)
-            return false
+            return 'unknown'
         }
     }
 
@@ -386,10 +402,17 @@ export default class inPersonController {
         await queryRunner.startTransaction()
         try {
             let isMatchNationalCod = await this.checkMatchOfPhoneAndNationalCode({ phoneNumber, nationalCode })
-            if (!isMatchNationalCod) {
-                // await queryRunner.rollbackTransaction()
-                return res.status(400).json({ msg: "کد ملی با شماره تلفن تطابق ندارد" })
+
+            if (isMatchNationalCod == 'unknown') {
+                return res.status(500).json({ msg: 'خطای داخلی سیستم' })
             }
+            if (isMatchNationalCod == 500) {
+                return res.status(500).json({ msg: 'سیستم شاهکار موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
+            }
+            if (isMatchNationalCod == false) {
+                return res.status(400).json({ msg: 'شماره تلفن با شماره ملی مطابقت ندارد' })
+            }
+
             let shahkarToken = await this.getToken()
             if (shahkarToken == null || shahkarToken == undefined) {
                 return res.status(500).json({ err: "error get token from server" })
@@ -530,6 +553,13 @@ export default class inPersonController {
         if (!goldPrice || !goldWeight || !invoiceId || !totalPrice || !nationalCode) {
             return next(new responseModel(req, res, '' ,'admin service', 400, 'لطفا ورودی هارا با دقت پر کنید', null))
         }
+        
+        if (totalPrice.toString().includes(',')){
+            totalPrice  = totalPrice.replaceAll(',' , '')
+            console.log('new totalPrice , ' , totalPrice)
+        }
+        console.log('tot' , totalPrice)
+
         let admin = `${req.user.firstName}-${req.user.lastName}`
         let queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
@@ -590,6 +620,11 @@ export default class inPersonController {
         if (!error.isEmpty()) {
             return next(new responseModel(req, res, error['errors'][0].msg , 'admin service', 400, error['errors'][0].msg, null))
         }
+        if (totalPrice.toString().includes(',')){
+            totalPrice  = totalPrice.replaceAll(',' , '')
+            console.log('new totalPrice , ' , totalPrice)
+        }
+        console.log('tot' , totalPrice)
         console.log(req.body)
         let admin = `${req.user.firstName}-${req.user.lastName}`
         let queryRunner = AppDataSource.createQueryRunner()

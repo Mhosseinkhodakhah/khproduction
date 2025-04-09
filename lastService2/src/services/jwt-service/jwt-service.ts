@@ -1,7 +1,6 @@
 
 import * as jwt from "jsonwebtoken";
 
-
 export class JwtService{
 
     async generateToken (user){        

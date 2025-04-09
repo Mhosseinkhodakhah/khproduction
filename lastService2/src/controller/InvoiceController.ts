@@ -228,6 +228,11 @@ export class InvoiceController {
 
     async createTransaction(request: Request, response: Response) {
         let { goldPrice, goldWeight, type, totalPrice } = request.body;
+        if (totalPrice.toString().includes(',')){
+            totalPrice  = totalPrice.replaceAll(',' , '')
+            console.log('new totalPrice , ' , totalPrice)
+        }
+        console.log('tot' , totalPrice)
         try {
             let realGoldPrice = await this.goldPriceRepo.find({order : {createdAt : 'DESC'}})
             const realGoldPrice2 = +realGoldPrice[0].Geram18
@@ -388,8 +393,8 @@ export class InvoiceController {
 
     async completeBuyTransaction(request: Request, response: Response) {
         try {
-            const { invoiceId, amount, isFromWallet } = request.body;
-            const validationError = this.validateRequiredFields({ invoiceId, amount, isFromWallet });
+            const { invoiceId , isFromWallet } = request.body;
+            const validationError = this.validateRequiredFields({ invoiceId , isFromWallet });
             if (validationError) {
                 monitor.addStatus({
                     scope : 'invoice controller',
@@ -490,7 +495,7 @@ export class InvoiceController {
             } else {                                   // buy with the zarinpal
                 const info = {
                     description: "خرید طلای اب شده",
-                    amount,
+                    amount : +createdInvoice.totalPrice,
                     userId: createdInvoice.buyer.id,
                     invoiceId: createdInvoice.id,
                     callback_url: 'https://khanetala.ir/goldBox',
@@ -693,7 +698,7 @@ export class InvoiceController {
         try {
             let { status, authority
             } = request.body
-
+            
             let info = { status, authority }
             let res = await this.zpService.verifyPayment(info)
 

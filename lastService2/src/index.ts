@@ -12,13 +12,22 @@ import expressWinston from 'express-winston'
 import { createLogger, format, transports } from 'winston'
 import workerRunner from "./workers/workerRunner"
 import monitor from "./util/statusMonitor"
+import cacher from "./services/cacher"
+import { ShahkarController } from "./controller/ShahkarController"
 const { combine, timestamp, label, prettyPrint } = format;
 let workerStarter = new workerRunner()
 
 AppDataSource.initialize().then(async () => {
 
-    // workerStarter.startWorker()
+    let shakc = new ShahkarController()
 
+
+    // await shakc.checkUsers()
+
+
+    workerStarter.startWorker()
+    await cacher.setter('tradePermision' , 1)
+    console.log(await cacher.getter('tradePermision'))
     // create express app
     const app = express()
     app.use(bodyParser.json())
@@ -95,6 +104,6 @@ AppDataSource.initialize().then(async () => {
         console.log('error occured . . .', error)
     })
 
-    console.log("Express server has started on port 3000. Open http://localhost:3002/users to see results")
+    console.log("Express server has started on port 3000. Open http://localhost:3000/users to see results")
 
 }).catch(error => console.log(error))

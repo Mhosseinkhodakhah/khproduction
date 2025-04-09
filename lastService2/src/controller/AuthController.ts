@@ -11,7 +11,7 @@ export class AuthController {
 
     async register(request: Request, response: Response , next : any) {
         const { phoneNumber, password } = request.body;
-
+        
     //     scope: string,
     // status: number,
     // error: string | null,
@@ -69,7 +69,7 @@ export class AuthController {
                     status : 0,
                     error : 'حساب کاربری یافت نشد'
                 })
-                return response.status(401).json({ message: "Invalid credentials." });
+                return response.status(400).json({ message: "Invalid credentials." });
             }
 
             const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -79,7 +79,7 @@ export class AuthController {
                     status : 0,
                     error : 'رمز عبور نادرست است'
                 })
-                return response.status(401).json({ message: "Invalid credentials." });
+                return response.status(403).json({ message: "Invalid credentials." });
             }
 
             const token = jwt.sign({ userId: user.id}, "your_secret_key", { expiresIn: "7d" });

@@ -16,6 +16,7 @@ import { EstimateTransactions } from "../entity/EstimateTransactions";
 import { responseModel } from "../util/response.model";
 import { validationResult } from "express-validator";
 import monitor from "../util/statusMonitor";
+import logger from "../services/interservice/logg.service";
 
 
 
@@ -29,6 +30,8 @@ export class PhoneInvoiceController {
     private paymentInfoRepository = AppDataSource.getRepository(PaymentInfo)
     private estimate = AppDataSource.getRepository(EstimateTransactions)
     private smsService = new SmsService()
+    private loggerService = new logger()
+    
 
     validateRequiredFields(fields: Record<string, any>): string | null {
         const missingFields = Object.keys(fields).filter(key => fields[key] === undefined || fields[key] === null);
@@ -241,6 +244,11 @@ export class PhoneInvoiceController {
     async createPhoneBuyInvoice(req: Request, res: Response, next : NextFunction){
         console.log('req.body>>>>' , req.body)
         let { goldPrice, goldWeight, totalPrice , userId  ,description , invoiceId} = req.body;
+        if (totalPrice.toString().includes(',')){
+            totalPrice  = totalPrice.replaceAll(',' , '')
+            console.log('new totalPrice , ' , totalPrice)
+        }
+        console.log('tot' , totalPrice)
         //  const error = validationResult(req)
         //         if (!error.isEmpty()) {
         //             return next(new responseModel(req, res, error['errors'][0].msg , 'create call buy invoice', 400, error['errors'][0].msg, null))
@@ -292,10 +300,24 @@ export class PhoneInvoiceController {
             await queryRunner.manager.save(paymentInfo)
             await queryRunner.commitTransaction()
            this.smsService.sendGeneralMessage(user.phoneNumber, "sellcall", user.firstName, goldWeight, totalPrice)
+           
+          try {
+            await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
+                'ایجاد تراکنش خرید' , `admin ${req.user.firstName} create new buy invoice in phone transAction` ,{
+               userName : savedTransAction.buyer.firstName,
+               lastName : savedTransAction.buyer.lastName,
+               amount : savedTransAction.goldWeight,
+               balance : savedTransAction.totalPrice
+           } , 1)
+          } catch (error) {
+            console.log('here is the fucking error in record the log')
+          }
+
+
            return next(new responseModel(req, res, '' ,'create call buy invoice', 201, null,{
             msg: "فاکتور با موفقیت ثبت شد",
             invoice:invoiceTransaction,
-            wallet: user.wallet,
+            buyer: user.wallet,
             }))
         } catch (error) {
             console.log('transaction failed' , error)
@@ -335,15 +357,12 @@ export class PhoneInvoiceController {
         });
 
         try{
-
+            
             const buyerGoldWeight = parseFloat(invoice.buyer.wallet.goldWeight.toString());
             const transactionGoldWeight = parseFloat(invoice.goldWeight.toString());
             const systemUserGoldWeight = parseFloat(systemUser.wallet.goldWeight.toString());
             const systemUserBalance = parseFloat(systemUser.wallet.balance.toString());
             const transactionTotalPrice = parseFloat(invoice.totalPrice.toString());
-    
-
-            
             invoice.buyer.wallet.goldWeight = parseFloat((buyerGoldWeight + transactionGoldWeight).toFixed(3));
             console.log('after updating the goldwaeight', invoice.buyer.wallet.goldWeight)
             systemUser.wallet.goldWeight = parseFloat((systemUserGoldWeight - transactionGoldWeight).toFixed(3));
@@ -355,17 +374,26 @@ export class PhoneInvoiceController {
             invoice.accounterId=accounterId
             invoice.status = "completed";
             invoice.accounterDescription=description
-
-
-             
-            await queryRunner.manager.save(invoice)
+            
+            let updated = await queryRunner.manager.save(invoice)
             await queryRunner.manager.save([invoice.buyer.wallet, systemUser.wallet])
-
-
  
             await this.estimateWeight(buyerGoldWeight,1)
             await queryRunner.commitTransaction()
             this.smsService.sendGeneralMessage(invoice.buyer.phoneNumber, "buy", invoice.buyer.firstName,invoice.goldWeight ,invoice.totalPrice )
+            
+          try {
+            await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
+                'تایید تراکنش خرید' , `accountant ${req.user.firstName} approved new buy invoice in phone transAction` ,{
+               userName : updated.buyer.firstName,
+               lastName : updated.buyer.lastName,
+               amount : updated.goldWeight,
+               balance : updated.totalPrice
+           } , 1)
+          } catch (error) {
+            console.log('here is the fucking error in record the log')
+          }
+            
             return next(new responseModel(req, res, '','approve call buy invoce', 200, null,invoice))
         }catch(err){
             console.log(err);
@@ -404,9 +432,22 @@ export class PhoneInvoiceController {
             invoice.accounterDescription=description
            
             
-            await queryRunner.manager.save(invoice)
+            let updated = await queryRunner.manager.save(invoice)
             await queryRunner.commitTransaction()
             this.smsService.sendGeneralMessage(invoice.buyer.phoneNumber, "rejectcall", invoice.buyer.firstName, invoice.goldWeight ,invoice.totalPrice )
+            
+            try {
+                await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
+                    'رد کردن تراکنش خرید' , `accountant ${req.user.firstName} reject buy invoice in phone transAction` ,{
+                   userName : updated.buyer.firstName,
+                   lastName : updated.buyer.lastName,
+                   amount : updated.goldWeight,
+                   balance : updated.totalPrice
+               } , 1)
+              } catch (error) {
+                console.log('here is the fucking error in record the log')
+              }
+
             return next(new responseModel(req, res, '' ,'reject call buy invoice', 200, null,invoice))
         }catch(err){
             await queryRunner.rollbackTransaction()
@@ -463,10 +504,14 @@ export class PhoneInvoiceController {
         
     }
     
-    
     async createSellCall (req: Request, res: Response, next : NextFunction){
         let { goldPrice, goldWeight, totalPrice , userId  ,description ,invoiceId} = req.body;
         const accounterId=`${req.user.id}-${req.user.firstName}-${req.user.lastName}`;
+        if (totalPrice.toString().includes(',')){
+            totalPrice  = totalPrice.replaceAll(',' , '')
+            console.log('new totalPrice , ' , totalPrice)
+        }
+        console.log(totalPrice)
         // const error = validationResult(req)
         // if (!error.isEmpty()) {
         //     return next(new responseModel(req, res, error['errors'][0].msg , 'create call sell invoice', 400, error['errors'][0].msg, null))
@@ -515,10 +560,23 @@ export class PhoneInvoiceController {
             systemUser.wallet.goldWeight=parseFloat((systemUserGoldWeight + transactionGoldWeight).toFixed(3));
             
             await queryRunner.manager.save([user.wallet,systemUser.wallet])
-            await queryRunner.manager.save(invoiceTransaction)
+            let updated = await queryRunner.manager.save(invoiceTransaction)
             await this.estimateWeight(goldWeight,0)
             await queryRunner.commitTransaction()
             this.smsService.sendGeneralMessage(user.phoneNumber, "selldasti", user.firstName, goldPrice, totalPrice)
+            
+            try {
+                await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
+                    'ایجاد فاکتور فروش تلفنی' , `accountant ${req.user.firstName} approved new sell invoice in phone transAction` ,{
+                   userName : updated.buyer.firstName,
+                   lastName : updated.buyer.lastName,
+                   amount : updated.goldWeight,
+                   balance : updated.totalPrice
+               } , 1)
+              } catch (error) {
+                console.log('here is the fucking error in record the log')
+              }
+              
             return next(new responseModel(req, res,'','create call buy invoice', 201, null,{
                 msg: "فاکتور با موفقیت ثبت شد",
                 invoice:invoiceTransaction,

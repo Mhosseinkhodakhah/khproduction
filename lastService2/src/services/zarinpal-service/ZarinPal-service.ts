@@ -29,7 +29,7 @@ export class ZarinPalService {
             callback_url: callback_url,
             description: description,
             metadata: {
-              // card_pan:cardPan,
+              card_pan:cardPan,
               mobile: phoneNumber
             }
           }, {
@@ -50,12 +50,12 @@ export class ZarinPalService {
           console.log('redirect url' , url)
           return {url : url , authority : response.data.data.authority , invoiceId : invoiceId}
         } catch (error){
-          monitor.error.push(`error in initiate payment in zarinpal :: ${error}`)
+          monitor.error.push(error)
           console.error(error);
         }
       }
 
-      async verifyPayment(info) {
+      async verifyPayment (info) {
         if (info.status === 'OK') {
           const paymentInfo = await this.paymentInfoRepository.findOneByOrFail({authority : info.authority})
           console.log('paymentInfo' , paymentInfo)
@@ -68,6 +68,13 @@ export class ZarinPalService {
                 authority: paymentInfo.authority,
               });
               console.log('after the verifying the payment data' , response)
+             
+              console.log('zarinpal status >>>>>' , response.status)
+
+              if (+response.status >= 500){
+                return {status  : false , code : 500}
+              }
+
               if (response.data.code === 100) {
                 console.log('Payment Verified:');
                 console.log('Reference ID:', response.data.ref_id);
@@ -79,14 +86,25 @@ export class ZarinPalService {
                 console.log('Payment already verified.');
                 return {status  : true , code : 101 , data : response.data}
               
-              } else {
+              }else {
                 console.log('Transaction failed with code:', response.data);
                 return {status  : false , data : response.data}
               }
             } catch (error) {
-              monitor.error.push(`error in verifying payment :: ${error}`)
-              console.error('Payment Verification Failed:', error.response.data.errors);
-              return {status  : false }
+              console.log('zarinpal status >>>>>', error.response.status)
+              if (+error.response.status >= 500){
+                return {status  : false , code : 500}
+              }
+              monitor.error.push(error)
+              if (error.response.data.errors){
+                if (error.response.data.errors.message == 'Session is not valid, session is not active paid try.'){
+                  console.log('error.response.data.errors' , error.response.data.errors.code)
+                }
+                console.error('Payment Verification Failed:', error.response.data.errors);
+                return {status  : false}
+              }else{
+                return {status : 'unknown'}
+              }
 
             }
           } else {
@@ -110,37 +128,77 @@ export class ZarinPalService {
       }
 
 
-      async handledVerify(authority : string){
-        const paymentInfo = await this.paymentInfoRepository.findOneByOrFail({authority : authority})
-        if (!paymentInfo){
-          return {status : false  ,data : {message : 'سند تراکنش یافت نشد'}}
-        }
-        
-        try {
-          console.log('after verification of transAction' , paymentInfo.amount);
-          const response = await this.zarinpal.verifications.verify({
-            amount: Math.floor(paymentInfo.amount)*10,
-            authority: paymentInfo.authority,
-          });
-          console.log('after the verifying the payment data' , response)
-          if (response.data.code === 100) {
-            console.log('Payment Verified:');
-            // console.log('Reference ID:', response.data.ref_id);
-            // console.log('Card PAN:', response.data.card_pan);
-            // console.log('Fee:', response.data.fee);
-            return {status  : true , code : 100 , data : response.data}
-          } else if (response.data.code === 101) {
-            console.log('Payment already verified.');
-            return {status  : true , code : 101 , data : response.data}
-          } else {
-            console.log('Transaction failed with code:', response.data.code);
-            return {status  : false , data : response.data}
-          }
-        } catch (error) {
-          monitor.error.push(`error in handle verifying:: ${error}`)
-          console.error('Payment Verification Failed:', error.response.data.errors);
-          return {status  : false  , data : {message : 'خطای داخلی سیستم'}}
-        }
-      }
+  async getTransActionStatus(authority : string) {
+    const paymentInfo = await this.paymentInfoRepository.findOneByOrFail({ authority: authority })
+    if (!paymentInfo) {
+      return { status: false, data: { message: 'سند تراکنش یافت نشد' } }
+    }
+    console.log('after verification of transAction', paymentInfo.amount);
+    const inquiryResult = await this.zarinpal.inquiries.inquire({
+      authority: authority,
+    });
+    console.log('result of inquery', inquiryResult)
+    
+    if (inquiryResult.data.status == 'IN_BANK') {
+      return { status: 'IN_BANK' }
+    }
 
+    else if (inquiryResult.data.status == 'FAILED') {
+      return { status: 'FAILED' }
+    }
+
+    else if (inquiryResult.data.status == 'VERIFIED') {
+      return { status: 'VERIFIED' }
+    }
+
+    else if (inquiryResult.data.status == 'REVERSED') {
+      return { status: 'REVERSED' }
+    }else { 
+      return {status : 'unknown'}
+    }
+  }
+
+  async handledVerify(authority: string) {
+    const paymentInfo = await this.paymentInfoRepository.findOneByOrFail({ authority: authority })
+    if (!paymentInfo) {
+      return { status: false, data: { message: 'سند تراکنش یافت نشد' } }
+    }
+    try {
+        const response = await this.zarinpal.verifications.verify({
+          amount: Math.floor(paymentInfo.amount) * 10,
+          authority: paymentInfo.authority,
+        });
+        console.log('zarinpal status >>>>>' , response.status)
+
+        if (response.data.code === 100) {
+          console.log('Payment Verified:');
+          // console.log('Reference ID:', response.data.ref_id);
+          // console.log('Card PAN:', response.data.card_pan);
+          // console.log('Fee:', response.data.fee);
+          return { status: true, code: 100, data: response.data }
+        } else if (response.data.code === 101) {
+          console.log('Payment already verified.');
+          return { status: true, code: 101, data: response.data }
+        } else {
+          console.log('Transaction failed with code:', response.data.code);
+          return { status: false, data: response.data }
+        }
+    } catch (error) {
+      console.log('zarinpal status >>>>>' , error.response.status)
+
+      const inquiryResult = await this.zarinpal.inquiries.inquire({
+        authority: authority,
+      });
+      monitor.error.push(`error in handle verifying:: ${error}`)
+      console.error('Payment Verification Failed:', error.response.data.errors);
+      if (error.response.data.errors){
+        if (error.response.data.errors.message == 'Session is not valid, session is not active paid try.'){
+          console.log('error.response.data.errors' , error.response.data.errors.code)
+        }
+        return { status: false, data: { message:error.response.data.errors.code}}
+      }else{
+        return {status : 'unknown'}
+      }
+    }
+  }
 }
