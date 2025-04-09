@@ -405,12 +405,10 @@ export default class inPersonController {
 
             if (isMatchNationalCod == 'unknown') {
                 return res.status(500).json({ msg: 'خطای داخلی سیستم' })
-            
             }
             if (isMatchNationalCod == 500) {
                 return res.status(500).json({ msg: 'سیستم شاهکار موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
             }
-
             if (isMatchNationalCod == false) {
                 return res.status(400).json({ msg: 'شماره تلفن با شماره ملی مطابقت ندارد' })
             }
