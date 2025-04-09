@@ -9,44 +9,72 @@ export class ShahkarService {
 
 
 
-     async checkMatchOfPhoneAndNationalCode  (phoneNumber: string ,nationalCode : string)  {
-
+    async checkMatchOfPhoneAndNationalCode(body) {
+        let { phoneNumber, nationalCode } = body
         let checkMatchationUrl = process.env.SHAHKAR_BASE_URL + '/istelamshahkar'
         let isMatch = false
         let token = await this.getToken()
         if (token == null || token == undefined) {
+            console.log('token is not defined....')
             return false
         }
-        console.log(token);
-        try{
-         const result =await  axios.post(checkMatchationUrl , {mobileNumber : phoneNumber
-                , nationalCode} , {headers : { 'Authorization' : token }})
-       //     , nationalCode} , {headers : { 'Authorization' : token }})
-       // axios.post(checkMatchationUrl , {mobileNumber : phoneNumber
-       //      , nationalCode} , {headers : { 'Authorization' : token }}).then((res)=>{
-       //        isMatch  = res.data.isMatched ? true : false 
-       // }).catch((err)=>{
-       //     console.log(err);
-       //     return  err
-       // })
-       let trackIdData : trackIdInterface = {
-           trackId : result.headers['track-code'],
-           // firstName : firstName,
-           // lastName : lastName,
-           // fatherName : fatherName,
-           phoneNumber : phoneNumber,
-           status : result.data.isMatched
-       }
-       let trackIdService = new internalDB()
-       let DBStatus = await trackIdService.saveData(trackIdData)
-       console.log('returned db status>>>>' , DBStatus)
-       return result.data.isMatched
-        }
-       
-        catch(err){
-            console.log(err);
-            return null
-            
+        try {
+            let res = await axios.post(checkMatchationUrl, {
+                mobileNumber: phoneNumber
+                , nationalCode
+            }, { headers: { 'Authorization': token } })
+
+            isMatch = res.data.isMatched ? true : false
+
+            if (isMatch) {
+                let trackIdData: trackIdInterface = {
+                    trackId: res.headers['track-code'],
+                    // firstName : firstName,
+                    // lastName : lastName,
+                    // fatherName : fatherName,
+                    phoneNumber: phoneNumber,
+                    status: true
+                }
+                let trackIdService = new internalDB()
+                let DBStatus = await trackIdService.saveData(trackIdData)
+                console.log('returned db status>>>>', DBStatus)
+                return isMatch
+            } else {
+                let trackIdData: trackIdInterface = {
+                    trackId: res.headers['track-code'],
+                    // firstName : firstName,
+                    // lastName : lastName,
+                    // fatherName : fatherName,
+                    phoneNumber: phoneNumber,
+                    status: false
+                }
+                let trackIdService = new internalDB()
+                let DBStatus = await trackIdService.saveData(trackIdData)
+                console.log('returned db status>>>>', DBStatus)
+                return isMatch
+            }
+        } catch (error) {
+
+            if (error.response.headers['track-code']) {
+                let trackIdData: trackIdInterface = {
+                    trackId: error.response.headers['track-code'],
+                    // firstName : firstName,
+                    // lastName : lastName,
+                    // fatherName : fatherName,
+                    phoneNumber: phoneNumber,
+                    status: false
+                }
+                let trackIdService = new internalDB()
+                let DBStatus = await trackIdService.saveData(trackIdData)
+                console.log('data base saver result>>>', DBStatus)
+                if (+error.response.status >= 500) {
+                    return 500
+                }
+            }
+            console.log('error>>>>>', `${error}`)
+            // monitor.error.push(`error in check card and national code of userssss ${error}`)
+            // console.log('error in ismatch national code', `${error}`)
+            return 'unknown'
         }
     }
 
