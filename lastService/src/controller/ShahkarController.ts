@@ -236,10 +236,11 @@ export class ShahkarController {
             console.log('transaction released')
             await queryRunner.release()
         }
-        }
-                
+        }       
     }
 
+
+    
     async checkMatchPhoneNumberAndCartNumber(info){
         try {
             const username = 'khanetala_pigsb'; 

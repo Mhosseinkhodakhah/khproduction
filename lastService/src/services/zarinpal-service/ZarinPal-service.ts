@@ -55,7 +55,7 @@ export class ZarinPalService {
         }
       }
 
-      async verifyPayment(info) {
+      async verifyPayment (info) {
         if (info.status === 'OK') {
           const paymentInfo = await this.paymentInfoRepository.findOneByOrFail({authority : info.authority})
           console.log('paymentInfo' , paymentInfo)
@@ -68,6 +68,9 @@ export class ZarinPalService {
                 authority: paymentInfo.authority,
               });
               console.log('after the verifying the payment data' , response)
+             
+              console.log('zarinpal status >>>>>' , response.status)
+
               if (response.data.code === 100) {
                 console.log('Payment Verified:');
                 console.log('Reference ID:', response.data.ref_id);
@@ -79,7 +82,7 @@ export class ZarinPalService {
                 console.log('Payment already verified.');
                 return {status  : true , code : 101 , data : response.data}
               
-              } else {
+              }else {
                 console.log('Transaction failed with code:', response.data);
                 return {status  : false , data : response.data}
               }
@@ -90,7 +93,7 @@ export class ZarinPalService {
                   console.log('error.response.data.errors' , error.response.data.errors.code)
                 }
                 console.error('Payment Verification Failed:', error.response.data.errors);
-                return {status  : false }
+                return {status  : false , code : 500}
               }else{
                 return {status : 'unknown'}
               }
