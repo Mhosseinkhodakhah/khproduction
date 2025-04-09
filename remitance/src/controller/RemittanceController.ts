@@ -51,8 +51,13 @@ export class RemittanceController {
 
     async createBuy(req: Request, res: Response, next: NextFunction) {
         const adminId = `${req.user.id}-${req.user.firstName}-${req.user.lastName}`;
-        const { goldPrice, goldWeight, totalPrice, phoneNumber, description, date, destCardPan, originCardPan, time } = req.body;
+        let { goldPrice, goldWeight, totalPrice, phoneNumber, description, date, destCardPan, originCardPan, time } = req.body;
         console.log('test body', req.body)
+        if (totalPrice.toString().includes(',')){
+            totalPrice  = totalPrice.replaceAll(',' , '')
+            console.log('new totalPrice , ' , totalPrice)
+        }
+        console.log('tot' , totalPrice)
         const user = await this.userRepository.findOneBy({ phoneNumber })
 
         if (!user) {
@@ -102,10 +107,14 @@ export class RemittanceController {
     async createSell(req: Request, res: Response, next: NextFunction) {
 
         const adminId=`${req.user.id}-${req.user.firstName}-${req.user.lastName}`;
-        const { goldPrice, goldWeight, totalPrice , phoneNumber  ,description ,date , destCardPan , originCardPan,time} = req.body;
+        let { goldPrice, goldWeight, totalPrice , phoneNumber  ,description ,date , destCardPan , originCardPan,time} = req.body;
         console.log(phoneNumber);
 
-    
+        if (totalPrice.toString().includes(',')){
+            totalPrice  = totalPrice.replaceAll(',' , '')
+            console.log('new totalPrice , ' , totalPrice)
+        }
+        console.log('tot' , totalPrice)
 
         const user=await this.userRepository.findOne({where : {phoneNumber : phoneNumber} , relations : ['wallet']})
         console.log('wallet>>>' , user.wallet)
