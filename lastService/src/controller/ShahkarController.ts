@@ -106,6 +106,9 @@ export class ShahkarController {
             return response.status(500).json({ err : "error get token from server"} )
         }else{
         let body = {birthDate : birthDate , nationalCode : nationalCode}
+        let queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
         try {
             let res = await axios.post(identityInfoUrl , body , {headers : { 'Authorization' : shahkarToken }})
             let info  = res.data 
@@ -113,6 +116,19 @@ export class ShahkarController {
             console.log('shahkar info>>>>' , res)
             if(res.status == 200){
                 if (!info.firstName || !info.lastName || !info.identificationNo || !info.identificationSerial || !info.identificationSeri){
+                    
+                    let trackIdData : trackIdInterface = {
+                        trackId : res.headers['track-code'],
+                        firstName : '',
+                        lastName : '',
+                        fatherName : '',
+                        phoneNumber : '',
+                        status : false
+                    }
+                    let trackIdService = new internalDB()
+                    let DBStatus = await trackIdService.saveData(trackIdData)
+                    console.log('returned db status>>>>' , DBStatus)
+
                     return response.status(500).json({msg : 'کاربر گرامی موقتا سیستم احراز هویت ثبت احوال در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید'})
                 }
                 let  {
@@ -138,15 +154,17 @@ export class ShahkarController {
                     firstName,lastName,phoneNumber,nationalCode,liveStatus,
                     verificationStatus : VerificationStatus.SUCCESS
                 })
-                let savedUser = await  this.userRepository.save(user)
+                let savedUser = await  queryRunner.manager.save(user)
                 console.log(savedUser)
                 const wallet = this.walletRepository.create({
                     balance: 0, 
                     goldWeight: 0, 
                     user: savedUser,
                 });
-                await this.walletRepository.save(wallet)
-                let token =await this.jwtService.generateToken(savedUser)
+                // await this.walletRepository.save(wallet)
+                await queryRunner.manager.save(wallet)
+                let token = await this.jwtService.generateToken(savedUser)
+                await queryRunner.commitTransaction()
                 let trackIdData : trackIdInterface = {
                     trackId : res.headers['track-code'],
                     firstName : firstName,
@@ -187,30 +205,36 @@ export class ShahkarController {
                     status: 0,
                     error: 'خطا در احراز هویت کاربر در اند پوینت شاهکار'
                 })
+                await queryRunner.rollbackTransaction()
                 return response.status(500).json({ err : res.data.details , msg : "خطا در احراز هویت کاربر"} )            
             }
         } catch (error) {
             // console.log(error.response.data.error);
             console.log(error)
+            await queryRunner.rollbackTransaction()
 
             monitor.addStatus({
                 scope: 'shahkar controller',
                 status: 0,
                 error: error
             })
-            let trackIdData : trackIdInterface = {
-                trackId : error.response.headers['track-code'],
-                // firstName : firstName,
-                // lastName : lastName,
-                // fatherName : fatherName,
-                phoneNumber : phoneNumber,
-                status : false
+            if (error.response.headers['track-code']){
+                let trackIdData : trackIdInterface = {
+                    trackId : error.response.headers['track-code'],
+                    // firstName : firstName,
+                    // lastName : lastName,
+                    // fatherName : fatherName,
+                    phoneNumber : phoneNumber,
+                    status : false
+                }
+                let trackIdService = new internalDB()
+                let DBStatus = await trackIdService.saveData(trackIdData)
+                console.log('data base saver result>>>' , DBStatus)
             }
-            let trackIdService = new internalDB()
-            let DBStatus = await trackIdService.saveData(trackIdData)
-            console.log('data base saver result>>>' , DBStatus)
             return response.status(500).json({ msg : "خطای داخلی سیستم"})           
-        }     
+        }finally{
+            await queryRunner.release()
+        }
         }
                 
     }
@@ -281,9 +305,11 @@ export class ShahkarController {
         try {
             let res =  await axios.post(authUrl,{username: "TLS_khanetalla",password: "1M@k8|H43O9S"})
             let token = `Bearer ${res.data.access_token}`
+            console.log(res?.headers)
             return token
-            
+
         } catch (error) {
+            console.log(error?.response?.headers)
             // monitor.error.push(`error in get token shahkar :: ${error.response}`)
             monitor.error.push(`error in get token shahkar :: ${error}`)
             console.log("error in getToken ShahkarController   " + error);
