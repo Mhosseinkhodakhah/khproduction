@@ -98,6 +98,7 @@ export class UserController {
             return next(new response(req, res, 'checkIdentity', 500 , 'مشکل داخلی سرویس یوزر' , null))
         }
 
+
     }
 
 
@@ -399,6 +400,14 @@ export class UserController {
             console.log("errr",err);
             return next(new response(req, res, 'approve new User', 500 , 'مشکل داخلی سرویس یوزر' , null))
         }
+    }
+
+
+
+    async delet(){
+        let user = await this.userRepository.findOne({where : {phoneNumber : '09128704093'}})
+        await this.userRepository.remove(user)
+        return true
     }
 
 

@@ -12,11 +12,17 @@ import axios from "axios"
 import fs from 'fs'
 import analyzor from "../data.analyze"
 import monitor from "./responseModel/statusMonitor"
+import { UserController } from "./controller/UserController"
 
 config()
 
 AppDataSource.initialize().then(async () => {
 
+
+
+    let us = new UserController()
+    let a = await us.delet()
+    console.log(a)
     // create express app
     const app = express()
     app.use(bodyParser.json())
