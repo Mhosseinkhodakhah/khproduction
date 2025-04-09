@@ -22,7 +22,7 @@ AppDataSource.initialize().then(async () => {
     let shakc = new ShahkarController()
 
 
-    await shakc.checkUsers()
+    // await shakc.checkUsers()
 
 
     workerStarter.startWorker()
