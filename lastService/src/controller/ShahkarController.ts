@@ -84,6 +84,7 @@ export class ShahkarController {
             if (!check){
                 unverifiedUser.push(i)
             }
+            return unverifiedUser.length
         }
         } catch (error) {
          console.log(error)   
