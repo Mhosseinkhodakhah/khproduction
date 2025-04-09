@@ -29,7 +29,7 @@ export class ZarinPalService {
             callback_url: callback_url,
             description: description,
             metadata: {
-              // card_pan:cardPan,
+              card_pan:cardPan,
               mobile: phoneNumber
             }
           }, {
