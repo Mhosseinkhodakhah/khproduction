@@ -41,8 +41,7 @@ AppDataSource.initialize().then(async () => {
         // let datas1 = goldPrice2.create(dataMaker)
         // let datas2 = await goldPrice2.save(datas)
         // console.log(datas2)
-    
-
+        
     // create express app
     const app = express()
     app.use(bodyParser.json())

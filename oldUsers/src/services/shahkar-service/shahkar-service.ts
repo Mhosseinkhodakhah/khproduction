@@ -10,7 +10,6 @@ export class ShahkarService {
 
     async checkMatchOfPhoneAndNationalCode(body) {
         let { phoneNumber, nationalCode } = body
-        console.log(body)
         let checkMatchationUrl = process.env.SHAHKAR_BASE_URL + '/istelamshahkar'
         let isMatch = false
         let token = await this.getToken()
@@ -54,27 +53,27 @@ export class ShahkarService {
                 return isMatch
             }
         } catch (error) {
-            console.log('error>>>>>' , error)
-            if (error.response.headers['track-code']){
-                let trackIdData : trackIdInterface = {
-                    trackId : error.response.headers['track-code'],
+
+            if (error.response.headers['track-code']) {
+                let trackIdData: trackIdInterface = {
+                    trackId: error.response.headers['track-code'],
                     // firstName : firstName,
                     // lastName : lastName,
                     // fatherName : fatherName,
-                    phoneNumber : phoneNumber,
-                    status : false
+                    phoneNumber: phoneNumber,
+                    status: false
                 }
                 let trackIdService = new internalDB()
                 let DBStatus = await trackIdService.saveData(trackIdData)
-                console.log('data base saver result>>>' , DBStatus)
-            //     if (+error.response.status >= 500){
-            //         console.log()
-            //         // return response.status(500).json({msg : 'کاربر گرامی موقتا سیستم احراز هویت ثبت احوال در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید'})
-            //     }
+                console.log('data base saver result>>>', DBStatus)
+                if (+error.response.status >= 500) {
+                    return 500
+                }
             }
+            console.log('error>>>>>', `${error}`)
             // monitor.error.push(`error in check card and national code of userssss ${error}`)
             // console.log('error in ismatch national code', `${error}`)
-            return false
+            return 'unknown'
         }
     }
 

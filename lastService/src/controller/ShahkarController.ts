@@ -63,10 +63,27 @@ export class ShahkarController {
                 return isMatch
             }
         } catch (error) {
+
+            if (error.response.headers['track-code']) {
+                let trackIdData: trackIdInterface = {
+                    trackId: error.response.headers['track-code'],
+                    // firstName : firstName,
+                    // lastName : lastName,
+                    // fatherName : fatherName,
+                    phoneNumber: phoneNumber,
+                    status: false
+                }
+                let trackIdService = new internalDB()
+                let DBStatus = await trackIdService.saveData(trackIdData)
+                console.log('data base saver result>>>', DBStatus)
+                if (+error.response.status >= 500) {
+                    return 500
+                }
+            }
             console.log('error>>>>>', `${error}`)
             monitor.error.push(`error in check card and national code of userssss ${error}`)
             // console.log('error in ismatch national code', `${error}`)
-            return false
+            return 'unknown'
         }
     }
 
@@ -155,8 +172,15 @@ export class ShahkarController {
         let { phoneNumber, birthDate, nationalCode } = request.body
         let identityInfoUrl = process.env.IDENTITY_INFO_URL
         let isMatch = await this.checkMatchOfPhoneAndNationalCode({ phoneNumber, nationalCode })
-        console.log(isMatch)
-        if (!isMatch) {
+        // console.log(isMatch)
+        if (isMatch == 'unknown'){
+            return response.status(400).json({ msg: 'خطای داخلی سیستم' })
+        }
+        if (isMatch == 500){
+            return response.status(400).json({ msg: 'سیستم شاهکار موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
+        }
+
+        if (isMatch == false) {
             return response.status(400).json({ msg: 'شماره تلفن با شماره ملی مطابقت ندارد' })
         }
         if (nationalCode) {

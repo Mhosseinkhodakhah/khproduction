@@ -90,7 +90,7 @@ export class OtpController {
                 return isMatch
             }
         } catch (error) {
-            console.log('error>>>>>', `${error}`)
+            console.log('error>>>>>', error)
             monitor.error.push(`error in check card and national code of userssss ${error}`)
             // console.log('error in ismatch national code', `${error}`)
             return false
@@ -233,9 +233,9 @@ export class OtpController {
                 status: 1,
                 error: null
             })
-
+            
             let isMatch = await this.checkMatchOfPhoneAndNationalCode({ phoneNumber : user.phoneNumber , nationalCode : user.nationalCode})
-            if (!isMatch){
+            if (isMatch == false){
                 console.log(isMatch)
                 // let newNotMatch = this.notMatchRepo.create({
                 //     firstName : user.firstName,

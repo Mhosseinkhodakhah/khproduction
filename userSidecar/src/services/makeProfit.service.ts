@@ -41,4 +41,8 @@ export default class profitService {
         return percent.toFixed(2);
     }
 
+
+
+  
+
 }

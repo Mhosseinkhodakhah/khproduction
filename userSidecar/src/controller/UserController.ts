@@ -11,6 +11,7 @@ import { Jalali } from 'jalali-ts';
 import { WalletTransaction } from "../entity/WalletTransaction"
 import { Between, MoreThan } from "typeorm"
 import profitService from "../services/makeProfit.service"
+import axios from "axios"
 
 
 export class UserController {
@@ -280,5 +281,7 @@ export class UserController {
         let all =await this.estimate.find()
         return all;
     }
+
+
 
 }

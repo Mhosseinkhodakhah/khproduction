@@ -108,7 +108,7 @@ export class convertTradeInvoice {
           default: TradeType.ONLINE
     })
     tradeType:TradeType;
-
+    
     @CreateDateColumn()
     createdAt: Date
     

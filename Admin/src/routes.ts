@@ -25,7 +25,7 @@ export const Routes = [{
     controller: UserController,
     middleware: [authMiddleware],
     action: "getAllMenu"
-}, {
+},{
     method: "post",
     route: "/create",
     controller: UserController,

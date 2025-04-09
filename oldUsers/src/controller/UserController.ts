@@ -254,11 +254,17 @@ export class UserController {
         }
              
         const resultMatch=await this.shakarService.checkMatchOfPhoneAndNationalCode({phoneNumber,nationalCode})        
-        const isMatch=resultMatch? true : false 
-        if(!isMatch){
-            return next(new response(req, res, 'approve old user', 400, "شماره تلفن و شماره ملی باهم مطابقت ندارد", null))
+        if (resultMatch == 'unknown') {
+            return res.status(500).json({ msg: 'خطای داخلی سیستم' })
+        
+        }
+        if (resultMatch == 500) {
+            return res.status(500).json({ msg: 'سیستم شاهکار موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
         }
 
+        if (resultMatch == false) {
+            return res.status(400).json({ msg: 'شماره تلفن با شماره ملی مطابقت ندارد' })
+        }
         const userInfo=await this.shakarService.identityInformationOfUser(phoneNumber,birthDate,nationalCode)
         
         if(!userInfo){
@@ -332,11 +338,17 @@ export class UserController {
             }
 
             const resultMatch=await this.shakarService.checkMatchOfPhoneAndNationalCode({phoneNumber,nationalCode})        
-            const isMatch=resultMatch? true : false 
-            console.log("isMatch",isMatch);
             
-            if(!isMatch){
-                return next(new response(req, res, 'approve new user', 400, "شماره تلفن و شماره ملی باهم مطابقت ندارد", null))
+            if (resultMatch == 'unknown') {
+                return res.status(500).json({ msg: 'خطای داخلی سیستم' })
+            
+            }
+            if (resultMatch == 500) {
+                return res.status(500).json({ msg: 'سیستم شاهکار موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
+            }
+
+            if (resultMatch == false) {
+                return res.status(400).json({ msg: 'شماره تلفن با شماره ملی مطابقت ندارد' })
             }
 
 
