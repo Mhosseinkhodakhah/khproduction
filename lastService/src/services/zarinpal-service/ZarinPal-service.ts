@@ -88,14 +88,16 @@ export class ZarinPalService {
               }
             } catch (error) {
               console.log('zarinpal status >>>>>', error.response.status)
-
+              if (+error.response.status >= 500){
+                return {status  : false , code : 500}
+              }
               monitor.error.push(error)
               if (error.response.data.errors){
                 if (error.response.data.errors.message == 'Session is not valid, session is not active paid try.'){
                   console.log('error.response.data.errors' , error.response.data.errors.code)
                 }
                 console.error('Payment Verification Failed:', error.response.data.errors);
-                return {status  : false , code : 500}
+                return {status  : false}
               }else{
                 return {status : 'unknown'}
               }

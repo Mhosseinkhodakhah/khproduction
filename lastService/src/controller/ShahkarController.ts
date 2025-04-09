@@ -115,7 +115,7 @@ export class ShahkarController {
             // console.log('trach code . . .',res.headers['track-code'])
             console.log('shahkar info>>>>' , res)
             if(res.status == 200){
-                if (!info.firstName || !info.lastName || !info.identificationNo || !info.identificationSerial || !info.identificationSeri){
+                if (!res.data.length){
                     
                     let trackIdData : trackIdInterface = {
                         trackId : res.headers['track-code'],
@@ -240,7 +240,7 @@ export class ShahkarController {
     }
 
 
-    
+
     async checkMatchPhoneNumberAndCartNumber(info){
         try {
             const username = 'khanetala_pigsb'; 
