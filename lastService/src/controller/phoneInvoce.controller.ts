@@ -33,8 +33,6 @@ export class PhoneInvoiceController {
     private loggerService = new logger()
     
 
-
-    
     validateRequiredFields(fields: Record<string, any>): string | null {
         const missingFields = Object.keys(fields).filter(key => fields[key] === undefined || fields[key] === null);
         if (missingFields.length > 0) {

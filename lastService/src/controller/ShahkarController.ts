@@ -112,6 +112,9 @@ export class ShahkarController {
             // console.log('trach code . . .',res.headers['track-code'])
             console.log('shahkar info>>>>' , res)
             if(res.status == 200){
+                if (!info.firstName || !info.lastName || !info.identificationNo || !info.identificationSerial || !info.identificationSeri){
+                    return response.status(500).json({msg : 'کاربر گرامی موقتا سیستم احراز هویت ثبت احوال در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید'})
+                }
                 let  {
                     firstName,
                     lastName,

@@ -11,7 +11,7 @@ export class AuthController {
 
     async register(request: Request, response: Response , next : any) {
         const { phoneNumber, password } = request.body;
-
+        
     //     scope: string,
     // status: number,
     // error: string | null,
