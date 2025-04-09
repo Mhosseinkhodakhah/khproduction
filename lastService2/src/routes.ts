@@ -513,7 +513,6 @@ export const Routes = [
 },
 
 
-
 /**
  * 
  * create buy invocie in call center
@@ -625,7 +624,6 @@ export const Routes = [
     action: "createSellCall",
     middlwares: [adminMiddleware]
 },
-
 {
     method: "get",
     route: "/selllist",
