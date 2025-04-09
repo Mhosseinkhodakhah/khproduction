@@ -115,7 +115,7 @@ export class ShahkarController {
             // console.log('trach code . . .',res.headers['track-code'])
             console.log('shahkar info>>>>' , res)
             if(res.status == 200){
-                if (!res.data.length){
+                if (!res.data || res.data == ''){
                     
                     let trackIdData : trackIdInterface = {
                         trackId : res.headers['track-code'],
