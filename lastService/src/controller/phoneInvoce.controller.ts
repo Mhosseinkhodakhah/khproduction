@@ -509,7 +509,6 @@ export class PhoneInvoiceController {
         
     }
     
-    
     async createSellCall (req: Request, res: Response, next : NextFunction){
         let { goldPrice, goldWeight, totalPrice , userId  ,description ,invoiceId} = req.body;
         const accounterId=`${req.user.id}-${req.user.firstName}-${req.user.lastName}`;

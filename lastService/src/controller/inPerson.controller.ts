@@ -530,6 +530,13 @@ export default class inPersonController {
         if (!goldPrice || !goldWeight || !invoiceId || !totalPrice || !nationalCode) {
             return next(new responseModel(req, res, '' ,'admin service', 400, 'لطفا ورودی هارا با دقت پر کنید', null))
         }
+        
+        if (totalPrice.toString().includes(',')){
+            totalPrice  = totalPrice.replaceAll(',' , '')
+            console.log('new totalPrice , ' , totalPrice)
+        }
+        console.log('tot' , totalPrice)
+
         let admin = `${req.user.firstName}-${req.user.lastName}`
         let queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
@@ -590,6 +597,11 @@ export default class inPersonController {
         if (!error.isEmpty()) {
             return next(new responseModel(req, res, error['errors'][0].msg , 'admin service', 400, error['errors'][0].msg, null))
         }
+        if (totalPrice.toString().includes(',')){
+            totalPrice  = totalPrice.replaceAll(',' , '')
+            console.log('new totalPrice , ' , totalPrice)
+        }
+        console.log('tot' , totalPrice)
         console.log(req.body)
         let admin = `${req.user.firstName}-${req.user.lastName}`
         let queryRunner = AppDataSource.createQueryRunner()
