@@ -53,7 +53,7 @@ export class ShahkarService {
                 return isMatch
             }
         } catch (error) {
-            console.log('error>>>>>' , `${error}`)
+            console.log('error>>>>>' , error)
             // monitor.error.push(`error in check card and national code of userssss ${error}`)
             // console.log('error in ismatch national code', `${error}`)
             return false
