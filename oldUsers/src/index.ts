@@ -20,9 +20,9 @@ AppDataSource.initialize().then(async () => {
 
 
 
-    let us = new UserController()
-    let a = await us.delet()
-    console.log(a)
+    // let us = new UserController()
+    // let a = await us.delet()
+    // console.log(a)
     // create express app
     const app = express()
     app.use(bodyParser.json())
