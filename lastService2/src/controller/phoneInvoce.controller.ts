@@ -243,7 +243,7 @@ export class PhoneInvoiceController {
    
     async createPhoneBuyInvoice(req: Request, res: Response, next : NextFunction){
         console.log('req.body>>>>' , req.body)
-        let { goldPrice, goldWeight, totalPrice , userId  ,description , invoiceId} = req.body;
+        let { goldPrice, goldWeight, totalPrice , userId  ,description , invoiceId , destCardPan} = req.body;
         if (totalPrice.toString().includes(',')){
             totalPrice  = totalPrice.replaceAll(',' , '')
             console.log('new totalPrice , ' , totalPrice)

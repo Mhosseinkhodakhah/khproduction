@@ -88,7 +88,6 @@ AppDataSource.initialize().then(async () => {
     
     app.listen(3002)
 
-
     process.on('unhandledRejection', (error) => {
         monitor.error.push(`${error}`)
         console.log('error occured . . .', error)
