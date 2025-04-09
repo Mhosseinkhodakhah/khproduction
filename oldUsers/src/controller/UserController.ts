@@ -253,11 +253,11 @@ export class UserController {
             return next(new response(req, res, 'approve old user', 400, "کاربر قبلا احراز شده است", user))
         }
              
-        const resultMatch=await this.shakarService.checkMatchOfPhoneAndNationalCode({phoneNumber,nationalCode})        
-        const isMatch=resultMatch? true : false 
-        if(!isMatch){
-            return next(new response(req, res, 'approve old user', 400, "شماره تلفن و شماره ملی باهم مطابقت ندارد", null))
-        }
+        // const resultMatch=await this.shakarService.checkMatchOfPhoneAndNationalCode({phoneNumber,nationalCode})        
+        // const isMatch=resultMatch? true : false 
+        // if(!isMatch){
+        //     return next(new response(req, res, 'approve old user', 400, "شماره تلفن و شماره ملی باهم مطابقت ندارد", null))
+        // }
 
         const userInfo=await this.shakarService.identityInformationOfUser(phoneNumber,birthDate,nationalCode)
         
@@ -331,13 +331,13 @@ export class UserController {
                 return next(new response(req, res, 'approve new User', 400, "کاربر در سیستم وجود دارد", exist))
             }
 
-            const resultMatch=await this.shakarService.checkMatchOfPhoneAndNationalCode({phoneNumber,nationalCode})        
-            const isMatch=resultMatch? true : false 
-            console.log("isMatch",isMatch);
+            // const resultMatch=await this.shakarService.checkMatchOfPhoneAndNationalCode({phoneNumber,nationalCode})        
+            // const isMatch=resultMatch? true : false 
+            // console.log("isMatch",isMatch);
             
-            if(!isMatch){
-                return next(new response(req, res, 'approve new user', 400, "شماره تلفن و شماره ملی باهم مطابقت ندارد", null))
-            }
+            // if(!isMatch){
+            //     return next(new response(req, res, 'approve new user', 400, "شماره تلفن و شماره ملی باهم مطابقت ندارد", null))
+            // }
 
 
             console.log("after Is Match");
