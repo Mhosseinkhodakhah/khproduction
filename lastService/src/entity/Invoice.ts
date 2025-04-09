@@ -64,7 +64,7 @@ export class Invoice {
 
     @Column({  default: "", type: "varchar" })
     destCardPan: string
-
+    
     @Column({nullable:true,default:"",type:"varchar"})
     description:string
 

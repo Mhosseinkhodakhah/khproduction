@@ -243,7 +243,7 @@ export class PhoneInvoiceController {
    
     async createPhoneBuyInvoice(req: Request, res: Response, next : NextFunction){
         console.log('req.body>>>>' , req.body)
-        let { goldPrice, goldWeight, totalPrice , userId  ,description , invoiceId} = req.body;
+        let { goldPrice, goldWeight, totalPrice , userId  ,description , invoiceId , destCardPan} = req.body;
         if (totalPrice.toString().includes(',')){
             totalPrice  = totalPrice.replaceAll(',' , '')
             console.log('new totalPrice , ' , totalPrice)
@@ -283,6 +283,7 @@ export class PhoneInvoiceController {
                 date: new Date().toLocaleString('fa-IR').split(',')[0],
                 status: "pending",
                 adminId,
+                destCardPan,
                 description,    
                 invoiceId,
                 fromPhone:true
@@ -357,15 +358,12 @@ export class PhoneInvoiceController {
         });
 
         try{
-
+            
             const buyerGoldWeight = parseFloat(invoice.buyer.wallet.goldWeight.toString());
             const transactionGoldWeight = parseFloat(invoice.goldWeight.toString());
             const systemUserGoldWeight = parseFloat(systemUser.wallet.goldWeight.toString());
             const systemUserBalance = parseFloat(systemUser.wallet.balance.toString());
             const transactionTotalPrice = parseFloat(invoice.totalPrice.toString());
-    
-
-            
             invoice.buyer.wallet.goldWeight = parseFloat((buyerGoldWeight + transactionGoldWeight).toFixed(3));
             console.log('after updating the goldwaeight', invoice.buyer.wallet.goldWeight)
             systemUser.wallet.goldWeight = parseFloat((systemUserGoldWeight - transactionGoldWeight).toFixed(3));
@@ -377,9 +375,7 @@ export class PhoneInvoiceController {
             invoice.accounterId=accounterId
             invoice.status = "completed";
             invoice.accounterDescription=description
-
-
-             
+            
             let updated = await queryRunner.manager.save(invoice)
             await queryRunner.manager.save([invoice.buyer.wallet, systemUser.wallet])
  

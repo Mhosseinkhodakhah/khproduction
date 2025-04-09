@@ -244,7 +244,6 @@ export default class invoiceConvertorController {
     }
 
 
-
     async getAllConvertsInvoice(req: Request, res: Response, next: NextFunction) {
         let invoices = await this.convertInvoice.find({ where: { status: 'pending' }, relations: ['buyer', 'buyer.wallet'] })
         return next(new responseModel(req, res, '', 'admin service', 200, null, invoices))

@@ -607,13 +607,12 @@ export default class inPersonController {
 
 
 
-
     /**
      * its for creating the sell transaction and make it pending for approvation accountant with inperson true
      * @param req 
      * @param res 
      * @param next 
-     */
+    */
     async creatSellTransActions(req: Request, res: Response, next: NextFunction) {
         let { goldPrice, goldWeight, invoiceId, totalPrice, nationalCode ,description } = req.body;
         const error = validationResult(req)
