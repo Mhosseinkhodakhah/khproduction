@@ -82,13 +82,14 @@ export class UserController {
         if(resultFromLastService.exist){
             return next(new response(req, res, 'checkIdentity', 200, null, {userExist:true, userVerified: true ,user:resultFromLastService.user}))
         }else{
-            if(user){
-                return next(new response(req, res, 'checkIdentity', 200, null, {userExist:true,userVerified: false ,user:user }))
+            return next(new response(req, res, 'checkIdentity', 200, null, {userExist:false, userVerified: false ,user:{}}))
+            // if(user){
+            //     return next(new response(req, res, 'checkIdentity', 200, null, {userExist:true,userVerified: false ,user:user }))
 
-            }else{
+            // }else{
 
-                return next(new response(req, res, 'checkIdentity', 200, null, {userExist:false, userVerified: false,user:{}}))
-            }
+            //     return next(new response(req, res, 'checkIdentity', 200, null, {userExist:false, userVerified: false,user:{}}))
+            // }
         }
         
     }
