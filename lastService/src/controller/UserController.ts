@@ -169,7 +169,7 @@ export class UserController {
     async remove(request: Request, response: Response, next: NextFunction) {
         const phoneNumber =request.params.phoneNumber
         try {
-            const userToRemove = await this.userRepository.findOne({where : {phoneNumber:phoneNumber},relations:["sells","buys","wallet" , "converSell" , "convertBuy"]})
+            const userToRemove = await this.userRepository.findOne({where : {phoneNumber:phoneNumber},relations:["sells","buys","wallet" , "convertSell" , "convertBuy"]})
             if (!userToRemove) {
                 return response.status(404).json({ err: "User with this id not found" })
             }
