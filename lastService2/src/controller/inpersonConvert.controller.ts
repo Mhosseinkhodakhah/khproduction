@@ -81,6 +81,7 @@ export default class invoiceConvertorController {
             })
             console.log('created invoice>>>', invoice)
             user.wallet.goldWeight = (+user.wallet.goldWeight) - (+req.body.goldWeight)
+            await queryRunner.manager.save(user.wallet)
             let createdInvoice = await queryRunner.manager.save(invoice)
             // for (let i = 0; i < productList.length; i++) {
             //     productList[i]['invoice'] = createdInvoice
