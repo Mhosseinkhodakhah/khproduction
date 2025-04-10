@@ -148,6 +148,21 @@ export class UserController {
     }
 
 
+    async all(req: Request, res: Response, next: NextFunction) {
+        // const page = parseInt(req.params.page) || 1; 
+        // const pageSize =parseInt(req.params.size) || 100;
+        
+        const users = await this.userRepository.find({
+            where: {
+                verificationStatus: 0
+            },
+            relations: ['wallet', 'sells', 'buys'],
+            take: 100,
+        });
+        return next(new response(req, res, 'get all users', 200, null, users))
+    }
+
+
 
     /**
      * this function is for creating the invoice of buy
