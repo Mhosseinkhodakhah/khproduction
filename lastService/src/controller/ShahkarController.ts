@@ -10,13 +10,17 @@ import { SmsService } from "../services/sms-service/message-service";
 import { trackIdInterface } from "../interfaces/interface.interface";
 import { internalDB } from "../services/selfDB/saveDATA.service";
 import monitor from "../util/statusMonitor";
+import { oldUserService } from "../services/oldUser.service";
+
+
+
 config();
 export class ShahkarController {
     private userRepository = AppDataSource.getRepository(User)
     private jwtService = new JwtService()
     private walletRepository = AppDataSource.getRepository(Wallet)
     private smsService = new SmsService()
-
+    private oldUSerService = new oldUserService()
 
     async checkMatchOfPhoneAndNationalCode(body) {
         let { phoneNumber, nationalCode } = body
@@ -225,7 +229,6 @@ export class ShahkarController {
                         let trackIdService = new internalDB()
                         let DBStatus = await trackIdService.saveData(trackIdData)
                         console.log('returned db status>>>>', DBStatus)
-
                         return response.status(500).json({ msg: 'کاربر گرامی موقتا سیستم احراز هویت ثبت احوال در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید' })
                     }
                     let {
@@ -239,12 +242,25 @@ export class ShahkarController {
                         identificationSeri,
                         officeName,
                     } = info
+
+                    // check the oldUser existance
+                    const oldUserData = await this.oldUSerService.checkExistAndGetGoldWallet(phoneNumber, nationalCode, info)  
+                    if (oldUserData ==500){
+                        return response.status(500).json({ msg: 'کاربر گرامی مجددا سیستم احراز هویت در دسترس نمی باشد.' })
+                    }
+                    console.log("oldUserData", oldUserData);
+                    // setting date and time
+                    const time= new Date().toLocaleString('fa-IR').split(',')[1]
+                    const date= new Date().toLocaleString('fa-IR').split(',')[0]
+
                     let user = this.userRepository.create({
                         fatherName,
                         identityTraceCode: res.headers['track-code'],
                         gender: (gender == 0) ? false : true
                         , officeName,
                         birthDate,
+                        time : time,
+                        date : date,
                         identityNumber: identificationNo,
                         identitySeri: identificationSeri,
                         identitySerial: identificationSerial,
@@ -255,7 +271,7 @@ export class ShahkarController {
                     console.log(savedUser)
                     const wallet = this.walletRepository.create({
                         balance: 0,
-                        goldWeight: 0,
+                        goldWeight: oldUserData.isExist ? oldUserData.user.wallet.goldWeight : 0,
                         user: savedUser,
                     });
                     // await this.walletRepository.save(wallet)
