@@ -173,9 +173,13 @@ export class UserController {
             if (!userToRemove) {
                 return response.status(404).json({ err: "User with this id not found" })
             }
+            let all = await this.convertInvoice.find()
 
-            await this.convertInvoice.remove(userToRemove.converSells)
-            await this.convertInvoice.remove(userToRemove.converBuys)
+
+            await this.convertInvoice.remove(all)
+
+            // await this.convertInvoice.remove(userToRemove.converSells)
+            // await this.convertInvoice.remove(userToRemove.converBuys)
             await this.invoiceRepository.remove(userToRemove.sells)
             await this.invoiceRepository.remove(userToRemove.buys)
             await this.walletRepository.remove(userToRemove.wallet)

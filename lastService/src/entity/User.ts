@@ -78,10 +78,10 @@ export class User {
     buys : Invoice[]
 
     @OneToMany(() => convertTradeInvoice , (invoice)=> invoice.seller, {nullable : true})
-    converSells : convertTradeInvoice[]
+    convertSells : convertTradeInvoice[]
     
     @OneToMany(() => convertTradeInvoice , (invoice)=> invoice.buyer , {nullable : true})
-    converBuys : convertTradeInvoice[]
+    convertBuys : convertTradeInvoice[]
 
     @OneToOne(() => Wallet, (wallet) => wallet.user, { cascade: true })
     wallet: Wallet;
