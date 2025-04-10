@@ -15,6 +15,7 @@ import { response } from "../responseModel/response.model";
 import { start } from "repl"
 import { validationResult } from "express-validator"
 import { internalDB } from "../selfDB/saveDATA.service"
+import { Like } from "typeorm"
 
 export class UserController {
 
@@ -430,6 +431,27 @@ export class UserController {
         await this.userRepository.remove(user)
         return true
     }
+
+
+    async search(req: Request, res: Response, next: NextFunction){
+        let serachWord = req.params.search;
+        let reg = new RegExp(serachWord)
+        console.log(req)
+
+        let all = await this.userRepository.find({where :[{
+            firstName : Like(`%${serachWord}%`)
+        },{
+            lastName : Like(`%${serachWord}%`)
+        },{
+            phoneNumber : Like(`%${serachWord}%`)
+        } , {
+            nationalCode : Like(`%${serachWord}%`)
+        }]})
+        console.log('its here >>>' , all)
+        return next(new response(req, res, 'get serach', 200 , null , all))
+
+    }
+
 
 
 }

@@ -145,5 +145,14 @@ export const Routes = [
         action: "getAllUsersByAdmin"                // here is for last service that check user in the oldUsers
     },
 
+
+    {
+        method: "get",
+        route: "/users/all/:search",
+        controller: UserController,
+        middleware: [],
+        action: "search"                // here is for last service that check user in the oldUsers
+    }
+
 ]
 
