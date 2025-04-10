@@ -237,12 +237,10 @@ export class PhoneInvoiceController {
                 createdAt: 'DESC' // Order by createdAt in descending order
             }
         })
-        
         return next(new responseModel(req, res, '','get buy call invoice with status ', 200, null, invoices))
     }
-   
+    
 
-   
     async intiPhoneSellInvoice(req: Request, res: Response, next : NextFunction){
         console.log('req.body>>>>' , req.body)
         let { goldPrice, goldWeight, totalPrice , userId  ,description , invoiceId} = req.body;

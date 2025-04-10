@@ -511,8 +511,6 @@ export const Routes = [
     action: "homeData",
     middlwares: [adminMiddleware]
 },
-
-
 /**
  * 
  * create buy invocie in call center
@@ -582,6 +580,14 @@ export const Routes = [
     controller: PhoneInvoiceController,
     action: "getAllPhoneTransactionForUser",
     middlwares: [authenticate]
+},
+
+{
+    method: "post",
+    route: "/inperson/convert/sell",
+    controller: invoiceConvertorController,
+    action: "createConver",
+    middlwares: [adminMiddleware]
 },
 
 {

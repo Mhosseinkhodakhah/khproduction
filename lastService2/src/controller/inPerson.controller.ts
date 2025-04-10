@@ -18,6 +18,7 @@ import { JwtService } from "../services/jwt-service/jwt-service"
 import { query, validationResult } from "express-validator"
 import monitor from "../util/statusMonitor"
 import { EstimateTransactions } from "../entity/EstimateTransactions"
+import { oldUserService } from "../services/oldUser.service"
 
 
 
@@ -35,6 +36,7 @@ export default class inPersonController {
     private smsService = new SmsService()
     private interservice = new logger()
     private jwtService = new JwtService()
+    private oldUserService = new oldUserService()
 
 
 
@@ -434,12 +436,20 @@ export default class inPersonController {
                     identificationSeri,
                     officeName,
                 } = info
+
+                const oldUserData = await this.oldUserService.checkExistAndGetGoldWallet(phoneNumber, nationalCode, info)  
+                console.log("after verify in oldUserData",oldUserData);
+                const time= new Date().toLocaleString('fa-IR').split(',')[1]
+                const date= new Date().toLocaleString('fa-IR').split(',')[0]
+
                 let user = this.userRepository.create({
                     fatherName,
                     identityTraceCode: res2.headers['track-code'],
                     gender: (gender == 0) ? false : true
                     , officeName,
                     birthDate,
+                    date: date,
+                    time: time,
                     identityNumber: identificationNo,
                     identitySeri: identificationSeri,
                     identitySerial: identificationSerial,
@@ -451,7 +461,7 @@ export default class inPersonController {
                 // console.log(savedUser)
                 const wallet = this.walletRepository.create({
                     balance: 0,
-                    goldWeight: 0,
+                    goldWeight: oldUserData.isExist ? oldUserData.user.wallet.goldWeight : 0,
                     user: savedUser,
                 });
                 let token = await this.jwtService.generateToken(savedUser)
@@ -510,30 +520,7 @@ export default class inPersonController {
             await queryRunner.release()
             console.log('transAction released....')
         }
-
-        // } catch (error) {
-        // console.log('error>>>>>' , `${error}`)
-        //     // console.log(error.response.data.error);
-        //     console.log('error occured', error)
-        //     let trackIdData: trackIdInterface = {
-        //         trackId: error.response.headers['track-code'],
-        //         // firstName : firstName,
-        //         // lastName : lastName,
-        //         // fatherName : fatherName,
-        //         phoneNumber: phoneNumber,
-        //         status: false
-        //     }
-        //     let trackIdService = new internalDB()
-        //     let DBStatus = await trackIdService.saveData(trackIdData)
-        //     console.log('data base saver result>>>', DBStatus)
-        //     return res.status(500).json({ msg: "خطای داخلی سیستم" })
-        // }
     }
-
-
-
-
-
 
     
     /**

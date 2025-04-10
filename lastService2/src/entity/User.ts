@@ -43,6 +43,13 @@ export class User {
     @Column({nullable : true})
     gender : boolean
 
+
+    @Column({ type: "varchar", nullable: true })
+    date: string
+
+    @Column({ type: "varchar", nullable: true })
+    time: string
+    
     @Column({nullable : true})
     identityNumber : string
 

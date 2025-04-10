@@ -1,6 +1,8 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn ,DeleteDateColumn ,UpdateDateColumn } from "typeorm";
 import { Wallet } from "./Wallet";
 
+
+
 @Entity()
 export class WalletTransaction{
     @PrimaryGeneratedColumn()

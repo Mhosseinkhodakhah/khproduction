@@ -38,6 +38,72 @@ export default class invoiceConvertorController {
         return (new Date().getTime()).toString()
     }
 
+
+
+    async createConver(req: Request, res: Response, next: NextFunction){
+        let admin = `${req.user.firstName}-${req.user.lastName}`;
+        console.log('bodyyyy>>>>>>>>>>>', req.body)
+        let nationalCode = req.body.nationalCode;
+        let user = await this.userRepository.findOne({
+            where: {
+                nationalCode: nationalCode
+            },relations : ['wallet']
+        })
+        if ((+user.wallet.goldWeight) < (+req.body.goldWeight)) {
+            return next(new responseModel(req, res, 'موجودی صندوق طلای کاربر کافی نمیباشد', 'admin service', 400, 'موجودی صندوق طلای کاربر کافی نمیباشد.', null))
+
+        }
+        let systemUser = await this.userRepository.findOne({
+            where: {
+                isSystemUser: true
+            }
+        })
+
+        // let type = await this.invoicesTypeRepository.findOne({where : {title : 'sell'}})
+        let queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        try {
+            let goldPrice = await this.goldPrice2.find({ order: { createdAt: 'DESC' } })
+            let invoice = this.convertInvoice.create({
+                goldPrice: +goldPrice[0].Geram18, 
+                goldWeight: +req.body.goldWeight,
+                buyer: systemUser,
+                seller: user,
+                date: new Date().toLocaleString('fa-IR').split(',')[0],
+                time: new Date().toLocaleString('fa-IR').split(',')[1],
+                invoiceId: await this.generateInvoice(),
+                // totalInvoicePrice: +req.body.totalInvoicePrice,
+                adminId: admin,
+                status: 'complete',
+                description: 'خرید از صندوق طلا',
+                tradeType: TradeType.INPERSONCONVERT,
+            })
+            console.log('created invoice>>>', invoice)
+            user.wallet.goldWeight = (+user.wallet.goldWeight) - (+req.body.goldWeight)
+            let createdInvoice = await queryRunner.manager.save(invoice)
+            // for (let i = 0; i < productList.length; i++) {
+            //     productList[i]['invoice'] = createdInvoice
+            // }
+            // let productLists = this.productLists.create(productList)
+            // console.log('created productList>>>', productList)
+            // await queryRunner.manager.save(productLists)
+            await queryRunner.commitTransaction()
+            let finalInvoice = await this.convertInvoice.findOne({ where: { id: createdInvoice.id }, relations: ['buyer', 'productList'] })
+            return next(new responseModel(req, res, 'پیش فاکتور با موفقیت ایجاد شد', 'admin service', 200, null, finalInvoice))
+        } catch (error) {
+            console.log('error in occured in creating first transAction in converting inperson', error)
+            await queryRunner.rollbackTransaction()
+            return next(new responseModel(req, res, 'مشکلی در ایجاد فاکتور پیش امده لطفا دقایقی دیگر مچددا تلاش کنید', 'admin service', 400, 'مشکلی در ایجاد فاکتور پیش امده لطفا دقایقی دیگر مچددا تلاش کنید.', null))
+        } finally {
+            console.log('transAction released')
+            await queryRunner.release()
+        }
+
+    }
+
+
+
     async createTransAction(req: Request, res: Response, next: NextFunction) {
         let admin = `${req.user.firstName}-${req.user.lastName}`;
         console.log('bodyyyy>>>>>>>>>>>', req.body)
@@ -192,7 +258,7 @@ export default class invoiceConvertorController {
                     invoice.creditCard = creditCard;
                     invoice.transfer = transfer;
                     invoice.cash = cash,
-                    invoice.creditCardId = creditCardId      // transaction id for paying cash
+                        invoice.creditCardId = creditCardId      // transaction id for paying cash
                     invoice.transferId = transferId      // transaction id for paying cash
                 } else if (payment == 2) {                                    // when the user wanted to pay whole cashe
                     invoice.payment = +payment
@@ -200,7 +266,7 @@ export default class invoiceConvertorController {
                     invoice.creditCard = creditCard;
                     invoice.transfer = transfer;
                     invoice.cash = cash,
-                    invoice.creditCardId = creditCardId      // transaction id for paying cash
+                        invoice.creditCardId = creditCardId      // transaction id for paying cash
                     invoice.transferId = transferId
                 } else if (payment == 1) {                                    // when the user wanted to pay checki
                     invoice.payment = +payment;
@@ -242,7 +308,6 @@ export default class invoiceConvertorController {
             await queryRunner.release()
         }
     }
-
 
     async getAllConvertsInvoice(req: Request, res: Response, next: NextFunction) {
         let invoices = await this.convertInvoice.find({ where: { status: 'pending' }, relations: ['buyer', 'buyer.wallet'] })
