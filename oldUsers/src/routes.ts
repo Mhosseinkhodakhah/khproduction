@@ -128,6 +128,13 @@ export const Routes = [
         middleware: [],
         action: "changeUserStatus"                // here is for last service that change user status in the oldUsers
     },
+    {
+        method: "post",
+        route: "/interservice/check/:phoneNumber/:nationalCode",
+        controller: interServiceController,
+        middleware: [],
+        action: "checkOldWithPhoneOrNatnialCode"                // here is for last service that check user in the oldUsers
+    },
 
 ]
 
