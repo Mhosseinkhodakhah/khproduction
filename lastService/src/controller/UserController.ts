@@ -12,12 +12,15 @@ import { validationResult } from "express-validator"
 import monitor from "../util/statusMonitor"
 import { Wallet } from "../entity/Wallet"
 import { convertTradeInvoice } from "../entity/inpersonConvertTrade.entity"
+import { productList } from "../entity/producList.entity"
 
 
 export class UserController {
     private userRepository = AppDataSource.getRepository(User)
     private invoiceRepository = AppDataSource.getRepository(Invoice)
     private walletRepository=AppDataSource.getRepository(Wallet)
+    private productLists = AppDataSource.getRepository(productList)
+    
     private goldPrice = AppDataSource.getRepository(goldPrice)
     private convertInvoice = AppDataSource.getRepository(convertTradeInvoice)
     private interservice = new logger()
@@ -173,8 +176,11 @@ export class UserController {
             if (!userToRemove) {
                 return response.status(404).json({ err: "User with this id not found" })
             }
-            let all = await this.convertInvoice.find()
 
+            let producList = await this.productLists.find()
+            await this.productLists.remove(producList)
+
+            let all = await this.convertInvoice.find()
 
             await this.convertInvoice.remove(all)
 
