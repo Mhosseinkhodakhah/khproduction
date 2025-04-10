@@ -22,7 +22,7 @@ export const Routes = [
         method: "get",
         route: "/users",
         controller: UserController,
-        action: "allUsers",                          // getting all user,
+        action: "all",                          // getting all user,
         middleware : [adminMiddleware]
     },{
         method: "get",
@@ -156,13 +156,13 @@ export const Routes = [
 
 
 
-    {
-        method: "get",
-        route: "/users",
-        controller: UserController,
-        middleware: [],
-        action: "all"                // here is for last service that check user in the oldUsers
-    }
+    // {
+    //     method: "get",
+    //     route: "/users",
+    //     controller: UserController,
+    //     middleware: [],
+    //     action: "all"                // here is for last service that check user in the oldUsers
+    // }
 
 
 ]
