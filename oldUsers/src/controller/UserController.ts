@@ -131,10 +131,18 @@ export class UserController {
      * @param next 
      * @returns 
      */
-    async allUsers(req: Request, res: Response, next: NextFunction) {
-        let users = await this.userRepository.find({ where : {
-            verificationStatus : 2
-        }, relations: ['wallet', 'sells', 'buys'],take:100 })
+    async getAllUsersByAdmin(req: Request, res: Response, next: NextFunction) {
+        const page = parseInt(req.params.page) || 1; 
+        const pageSize =parseInt(req.params.size) || 100;
+        
+        const users = await this.userRepository.find({
+            where: {
+                verificationStatus: 0
+            },
+            relations: ['wallet', 'sells', 'buys'],
+            take: pageSize,  
+            skip: (page - 1) * pageSize 
+        });
         return next(new response(req, res, 'get all users', 200, null, users))
     }
 
