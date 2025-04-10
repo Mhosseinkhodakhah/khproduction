@@ -11,6 +11,7 @@ import { Jalali } from 'jalali-ts';
 import { validationResult } from "express-validator"
 import monitor from "../util/statusMonitor"
 import { Wallet } from "../entity/Wallet"
+import { convertTradeInvoice } from "../entity/inpersonConvertTrade.entity"
 
 
 export class UserController {
@@ -18,6 +19,7 @@ export class UserController {
     private invoiceRepository = AppDataSource.getRepository(Invoice)
     private walletRepository=AppDataSource.getRepository(Wallet)
     private goldPrice = AppDataSource.getRepository(goldPrice)
+    private convertInvoice = AppDataSource.getRepository(convertTradeInvoice)
     private interservice = new logger()
     async all(request: Request, response: Response, next: NextFunction) {
         try {
@@ -167,10 +169,13 @@ export class UserController {
     async remove(request: Request, response: Response, next: NextFunction) {
         const phoneNumber =request.params.phoneNumber
         try {
-            const userToRemove = await this.userRepository.findOne({where : {phoneNumber:phoneNumber},relations:["sells","buys","wallet"] })
+            const userToRemove = await this.userRepository.findOne({where : {phoneNumber:phoneNumber},relations:["sells","buys","wallet" , "converSell" , "convertBuy"]})
             if (!userToRemove) {
                 return response.status(404).json({ err: "User with this id not found" })
             }
+
+            await this.convertInvoice.remove(userToRemove.converSells)
+            await this.convertInvoice.remove(userToRemove.converBuys)
             await this.invoiceRepository.remove(userToRemove.sells)
             await this.invoiceRepository.remove(userToRemove.buys)
             await this.walletRepository.remove(userToRemove.wallet)

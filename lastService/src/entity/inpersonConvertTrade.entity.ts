@@ -59,7 +59,7 @@ export class convertTradeInvoice {
 
     @Column({ type: "numeric", precision: 10, scale: 0,default : 0 , nullable : true})
     totalCash : number
-
+    
     @Column({ type: "int", default : 0 })
     installmentType : number
 
