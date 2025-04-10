@@ -184,11 +184,11 @@ export class UserController {
 
             await this.convertInvoice.remove(all)
 
-            await this.convertInvoice.remove(userToRemove.convertSells)
-            await this.convertInvoice.remove(userToRemove.convertBuys)
-            await this.invoiceRepository.remove(userToRemove.sells)
-            await this.invoiceRepository.remove(userToRemove.buys)
-            await this.walletRepository.remove(userToRemove.wallet)
+            // await this.convertInvoice.remove(userToRemove.convertSells)
+            // await this.convertInvoice.remove(userToRemove.convertBuys)
+            // await this.invoiceRepository.remove(userToRemove.sells)
+            // await this.invoiceRepository.remove(userToRemove.buys)
+            // await this.walletRepository.remove(userToRemove.wallet)
             await this.userRepository.remove(userToRemove)
             
             // const wallet=await this.walletRepository.findOne({where:{
