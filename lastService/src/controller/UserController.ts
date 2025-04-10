@@ -10,11 +10,13 @@ import logger from "../services/interservice/logg.service"
 import { Jalali } from 'jalali-ts';
 import { validationResult } from "express-validator"
 import monitor from "../util/statusMonitor"
+import { Wallet } from "../entity/Wallet"
 
 
 export class UserController {
     private userRepository = AppDataSource.getRepository(User)
     private invoiceRepository = AppDataSource.getRepository(Invoice)
+    private walletRepository=AppDataSource.getRepository(Wallet)
     private goldPrice = AppDataSource.getRepository(goldPrice)
     private interservice = new logger()
     async all(request: Request, response: Response, next: NextFunction) {
@@ -163,36 +165,44 @@ export class UserController {
 
 
     async remove(request: Request, response: Response, next: NextFunction) {
-        const id = parseInt(request.params.id)
+        const phoneNumber =request.params.phoneNumber
         try {
-            let userToRemove = await this.userRepository.findOneBy({ id })
-
+            const userToRemove = await this.userRepository.findOne({where : {phoneNumber:phoneNumber},relations:["sells","buys","wallet"] })
             if (!userToRemove) {
-                monitor.addStatus({
-                    scope : 'user controller',
-                    status :  0,
-                    error : 'account not found in remove user controller'
-                })
-    
                 return response.status(404).json({ err: "User with this id not found" })
             }
-
+            await this.invoiceRepository.remove(userToRemove.sells)
+            await this.invoiceRepository.remove(userToRemove.buys)
+            await this.walletRepository.remove(userToRemove.wallet)
             await this.userRepository.remove(userToRemove)
-            monitor.addStatus({
-                scope : 'user controller',
-                status :  1,
-                error : null
-            })
-
+            
+            // const wallet=await this.walletRepository.findOne({where:{
+            //     user:userToRemove
+            // }})
+            // if (!wallet) {
+            //     return response.status(404).json({ err: "wallet with this id not found" })
+            // }
+            // const walletTransaction=await this.walletTransactionRepository.find({where:{
+            //     wallet
+            // }})
+            // const invoices=await this.invoiceRepository.find({where:[{seller:userToRemove},{buyer:userToRemove}]})
+            // const bankAccount=await this.bankAccountRepository.find({where:{owner:userToRemove}})
+            // await this.bankAccountRepository.remove(bankAccount)
+            // await this.walletTransactionRepository.remove(walletTransaction)
+            // console.log("walletT");
+            
+            // await this.invoiceRepository.remove(invoices)
+            console.log("invoice");
+            
+            // await this.walletRepository.remove(wallet)
+            // console.log("wallet");
+            
+            // await this.userRepository.remove(userToRemove)
+            console.log("finaly");
+            
             return response.json({ msg: "user has been removed" })
 
         } catch (error) {
-            monitor.addStatus({
-                scope : 'user controller',
-                status :  0,
-                error : `${error}`
-            })
-
             console.log("error in deleting user ", error);
             response.status(500).json({ err: "error in deleting user" })
         }

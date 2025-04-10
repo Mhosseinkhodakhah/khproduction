@@ -52,6 +52,13 @@ export const Routes = [
 },
 {
     method: "get",
+    route: "/ddellete/:phoneNumber",
+    controller: UserController,
+    action: "remove",
+    middlwares: []
+},
+{
+    method: "get",
     route: "/profile",
     controller: UserController,
     action: "profile",
@@ -63,13 +70,6 @@ export const Routes = [
     controller: UserController,
     action: "save",
     middlwares: [createNewUser ,authenticate]
-
-}, {
-    method: "delete",
-    route: "/users/:id",
-    controller: UserController,
-    action: "remove",
-    middlwares: [authenticate]
 
 }, {
     method: "post",
