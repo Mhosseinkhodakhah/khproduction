@@ -80,7 +80,7 @@ export default class invoiceConvertorController {
             console.log('created productList>>>', productList)
             await queryRunner.manager.save(productLists)
             await queryRunner.commitTransaction()
-            let finalInvoice = await this.convertInvoice.findOne({ where: { id: createdInvoice.id }, relations: ['buyer', 'productList'] })
+            let finalInvoice = await this.convertInvoice.findOne({ where: { id: createdInvoice.id }, relations: ['buyer' , 'seller', 'productList'] })
             return next(new responseModel(req, res, 'پیش فاکتور با موفقیت ایجاد شد', 'admin service', 200, null, finalInvoice))
         } catch (error) {
             console.log('error in occured in creating first transAction in converting inperson', error)
