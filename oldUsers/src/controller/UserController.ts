@@ -202,16 +202,16 @@ export class UserController {
     async script(request: Request, response: Response, next: NextFunction){
         let users = await this.userRepository.find({relations : ['wallet']})
         console.log('userssss>>>>' , users)
-        // users.forEach(async(elem)=>{
-        //     await this.userRepository.remove(elem)
-        // })
-        // let wallet = await this.walletRepository.find()
-        // wallet.forEach(async(elem)=>{
-        //     await this.walletRepository.remove(elem)
-        // })   
-        // let saver = new analyzor()
-        // console.log(await saver.startProcess())
-        // let users2 = await this.userRepository.find({relations : ['wallet']})
+        users.forEach(async(elem)=>{
+            await this.userRepository.remove(elem)
+        })
+        let wallet = await this.walletRepository.find()
+        wallet.forEach(async(elem)=>{
+            await this.walletRepository.remove(elem)
+        })   
+        let saver = new analyzor()
+        console.log(await saver.startProcess())
+        let users2 = await this.userRepository.find({relations : ['wallet']})
         return response.status(200).json(users)
     }
 
