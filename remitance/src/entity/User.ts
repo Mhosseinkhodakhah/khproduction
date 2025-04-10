@@ -53,6 +53,13 @@ export class User {
     @Column({nullable : true})
     identitySeri : string
 
+    @Column({type : 'varchar' , nullable : true})
+    time:string
+
+    @Column({type : 'varchar' , nullable : true})
+    date:string
+
+
     @Column({nullable : true})
     officeName : string
     

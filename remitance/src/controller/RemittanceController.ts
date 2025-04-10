@@ -14,6 +14,7 @@ export class RemittanceController {
     private interservice = new LastService()
     private walletRepository = AppDataSource.getRepository(Wallet)
     private smsService = new SmsService()
+    private lastServiceService = new LastService()
     private async generateInvoice() {
         return (new Date().getTime()).toString()
     }
@@ -52,14 +53,32 @@ export class RemittanceController {
     async createBuy(req: Request, res: Response, next: NextFunction) {
         const adminId = `${req.user.id}-${req.user.firstName}-${req.user.lastName}`;
         let { goldPrice, goldWeight, totalPrice, phoneNumber, description, date, destCardPan, originCardPan, time } = req.body;
+        const resultFromLastService = await this.lastServiceService.checkExistUserInLastService(phoneNumber)
+        
+        if (resultFromLastService.response.status >= 500){
+            return next(new response(req, res, 'create buy remmitance ', 500 , "خطای داخلی سرویس" , null))
+        }
+
+        if (resultFromLastService.response.status >= 500){
+            return next(new response(req, res, 'create buy remmitance ', 500 , "خطای داخلی سرویس" , null))
+        }
+
+        if (!resultFromLastService.exist){
+            return next(new response(req, res, 'create buy remmitance ', 500 , "خطای داخلی سرویس" , null))
+        }
+        
+        if (resultFromLastService.exist == false ){
+            return next(new response(req, res, 'create buy remmitance ', 400 , "کاربر وجود ندارد", null))
+        }
+
         console.log('test body', req.body)
         if (totalPrice.toString().includes(',')){
             totalPrice  = totalPrice.replaceAll(',' , '')
             console.log('new totalPrice , ' , totalPrice)
         }
         console.log('tot' , totalPrice)
-        const user = await this.userRepository.findOneBy({ phoneNumber })
-
+        // const user = await this.userRepository.findOneBy({ phoneNumber })
+        let user = resultFromLastService.user;
         if (!user) {
             return next(new response(req, res, 'create buy remmitance ', 422, "کاربر وجود ندارد", null))
         }
@@ -90,7 +109,6 @@ export class RemittanceController {
             console.log('saved remmitance>>>', savedRemmitance2)
             await this.smsService.sendGeneralMessage(user.phoneNumber, "sellcall", user.firstName, goldWeight, totalPrice)
             return next(new response(req, res, 'create buy remmitance ', 200, null, savedRemmitance2))
-
         }
         catch (err) {
             console.log(err);
@@ -109,14 +127,30 @@ export class RemittanceController {
         const adminId=`${req.user.id}-${req.user.firstName}-${req.user.lastName}`;
         let { goldPrice, goldWeight, totalPrice , phoneNumber  ,description ,date , destCardPan , originCardPan,time} = req.body;
         console.log(phoneNumber);
+        const resultFromLastService = await this.lastServiceService.checkExistUserInLastService(phoneNumber)
+        
+        if (resultFromLastService.response.status >= 500){
+            return next(new response(req, res, 'create buy remmitance ', 500 , "خطای داخلی سرویس" , null))
+        }
 
+        if (resultFromLastService.response.status >= 500){
+            return next(new response(req, res, 'create buy remmitance ', 500 , "خطای داخلی سرویس" , null))
+        }
+
+        if (!resultFromLastService.exist){
+            return next(new response(req, res, 'create buy remmitance ', 500 , "خطای داخلی سرویس" , null))
+        }
+        
+        if (resultFromLastService.exist == false ){
+            return next(new response(req, res, 'create buy remmitance ', 400 , "کاربر وجود ندارد", null))
+        }
         if (totalPrice.toString().includes(',')){
             totalPrice  = totalPrice.replaceAll(',' , '')
             console.log('new totalPrice , ' , totalPrice)
         }
         console.log('tot' , totalPrice)
 
-        const user=await this.userRepository.findOne({where : {phoneNumber : phoneNumber} , relations : ['wallet']})
+        const user=resultFromLastService.user
         console.log('wallet>>>' , user.wallet)
         if(!user){
             return next(new response(req, res, 'create buy remmitance ',422,"کاربر وجود ندارد",null))
@@ -145,7 +179,7 @@ export class RemittanceController {
                 type: 0,
                 seller: user
             })
-
+            
             let savedRemitance1 = await queryRunner.manager.save(createRemmitance)
             console.log('after creations', savedRemitance1)
             await queryRunner.commitTransaction()
