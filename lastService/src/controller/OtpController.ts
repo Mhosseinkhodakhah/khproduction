@@ -135,7 +135,6 @@ export class OtpController {
                     status: 1,
                     error: null
                 })
-                
                 response.status(200).json({ msg: res.msg });
             } else {
                 await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , `getting otp code failed for user : ${phoneNumber}` , {
@@ -235,15 +234,25 @@ export class OtpController {
             })
             
             let isMatch = await this.checkMatchOfPhoneAndNationalCode({ phoneNumber : user.phoneNumber , nationalCode : user.nationalCode})
-            if (isMatch == false){
-                console.log(isMatch)
-                // let newNotMatch = this.notMatchRepo.create({
-                //     firstName : user.firstName,
-                //     lastName : user.lastName,
-                //     phoneNumber : user.phoneNumber,
-                //     nationalCode : user.nationalCode
-                // })
-                // await this.notMatchRepo.save(newNotMatch)
+            try {
+                if (isMatch == false){
+                    console.log('isMatch is false',isMatch)
+                    let isNotMatch = await this.notMatchRepo.exists({where : {nationalCode : user.nationalCode}})
+                    if (isNotMatch){
+                        console.log('isNotMatch exist >>>>')
+                    }else{
+                        let newNotMatch = this.notMatchRepo.create({
+                            firstName : user.firstName,
+                            lastName : user.lastName,
+                            phoneNumber : user.phoneNumber,
+                            nationalCode : user.nationalCode
+                        })
+                        let addIsNOtMatch = await this.notMatchRepo.save(newNotMatch)
+                        console.log('saved to database >>>>>>>>>>>>' , addIsNOtMatch)
+                    }
+                }
+            } catch (error) {
+                console.log(error)
             }
 
             return response.status(200).json({ 
