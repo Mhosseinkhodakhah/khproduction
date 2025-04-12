@@ -25,7 +25,7 @@ AppDataSource.initialize().then(async () => {
     // await shakc.checkUsers()
 
 
-    workerStarter.startWorker()
+    // workerStarter.startWorker()
     await cacher.setter('tradePermision' , 1)
     console.log(await cacher.getter('tradePermision'))
     // create express app
