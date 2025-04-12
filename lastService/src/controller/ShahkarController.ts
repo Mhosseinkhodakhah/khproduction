@@ -67,6 +67,8 @@ export class ShahkarController {
                 return isMatch
             }
         } catch (error) {
+            monitor.error.push(`error in check card and national code of userssss ${error.response}`)
+            console.log('error>>>>>', `${error.response}`)
             if (error.response.headers['track-code']) {
                 let trackIdData: trackIdInterface = {
                     trackId: error.response.headers['track-code'],
@@ -83,8 +85,6 @@ export class ShahkarController {
                     return 500
                 }
             }
-            console.log('error>>>>>', `${error.response}`)
-            monitor.error.push(`error in check card and national code of userssss ${error.response}`)
             // console.log('error in ismatch national code', `${error}`)
             return 'unknown'
         }
@@ -99,17 +99,21 @@ export class ShahkarController {
         // console.log(isMatch)
 
         if (isMatch == 'noToken'){
+            console.log('111')
             return response.status(400).json({ msg: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
         }
 
         if (isMatch == 'unknown'){
+            console.log('222')
             return response.status(400).json({ msg: 'مشکلی در در احراز هویت بوجود آمده است.لطفا دقایقی دیگر مجددا تلاش کنید.' })
         }
         if (isMatch == 500){
+            console.log('333')
             return response.status(400).json({ msg: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
         }
 
         if (isMatch == false) {
+            console.log('444')
             return response.status(400).json({ msg: 'شماره تلفن با شماره ملی مطابقت ندارد' })
         }
         if (nationalCode) {
@@ -251,7 +255,6 @@ export class ShahkarController {
                 // console.log(error.response.data.error);
                 console.log(`${error}`, 'transAction rollback')
                 await queryRunner.rollbackTransaction()
-
                 monitor.addStatus({
                     scope: 'shahkar controller',
                     status: 0,
@@ -281,8 +284,6 @@ export class ShahkarController {
             }
         }
     }
-
-
 
     async checkMatchPhoneNumberAndCartNumber(info) {
         try {
