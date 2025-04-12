@@ -22,7 +22,6 @@ import { EstimateTransactions } from "../entity/EstimateTransactions"
 
 
 export default class inPersonController {
-
     private userRepository = AppDataSource.getRepository(User)
     private walletRepository = AppDataSource.getRepository(Wallet)
     private invoicesRepository = AppDataSource.getRepository(Invoice)
@@ -35,7 +34,6 @@ export default class inPersonController {
     private smsService = new SmsService()
     private interservice = new logger()
     private jwtService = new JwtService()
-
 
 
     private async estimateWeight(goldWeight: number, type: number) {
@@ -400,8 +398,7 @@ export default class inPersonController {
         try {
             let isMatchNationalCod = await this.checkMatchOfPhoneAndNationalCode({ phoneNumber, nationalCode })
 
-
-            if (isMatchNationalCod == 'noToken') {
+            if (isMatchNationalCod == 'noToken') { 
                 console.log('111')
                 return res.status(400).json({ msg: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
             }
