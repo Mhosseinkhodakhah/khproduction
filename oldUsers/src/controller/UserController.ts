@@ -138,7 +138,7 @@ export class UserController {
         
         const users = await this.userRepository.find({
             where: {
-                verificationStatus: 0
+                verificationStatus: 2
             },
             relations: ['wallet', 'sells', 'buys'],
             take: pageSize,  
@@ -154,7 +154,7 @@ export class UserController {
         
         const users = await this.userRepository.find({
             where: {
-                verificationStatus: 2
+                verificationStatus: 0
             },
             relations: ['wallet', 'sells', 'buys'],
             take: 100,
