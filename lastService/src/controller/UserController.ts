@@ -327,6 +327,7 @@ export class UserController {
     async logOut(request: Request, response: Response, next: NextFunction) {
         console.log(request.headers.authorization)
         blackList.setter(request.headers.authorization)
+        console.log(blackList.getter())
         return response.status(200).json({
             token: request.headers.authorization
         })
