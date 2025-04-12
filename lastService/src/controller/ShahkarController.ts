@@ -21,7 +21,7 @@ export class ShahkarController {
     private walletRepository = AppDataSource.getRepository(Wallet)
     private smsService = new SmsService()
     private oldUSerService = new oldUserService()
-
+    
     async checkMatchOfPhoneAndNationalCode(body) {
         let { phoneNumber, nationalCode } = body
         let checkMatchationUrl = process.env.SHAHKAR_BASE_URL + '/istelamshahkar'

@@ -57,6 +57,11 @@ export class ZarinPalService {
         } catch (error){
           monitor.error.push(`error in inititate payment :::: ${error}`)
           console.log(error);
+          if (error.response){
+            if (error.response.status == 422){
+              return 'tooMuch'
+            }
+          }
           return 'error'
         }
       }

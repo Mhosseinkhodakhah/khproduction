@@ -339,6 +339,11 @@ export class WalletController {
             info.cardPan = wallet.user.bankAccounts[0].cardNumber
             info.phoneNumber = wallet.user.phoneNumber
             const url = await this.zpService.initiatePayment(info);
+            if (url == 'tooMuch'){
+                return response.status(500).json({
+                    msg : 'مبلغ وارد شده بیش از حد مجاز است.'
+                }) 
+            }
             if (url == 'error'){
                 return response.status(500).json({
                     msg : 'درگاه پرداخت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.'

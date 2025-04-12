@@ -506,6 +506,11 @@ export class InvoiceController {
                 // console.log('amount>>>>>><<<<<<<<<<<>>>>>>>>>' , amount)
                 // console.log(Math.floor(amount))
                 const url = await this.zpService.initiatePayment(info);              // get dargah url from zarinpal
+                if (url == 'tooMuch'){
+                    return response.status(500).json({
+                        msg : 'مبلغ وارد شده بیش از حد مجاز است.'
+                    }) 
+                }
                 if (url == 'error'){
                     return response.status(500).json({
                         msg : 'درگاه پرداخت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.'
