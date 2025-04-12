@@ -9,7 +9,7 @@ export class internalDB{
         try {
             let path = JSON.parse(fs.readFileSync('/etc/backup/ShahkarTrackId/trackIdDatas.json' , {encoding : 'utf-8'})) 
             this.file = path
-            console.log('file is >>>>>>' , this.file)
+            // console.log('file is >>>>>>' , this.file)
         } catch (error) {
             // this.file = 
             monitor.error.push(`error in saving shahkar track id in the file :: ${error}`)

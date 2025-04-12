@@ -97,7 +97,7 @@ export class ShahkarController {
         let identityInfoUrl = process.env.IDENTITY_INFO_URL
         console.log('start the identity')
         let isMatch = await this.checkMatchOfPhoneAndNationalCode({ phoneNumber, nationalCode })
-        // console.log(isMatch)
+        console.log('isMatch is>>>>' , isMatch)
 
         if (isMatch == 'noToken') {
             console.log('111')
