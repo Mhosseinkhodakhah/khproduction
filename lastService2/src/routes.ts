@@ -487,21 +487,19 @@ export const Routes = [
     action: "getStatus",                     // get status by logger service
     middlwares: []
 },
-// , {
-//     method: "patch",
-//     route: "/interservice/create",
-//     controller: interServiceController,
-//     action: "addNewUser",                   // add new user by oldUser service
-//     middlwares: []
-// }, {
-//     method: "post",
-//     route: "/interservice/updateWaller/:phoneNumber",
-//     controller: interServiceController,
-//     action: "updateWallet",                   // add new user by oldUser service
-//     middlwares: []
-// },
-
-
+{
+    method: "patch",
+    route: "/interservice/create",
+    controller: interServiceController,
+    action: "addNewUser",                   // add new user by oldUser service
+    middlwares: []
+}, {
+    method: "post",
+    route: "/interservice/updateWaller/:phoneNumber",
+    controller: interServiceController,
+    action: "updateWallet",                   // add new user by oldUser service
+    middlwares: []
+},
 
 /**
  * this rout is for home page charts
