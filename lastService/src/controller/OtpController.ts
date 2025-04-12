@@ -44,16 +44,14 @@ export class OtpController {
         }
     }
 
-
     async checkMatchOfPhoneAndNationalCode(body) {
         let { phoneNumber, nationalCode } = body
         let checkMatchationUrl = process.env.SHAHKAR_BASE_URL + '/istelamshahkar'
         let isMatch = false
-        console.log(body)
         let token = await this.getToken()
         if (token == null || token == undefined) {
             console.log('token is not defined....')
-            return false
+            return 'noToken'
         }
         try {
             let res = await axios.post(checkMatchationUrl, {
@@ -74,8 +72,7 @@ export class OtpController {
                 }
                 let trackIdService = new internalDB()
                 let DBStatus = await trackIdService.saveData(trackIdData)
-                console.log('returned db status>>>>', DBStatus)
-                console.log(isMatch)
+                // console.log('returned db status>>>>', DBStatus)
                 return isMatch
             } else {
                 let trackIdData: trackIdInterface = {
@@ -88,15 +85,30 @@ export class OtpController {
                 }
                 let trackIdService = new internalDB()
                 let DBStatus = await trackIdService.saveData(trackIdData)
-                console.log('returned db status>>>>', DBStatus)
-                console.log(isMatch)
+                // console.log('returned db status>>>>', DBStatus)
                 return isMatch
             }
         } catch (error) {
+            monitor.error.push(`error in check phone and national code of userssss ` + error.response.data.message)
             console.log('error>>>>>', error)
-            monitor.error.push(`error in check card and national code of userssss ${error}`)
+            if (error.response.headers['track-code']) {
+                let trackIdData: trackIdInterface = {
+                    trackId: error.response.headers['track-code'],
+                    // firstName : firstName,
+                    // lastName : lastName,
+                    // fatherName : fatherName,
+                    phoneNumber: phoneNumber,
+                    status: false
+                }
+                let trackIdService = new internalDB()
+                let DBStatus = await trackIdService.saveData(trackIdData)
+                // console.log('data base saver result>>>', DBStatus)
+                if (+error.response.status >= 500) {
+                    return 500
+                }
+            }
             // console.log('error in ismatch national code', `${error}`)
-            return false
+            return 'unknown'
         }
     }
 

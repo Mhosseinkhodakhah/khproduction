@@ -1,12 +1,12 @@
 import axios from "axios"
 import {internalDB} from "../../selfDB/saveDATA.service"
 import {trackIdInterface} from "../../interfaces/interface.interface"
+import monitor from "../../responseModel/statusMonitor"
 
 
 
 export class ShahkarService {
     
-
 
 
     async checkMatchOfPhoneAndNationalCode(body) {
@@ -16,7 +16,7 @@ export class ShahkarService {
         let token = await this.getToken()
         if (token == null || token == undefined) {
             console.log('token is not defined....')
-            return false
+            return 'noToken'
         }
         try {
             let res = await axios.post(checkMatchationUrl, {
@@ -37,7 +37,7 @@ export class ShahkarService {
                 }
                 let trackIdService = new internalDB()
                 let DBStatus = await trackIdService.saveData(trackIdData)
-                console.log('returned db status>>>>', DBStatus)
+                // console.log('returned db status>>>>', DBStatus)
                 return isMatch
             } else {
                 let trackIdData: trackIdInterface = {
@@ -50,11 +50,12 @@ export class ShahkarService {
                 }
                 let trackIdService = new internalDB()
                 let DBStatus = await trackIdService.saveData(trackIdData)
-                console.log('returned db status>>>>', DBStatus)
+                // console.log('returned db status>>>>', DBStatus)
                 return isMatch
             }
         } catch (error) {
-
+            monitor.error.push(`error in check phone and national code of userssss ` + error.response.data.message)
+            console.log('error>>>>>', error)
             if (error.response.headers['track-code']) {
                 let trackIdData: trackIdInterface = {
                     trackId: error.response.headers['track-code'],
@@ -66,17 +67,16 @@ export class ShahkarService {
                 }
                 let trackIdService = new internalDB()
                 let DBStatus = await trackIdService.saveData(trackIdData)
-                console.log('data base saver result>>>', DBStatus)
+                // console.log('data base saver result>>>', DBStatus)
                 if (+error.response.status >= 500) {
                     return 500
                 }
             }
-            console.log('error>>>>>', `${error}`)
-            // monitor.error.push(`error in check card and national code of userssss ${error}`)
             // console.log('error in ismatch national code', `${error}`)
             return 'unknown'
         }
     }
+
 
      async identityInformationOfUser(phoneNumber : string ,birthDate : string ,nationalCode : string){
         let identityInfoUrl = process.env.IDENTITY_INFO_URL 

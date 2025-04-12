@@ -156,17 +156,24 @@ export class UserController {
             }
 
             const resultMatch = await this.shakarService.checkMatchOfPhoneAndNationalCode({ phoneNumber, nationalCode })
-
-            if (resultMatch == 'unknown') {
-                return res.status(500).json({ msg: 'خطای داخلی سیستم' })
+            if (resultMatch == 'noToken'){
+                console.log('111')
+                return res.status(400).json({ msg: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
             }
-            if (resultMatch == 500) {
-                return res.status(500).json({ msg: 'سیستم شاهکار موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
+            
+            if (resultMatch == 'unknown'){
+                console.log('222')
+                return res.status(400).json({ msg: 'مشکلی در در احراز هویت بوجود آمده است.لطفا دقایقی دیگر مجددا تلاش کنید.' })
             }
+            if (resultMatch == 500){
+                console.log('333')
+                return res.status(400).json({ msg: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
+            }
+    
             if (resultMatch == false) {
+                console.log('444')
                 return res.status(400).json({ msg: 'شماره تلفن با شماره ملی مطابقت ندارد' })
             }
-
             console.log("after Is Match");
 
             const userInfo = await this.shakarService.identityInformationOfUser(phoneNumber, birthDate, nationalCode)

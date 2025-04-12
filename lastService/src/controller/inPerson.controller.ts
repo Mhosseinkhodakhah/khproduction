@@ -155,7 +155,7 @@ export default class inPersonController {
         let token = await this.getToken()
         if (token == null || token == undefined) {
             console.log('token is not defined....')
-            return false
+            return 'noToken'
         }
         try {
             let res = await axios.post(checkMatchationUrl, {
@@ -176,7 +176,7 @@ export default class inPersonController {
                 }
                 let trackIdService = new internalDB()
                 let DBStatus = await trackIdService.saveData(trackIdData)
-                console.log('returned db status>>>>', DBStatus)
+                // console.log('returned db status>>>>', DBStatus)
                 return isMatch
             } else {
                 let trackIdData: trackIdInterface = {
@@ -189,11 +189,12 @@ export default class inPersonController {
                 }
                 let trackIdService = new internalDB()
                 let DBStatus = await trackIdService.saveData(trackIdData)
-                console.log('returned db status>>>>', DBStatus)
+                // console.log('returned db status>>>>', DBStatus)
                 return isMatch
             }
         } catch (error) {
-
+            monitor.error.push(`error in check phone and national code of userssss ` + error.response.data.message)
+            console.log('error>>>>>', error)
             if (error.response.headers['track-code']) {
                 let trackIdData: trackIdInterface = {
                     trackId: error.response.headers['track-code'],
@@ -205,19 +206,15 @@ export default class inPersonController {
                 }
                 let trackIdService = new internalDB()
                 let DBStatus = await trackIdService.saveData(trackIdData)
-                console.log('data base saver result>>>', DBStatus)
+                // console.log('data base saver result>>>', DBStatus)
                 if (+error.response.status >= 500) {
                     return 500
                 }
             }
-            console.log('error>>>>>', `${error}`)
-            monitor.error.push(`error in check card and national code of userssss ${error}`)
             // console.log('error in ismatch national code', `${error}`)
             return 'unknown'
         }
     }
-
-
 
     private async getToken() {
         let authUrl = process.env.AUTH_URL
@@ -403,13 +400,23 @@ export default class inPersonController {
         try {
             let isMatchNationalCod = await this.checkMatchOfPhoneAndNationalCode({ phoneNumber, nationalCode })
 
+
+            if (isMatchNationalCod == 'noToken') {
+                console.log('111')
+                return res.status(400).json({ msg: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
+            }
+
             if (isMatchNationalCod == 'unknown') {
-                return res.status(500).json({ msg: 'خطای داخلی سیستم' })
+                console.log('222')
+                return res.status(400).json({ msg: 'مشکلی در در احراز هویت بوجود آمده است.لطفا دقایقی دیگر مجددا تلاش کنید.' })
             }
             if (isMatchNationalCod == 500) {
-                return res.status(500).json({ msg: 'سیستم شاهکار موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
+                console.log('333')
+                return res.status(400).json({ msg: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
             }
+
             if (isMatchNationalCod == false) {
+                console.log('444')
                 return res.status(400).json({ msg: 'شماره تلفن با شماره ملی مطابقت ندارد' })
             }
 
