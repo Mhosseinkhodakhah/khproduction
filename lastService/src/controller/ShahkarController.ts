@@ -67,8 +67,8 @@ export class ShahkarController {
                 return isMatch
             }
         } catch (error) {
-            monitor.error.push(`error in check card and national code of userssss ${error.response}`)
-            console.log('error>>>>>', `${error.response}`)
+            monitor.error.push(`error in check card and national code of userssss ` + error)
+            console.log('error>>>>>', error)
             if (error.response.headers['track-code']) {
                 let trackIdData: trackIdInterface = {
                     trackId: error.response.headers['track-code'],
