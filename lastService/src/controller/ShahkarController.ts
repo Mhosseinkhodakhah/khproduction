@@ -289,7 +289,7 @@ export class ShahkarController {
         try {
             const username = 'khanetala_pigsb';
             const password = 'Ttb@78f7hLR';
-            
+
             const credentials = `${username}:${password}`;
             const base64Credentials = Buffer.from(credentials).toString('base64');
             const authHeader = `Basic ${base64Credentials}`;
@@ -316,12 +316,21 @@ export class ShahkarController {
                 if (response.data) {
                     return response.data.match
                 }
+            }else if(response.status >= 500) {
+                return 500
             } else {
                 return false
             }
         } catch (error) {
-            monitor.error.push(`error in check phone and cartNumber:::: ${error.response}`)
+            monitor.error.push(`error in check phone and cartNumber:::: ${error}`)
             console.log("error in checkMatchPhoneNumberAndCartNumber", error);
+            if (error.response.status){
+                if (error.response.status >= 500){
+                    return 500
+                }if (error.response.status >= 400 && error.response.status < 500){
+                    return false
+                }
+            }
             return false
         }
     }
