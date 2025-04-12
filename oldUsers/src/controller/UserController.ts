@@ -135,7 +135,7 @@ export class UserController {
     async getAllUsersByAdmin(req: Request, res: Response, next: NextFunction) {
         const page = parseInt(req.params.page) || 1; 
         const pageSize =parseInt(req.params.size) || 100;
-        let toatlItem = await this.userRepository.count({where : {
+        let totalItem = await this.userRepository.count({where : {
             verificationStatus : 2
         }})
         const users = await this.userRepository.find({
@@ -146,7 +146,7 @@ export class UserController {
             take: pageSize,  
             skip: (page - 1) * pageSize 
         });
-        return next(new response(req, res, 'get all users', 200, null, {users , toatlItem}))
+        return next(new response(req, res, 'get all users', 200, null, {users , totalItem}))
     }
 
 
