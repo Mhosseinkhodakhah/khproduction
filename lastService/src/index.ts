@@ -24,7 +24,7 @@ AppDataSource.initialize().then(async () => {
 
     // await shakc.checkUsers()
 
-
+    
     // workerStarter.startWorker()
     await cacher.setter('tradePermision' , 1)
     console.log(await cacher.getter('tradePermision'))
@@ -36,8 +36,6 @@ AppDataSource.initialize().then(async () => {
         methods: ["GET", "POST", "PUT", "DELETE" , "PATCH"],
         allowedHeaders: ["Content-Type", "Authorization"]
     }));
-
-    
 
     //set logger
     app.use(
