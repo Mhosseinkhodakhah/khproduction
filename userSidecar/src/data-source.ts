@@ -13,6 +13,8 @@ import { EstimateTransactions } from "./entity/EstimateTransactions"
 import { config } from "dotenv"
 import { transportInvoice } from "./entity/transport"
 import { NotMatch } from "./entity/notMatch"
+import { convertTradeInvoice } from "./entity/inpersonConvertTrade.entity"
+import { productList } from "./entity/producList.entity"
 
 config()
 
@@ -26,7 +28,7 @@ export const AppDataSource = new DataSource({
     database: 'gold_home', // Database name
     synchronize: true,
     logging: false,
-    entities: [User,Otp,Invoice,InvoiceType,NotMatch,Wallet,PaymentInfo,BankAccount,WalletTransaction,goldPrice , EstimateTransactions , transportInvoice],
+    entities: [User,Otp,Invoice,InvoiceType,NotMatch,Wallet,PaymentInfo,BankAccount,WalletTransaction,goldPrice , EstimateTransactions , transportInvoice , convertTradeInvoice , productList],
     migrations: [],
     subscribers: [],})
 
