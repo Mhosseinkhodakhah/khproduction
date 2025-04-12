@@ -175,15 +175,15 @@ export class ShahkarController {
                     } = info
 
                     // check the oldUser existance
-                    const oldUserData = await this.oldUSerService.checkExistAndGetGoldWallet(phoneNumber, nationalCode, info)
-                    if (oldUserData == 500) {
-                        return response.status(500).json({ msg: 'کاربر گرامی مجددا سیستم احراز هویت در دسترس نمی باشد.' })
-                    }
-                    console.log("oldUserData", oldUserData);
+                    // const oldUserData = await this.oldUSerService.checkExistAndGetGoldWallet(phoneNumber, nationalCode, info)
+                    // if (oldUserData == 500) {
+                    //     return response.status(500).json({ msg: 'کاربر گرامی مجددا سیستم احراز هویت در دسترس نمی باشد.' })
+                    // }
+                    // console.log("oldUserData", oldUserData);
                     // setting date and time
                     const time = new Date().toLocaleString('fa-IR').split(',')[1]
                     const date = new Date().toLocaleString('fa-IR').split(',')[0]
-                    
+
                     let user = this.userRepository.create({
                         fatherName,
                         identityTraceCode: res.headers['track-code'],
@@ -202,7 +202,8 @@ export class ShahkarController {
                     console.log(savedUser)
                     const wallet = this.walletRepository.create({
                         balance: 0,
-                        goldWeight: oldUserData.isExist ? oldUserData.updatedUser.wallet.goldWeight : 0,
+                        // goldWeight: oldUserData.isExist ? oldUserData.updatedUser.wallet.goldWeight : 0,
+                        goldWeight: 0,
                         user: savedUser,
                     });
                     // await this.walletRepository.save(wallet)
