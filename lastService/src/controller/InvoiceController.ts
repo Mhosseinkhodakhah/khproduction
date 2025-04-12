@@ -506,6 +506,11 @@ export class InvoiceController {
                 // console.log('amount>>>>>><<<<<<<<<<<>>>>>>>>>' , amount)
                 // console.log(Math.floor(amount))
                 const url = await this.zpService.initiatePayment(info);              // get dargah url from zarinpal
+                if (url == 'error'){
+                    return response.status(500).json({
+                        msg : 'درگاه پرداخت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.'
+                    })
+                }
                 const queryRunner = AppDataSource.createQueryRunner()
                 await queryRunner.connect()
                 await queryRunner.startTransaction()

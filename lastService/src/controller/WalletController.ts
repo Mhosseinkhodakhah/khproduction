@@ -339,6 +339,11 @@ export class WalletController {
             info.cardPan = wallet.user.bankAccounts[0].cardNumber
             info.phoneNumber = wallet.user.phoneNumber
             const url = await this.zpService.initiatePayment(info);
+            if (url == 'error'){
+                return response.status(500).json({
+                    msg : 'درگاه پرداخت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.'
+                })
+            }
             let transAction = await this.walletTransactionRepository.findOne({where : {id : savedTransaction.id}})
             transAction.authority = url.authority;
             transAction.invoiceId = await this.generateInvoice();

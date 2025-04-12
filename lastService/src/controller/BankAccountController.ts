@@ -106,7 +106,7 @@ export class BankAccountController {
                 return response.status(400).json({ error: "Owner not found" });
             }
             const bankAccount = this.bankAccountRepository.create({
-                cardNumber, 
+                cardNumber,
                 owner,
                 isVerified: false
             });
@@ -120,7 +120,7 @@ export class BankAccountController {
                 console.log('its returned data>>>' , isMatch)
                 bankAccount.isVerified = isMatch;
                 
-                if (isMatch) {                    
+                if (isMatch) {                
                     let res =  await this.shahkarController.convertCardToSheba(cardNumber)
                     if (res) {
                         bankAccount.shebaNumber = res.ibanInfo.iban
@@ -150,10 +150,11 @@ export class BankAccountController {
                     status : 0,
                     error: `${error}`
                 })
-                console.log("Error in creating bank account", error);
+                console.log("Error in creating bank account", error.response);
                 return response.status(500).json({msg : "خطا در ثبت کارت بانکی"})
             }
         }
+
 
     async verify(request: Request, response: Response, next: NextFunction) {
         const id = parseInt(request.params.id);
@@ -251,5 +252,4 @@ export class BankAccountController {
             return response.status(500).json({msg :"خطا در حذف کارت بانکی"})
         }
     }
-
 }

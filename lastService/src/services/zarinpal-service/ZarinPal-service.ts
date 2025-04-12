@@ -41,17 +41,23 @@ export class ZarinPalService {
           amount = Math.floor(+amount)
           console.log('response of the payment . . .' , response.data)
           console.log('its newwwwwwwwwwwwwwwwwww',response.data.data);
-          
+          if (!response.data.data.authority){
+            return 'error'
+          }
           let paymentForSave =  this.paymentInfoRepository.create({amount , authority: response.data.data.authority,userId : info.userId , invoiceId})
           console.log('payment info' , paymentForSave)
           let payinfo = await this.paymentInfoRepository.save(paymentForSave)
           console.log('check hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee<><' , payinfo)
           let url = this.zarinpal.payments.getRedirectUrl(response.data.data.authority)
+          if (!url){
+            return 'error'
+          }
           console.log('redirect url' , url)
           return {url : url , authority : response.data.data.authority , invoiceId : invoiceId}
         } catch (error){
-          monitor.error.push(error)
-          console.error(error);
+          monitor.error.push(`error in inititate payment :::: ${error}`)
+          console.log(error);
+          return 'error'
         }
       }
 
@@ -95,7 +101,7 @@ export class ZarinPalService {
               if (+error.response.status >= 500){
                 return {status  : false , code : 500}
               }
-              monitor.error.push(error)
+              monitor.error.push(`error in verify payment :::: ${error}`)
               if (error.response.data.errors){
                 if (error.response.data.errors.message == 'Session is not valid, session is not active paid try.'){
                   console.log('error.response.data.errors' , error.response.data.errors.code)

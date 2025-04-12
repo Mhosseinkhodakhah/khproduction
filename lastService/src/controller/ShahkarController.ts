@@ -29,7 +29,7 @@ export class ShahkarController {
         let token = await this.getToken()
         if (token == null || token == undefined) {
             console.log('token is not defined....')
-            return false
+            return 'noToken'
         }
         try {
             let res = await axios.post(checkMatchationUrl, {
@@ -50,7 +50,7 @@ export class ShahkarController {
                 }
                 let trackIdService = new internalDB()
                 let DBStatus = await trackIdService.saveData(trackIdData)
-                console.log('returned db status>>>>', DBStatus)
+                // console.log('returned db status>>>>', DBStatus)
                 return isMatch
             } else {
                 let trackIdData: trackIdInterface = {
@@ -63,11 +63,10 @@ export class ShahkarController {
                 }
                 let trackIdService = new internalDB()
                 let DBStatus = await trackIdService.saveData(trackIdData)
-                console.log('returned db status>>>>', DBStatus)
+                // console.log('returned db status>>>>', DBStatus)
                 return isMatch
             }
         } catch (error) {
-
             if (error.response.headers['track-code']) {
                 let trackIdData: trackIdInterface = {
                     trackId: error.response.headers['track-code'],
@@ -79,109 +78,35 @@ export class ShahkarController {
                 }
                 let trackIdService = new internalDB()
                 let DBStatus = await trackIdService.saveData(trackIdData)
-                console.log('data base saver result>>>', DBStatus)
+                // console.log('data base saver result>>>', DBStatus)
                 if (+error.response.status >= 500) {
                     return 500
                 }
             }
-            console.log('error>>>>>', `${error}`)
-            monitor.error.push(`error in check card and national code of userssss ${error}`)
+            console.log('error>>>>>', `${error.response}`)
+            monitor.error.push(`error in check card and national code of userssss ${error.response}`)
             // console.log('error in ismatch national code', `${error}`)
             return 'unknown'
         }
     }
 
-    // async checkUsers(){
-    //     try {
-    //         let users = await this.userRepository.find()
-    //     let unverifiedUser = []
-    //     for (let i of users){
-    //         let check = await this.checkMatchOfPhoneAndNationalCode({phoneNumber : i.phoneNumber , nationalCode: i.nationalCode})
-    //         console.log('user>>>>>>' , check)
-    //         if (!check){
-    //             unverifiedUser.push(i)
-    //         }
-    //         return unverifiedUser.length
-    //     }
-    //     } catch (error) {
-    //      console.log(error)   
-    //     }
-    // }
 
-
-    // async checkMatchOfPhoneAndNationalCode(request: Request, response: Response, next: NextFunction) {
-    //     let {phoneNumber,nationalCode} = request.body
-    //     let checkMatchationUrl = process.env.SHAHKAR_BASE_URL + '/istelamshahkar'
-    //     let isMatch = false
-    //     let token = await this.getToken()
-    //     if (token == null || token == undefined) {
-    //         monitor.addStatus({
-    //             scope: 'shahkar controller',
-    //             status: 0,
-    //             error: 'error from get token in shahkar get token checkMatchOfPhoneAndNationalCode endPoint'
-    //         })
-    //         return response.status(500).json({ err : "error get token from server"} )
-    //     }
-    //     axios.post(checkMatchationUrl , {mobileNumber : phoneNumber
-    //          , nationalCode} , {headers : { 'Authorization' : token }}).then(async(res)=>{
-    //         isMatch  = res.data.isMatched ? true : false 
-    //         if (isMatch) {
-    //             let trackIdData : trackIdInterface = {
-    //                 trackId : res.headers['track-code'],
-    //                 // firstName : firstName,
-    //                 // lastName : lastName,
-    //                 // fatherName : fatherName,
-    //                 phoneNumber : phoneNumber,
-    //                 status : true
-    //             }
-    //             let trackIdService = new internalDB()
-    //             let DBStatus = await trackIdService.saveData(trackIdData)
-    //             console.log('returned db status>>>>' , DBStatus)
-    //             monitor.addStatus({
-    //                 scope: 'shahkar controller',
-    //                 status: 1,
-    //                 error: null
-    //             })
-    //             return response.json({ isMatch , msg : "number and national code matched successfully"})                
-    //         }else{
-    //             let trackIdData : trackIdInterface = {
-    //                 trackId : res.headers['track-code'],
-    //                 // firstName : firstName,
-    //                 // lastName : lastName,
-    //                 // fatherName : fatherName,
-    //                 phoneNumber : phoneNumber,
-    //                 status : false
-    //             }
-    //             let trackIdService = new internalDB()
-    //             let DBStatus = await trackIdService.saveData(trackIdData)
-    //             console.log('returned db status>>>>' , DBStatus)
-    //             monitor.addStatus({
-    //                 scope: 'shahkar controller',    
-    //                 status: 0,
-    //                 error: `there is no match between number and national code`
-    //             })
-    //             return  response.status(404).json({ isMatch , msg : "there is no match between number and national code"})
-    //         }
-    //     }).catch((err)=>{
-    //         monitor.addStatus({
-    //             scope: 'shahkar controller',
-    //             status: 0,
-    //             error: err
-    //         })
-    //         return  response.status(500).json({ err : err.message , msg : "there is an error "} )
-    //     })
-    // }
 
     async identityInformationOfUser(request: Request, response: Response, next: NextFunction) {
         let { phoneNumber, birthDate, nationalCode } = request.body
         let identityInfoUrl = process.env.IDENTITY_INFO_URL
         let isMatch = await this.checkMatchOfPhoneAndNationalCode({ phoneNumber, nationalCode })
         // console.log(isMatch)
+
+        if (isMatch == 'noToken'){
+            return response.status(400).json({ msg: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
+        }
+
         if (isMatch == 'unknown'){
-            return response.status(400).json({ msg: 'خطای داخلی سیستم' })
+            return response.status(400).json({ msg: 'مشکلی در در احراز هویت بوجود آمده است.لطفا دقایقی دیگر مجددا تلاش کنید.' })
         }
         if (isMatch == 500){
-            return response.status(400).json({ msg: 'سیستم شاهکار موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
+            return response.status(400).json({ msg: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
         }
 
         if (isMatch == false) {
@@ -205,7 +130,7 @@ export class ShahkarController {
                 status: 0,
                 error: `error from get token in shahkar get token identityInformationOfUser endPoint`
             })
-            return response.status(500).json({ err: "error get token from server" })
+            return response.status(500).json({ msg: "کاربر سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید." })
         } else {
             let body = { birthDate: birthDate, nationalCode: nationalCode }
             let queryRunner = AppDataSource.createQueryRunner()
@@ -228,7 +153,7 @@ export class ShahkarController {
                         }
                         let trackIdService = new internalDB()
                         let DBStatus = await trackIdService.saveData(trackIdData)
-                        console.log('returned db status>>>>', DBStatus)
+                        // console.log('returned db status>>>>', DBStatus)
                         return response.status(500).json({ msg: 'کاربر گرامی موقتا سیستم احراز هویت ثبت احوال در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید' })
                     }
                     let {
@@ -288,7 +213,7 @@ export class ShahkarController {
                     }
                     let trackIdService = new internalDB()
                     let DBStatus = await trackIdService.saveData(trackIdData)
-                    console.log('returned db status>>>>', DBStatus)
+                    // console.log('returned db status>>>>', DBStatus)
                     // let nameFamily = firstName + ' ' + lastName
                     this.smsService.sendGeneralMessage(wallet.user.phoneNumber, "identify", firstName, null, null)
 
@@ -310,7 +235,7 @@ export class ShahkarController {
                     }
                     let trackIdService = new internalDB()
                     let DBStatus = await trackIdService.saveData(trackIdData)
-                    console.log('returned db status>>>>', DBStatus)
+                    // console.log('returned db status>>>>', DBStatus)
 
                     monitor.addStatus({
                         scope: 'shahkar controller',
@@ -344,7 +269,7 @@ export class ShahkarController {
                     }
                     let trackIdService = new internalDB()
                     let DBStatus = await trackIdService.saveData(trackIdData)
-                    console.log('data base saver result>>>', DBStatus)
+                    // console.log('data base saver result>>>', DBStatus)
                     if (+error.response.status >= 500) {
                         return response.status(500).json({ msg: 'کاربر گرامی موقتا سیستم احراز هویت ثبت احوال در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید' })
                     }
@@ -394,7 +319,7 @@ export class ShahkarController {
                 return false
             }
         } catch (error) {
-            monitor.error.push(error)
+            monitor.error.push(`error in check phone and cartNumber:::: ${error.response}`)
             console.log("error in checkMatchPhoneNumberAndCartNumber", error);
             return false
         }
@@ -432,7 +357,7 @@ export class ShahkarController {
         } catch (error) {
             console.log(error?.response?.headers)
             // monitor.error.push(`error in get token shahkar :: ${error.response}`)
-            monitor.error.push(`error in get token shahkar :: ${error}`)
+            monitor.error.push(`error in get token shahkar :: ${error.response}`)
             console.log("error in getToken ShahkarController   " + error);
             return null
         }

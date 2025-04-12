@@ -15,6 +15,10 @@ import axios from "axios"
 import { NotMatch } from "../entity/notMatch"
  
 
+
+
+
+
 export class OtpController {
     private otpRepository  = AppDataSource.getRepository(Otp)
     private userRepository  = AppDataSource.getRepository(User)
@@ -22,7 +26,6 @@ export class OtpController {
     private jwtService = new JwtService()
     private smsService = new SmsService()
     private loggerService =new logger()
-
 
     async getToken() {
         let authUrl = process.env.AUTH_URL
