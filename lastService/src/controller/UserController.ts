@@ -172,23 +172,23 @@ export class UserController {
     async remove(request: Request, response: Response, next: NextFunction) {
         const phoneNumber =request.params.phoneNumber
         try {
-            const userToRemove = await this.userRepository.findOne({where : {phoneNumber:phoneNumber},relations:["sells","buys","wallet" , "convertSells" , "convertBuys"]})
+            const userToRemove = await this.userRepository.findOne({where : {phoneNumber:phoneNumber},relations:[ "wallet"]})
             if (!userToRemove) {
                 return response.status(404).json({ err: "User with this id not found" })
             }
 
-            let producList = await this.productLists.find()
-            await this.productLists.remove(producList)
+            // let producList = await this.productLists.find()
+            // await this.productLists.remove(producList)
 
-            let all = await this.convertInvoice.find()
+            // let all = await this.convertInvoice.find()
 
-            await this.convertInvoice.remove(all)
+            // await this.convertInvoice.remove(all)
 
             // await this.convertInvoice.remove(userToRemove.convertSells)
             // await this.convertInvoice.remove(userToRemove.convertBuys)
             // await this.invoiceRepository.remove(userToRemove.sells)
             // await this.invoiceRepository.remove(userToRemove.buys)
-            // await this.walletRepository.remove(userToRemove.wallet)
+            await this.walletRepository.remove(userToRemove.wallet)
             await this.userRepository.remove(userToRemove)
             
             // const wallet=await this.walletRepository.findOne({where:{
