@@ -13,6 +13,7 @@ import monitor from "../util/statusMonitor"
 import { Wallet } from "../entity/Wallet"
 import { convertTradeInvoice } from "../entity/inpersonConvertTrade.entity"
 import { productList } from "../entity/producList.entity"
+import blackList from "../util/blackList"
 
 
 export class UserController {
@@ -321,4 +322,15 @@ export class UserController {
         })
         return response.status(200).json(allCharts)
     }
+
+
+    async logOut(request: Request, response: Response, next: NextFunction) {
+        console.log(request.headers.authorization)
+        blackList.setter(request.headers.authorization)
+        return response.status(200).json({
+            token: request.headers.authorization
+        })
+    }
+
+
 }

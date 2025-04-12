@@ -44,6 +44,13 @@ export const Routes = [
         middlwares: [ authenticate]
     },
     {
+        method: "post",
+        route: "/logout",
+        controller: UserController,
+        action: "logOut",
+        middlwares: []
+    },
+    {
     method: "get",
     route: "/users",
     controller: UserController,

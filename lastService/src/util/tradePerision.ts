@@ -1,7 +1,7 @@
 
 
 
- class tradePermision {
+class tradePermision {
     private permision = 1;
 
     async getter(){
