@@ -113,7 +113,7 @@ export class ShahkarController {
             return response.status(400).json({ msg: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
         }
 
-        if (isMatch == false) {
+        if (isMatch === false) {
             console.log('444')
             return response.status(400).json({ msg: 'شماره تلفن با شماره ملی مطابقت ندارد' })
         }
@@ -175,11 +175,11 @@ export class ShahkarController {
                     } = info
 
                     // check the oldUser existance
-                    // const oldUserData = await this.oldUSerService.checkExistAndGetGoldWallet(phoneNumber, nationalCode, info)
-                    // if (oldUserData == 500) {
-                    //     return response.status(500).json({ msg: 'کاربر گرامی مجددا سیستم احراز هویت در دسترس نمی باشد.' })
-                    // }
-                    // console.log("oldUserData", oldUserData);
+                    const oldUserData = await this.oldUSerService.checkExistAndGetGoldWallet(phoneNumber, nationalCode, info)
+                    if (oldUserData == 500) {
+                        return response.status(500).json({ msg: 'کاربر گرامی سیستم احراز هویت در دسترس نمی باشد.' })
+                    }
+                    console.log("oldUserData", oldUserData);
                     // setting date and time
                     const time = new Date().toLocaleString('fa-IR').split(',')[1]
                     const date = new Date().toLocaleString('fa-IR').split(',')[0]
