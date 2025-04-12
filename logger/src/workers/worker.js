@@ -37,6 +37,24 @@ class interConnection {
                     console.log(error)
                 }
                 break;
+            case 'adminNode':
+                try {
+                    let rawRespons = await fetch('http://localhost:3002/monitor/all', { method: 'GET' })
+                    response = await rawRespons.json()
+                    console.log('response from user status . . .', response)
+                } catch (error) {
+                    console.log(error)
+                }
+                break;
+            case 'queryService':
+                try {
+                    let rawRespons = await fetch('http://localhost:3003/monitor/all', { method: 'GET' })
+                    response = await rawRespons.json()
+                    console.log('response from user status . . .', response)
+                } catch (error) {
+                    console.log(error)
+                }
+                break;
             case 'admin':
                 try {
                     let rawRespons = await fetch('http://localhost:5005/monitor/all', { method: 'GET' })
@@ -116,6 +134,8 @@ let interConnectionService = new interConnection()
 
 setInterval(async () => {
     let gatewayResponse = await interConnectionService.getStatus('gateway')
+    let adminNodeResponse = await interConnectionService.getStatus('adminNode')
+    let queryServiceResponse = await interConnectionService.getStatus('queryService')
     let userResponse = await interConnectionService.getStatus('user')
     let adminResponse = await interConnectionService.getStatus('admin')
     let oldUserResponse = await interConnectionService.getStatus('oldUser')
@@ -135,6 +155,18 @@ setInterval(async () => {
         result.push({ status: 0, service: 'user' })
     } else {
         result.push({  status: 1,  total : userResponse, service: 'user' })
+    } 
+    if (!adminNodeResponse) {
+        console.log('adminNode service seems like is down . . .')
+        result.push({ status: 0, service: 'adminNode' })
+    } else {
+        result.push({  status: 1,  total : adminNodeResponse, service: 'adminNode' })
+    } 
+    if (!queryServiceResponse) {
+        console.log('query service seems like is down . . .')
+        result.push({ status: 0, service: 'query' })
+    } else {
+        result.push({  status: 1,  total : queryServiceResponse, service: 'query' })
     }
     if (!adminResponse) {
         console.log('admin service seems like is down . . .')
