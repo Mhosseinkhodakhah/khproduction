@@ -344,6 +344,11 @@ export class WalletController {
                     msg : 'درگاه پرداخت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.'
                 })
             }
+            if (!url.authority){
+                return response.status(500).json({
+                    msg : 'درگاه پرداخت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.'
+                })
+            }
             let transAction = await this.walletTransactionRepository.findOne({where : {id : savedTransaction.id}})
             transAction.authority = url.authority;
             transAction.invoiceId = await this.generateInvoice();

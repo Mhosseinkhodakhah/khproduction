@@ -69,7 +69,7 @@ export class ShahkarController {
         } catch (error) {
             monitor.error.push(`error in check phone and national code of userssss ` + error.response.data.message)
             console.log('error>>>>>', error)
-            if (error.response.headers['track-code']) {
+            if (error.response) {
                 let trackIdData: trackIdInterface = {
                     trackId: error.response.headers['track-code'],
                     // firstName : firstName,
@@ -95,6 +95,7 @@ export class ShahkarController {
     async identityInformationOfUser(request: Request, response: Response, next: NextFunction) {
         let { phoneNumber, birthDate, nationalCode } = request.body
         let identityInfoUrl = process.env.IDENTITY_INFO_URL
+        console.log('start the identity')
         let isMatch = await this.checkMatchOfPhoneAndNationalCode({ phoneNumber, nationalCode })
         // console.log(isMatch)
 
@@ -253,6 +254,7 @@ export class ShahkarController {
                 }
             } catch (error) {
                 // console.log(error.response.data.error);
+                
                 console.log(`${error}`, 'transAction rollback')
                 await queryRunner.rollbackTransaction()
                 monitor.addStatus({
@@ -261,7 +263,7 @@ export class ShahkarController {
                     error: error
                 })
 
-                if (error.response.headers['track-code']) {
+                if (error.response) {
                     let trackIdData: trackIdInterface = {
                         trackId: error.response.headers['track-code'],
                         // firstName : firstName,
@@ -324,7 +326,7 @@ export class ShahkarController {
         } catch (error) {
             monitor.error.push(`error in check phone and cartNumber:::: ${error}`)
             console.log("error in checkMatchPhoneNumberAndCartNumber", error);
-            if (error.response.status){
+            if (error.response && error.response.status){
                 if (error.response.status >= 500){
                     return 500
                 }if (error.response.status >= 400 && error.response.status < 500){
@@ -335,7 +337,7 @@ export class ShahkarController {
         }
     }
 
-    
+
 
     async convertCardToSheba(cardNumber) {
         try {
