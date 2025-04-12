@@ -3,6 +3,7 @@ import { VerificationStatus } from "./enums/VerificationStatus"
 import { Invoice } from "./Invoice"
 import { Wallet } from "./Wallet";
 import { BankAccount } from "./BankAccount";
+import { convertTradeInvoice } from "./inpersonConvertTrade.entity";
 
 
 
@@ -43,6 +44,12 @@ export class User {
     @Column({nullable : true})
     gender : boolean
 
+    @Column({ type: "varchar", nullable: true })
+    date: string
+
+    @Column({ type: "varchar", nullable: true })
+    time: string
+    
     @Column({nullable : true})
     identityNumber : string
 
@@ -69,6 +76,12 @@ export class User {
     
     @OneToMany(() => Invoice , (invoice)=> invoice.buyer , {nullable : true})
     buys : Invoice[]
+
+    @OneToMany(() => convertTradeInvoice , (invoice)=> invoice.seller, {nullable : true})
+    convertSells : convertTradeInvoice[]
+    
+    @OneToMany(() => convertTradeInvoice , (invoice)=> invoice.buyer , {nullable : true})
+    convertBuys : convertTradeInvoice[]
 
     @OneToOne(() => Wallet, (wallet) => wallet.user, { cascade: true })
     wallet: Wallet;

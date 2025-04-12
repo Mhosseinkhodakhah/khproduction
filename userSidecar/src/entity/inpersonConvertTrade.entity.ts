@@ -29,12 +29,12 @@ export class convertTradeInvoice {
 
     @Column({nullable : true})
     invoiceId : string
-
+    
     @Column({nullable : true})
-    checkNumber : string
+    chequeNumber : string
 
-    @Column({type : 'int' , nullable : true })
-    paymentMethod : number                      
+    @Column({type : 'varchar' , nullable : true  , default : 0})
+    requiredToPay : string                      
 
     @Column({type : 'int' , nullable : true })
     payment : number                      
@@ -59,7 +59,7 @@ export class convertTradeInvoice {
 
     @Column({ type: "numeric", precision: 10, scale: 0,default : 0 , nullable : true})
     totalCash : number
-
+    
     @Column({ type: "int", default : 0 })
     installmentType : number
 
@@ -108,7 +108,7 @@ export class convertTradeInvoice {
           default: TradeType.ONLINE
     })
     tradeType:TradeType;
-    
+
     @CreateDateColumn()
     createdAt: Date
     
