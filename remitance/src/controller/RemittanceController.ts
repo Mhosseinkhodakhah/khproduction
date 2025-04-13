@@ -107,10 +107,10 @@ export class RemittanceController {
             let savedRemitance1 = await queryRunner.manager.save(createRemmitance)
             console.log('remitanceId', savedRemitance1)
             await queryRunner.commitTransaction()
-            // let savedRemmitance2 = await this.remittanceRepository.findOne({ where: { id: savedRemitance1.id }, relations: ['buyer', 'buyer.wallet'] })
-            // console.log('saved remmitance>>>', savedRemmitance2)
+            let savedRemmitance2 = await this.remittanceRepository.findOne({ where: { id: savedRemitance1.id }, relations: ['buyer', 'buyer.wallet'] })
+            console.log('after getting from databse >>>' , savedRemmitance2)
             await this.smsService.sendGeneralMessage(user.phoneNumber, "sellcall", user.firstName, goldWeight, totalPrice)
-            return next(new response(req, res, 'create buy remmitance ', 200, null, resultFromLastService.user))
+            return next(new response(req, res, 'create buy remmitance ', 200, null, savedRemmitance2))
         }
         catch (err) {
             console.log(err);
