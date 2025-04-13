@@ -287,7 +287,7 @@ export class UserController {
             const time = new Date().toLocaleString('fa-IR').split(',')[1]
             const date = new Date().toLocaleString('fa-IR').split(',')[0]
 
-            let wallet = this.walletRepository.create({ goldWeight: oldUserData.isExist ? oldUserData.wallet.goldWeight : 0 , balance: 0 })
+            let wallet = this.walletRepository.create({ goldWeight: oldUserData.isExist ? oldUserData.updatedUser.wallet.goldWeight : 0 , balance: 0 })
             const user = this.userRepository.create({
                 fatherName: userInfo.fatherName,
                 gender: userInfo.gender,
