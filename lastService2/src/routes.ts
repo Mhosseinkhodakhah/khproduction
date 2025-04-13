@@ -72,14 +72,16 @@ export const Routes = [
 //     action: "remove",
 //     middlwares: [authenticate]
 
-// }, {
-//     method: "post",
-//     route: "/otp",
-//     controller: OtpController,
-//     action: "sendOtpMessage",
-//     middlwares: [ratelimit]
+// }, 
+{
+    method: "post",
+    route: "/otp",
+    controller: OtpController,
+    action: "sendOtpMessage",
+    middlwares: [ratelimit]
 
-// }, {
+},
+// ,{
 //     method: "post",
 //     route: "/verifyOtp",
 //     controller: OtpController,
