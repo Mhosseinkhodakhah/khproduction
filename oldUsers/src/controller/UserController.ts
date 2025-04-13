@@ -456,6 +456,7 @@ export class UserController {
     async search(req: Request, res: Response, next: NextFunction){
         
         let serachWord = req.params.search;
+        console.log('query' , req.query.page , req.query.size)
         let reg = `%${serachWord}%`
         const page = req.query.page ? req.query.page : 1; 
         const pageSize =req.query.size ? req.query.size : 100;
@@ -464,7 +465,7 @@ export class UserController {
         }})
 
         let user = await this.userRepository.createQueryBuilder('user')
-        .where('user.verificationStatus = :status AND  AND (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)' , {status : 2 , search : reg})
+        .where('user.verificationStatus = :status  AND (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)' , {status : 2 , search : reg})
         .take(+pageSize)
         .skip(+((+page - 1) * +pageSize))
         .getMany()
