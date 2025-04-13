@@ -55,7 +55,7 @@ export class RemittanceController {
         const adminId = `${req.user.id}-${req.user.firstName}-${req.user.lastName}`;
         let { goldPrice, goldWeight, totalPrice, phoneNumber, description, date, destCardPan, originCardPan, time } = req.body;
         console.log('phone' , phoneNumber)
-       
+        
         console.log('test body', req.body)
         if (totalPrice.toString().includes(',')){
             totalPrice  = totalPrice.replaceAll(',' , '')
@@ -68,7 +68,7 @@ export class RemittanceController {
             return next(new responseModel(req, res,'', 'create buy remmitance ', 422, "کاربر وجود ندارد", null))
         }   
         let type = await this.typeRepo.findOne({where : {title : 'buy'}})
-
+        let systemUser = await this.userRepository.findOne({where : {isSystemUser : true}})
         const queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
@@ -85,6 +85,7 @@ export class RemittanceController {
                 status: "pending",
                 type: type,
                 buyer: user,
+                seller : systemUser,
                 tradeType : TradeType.REMMITANCE
             })
             createRemmitance.destCardPan = destCardPan
@@ -121,12 +122,11 @@ export class RemittanceController {
         console.log('tot' , totalPrice)
 
         const user=await this.userRepository.findOne({where : {phoneNumber : phoneNumber} , relations : ['wallet']})
+        let systemUser = await this.userRepository.findOne({where : {isSystemUser : true}})
         console.log('wallet>>>' , user.wallet)
         if(!user){
             return next(new responseModel(req, res,'', 'create buy remmitance ',422,"کاربر وجود ندارد",null))
         }
-
-
         if (+user.wallet.goldWeight < +goldWeight){
             return next(new responseModel(req, res,'', 'create buy remmitance ',422,"موجودی صندوق طلای کاربر کافی نمیباشد",null))
         }
@@ -148,6 +148,7 @@ export class RemittanceController {
                 status: "pending",
                 type: type,
                 seller: user,
+                buyer : systemUser,
                 tradeType : TradeType.REMMITANCE
             })
             
