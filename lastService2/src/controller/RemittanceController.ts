@@ -232,7 +232,7 @@ export class RemittanceController {
             await queryRunner.manager.save(remmitance)
             await queryRunner.commitTransaction()
             if (remmitance.type.title == 'sell'){
-                await this.smsService.sendGeneralMessage(remmitance.buyer.phoneNumber, "buy", remmitance.buyer.firstName,remmitance.goldWeight ,remmitance.totalPrice )
+                await this.smsService.sendGeneralMessage(remmitance.seller.phoneNumber, "buy", remmitance.seller.firstName,remmitance.goldWeight ,remmitance.totalPrice )
             }else if (remmitance.type.title == 'buy'){
                 await this.smsService.sendGeneralMessage(remmitance.buyer.phoneNumber, "buy", remmitance.buyer.firstName,remmitance.goldWeight ,remmitance.totalPrice )
             }            
@@ -265,7 +265,11 @@ export class RemittanceController {
             remmitance.accounterDescription = description;
             await queryRunner.manager.save(remmitance)
             await queryRunner.commitTransaction()
-            await this.smsService.sendGeneralMessage(remmitance.buyer.phoneNumber, "rejectcall", remmitance.buyer.firstName, remmitance.goldWeight ,remmitance.totalPrice )
+            if (remmitance.type.title == 'sell'){
+                await this.smsService.sendGeneralMessage(remmitance.seller.phoneNumber, "rejectcall", remmitance.seller.firstName, remmitance.goldWeight ,remmitance.totalPrice )
+            }else if (remmitance.type.title == 'buy'){
+                await this.smsService.sendGeneralMessage(remmitance.buyer.phoneNumber, "rejectcall", remmitance.buyer.firstName, remmitance.goldWeight ,remmitance.totalPrice )
+            }        
             return next(new responseModel(req, res,'', 'reject remmitance ', 200, null, remmitance))
         }
         catch (err) {
