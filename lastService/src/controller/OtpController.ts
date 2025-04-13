@@ -39,7 +39,7 @@ export class OtpController {
             return null
         }
     }
-
+    
     async checkMatchOfPhoneAndNationalCode(body) {
         let { phoneNumber, nationalCode } = body
         let checkMatchationUrl = process.env.SHAHKAR_BASE_URL + '/istelamshahkar'
