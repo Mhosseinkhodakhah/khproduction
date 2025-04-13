@@ -454,21 +454,44 @@ export class UserController {
 
 
     async search(req: Request, res: Response, next: NextFunction){
+        
         let serachWord = req.params.search;
-        let reg = new RegExp(serachWord)
-        console.log(req)
+        let reg = `%${serachWord}%`
+        const page = req.query.page ? req.query.page : 1; 
+        const pageSize =req.query.size ? req.query.size : 100;
+        let totalItem = await this.userRepository.count({where : {
+            verificationStatus : 2 , 
+        }})
 
-        let all = await this.userRepository.find({where :[{
-            firstName : Like(`%${serachWord}%`)
-        },{
-            lastName : Like(`%${serachWord}%`)
-        },{
-            phoneNumber : Like(`%${serachWord}%`)
-        } , {
-            nationalCode : Like(`%${serachWord}%`)
-        }]})
-        console.log('its here >>>' , all)
-        return next(new response(req, res, 'get serach', 200 , null , all))
+        let user = await this.userRepository.createQueryBuilder('user')
+        .where('user.verificationStatus = :status AND (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)' , {status : 2 , search : reg})
+        .getMany()
+
+        // const users = await this.userRepository.find({
+        //     where: {
+        //         verificationStatus: 2 ,
+            
+        //     },
+        //     relations: ['wallet', 'sells', 'buys'],
+        //     take: pageSize,  
+        //     skip: (page - 1) * pageSize 
+        // });
+        // console.log( 'tedad users', users.length)
+        
+        
+        // console.log(req)
+
+        // let all = await this.userRepository.find({where :[{
+        //     firstName : Like(`%${serachWord}%`)
+        // },{
+        //     lastName : Like(`%${serachWord}%`)
+        // },{
+        //     phoneNumber : Like(`%${serachWord}%`)
+        // } , {
+        //     nationalCode : Like(`%${serachWord}%`)
+        // }]})
+        console.log('its here >>>' , user)
+        return next(new response(req, res, 'get serach', 200 , null , {user , totalItem}))
 
     }
 
