@@ -156,7 +156,7 @@ export class UserController {
         
         const users = await this.userRepository.find({
             where: {
-                verificationStatus: 0
+                verificationStatus: 2
             },
             relations: ['wallet', 'sells', 'buys'],
             take: 100,
