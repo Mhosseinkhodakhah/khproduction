@@ -2,7 +2,7 @@ import { AppDataSource } from "../data-source"
 import {LastService} from "../services/intrnal-service/lastService-serivce"
 import { ShahkarService } from "../services/shahkar-service/shahkar-service"
 import { OtpSerivce } from "../services/otp-service/otp-service"
-import { NextFunction, Request, Response } from "express"
+import { NextFunction, query, Request, Response } from "express"
 import { User } from "../entity/User"
 import { oldInvoice } from "../entity/oldInvoice"
 import {v4 as uuidv4} from 'uuid';
@@ -133,7 +133,7 @@ export class UserController {
     async getAllUsersByAdmin(req: Request, res: Response, next: NextFunction) {
         const page = parseInt(req.params.page) || 1; 
         const pageSize =parseInt(req.params.size) || 100;
-        let searchWord = req.params.search
+        let searchWord = req.query.search
         let reg = `%${searchWord}%`
         console.log('params' , page , pageSize , searchWord)
         let totalItem = await this.userRepository.count({where : {
