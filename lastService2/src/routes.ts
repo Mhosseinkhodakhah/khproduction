@@ -19,6 +19,7 @@ import {createBuyPhone,createSellPhone,approveBuyPhone,rejectBuyPhone,updatePhon
 import inPersonController from "./controller/inPerson.controller";
 import { createNewUser } from "./DTO/applicationDTo";
 import invoiceConvertorController from "./controller/inpersonConvert.controller";
+import { RemittanceController } from "./controller/RemittanceController";
 
 
 export const Routes = [
@@ -680,6 +681,87 @@ export const Routes = [
 //     action: "test",
 //     middlwares: []
 // },
+//////////////////////////////////////////////////////////////////////////
+//remmiteance
+//////////////////////////////////////////////////////////////////////////
+
+{
+    method: "post",
+    route: "/users/check",
+    controller: UserController,
+    action: "checkIdentity",
+    middlware: [adminMiddleware]
+}, {
+    method: "post",
+    route: "/users/newuser",
+    controller: UserController,
+    action: "approveNewUser",
+    middlware: [adminMiddleware]
+}
+
+//! remmitance controller
+,{
+    method: "post",
+    route: "/sell",
+    controller: RemittanceController,
+    action: "createSell",
+    middlware: [adminMiddleware]
+}, {
+    method: "post",
+    route: "/buy",
+    controller: RemittanceController,
+    action: "createBuy",
+    middlware: [adminMiddleware]
+
+}, {
+    method: "post",
+    route: "/approve/:id",
+    controller: RemittanceController,
+    action: "approveRemmitance",
+    middlware: [adminMiddleware]
+}, {
+    method: "post",
+    route: "/reject/:id",
+    controller: RemittanceController,
+    action: "rejectRemmitance",
+    middlware: [adminMiddleware]
+},
+
+, {
+    method: "put",
+    route: "/update/:id",
+    controller: RemittanceController,
+    action: "updateRemmitance",
+    middlware: [adminMiddleware]
+}
+,{
+    method: "get",
+    route: "/buy/:status",
+    controller: RemittanceController,
+    action: "getByStatusBuyRemmitance",
+    middlware: [adminMiddleware]
+},
+{
+    method: "get",
+    route: "/sell/:status",
+    controller: RemittanceController,
+    action: "getByStatusSellRemmitance",
+    middlware: [adminMiddleware]
+},{
+    method: "get",
+    route: "/invoice/sell/:phone/:status",
+    controller: interServiceController,
+    action: "getAllSellInvoices",
+    middlware: []
+},
+, {
+    method: "get",
+    route: "/invoice/buy/:phone/:status",
+    controller: interServiceController,
+    action: "getAllBuyInvoices",
+    middlware: []
+},
+
 
 ]
 

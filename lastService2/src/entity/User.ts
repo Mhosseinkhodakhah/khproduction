@@ -43,7 +43,6 @@ export class User {
     @Column({nullable : true})
     gender : boolean
 
-
     @Column({ type: "varchar", nullable: true })
     date: string
 
