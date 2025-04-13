@@ -690,13 +690,13 @@ export const Routes = [
     route: "/users/check",
     controller: UserController,
     action: "checkIdentity",
-    middlware: [adminMiddleware]
+    middlwares: [adminMiddleware]
 }, {
     method: "post",
     route: "/users/newuser",
     controller: UserController,
     action: "approveNewUser",
-    middlware: [adminMiddleware]
+    middlwares: [adminMiddleware]
 }
 
 // //! remmitance controller
