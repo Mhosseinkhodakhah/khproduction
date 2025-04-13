@@ -21,7 +21,7 @@ export class ShahkarController {
     private walletRepository = AppDataSource.getRepository(Wallet)
     private smsService = new SmsService()
     private oldUSerService = new oldUserService()
-    
+
     async checkMatchOfPhoneAndNationalCode(body) {
         let { phoneNumber, nationalCode } = body
         let checkMatchationUrl = process.env.SHAHKAR_BASE_URL + '/istelamshahkar'
@@ -147,7 +147,7 @@ export class ShahkarController {
                 // console.log('trach code . . .',res.headers['track-code'])
                 console.log('shahkar info>>>>', res)
                 if (res.status == 200) {
-                    if (!res.data || res.data == '') {
+                    if (!res.data || res.data == '' || typeof(res.data.fristName) === undefined) {
                         console.log('its in here>>>>>')
                         let trackIdData: trackIdInterface = {
                             trackId: res.headers['track-code'],
@@ -229,6 +229,7 @@ export class ShahkarController {
                         status: 1,
                         error: null
                     })
+
                     return response.json({ user: savedUser, msg: "ثبت نام شما با موفقیت انجام شد", token })
                 } else if (res.status == 400) {
                     console.log('track id>>>>', res.headers['track-code'])

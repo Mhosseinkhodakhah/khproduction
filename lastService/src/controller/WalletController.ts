@@ -310,7 +310,6 @@ export class WalletController {
                     status :  0,
                     error : 'مبلغ وارد شده برای واریزی باید حداقل 100 هزارتومن باشد.'
                 })
-    
                 return response.status(400).json({msg : "مبلغ وارد شده از حداقل مبلغ واریز کمتر است"})
             }
             const info = {

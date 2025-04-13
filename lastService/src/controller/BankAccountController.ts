@@ -115,23 +115,23 @@ export class BankAccountController {
                 birthDate : owner.birthDate
                 }
                 console.log(info)
-                let isMatch = await this.checkCard.checkCardNuber(info)
-                // let isMatch = await  this.shahkarController.checkMatchPhoneNumberAndCartNumber(info)
+                // let isMatch = await this.checkCard.checkCardNuber(info)
+                let isMatch = await  this.shahkarController.checkMatchPhoneNumberAndCartNumber(info)
                 console.log('its returned data>>>' , isMatch)
                 if (isMatch == 500){
                     return response.status(500).json({msg : 'سیستم ثبت کارت بانکی موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید'})
                 }
-                // if (!isMatch){
-                //     return response.status(500).json({msg : 'سیستم ثبت کارت بانکی موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید'})
-                // }
-                // if (isMatch == false){
-                //     monitor.addStatus({
-                //         scope : 'bank account controller',
-                //         status : 0,
-                //         error: `کارت نامعتبر `
-                //     })
-                //     response.status(400).json({ msg: "کارت نامعتبر است" });
-                // }
+                if (typeof(isMatch) === undefined){
+                    return response.status(500).json({msg : 'سیستم ثبت کارت بانکی موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید'})
+                }
+                if (isMatch == false){
+                    monitor.addStatus({
+                        scope : 'bank account controller',
+                        status : 0,
+                        error: `کارت نامعتبر `
+                    })
+                    response.status(400).json({ msg: "کارت نامعتبر است" });
+                }
 
                 bankAccount.isVerified = isMatch;
                 
