@@ -55,20 +55,24 @@ export class RemittanceController {
         let { goldPrice, goldWeight, totalPrice, phoneNumber, description, date, destCardPan, originCardPan, time } = req.body;
         const resultFromLastService = await this.lastServiceService.checkExistUserInLastService(phoneNumber)
         
-        if (resultFromLastService.response.status >= 500){
-            return next(new response(req, res, 'create buy remmitance ', 500 , "خطای داخلی سرویس" , null))
+        if (resultFromLastService.response){
+
+            if (resultFromLastService.response.status >= 500) {
+                return next(new response(req, res, 'create buy remmitance ', 500, "خطای داخلی سرویس", null))
+            }
+
+            if (resultFromLastService.response.status >= 500) {
+                return next(new response(req, res, 'create buy remmitance ', 500, "خطای داخلی سرویس", null))
+            }
+        
         }
 
-        if (resultFromLastService.response.status >= 500){
-            return next(new response(req, res, 'create buy remmitance ', 500 , "خطای داخلی سرویس" , null))
+        if (resultFromLastService.exist == false ){
+            return next(new response(req, res, 'create buy remmitance ', 400 , "کاربر وجود ندارد", null))
         }
 
         if (!resultFromLastService.exist){
             return next(new response(req, res, 'create buy remmitance ', 500 , "خطای داخلی سرویس" , null))
-        }
-        
-        if (resultFromLastService.exist == false ){
-            return next(new response(req, res, 'create buy remmitance ', 400 , "کاربر وجود ندارد", null))
         }
 
         console.log('test body', req.body)
