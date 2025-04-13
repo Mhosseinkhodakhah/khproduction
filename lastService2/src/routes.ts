@@ -699,68 +699,68 @@ export const Routes = [
     middlwares: [adminMiddleware]
 }
 
-// //! remmitance controller
-// ,{
-//     method: "post",
-//     route: "/sell",
-//     controller: RemittanceController,
-//     action: "createSell",
-//     middlware: [adminMiddleware]
-// }, {
-//     method: "post",
-//     route: "/buy",
-//     controller: RemittanceController,
-//     action: "createBuy",
-//     middlware: [adminMiddleware]
+//! remmitance controller
+,{
+    method: "post",
+    route: "/sell",
+    controller: RemittanceController,
+    action: "createSell",
+    middlwares: [adminMiddleware]
+}, {
+    method: "post",
+    route: "/buy",
+    controller: RemittanceController,
+    action: "createBuy",
+    middlwares: [adminMiddleware]
 
-// }, {
-//     method: "post",
-//     route: "/approve/:id",
-//     controller: RemittanceController,
-//     action: "approveRemmitance",
-//     middlware: [adminMiddleware]
-// }, {
-//     method: "post",
-//     route: "/reject/:id",
-//     controller: RemittanceController,
-//     action: "rejectRemmitance",
-//     middlware: [adminMiddleware]
-// },
+}, {
+    method: "post",
+    route: "/approve/:id",
+    controller: RemittanceController,
+    action: "approveRemmitance",
+    middlwares: [adminMiddleware]
+}, {
+    method: "post",
+    route: "/reject/:id",
+    controller: RemittanceController,
+    action: "rejectRemmitance",
+    middlwares: [adminMiddleware]
+},
 
-// , {
-//     method: "put",
-//     route: "/update/:id",
-//     controller: RemittanceController,
-//     action: "updateRemmitance",
-//     middlware: [adminMiddleware]
-// }
-// ,{
-//     method: "get",
-//     route: "/buy/:status",
-//     controller: RemittanceController,
-//     action: "getByStatusBuyRemmitance",
-//     middlware: [adminMiddleware]
-// },
-// {
-//     method: "get",
-//     route: "/sell/:status",
-//     controller: RemittanceController,
-//     action: "getByStatusSellRemmitance",
-//     middlware: [adminMiddleware]
-// },{
-//     method: "get",
-//     route: "/invoice/sell/:phone/:status",
-//     controller: interServiceController,
-//     action: "getAllSellInvoices",
-//     middlware: []
-// },
-// , {
-//     method: "get",
-//     route: "/invoice/buy/:phone/:status",
-//     controller: interServiceController,
-//     action: "getAllBuyInvoices",
-//     middlware: []
-// },
+, {
+    method: "put",
+    route: "/update/:id",
+    controller: RemittanceController,
+    action: "updateRemmitance",
+    middlwares: [adminMiddleware]
+}
+,{
+    method: "get",
+    route: "/buy/:status",
+    controller: RemittanceController,
+    action: "getByStatusBuyRemmitance",
+    middlwares: [adminMiddleware]
+},
+{
+    method: "get",
+    route: "/sell/:status",
+    controller: RemittanceController,
+    action: "getByStatusSellRemmitance",
+    middlwares: [adminMiddleware]
+},{
+    method: "get",
+    route: "/invoice/sell/:phone/:status",
+    controller: interServiceController,
+    action: "getAllSellInvoices",
+    middlwares: []
+},
+, {
+    method: "get",
+    route: "/invoice/buy/:phone/:status",
+    controller: interServiceController,
+    action: "getAllBuyInvoices",
+    middlwares: []
+},
 
 
 ]
