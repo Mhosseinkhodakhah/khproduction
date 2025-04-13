@@ -68,6 +68,31 @@ export default class adminController {
     }
 
 
+    async checkStatus(req: Request, res: Response, next: NextFunction) {
+        let status = await this.zpService.getTransActionStatus(req.params.authority)
+        let final = '' ;
+        if (status.status == 'IN_BANK'){
+            final = 'تراکنش در درگاه میباشد'
+        }
+        if (status.status == 'FAILED'){
+            final = 'تراکنش نا موفق'
+
+        }
+        if (status.status == 'VERIFIED'){
+            final = 'تراکنش موفق'
+        }
+        if (status.status == 'REVERSED'){
+            final = 'تراکنش بازگشت خورده'
+            
+        }
+        if (status.status == 'unknown'){
+            final = 'تراکنش نامشخص'
+        }
+
+        return next(new responseModel(req, res,'' ,'admin service', 200, null, final))
+        
+    }
+
 
     /**
      * this function is for getting user info

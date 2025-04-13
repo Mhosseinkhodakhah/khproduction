@@ -309,7 +309,6 @@ export class UserController {
                 // fullName: `${userInfo.firstName} ${userInfo.lastName}`,
                 wallet
             })
-
             console.log("after create in local data base");
             console.log("after interservice");
             delete user.identityTraceCode
