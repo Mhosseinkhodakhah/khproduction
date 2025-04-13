@@ -145,7 +145,12 @@ export class UserController {
             .take(+pageSize)
             .skip(+((+page - 1) * +pageSize))
             .getMany()
-            return next(new response(req, res, 'get all users', 200, null, {users , totalItem : users.length}))
+
+            totalItem = await this.userRepository.createQueryBuilder('user')
+            .where('user.verificationStatus = :status  AND (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)' , {status : 2 , search : reg})
+            .getCount()
+            console.log('total items >>> ' , totalItem)
+            return next(new response(req, res, 'get all users', 200, null, {users , totalItem}))
         }else if(searchWord === ''){
             const users = await this.userRepository.find({
                 where: {
