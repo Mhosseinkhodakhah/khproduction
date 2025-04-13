@@ -145,7 +145,7 @@ export class UserController {
             .take(+pageSize)
             .skip(+((+page - 1) * +pageSize))
             .getMany()
-            return next(new response(req, res, 'get all users', 200, null, {users , totalItem}))
+            return next(new response(req, res, 'get all users', 200, null, {users , totalItem : users.length}))
         }else if(searchWord === ''){
             const users = await this.userRepository.find({
                 where: {
