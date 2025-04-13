@@ -120,7 +120,7 @@ export class RemittanceController {
         }
         console.log('tot' , totalPrice)
 
-        const user=await this.userRepository.findOne({where : {phoneNumber : phoneNumber}})
+        const user=await this.userRepository.findOne({where : {phoneNumber : phoneNumber} , relations : ['wallet']})
         console.log('wallet>>>' , user.wallet)
         if(!user){
             return next(new responseModel(req, res,'', 'create buy remmitance ',422,"کاربر وجود ندارد",null))
