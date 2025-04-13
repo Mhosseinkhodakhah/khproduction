@@ -57,7 +57,6 @@ export class RemittanceController {
         const resultFromLastService = await this.lastServiceService.checkExistUserInLastService(phoneNumber)
         
         if (resultFromLastService.response){
-
             if (resultFromLastService.response.status >= 500) {
                 return next(new response(req, res, 'create buy remmitance ', 500, "خطای داخلی سرویس", null))
             }
@@ -101,17 +100,17 @@ export class RemittanceController {
                 adminId,
                 status: "pending",
                 type: 1,
-                buyer: user
+                buyer: resultFromLastService.user
             })
             createRemmitance.destCardPan = destCardPan
             createRemmitance.originCardPan = originCardPan
             let savedRemitance1 = await queryRunner.manager.save(createRemmitance)
             console.log('remitanceId', savedRemitance1)
             await queryRunner.commitTransaction()
-            let savedRemmitance2 = await this.remittanceRepository.findOne({ where: { id: savedRemitance1.id }, relations: ['buyer', 'buyer.wallet'] })
-            console.log('saved remmitance>>>', savedRemmitance2)
+            // let savedRemmitance2 = await this.remittanceRepository.findOne({ where: { id: savedRemitance1.id }, relations: ['buyer', 'buyer.wallet'] })
+            // console.log('saved remmitance>>>', savedRemmitance2)
             await this.smsService.sendGeneralMessage(user.phoneNumber, "sellcall", user.firstName, goldWeight, totalPrice)
-            return next(new response(req, res, 'create buy remmitance ', 200, null, savedRemmitance2))
+            return next(new response(req, res, 'create buy remmitance ', 200, null, resultFromLastService.user))
         }
         catch (err) {
             console.log(err);
