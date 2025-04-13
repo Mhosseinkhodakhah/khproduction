@@ -53,6 +53,7 @@ export class RemittanceController {
     async createBuy(req: Request, res: Response, next: NextFunction) {
         const adminId = `${req.user.id}-${req.user.firstName}-${req.user.lastName}`;
         let { goldPrice, goldWeight, totalPrice, phoneNumber, description, date, destCardPan, originCardPan, time } = req.body;
+        console.log('phone' , phoneNumber)
         const resultFromLastService = await this.lastServiceService.checkExistUserInLastService(phoneNumber)
         
         if (resultFromLastService.response){
@@ -60,11 +61,9 @@ export class RemittanceController {
             if (resultFromLastService.response.status >= 500) {
                 return next(new response(req, res, 'create buy remmitance ', 500, "خطای داخلی سرویس", null))
             }
-
             if (resultFromLastService.response.status >= 500) {
                 return next(new response(req, res, 'create buy remmitance ', 500, "خطای داخلی سرویس", null))
             }
-        
         }
 
         if (resultFromLastService.exist == false ){
