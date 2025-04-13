@@ -98,8 +98,6 @@ export class UserController {
             console.log(err);
             return next(new response(req, res, 'checkIdentity', 500 , 'مشکل داخلی سرویس یوزر' , null))
         }
-
-
     }
 
 
@@ -146,6 +144,7 @@ export class UserController {
             take: pageSize,  
             skip: (page - 1) * pageSize 
         });
+        console.log( 'tedad users', users.length)
         return next(new response(req, res, 'get all users', 200, null, {users , totalItem}))
     }
 
@@ -163,8 +162,6 @@ export class UserController {
         });
         return next(new response(req, res, 'get all users', 200, null, users))
     }
-
-
 
     /**
      * this function is for creating the invoice of buy
@@ -188,7 +185,6 @@ export class UserController {
         // now it needs to send sms to user for creating a invoice
         return next(new response(req, res, 'create new invoice', 200, null, invoice))
     }
-
 
 
     /**
