@@ -56,7 +56,6 @@ export class RemittanceController {
         let { goldPrice, goldWeight, totalPrice, phoneNumber, description, date, destCardPan, originCardPan, time } = req.body;
         console.log('phone' , phoneNumber)
        
-
         console.log('test body', req.body)
         if (totalPrice.toString().includes(',')){
             totalPrice  = totalPrice.replaceAll(',' , '')
@@ -85,7 +84,8 @@ export class RemittanceController {
                 adminId,
                 status: "pending",
                 type: type,
-                buyer: user
+                buyer: user,
+                tradeType : TradeType.REMMITANCE
             })
             createRemmitance.destCardPan = destCardPan
             createRemmitance.originCardPan = originCardPan
@@ -147,7 +147,8 @@ export class RemittanceController {
                 adminId,
                 status: "pending",
                 type: type,
-                seller: user
+                seller: user,
+                tradeType : TradeType.REMMITANCE
             })
             
             let savedRemitance1 = await queryRunner.manager.save(createRemmitance)
@@ -279,15 +280,20 @@ export class RemittanceController {
         const status = req.params.status
         let type  = await this.typeRepo.findOne({where : {title : 'buy'}})
         try {
-            const remmitances = await this.remittanceRepository.find({
-                where: {
-                    status,
-                    tradeType : TradeType.REMMITANCE
-                }, relations: ["buyer"], order: { updatedAt: 'DESC' }
-            })
+            let remm = await this.remittanceRepository.createQueryBuilder('invoice')
+            .leftJoinAndSelect('invoice.buyer' , 'buyer')
+            .leftJoinAndSelect('invoice.type' , 'type')
+            .where('invoice.status = :status AND tradeType = :trade AND type.title = :title' , {status : status , trade : TradeType.REMMITANCE , title : 'buy'})
+            .getMany()
+            // const remmitances = await this.remittanceRepository.find({
+            //     where: {
+            //         status,
+            //         tradeType : TradeType.REMMITANCE
+            //     }, relations: ["buyer"], order: { updatedAt: 'DESC' }
+            // })
 
 
-            return next(new responseModel(req, res,'', 'get  buy remmitance with status ', 200, null, remmitances))
+            return next(new responseModel(req, res,'', 'get  buy remmitance with status ', 200, null, remm))
         }
         catch (err) {
             return next(new responseModel(req, res,'', 'get  buy remmitance with status', 500, err, null))
@@ -300,14 +306,19 @@ export class RemittanceController {
         const status = req.params.status
         let type  = await this.typeRepo.findOne({where : {title : 'sell'}})
         try {
-            const remmitances = await this.remittanceRepository.find({
-                where: {
-                    status,
-                    tradeType : TradeType.REMMITANCE
-                }, relations: ["seller"], order: { updatedAt: 'DESC' }
-            })
+            let remm = await this.remittanceRepository.createQueryBuilder('invoice')
+            .leftJoinAndSelect('invoice.seller' , 'seller')
+            .leftJoinAndSelect('invoice.type' , 'type')
+            .where('invoice.status = :status AND tradeType = :trade AND type.title = :title' , {status : status , trade : TradeType.REMMITANCE , title : 'sell'})
+            .getMany()
+            // const remmitances = await this.remittanceRepository.find({
+            //     where: {
+            //         status,
+            //         tradeType : TradeType.REMMITANCE
+            //     }, relations: ["seller"], order: { updatedAt: 'DESC' }
+            // })
 
-            return next(new responseModel(req, res,'', 'get  sell remmitance with status ', 200, null, remmitances))
+            return next(new responseModel(req, res,'', 'get  sell remmitance with status ', 200, null, remm))
         }
         catch (err) {
             return next(new responseModel(req, res,'', 'get  sell remmitance with status', 500, err, null))
