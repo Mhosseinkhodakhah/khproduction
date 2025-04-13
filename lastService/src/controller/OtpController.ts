@@ -13,10 +13,6 @@ import { internalDB } from "../services/selfDB/saveDATA.service"
 import { trackIdInterface } from "../interfaces/interface.interface"
 import axios from "axios"
 import { NotMatch } from "../entity/notMatch"
- 
-
-
-
 
 
 export class OtpController {
@@ -248,6 +244,15 @@ export class OtpController {
                 error: null
             })
             
+            if (!user.date){
+                const mainDate=new Date(user.createdAt).toLocaleString('fa-IR').split(',')
+                const date=mainDate[0]
+                const time=mainDate[1]
+                user.date=date
+                user.time=time
+                await this.userRepository.save(user)
+            }
+
             let isMatch = await this.checkMatchOfPhoneAndNationalCode({ phoneNumber : user.phoneNumber , nationalCode : user.nationalCode})
             let isNotMatch = await this.notMatchRepo.exists({where : {nationalCode : user.nationalCode}})
             if (!isNotMatch){
