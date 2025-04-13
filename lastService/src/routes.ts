@@ -505,7 +505,13 @@ export const Routes = [
     action: "updateWallet",                   // add new user by oldUser service
     middlwares: []
 },
-
+{                          
+    method: "put",
+    route: "/admin/transAction/:authority",
+    controller: adminController,
+    action: "checkStatus",        /**its for verifying the deposit by admin */
+    middlwares: [adminMiddleware , verifyTransActinon]
+},
 
 
 /**

@@ -91,7 +91,6 @@ export class ShahkarController {
     }
 
 
-
     async identityInformationOfUser(request: Request, response: Response, next: NextFunction) {
         let { phoneNumber, birthDate, nationalCode } = request.body
         let identityInfoUrl = process.env.IDENTITY_INFO_URL

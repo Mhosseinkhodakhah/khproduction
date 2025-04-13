@@ -51,6 +51,7 @@ export default class adminController {
     }
 
 
+
     async getTradePermision(req: Request, res: Response, next: NextFunction){
         // let tradePerimision = await cacher.getter('tradePermision')
         let tradePerimision = await instance.getter()
