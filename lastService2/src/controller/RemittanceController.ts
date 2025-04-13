@@ -211,7 +211,7 @@ export class RemittanceController {
         const remmitanceId = req.params.id
         const {description} = req.body
         const accounterId = `${req.user.id}-${req.user.firstName}-${req.user.lastName}`;
-        const remmitance = await this.remittanceRepository.findOne({ where: { id: remmitanceId } , relations : ['buyer' , 'seller' , 'buyer.wallet' , 'seller.wallet']})
+        const remmitance = await this.remittanceRepository.findOne({ where: { id: remmitanceId } , relations : ['buyer' , 'seller' ,'type' ,'buyer.wallet' , 'seller.wallet']})
         const queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
@@ -247,7 +247,7 @@ export class RemittanceController {
         const remmitanceId = req.params.id
         const {description} = req.body
         const accounterId = `${req.user.id}-${req.user.firstName}-${req.user.lastName}`;
-        const remmitance = await this.remittanceRepository.findOne({ where: { id: remmitanceId } , relations : ['buyer' , 'seller']})
+        const remmitance = await this.remittanceRepository.findOne({ where: { id: remmitanceId } , relations : ['buyer' , 'type' ,'seller']})
         const queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
