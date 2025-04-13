@@ -333,48 +333,61 @@ export class WalletController {
             }
             let date = new Date().toLocaleString('fa-IR').split(',')[0]
             let time = new Date().toLocaleString('fa-IR').split(',')[1]
-            let transactionToCreate = this.walletTransactionRepository.create({description  : info.description, status : "pending", type : "deposit" ,wallet : wallet,amount,time,date})
-            let savedTransaction = await this.walletTransactionRepository.save(transactionToCreate)
-            info.invoiceId = savedTransaction.id
-            info.cardPan = wallet.user.bankAccounts[0].cardNumber
-            info.phoneNumber = wallet.user.phoneNumber
-            const url = await this.zpService.initiatePayment(info);
-            if (url == 'tooMuch'){
-                return response.status(500).json({
-                    msg : 'مبلغ وارد شده بیش از حد مجاز است.'
-                }) 
-            }
-            if (url == 'error'){
-                return response.status(500).json({
-                    msg : 'درگاه پرداخت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.'
+            let queryRunner = AppDataSource.createQueryRunner()
+            await queryRunner.connect()
+            await queryRunner.startTransaction()
+            try {
+                let transactionToCreate = this.walletTransactionRepository.create({description  : info.description, status : "pending", type : "deposit" ,wallet : wallet,amount,time,date})
+                let savedTransaction = await queryRunner.manager.save(transactionToCreate)
+                
+                info.invoiceId = savedTransaction.id
+                info.cardPan = wallet.user.bankAccounts[0].cardNumber
+                info.phoneNumber = wallet.user.phoneNumber
+                const url = await this.zpService.initiatePayment(info);
+                if (url === 'tooMuch'){
+                    return response.status(500).json({
+                        msg : 'مبلغ وارد شده بیش از حد مجاز است.'
+                    }) 
+                }
+                if (url == 'error'){
+                    return response.status(500).json({
+                        msg : 'درگاه پرداخت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.'
+                    })
+                }
+                if (!url.authority){
+                    return response.status(500).json({
+                        msg : 'درگاه پرداخت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.'
+                    })
+                }
+                let transAction = await this.walletTransactionRepository.findOne({where : {id : savedTransaction.id}})
+                transAction.authority = url.authority;
+                transAction.invoiceId = await this.generateInvoice();
+                let addedAuthority = await queryRunner.manager.save(transAction)
+                console.log('added authority >>>>' , addedAuthority)
+                monitor.addStatus({
+                    scope : 'wallet controller',
+                    status :  1,
+                    error : null
                 })
+                return response.status(200).json({msg : "انتقال به درگاه پرداخت" , url : url.url})
+            } catch (error) {
+               await queryRunner.rollbackTransaction()
+               console.log('error in initiate payment>>>' , `${error}` )
+               return response.status(200).json({msg : "ایجاد فاکتور با مشکل مواجه شده است."})
+            }finally{
+                console.log('transaction released>>>')
+                await queryRunner.release()
             }
-            if (!url.authority){
-                return response.status(500).json({
-                    msg : 'درگاه پرداخت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.'
+            } catch (error) {
+                monitor.addStatus({
+                    scope : 'wallet controller',
+                    status :  0,
+                    error : `error in transfer to gateway zarinpal ::: ${error}`
                 })
+    
+                console.error("Error charge wallet:", error);
+                return response.status(500).json({msg : "خطای داخلی سیستم"})
             }
-            let transAction = await this.walletTransactionRepository.findOne({where : {id : savedTransaction.id}})
-            transAction.authority = url.authority;
-            transAction.invoiceId = await this.generateInvoice();
-            let addedAuthority = await this.walletTransactionRepository.save(transAction)
-            console.log('added authority >>>>' , addedAuthority)
-            monitor.addStatus({
-                scope : 'wallet controller',
-                status :  1,
-                error : null
-            })
-            return response.status(200).json({msg : "انتقال به درگاه پرداخت" , url : url.url})
-        } catch (error) {
-            monitor.addStatus({
-                scope : 'wallet controller',
-                status :  0,
-                error : `error in transfer to gateway zarinpal ::: ${error}`
-            })
-
-            console.error("Error charge wallet:", error);
-            return response.status(500).json({msg : "خطای داخلی سیستم"})
-        }
     }   
 
 
