@@ -223,17 +223,22 @@ export class RemittanceController {
             remmitance.accounterDescription = description;
             if (remmitance.type.title == 'sell'){
                 remmitance.seller.wallet.goldWeight = (+remmitance.seller.wallet.goldWeight) - (+remmitance.goldWeight)
+                remmitance.buyer.wallet.goldBlock = (+remmitance.buyer.wallet.goldWeight) + (+remmitance.goldWeight)
             }else if (remmitance.type.title == 'buy'){
                 remmitance.buyer.wallet.goldWeight = (+remmitance.buyer.wallet.goldWeight) + (+remmitance.goldWeight)
+                remmitance.seller.wallet.goldBlock = (+remmitance.seller.wallet.goldWeight) - (+remmitance.goldWeight)
             }
             await queryRunner.manager.save(remmitance)
             await queryRunner.commitTransaction()
-            await this.smsService.sendGeneralMessage(remmitance.buyer.phoneNumber, "buy", remmitance.buyer.firstName,remmitance.goldWeight ,remmitance.totalPrice )
+            if (remmitance.type.title == 'sell'){
+                await this.smsService.sendGeneralMessage(remmitance.buyer.phoneNumber, "buy", remmitance.buyer.firstName,remmitance.goldWeight ,remmitance.totalPrice )
+            }else if (remmitance.type.title == 'buy'){
+                await this.smsService.sendGeneralMessage(remmitance.buyer.phoneNumber, "buy", remmitance.buyer.firstName,remmitance.goldWeight ,remmitance.totalPrice )
+            }            
             return next(new responseModel(req, res,'', 'approve remmitance ', 200, null, remmitance))
-        }
-        catch (err) {
+        }catch (err) {
             console.log(`${err}`);
-            await queryRunner.rollbackTransaction()
+            await queryRunner.rollbackTransaction() 
             return next(new responseModel(req, res,'', ' approve remmitance', 500, err, null))
         }
         finally {
