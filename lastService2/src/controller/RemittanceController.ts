@@ -283,7 +283,7 @@ export class RemittanceController {
             let remm = await this.remittanceRepository.createQueryBuilder('invoice')
             .leftJoinAndSelect('invoice.buyer' , 'buyer')
             .leftJoinAndSelect('invoice.type' , 'type')
-            .where('invoice.status = :status AND tradeType = :trade AND type.title = :title' , {status : status , trade : TradeType.REMMITANCE , title : 'buy'})
+            .where('invoice.status = :status AND invoice.tradeType = :trade AND type.title = :title' , {status : status , trade : TradeType.REMMITANCE , title : 'buy'})
             .getMany()
             // const remmitances = await this.remittanceRepository.find({
             //     where: {
@@ -309,7 +309,7 @@ export class RemittanceController {
             let remm = await this.remittanceRepository.createQueryBuilder('invoice')
             .leftJoinAndSelect('invoice.seller' , 'seller')
             .leftJoinAndSelect('invoice.type' , 'type')
-            .where('invoice.status = :status AND tradeType = :trade AND type.title = :title' , {status : status , trade : TradeType.REMMITANCE , title : 'sell'})
+            .where('invoice.status = :status AND invoice.tradeType = :trade AND type.title = :title' , {status : status , trade : TradeType.REMMITANCE , title : 'sell'})
             .getMany()
             // const remmitances = await this.remittanceRepository.find({
             //     where: {
