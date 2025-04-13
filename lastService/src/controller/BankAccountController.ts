@@ -170,7 +170,7 @@ export class BankAccountController {
             }
         }
 
-
+        
     async verify(request: Request, response: Response, next: NextFunction) {
         const id = parseInt(request.params.id);
 
