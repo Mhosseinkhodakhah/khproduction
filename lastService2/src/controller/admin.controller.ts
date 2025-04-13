@@ -71,6 +71,9 @@ export default class adminController {
     async checkStatus(req: Request, res: Response, next: NextFunction) {
         let status = await this.zpService.getTransActionStatus(req.params.authority)
         let final = '' ;
+        if (status == null){
+            return next(new responseModel(req, res, '', 'admin service', 200, null, 'شماره پیگیری تراکنش نا معتبر میباشد'))
+        }
         if (status.status == 'IN_BANK'){
             final = 'تراکنش در درگاه میباشد'
         }
