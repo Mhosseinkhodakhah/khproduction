@@ -144,8 +144,6 @@ export const Routes = [
         middleware: [adminMiddleware],
         action: "getAllUsersByAdmin"                // here is for last service that check user in the oldUsers
     },
-
-
     {
         method: "get",
         route: "/users/all/:search",
@@ -153,9 +151,6 @@ export const Routes = [
         middleware: [],
         action: "search"                // here is for last service that check user in the oldUsers
     },
-
-
-
     // {
     //     method: "get",
     //     route: "/users",

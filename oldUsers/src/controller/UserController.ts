@@ -464,9 +464,10 @@ export class UserController {
         }})
 
         let user = await this.userRepository.createQueryBuilder('user')
-        .where('user.verificationStatus = :status AND (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)' , {status : 2 , search : reg})
+        .where('user.verificationStatus = :status AND  AND (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)' , {status : 2 , search : reg})
+        .take(+pageSize)
+        .skip(+((+page - 1) * +pageSize))
         .getMany()
-
         // const users = await this.userRepository.find({
         //     where: {
         //         verificationStatus: 2 ,
@@ -494,7 +495,4 @@ export class UserController {
         return next(new response(req, res, 'get serach', 200 , null , {user , totalItem}))
 
     }
-
-
-
 }
