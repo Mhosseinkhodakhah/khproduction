@@ -139,7 +139,7 @@ export const Routes = [
 
     {
         method: "get",
-        route: "/users/all/:page/:size",
+        route: "/users/all/:page/:size/:search",
         controller: UserController,
         middleware: [adminMiddleware],
         action: "getAllUsersByAdmin"                // here is for last service that check user in the oldUsers

@@ -133,19 +133,33 @@ export class UserController {
     async getAllUsersByAdmin(req: Request, res: Response, next: NextFunction) {
         const page = parseInt(req.params.page) || 1; 
         const pageSize =parseInt(req.params.size) || 100;
+        let searchWord = req.params.search
+        let reg = `%${searchWord}%`
+        console.log('params' , page , pageSize , searchWord)
         let totalItem = await this.userRepository.count({where : {
             verificationStatus : 2
         }})
-        const users = await this.userRepository.find({
-            where: {
-                verificationStatus: 2
-            },
-            relations: ['wallet', 'sells', 'buys'],
-            take: pageSize,  
-            skip: (page - 1) * pageSize 
-        });
-        console.log( 'tedad users', users.length)
-        return next(new response(req, res, 'get all users', 200, null, {users , totalItem}))
+        if (searchWord != ''){
+            let users = await this.userRepository.createQueryBuilder('user')
+            .where('user.verificationStatus = :status  AND (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)' , {status : 2 , search : reg})
+            .take(+pageSize)
+            .skip(+((+page - 1) * +pageSize))
+            .getMany()
+            return next(new response(req, res, 'get all users', 200, null, {users , totalItem}))
+        }else if(searchWord === ''){
+            const users = await this.userRepository.find({
+                where: {
+                    verificationStatus: 2
+                },
+                relations: ['wallet', 'sells', 'buys'],
+                take: pageSize,  
+                skip: (page - 1) * pageSize 
+            });
+            console.log( 'tedad users', users.length)
+            return next(new response(req, res, 'get all users', 200, null, {users , totalItem}))
+        }else{
+            return next(new response(req, res, 'get all users', 400, 'bad request', null))
+        }
     }
 
 
