@@ -130,7 +130,7 @@ export class UserController {
         const { phoneNumber } = req.body
         try {
             const resultFromLastService = await this.userRepository.findOne({ where: { phoneNumber: phoneNumber } })
-            let user;
+            let user = {};
             let isVerified = false;
             let userExist = false;
             if (resultFromLastService) {
