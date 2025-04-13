@@ -889,7 +889,7 @@ export class InvoiceController {
             console.log(status)
             const typeInstance = await this.invoiceTypeRepository.findOneBy({ title: 'sell' })
             const user=await this.userRepository.findOneBy({id:userId})
-            let remmitance
+            // let remmitance
             console.log("typeInstance for sell", typeInstance);
  
         
@@ -899,15 +899,16 @@ export class InvoiceController {
                 .where('seller.id = :userId AND type.id = :id', { userId, id: typeInstance.id });
 
             if (status) {
-                remmitance=await this.remmitanceService.getSellRmmitanceForUser(user.phoneNumber,"completed")
+                // remmitance=await this.remmitanceService.getSellRmmitanceForUser(user.phoneNumber,"completed")
                 if (status == "success") {
                     queryBuilder.andWhere('invoice.status = :status', { status: "completed" });
                 } else {
-                    remmitance=await this.remmitanceService.getSellRmmitanceForUser(user.phoneNumber,status)
+                    // remmitance=await this.remmitanceService.getSellRmmitanceForUser(user.phoneNumber,status)
                     queryBuilder.andWhere('invoice.status = :status', { status: status });
                 }
             }else{
-                remmitance=await this.remmitanceService.getSellRmmitanceForUser(user.phoneNumber,"all")
+                console.log('back')
+                // remmitance=await this.remmitanceService.getSellRmmitanceForUser(user.phoneNumber,"all")
             }
 
             const transactions = await queryBuilder
@@ -916,7 +917,7 @@ export class InvoiceController {
 
                
                 
-            const all=[...transactions,...remmitance]
+            const all=transactions
 
             monitor.addStatus({
                 scope : 'invoice controller',
@@ -942,7 +943,7 @@ export class InvoiceController {
             
             const typeInstance = await this.invoiceTypeRepository.findOneBy({ title: 'buy' })
             const user=await this.userRepository.findOneBy({id:userId})
-            let remmitance
+            // let remmitance
             const queryBuilder = this.invoiceRepository.createQueryBuilder('invoice')
                 .leftJoinAndSelect('invoice.buyer', 'buyer')
                 .leftJoinAndSelect('invoice.type', 'type')
@@ -952,20 +953,21 @@ export class InvoiceController {
            
             if (status) {
                 if (status == "success") {
-                    remmitance=await this.remmitanceService.getBuyRmmitanceForUser(user.phoneNumber,"completed")
+                    // remmitance=await this.remmitanceService.getBuyRmmitanceForUser(user.phoneNumber,"completed")
                     queryBuilder.andWhere('invoice.status = :status', { status: "completed" });
                 } else {
-                    remmitance=await this.remmitanceService.getBuyRmmitanceForUser(user.phoneNumber,status)
+                    // remmitance=await this.remmitanceService.getBuyRmmitanceForUser(user.phoneNumber,status)
                     queryBuilder.andWhere('invoice.status = :status', { status: status });
                 }
             }else{
-                remmitance=await this.remmitanceService.getBuyRmmitanceForUser(user.phoneNumber,"all")
+                console.log('back')
+                // remmitance=await this.remmitanceService.getBuyRmmitanceForUser(user.phoneNumber,"all")
             }
             const transactions = await queryBuilder
                 .orderBy('invoice.createdAt', 'DESC')
                 .getMany();
 
-            console.log("remiitance",remmitance);
+            // console.log("remiitance",remmitance);
                 
 
             // for (let index = 0; index < remmitance.length; index++) {
@@ -973,10 +975,10 @@ export class InvoiceController {
             //     transactions.push(element)
             // }
             
-          const all=[...transactions,...remmitance]
+          const all=transactions
 
         //   console.log("allllll",all);
-           console.log("remi",remmitance);
+        //    console.log("remi",remmitance);
             monitor.addStatus({
                 scope: 'invoice controller',
                 status: 1,
