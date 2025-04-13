@@ -282,7 +282,6 @@ export class RemittanceController {
             const remmitances = await this.remittanceRepository.find({
                 where: {
                     status,
-                    type: type,
                 }, relations: ["buyer"], order: { updatedAt: 'DESC' }
             })
 
@@ -303,7 +302,6 @@ export class RemittanceController {
             const remmitances = await this.remittanceRepository.find({
                 where: {
                     status,
-                    type: type,
                 }, relations: ["seller"], order: { updatedAt: 'DESC' }
             })
 

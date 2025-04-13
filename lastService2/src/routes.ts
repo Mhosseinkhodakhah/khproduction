@@ -499,13 +499,13 @@ export const Routes = [
  * this route is for logger to check the service status
  * status checker
  */
-// {
-//     method: "get",
-//     route: "/monitor/all",
-//     controller: interServiceController,
-//     action: "getStatus",                     // get status by logger service
-//     middlwares: []
-// },
+{
+    method: "get",
+    route: "/monitor/all",
+    controller: interServiceController,
+    action: "getStatus",                     // get status by logger service
+    middlwares: []
+},
 {
     method: "patch",
     route: "/interservice/create",
