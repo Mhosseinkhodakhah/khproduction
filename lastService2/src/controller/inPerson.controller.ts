@@ -501,6 +501,7 @@ export default class inPersonController {
                 }
                 if (id != '') {
                     let oldUserUpdated = await this.interservice.changeUserStatus(id, savedUser)                // change the user
+                    console.log('olllldddd>>>' , oldUserData)
                     if (!oldUserUpdated.success) {
                         await queryRunner.rollbackTransaction()
                         console.log('interservice oldUser is not in access')
