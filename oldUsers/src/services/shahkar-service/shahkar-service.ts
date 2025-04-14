@@ -127,7 +127,8 @@ export class ShahkarService {
         if (shahkarToken == null || shahkarToken == undefined) {
             return null
         }else{
-        let body = {birthDate : birthDate , nationalCode : nationalCode}   
+        // let body = {birthDate : birthDate , nationalCode : nationalCode}   
+        let body = { birthDate: birthDate, nationalCode: nationalCode }
         try {
            let res = await axios.post(identityInfoUrl , body , {headers : { 'Authorization' : shahkarToken }})
             let info  = res.data 
