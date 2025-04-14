@@ -667,7 +667,6 @@ export const Routes = [
     action: "test",
     middlwares: []
 },
-
 ,{
     method: "get",
     route: "/buy/:status",

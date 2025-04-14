@@ -369,7 +369,7 @@ export default class adminController {
     async getAllSucceedDeposit(req: Request, res: Response, next: NextFunction){
         let succeedDposit = await this.walletTransActions.find({where : {
             status : 'completed',
-            type : 'deposit' 
+            type : 'withdraw' 
         },relations : ['wallet' , 'wallet.user' , 'wallet.user.bankAccounts'],order : {updatedAt : 'DESC'}})
         // let sss = await this.walletTransActions.find()
         // console.log(sss)
