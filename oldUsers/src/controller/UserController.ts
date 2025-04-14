@@ -16,6 +16,7 @@ import { start } from "repl"
 import { validationResult } from "express-validator"
 import { internalDB } from "../selfDB/saveDATA.service"
 import { Like } from "typeorm"
+import { error } from "console"
 
 
 export class UserController {
@@ -320,7 +321,9 @@ export class UserController {
             return res.status(400).json({ error: 'شماره تلفن با شماره ملی مطابقت ندارد' })
         }
         const userInfo=await this.shakarService.identityInformationOfUser(phoneNumber,birthDate,nationalCode)
-        
+        if (userInfo == 500){
+            return next(new response(req, res, 'approve old user', 400, "سیستم احراز هویت موقتا در دسترس نمیباشد لطفا دقایقی دیگر مجددا تلاش کنید.", null))
+        }
         if(!userInfo){
             return next(new response(req, res, 'approve old user', 400, " مشکلی در استعلام اطلاعات کاربر رخ داده است لطفا از درست بودن اطلاعات اطمینان حاصل کنید", null))
         }
@@ -393,21 +396,24 @@ export class UserController {
             const resultMatch=await this.shakarService.checkMatchOfPhoneAndNationalCode({phoneNumber,nationalCode})        
             
             if (resultMatch == 'unknown') {
-                return res.status(500).json({ msg: 'خطای داخلی سیستم' })
+                return res.status(500).json({ error: 'خطای داخلی سیستم' })
             
             }
             if (resultMatch == 500) {
-                return res.status(500).json({ msg: 'سیستم شاهکار موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
+                return res.status(500).json({ error: 'سیستم شاهکار موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
             }
 
             if (resultMatch == false) {
-                return res.status(400).json({ msg: 'شماره تلفن با شماره ملی مطابقت ندارد' })
+                return res.status(400).json({ error: 'شماره تلفن با شماره ملی مطابقت ندارد' })
             }
 
 
             console.log("after Is Match");
     
             const userInfo=await this.shakarService.identityInformationOfUser(phoneNumber,birthDate,nationalCode)
+            if (userInfo == 500){
+                return next(new response(req, res, 'approve old user', 400, "سیستم احراز هویت موقتا در دسترس نمیباشد لطفا دقایقی دیگر مجددا تلاش کنید.", null))
+            }
             if(!userInfo){
                 return next(new response(req, res, 'approve new user', 400, " مشکلی در استعلام اطلاعات کاربر رخ داده است لطفا از درست بودن اطلاعات اطمینان حاصل کنید", null))
             }

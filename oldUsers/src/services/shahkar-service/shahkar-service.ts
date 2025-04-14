@@ -134,6 +134,20 @@ export class ShahkarService {
             console.log('trach code . . .',res.headers['track-code'])
             console.log('shahkar info>>>>' , res)
             if(res.status == 200){
+                if (!res.data || res.data == '') {
+                    let trackIdData: trackIdInterface = {
+                        trackId: res.headers['track-code'],
+                        firstName: '',
+                        lastName: '',
+                        fatherName: '',
+                        phoneNumber: '',
+                        status: false
+                    }
+                    let trackIdService = new internalDB()
+                    let DBStatus = await trackIdService.saveData(trackIdData)
+                    console.log('returned db status>>>>', DBStatus)
+                    return 500
+                }
                 let  {
                     firstName,
                     lastName,
@@ -171,8 +185,8 @@ export class ShahkarService {
                 }
                 let saveData=new internalDB()
                 const DBStatus=await saveData.saveData(trackObj)
-                console.log('returned db status>>>>' , DBStatus)
-                return  user 
+                // console.log('returned db status>>>>' , DBStatus)
+                return user 
 
             }else {
                 const trackObj : trackIdInterface = {
