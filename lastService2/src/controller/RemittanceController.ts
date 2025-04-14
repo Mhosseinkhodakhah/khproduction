@@ -7,6 +7,7 @@ import { SmsService } from "../services/sms-service/message-service";
 import { Invoice } from "../entity/Invoice";
 import { TradeType } from "../entity/enums/TradeType";
 import { InvoiceType } from "../entity/InvoiceType";
+import { estimatier } from "../util/estimate.util";
 
 
 export class RemittanceController {
@@ -14,6 +15,8 @@ export class RemittanceController {
     private walletRepository = AppDataSource.getRepository(Wallet)
     private remittanceRepository = AppDataSource.getRepository(Invoice)
     private typeRepo = AppDataSource.getRepository(InvoiceType)
+    private estimateWeight = new estimatier()
+    
 
 
     private smsService = new SmsService()
@@ -225,11 +228,14 @@ export class RemittanceController {
             if (remmitance.type.title == 'sell'){
                 remmitance.seller.wallet.goldWeight = (+remmitance.seller.wallet.goldWeight) - (+remmitance.goldWeight)
                 remmitance.buyer.wallet.goldBlock = (+remmitance.buyer.wallet.goldWeight) + (+remmitance.goldWeight)
+                await this.estimateWeight.estimateWeight(remmitance.goldWeight , 0)
             }else if (remmitance.type.title == 'buy'){
                 remmitance.buyer.wallet.goldWeight = (+remmitance.buyer.wallet.goldWeight) + (+remmitance.goldWeight)
                 remmitance.seller.wallet.goldBlock = (+remmitance.seller.wallet.goldWeight) - (+remmitance.goldWeight)
+                await this.estimateWeight.estimateWeight(remmitance.goldWeight , 1)
             }
             await queryRunner.manager.save(remmitance)
+            
             await queryRunner.commitTransaction()
             if (remmitance.type.title == 'sell'){
                 await this.smsService.sendGeneralMessage(remmitance.seller.phoneNumber, "buy", remmitance.seller.firstName,remmitance.goldWeight ,remmitance.totalPrice )
