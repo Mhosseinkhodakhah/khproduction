@@ -14,6 +14,7 @@ export class estimatier{
     async estimateWeight(goldWeight: number, type: number) {
         try {
             console.log(goldWeight)
+            goldWeight = +goldWeight
             if (type == 0) {
                 let month = new Date().toLocaleString('fa-IR').split(",")[0].split("/")[1]  
                 console.log('monthhhhh' , month)
