@@ -215,8 +215,8 @@ export class ShahkarController {
                     console.log(savedUser)
                     const wallet = this.walletRepository.create({
                         balance: 0,
-                        // goldWeight: oldUserData.isExist ? oldUserData.updatedUser.wallet.goldWeight : 0,
-                        goldWeight: 0,
+                        goldWeight: oldUserData.isExist ? oldUserData.updatedUser.wallet.goldWeight : 0,
+                        // goldWeight: 0,
                         user: savedUser,
                     });
                     // await this.walletRepository.save(wallet)
