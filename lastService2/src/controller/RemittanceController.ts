@@ -246,11 +246,11 @@ export class RemittanceController {
             }else if (remmitance.type.title == 'buy'){
                 await this.smsService.sendGeneralMessage(remmitance.buyer.phoneNumber, "buy", remmitance.buyer.firstName,remmitance.goldWeight ,remmitance.totalPrice )
             }            
-            return next(new responseModel(req, res,'', 'approve remmitance ', 200, null, remmitance))
+            return next(new responseModel(req, res,'حواله با موفقیت ایجاد شد', 'approve remmitance ', 200, null, remmitance))
         }catch (err) {
             console.log(err);
             await queryRunner.rollbackTransaction() 
-            return next(new responseModel(req, res,'', ' approve remmitance', 500, err, null))
+            return next(new responseModel(req, res,'', ' approve remmitance', 500, 'مشکلی در تایید فاکتور حواله بوجود آمده است.', null))
         }
         finally {
             console.log('transaction released')
@@ -280,12 +280,12 @@ export class RemittanceController {
             }else if (remmitance.type.title == 'buy'){
                 await this.smsService.sendGeneralMessage(remmitance.buyer.phoneNumber, "rejectcall", remmitance.buyer.firstName, remmitance.goldWeight ,remmitance.totalPrice )
             }        
-            return next(new responseModel(req, res,'', 'reject remmitance ', 200, null, remmitance))
+            return next(new responseModel(req, res,'رد حواله با موفقیت انجام شد', 'reject remmitance ', 200, null, remmitance))
         }
         catch (err) {
             console.log(err);
             await queryRunner.rollbackTransaction()
-            return next(new responseModel(req, res,'', 'reject remmitance', 500, err, null))
+            return next(new responseModel(req, res,'', 'reject remmitance', 500, 'مشکلی در رد حواله ایجاد شده است', null))
         }
         finally {
             console.log('transaction released')
