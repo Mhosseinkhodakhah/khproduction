@@ -227,15 +227,15 @@ export class RemittanceController {
             remmitance.accounterDescription = description;
             if (remmitance.type.title == 'sell'){
                 remmitance.seller.wallet.goldWeight = +((+remmitance.seller.wallet.goldWeight) - (+remmitance.goldWeight)).toFixed(3)
-                remmitance.buyer.wallet.goldBlock = +((+remmitance.buyer.wallet.goldWeight) + (+remmitance.goldWeight)).toFixed(3)
+                remmitance.buyer.wallet.goldWeight = +((+remmitance.buyer.wallet.goldWeight) + (+remmitance.goldWeight)).toFixed(3)
                 await this.estimateWeight.estimateWeight(remmitance.goldWeight , 0)
             }else if (remmitance.type.title == 'buy'){
                 remmitance.buyer.wallet.goldWeight = +((+remmitance.buyer.wallet.goldWeight) + (+remmitance.goldWeight)).toFixed(3)
-                remmitance.seller.wallet.goldBlock = +((+remmitance.seller.wallet.goldWeight) - (+remmitance.goldWeight)).toFixed(3)
+                remmitance.seller.wallet.goldWeight = +((+remmitance.seller.wallet.goldWeight) - (+remmitance.goldWeight)).toFixed(3)
                 await this.estimateWeight.estimateWeight(remmitance.goldWeight , 1)
             }
             console.log( 'goldweights logs', remmitance.buyer.wallet.goldWeight
-                ,remmitance.seller.wallet.goldBlock)
+                ,remmitance.seller.wallet.goldWeight)
             await queryRunner.manager.save(remmitance.buyer.wallet)
             await queryRunner.manager.save(remmitance.seller.wallet)
             await queryRunner.manager.save(remmitance)
