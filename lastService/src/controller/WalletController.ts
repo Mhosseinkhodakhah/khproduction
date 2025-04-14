@@ -306,7 +306,7 @@ export class WalletController {
             let trade = instance.getter()
             console.log('permision is >>>>>' , trade)
             if (trade) {
-                return response.status(400).json({ msg: 'کاربر گرامی با عرض پوزش امکان ثبت معامله برای دقایقی امکان پذیر نمی باشد.لطفا دقایقی دیگر مجددا تلاش کنید.' });
+                return response.status(400).json({ msg: 'کاربر گرامی با عرض پوزش امکان  واریز وجه برای دقایقی امکان پذیر نمی باشد.لطفا دقایقی دیگر مجددا تلاش کنید.' });
             }
             const {amount} = request.body
             const userId = request.user_id;
