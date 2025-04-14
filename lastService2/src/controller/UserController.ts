@@ -219,7 +219,6 @@ export class UserController {
     }
 
 
-
     // private saveData = new internalDB()
     /**
      * check identity and if user not exist in local userDB create it 
@@ -246,6 +245,7 @@ export class UserController {
                     console.log('this user is in the oldUsers')
                     // user = oldUser.data;
                     userExist = true
+                    user = oldUser.data
                 } else {
                     console.log('this user is not in the oldUsers')
                 }
