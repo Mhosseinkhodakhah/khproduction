@@ -228,11 +228,11 @@ export class RemittanceController {
             if (remmitance.type.title == 'sell'){
                 remmitance.seller.wallet.goldWeight = (+remmitance.seller.wallet.goldWeight) - (+remmitance.goldWeight)
                 remmitance.buyer.wallet.goldBlock = (+remmitance.buyer.wallet.goldWeight) + (+remmitance.goldWeight)
-                await this.estimateWeight.estimateWeight(remmitance.goldWeight , 0)
+                // await this.estimateWeight.estimateWeight(remmitance.goldWeight , 0)
             }else if (remmitance.type.title == 'buy'){
                 remmitance.buyer.wallet.goldWeight = (+remmitance.buyer.wallet.goldWeight) + (+remmitance.goldWeight)
                 remmitance.seller.wallet.goldBlock = (+remmitance.seller.wallet.goldWeight) - (+remmitance.goldWeight)
-                await this.estimateWeight.estimateWeight(remmitance.goldWeight , 1)
+                // await this.estimateWeight.estimateWeight(remmitance.goldWeight , 1)
             }
             await queryRunner.manager.save(remmitance.buyer.wallet)
             await queryRunner.manager.save(remmitance.seller.wallet)
