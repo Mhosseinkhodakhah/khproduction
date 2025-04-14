@@ -487,7 +487,7 @@ export default class inPersonController {
                 // console.log(savedUser)
                 const wallet = this.walletRepository.create({
                     balance: 0,
-                    goldWeight: oldUserData.isExist ? oldUserData.user.wallet.goldWeight : 0,
+                    goldWeight: oldUserData.isExist ? oldUserData.updatedUser.wallet.goldWeight : 0,
                     user: savedUser,
                 });
                 let token = await this.jwtService.generateToken(savedUser)
