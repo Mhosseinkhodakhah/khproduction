@@ -234,6 +234,8 @@ export class RemittanceController {
                 remmitance.seller.wallet.goldBlock = (+remmitance.seller.wallet.goldWeight) - (+remmitance.goldWeight)
                 await this.estimateWeight.estimateWeight(remmitance.goldWeight , 1)
             }
+            await queryRunner.manager.save(remmitance.buyer.wallet)
+            await queryRunner.manager.save(remmitance.seller.wallet)
             await queryRunner.manager.save(remmitance)
             
             await queryRunner.commitTransaction()

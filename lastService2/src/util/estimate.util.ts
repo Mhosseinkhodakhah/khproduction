@@ -13,6 +13,7 @@ export class estimatier{
 
     async estimateWeight(goldWeight: number, type: number) {
         try {
+            console.log(goldWeight)
             if (type == 0) {
                 let month = new Date().toLocaleString('fa-IR').split(",")[0].split("/")[1]  
                 console.log('monthhhhh' , month)
@@ -71,7 +72,7 @@ export class estimatier{
                     let monthT = await this.estimate.findOne({where : {
                         month : month
                     }})
-                    monthT.boughtGold = (parseFloat(((+monthT.boughtGold) + goldWeight).toFixed(3))).toString()
+                    monthT.boughtGold = ((+monthT.boughtGold) + +goldWeight).toFixed(3)
                     await this.estimate.save(monthT)
                 }else{
                 console.log('month for creation2')
