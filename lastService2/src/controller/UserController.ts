@@ -46,6 +46,16 @@ export class UserController {
             console.log('shahkar info>>>>' , res)
             if(res.status == 200){
                 if (typeof(res.data) == "string" ){
+                    let trackIdData: trackIdInterface = {
+                        trackId: res.headers['track-code'],
+                        firstName: '',
+                        lastName: '',
+                        fatherName: '',
+                        phoneNumber: '',
+                        status: false
+                    }
+                    let trackIdService = new internalDB()
+                    let DBStatus = await trackIdService.saveData(trackIdData)
                     return 400
                 }
                 if (!res.data  || typeof(res.data.fristName) === undefined) {
@@ -59,7 +69,7 @@ export class UserController {
                     }
                     let trackIdService = new internalDB()
                     let DBStatus = await trackIdService.saveData(trackIdData)
-                    console.log('returned db status>>>>', DBStatus)
+                    // console.log('returned db status>>>>', DBStatus)
                     return 500
                 }
                 let  {
