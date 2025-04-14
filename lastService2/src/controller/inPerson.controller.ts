@@ -434,12 +434,12 @@ export default class inPersonController {
             // console.log('trach code . . .',res.headers['track-code'])
             console.log('shahkar info>>>>', res2)
             if (res2.status == 200) {
-                if (typeof(res.data) == "string" ){
+                if (typeof(res2.data) == "string" ){
                     return next(new responseModel(req, res, 'کاربر گرامی لطفا مقادیر ورودی را چک و از صحت اطلاعات اطمینان حاصل فرمایید' ,'admin service', 502, 'کاربر گرامی لطفا مقادیر ورودی را چک و از صحت اطلاعات اطمینان حاصل فرمایید', null))
                 }
-                if (!res.data  || typeof(res.data.fristName) === undefined) {
+                if (!res2.data  || typeof(res2.data.fristName) === undefined) {
                     let trackIdData: trackIdInterface = {
-                        trackId: res.headers['track-code'],
+                        trackId: res2.headers['track-code'],
                         firstName: '',
                         lastName: '',
                         fatherName: '',
