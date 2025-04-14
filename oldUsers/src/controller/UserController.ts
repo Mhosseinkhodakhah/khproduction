@@ -317,7 +317,7 @@ export class UserController {
 
         if (resultMatch == false) {
             console.log('444')
-            return res.status(400).json({ msg: 'شماره تلفن با شماره ملی مطابقت ندارد' })
+            return res.status(400).json({ error: 'شماره تلفن با شماره ملی مطابقت ندارد' })
         }
         const userInfo=await this.shakarService.identityInformationOfUser(phoneNumber,birthDate,nationalCode)
         
