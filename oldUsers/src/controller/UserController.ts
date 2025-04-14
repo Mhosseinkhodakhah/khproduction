@@ -415,11 +415,14 @@ export class UserController {
             console.log("after Is Match");
     
             const userInfo=await this.shakarService.identityInformationOfUser(phoneNumber,birthDate,nationalCode)
+            if (userInfo == 400){
+                return next(new response(req, res, 'approve new user', 400, "ورودی های خود را چک کرده و مجددا تلاش کنید", null))
+            }
             if (userInfo == 500){
                 return next(new response(req, res, 'approve old user', 400, "سیستم احراز هویت موقتا در دسترس نمیباشد لطفا دقایقی دیگر مجددا تلاش کنید.", null))
             }
             if(!userInfo){
-                return next(new response(req, res, 'approve new user', 400, " مشکلی در استعلام اطلاعات کاربر رخ داده است لطفا از درست بودن اطلاعات اطمینان حاصل کنید", null))
+                return next(new response(req, res, 'approve old user', 400, " مشکلی در استعلام اطلاعات کاربر رخ داده است لطفا از درست بودن اطلاعات اطمینان حاصل کنید", null))
             }
 
             console.log("after get user info");
