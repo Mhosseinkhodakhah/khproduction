@@ -506,7 +506,7 @@ export default class inPersonController {
                         console.log('interservice oldUser is not in access')
                         return next(new responseModel(req, res, '' ,'admin service', 502, 'oldUser service is out of access', null))
                     }
-                    console.log('goldWeight', typeof (oldUserUpdated.data.wallet.goldWeight))
+                    // console.log('goldWeight', oldUserUpdated.data.wallet.goldWeight)
                     wallet.goldWeight = +(oldUserUpdated.data.wallet.goldWeight)
                 }
                 let trackIdService = new internalDB()
@@ -538,7 +538,7 @@ export default class inPersonController {
                 // return res.status(500).json({ err: res.data.details, msg: "خطا در احراز هویت کاربر" })
             }
         } catch (error) {
-            console.log('error>>>>>' , `${error}`)
+            console.log('error>>>>>' , error)
             console.log('transaction rolledBack beacause of error....', `${error}`)
             await queryRunner.rollbackTransaction()
             return next(new responseModel(req, res, '' ,'admin service', 500, `${error}`, null))
