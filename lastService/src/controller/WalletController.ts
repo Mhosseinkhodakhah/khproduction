@@ -9,6 +9,7 @@ import { GoldPriceService } from "../services/gold-price-service/gold-price-serv
 import { SmsService } from "../services/sms-service/message-service";
 import { transportInvoice } from "../entity/transport";
 import monitor from "../util/statusMonitor";
+import instance from "../util/tradePerision";
 
 export class WalletController {
     private walletRepository = AppDataSource.getRepository(Wallet);
@@ -302,6 +303,10 @@ export class WalletController {
 
     async depositToWallet(request: Request, response: Response){
         try {
+            let trade = instance.getter()
+            if (!trade) {
+                return response.status(400).json({ msg: 'کاربر گرامی با عرض پوزش امکان ثبت معامله برای دقایقی امکان پذیر نمی باشد.لطفا دقایقی دیگر مجددا تلاش کنید.' });
+            }
             const {amount} = request.body
             const userId = request.user_id;
             if (+amount < 100000) {

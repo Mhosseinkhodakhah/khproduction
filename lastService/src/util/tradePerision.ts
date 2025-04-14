@@ -1,6 +1,5 @@
 
 
-
 class tradePermision {
     private permision = 1;
 
