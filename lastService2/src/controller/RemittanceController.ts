@@ -226,14 +226,16 @@ export class RemittanceController {
             remmitance.invoiceId = invoiceId;
             remmitance.accounterDescription = description;
             if (remmitance.type.title == 'sell'){
-                remmitance.seller.wallet.goldWeight = (+remmitance.seller.wallet.goldWeight) - (+remmitance.goldWeight)
-                remmitance.buyer.wallet.goldBlock = (+remmitance.buyer.wallet.goldWeight) + (+remmitance.goldWeight)
-                // await this.estimateWeight.estimateWeight(remmitance.goldWeight , 0)
+                remmitance.seller.wallet.goldWeight = +((+remmitance.seller.wallet.goldWeight) - (+remmitance.goldWeight)).toFixed(3)
+                remmitance.buyer.wallet.goldBlock = +((+remmitance.buyer.wallet.goldWeight) + (+remmitance.goldWeight)).toFixed(3)
+                await this.estimateWeight.estimateWeight(remmitance.goldWeight , 0)
             }else if (remmitance.type.title == 'buy'){
-                remmitance.buyer.wallet.goldWeight = (+remmitance.buyer.wallet.goldWeight) + (+remmitance.goldWeight)
-                remmitance.seller.wallet.goldBlock = (+remmitance.seller.wallet.goldWeight) - (+remmitance.goldWeight)
-                // await this.estimateWeight.estimateWeight(remmitance.goldWeight , 1)
+                remmitance.buyer.wallet.goldWeight = +((+remmitance.buyer.wallet.goldWeight) + (+remmitance.goldWeight)).toFixed(3)
+                remmitance.seller.wallet.goldBlock = +((+remmitance.seller.wallet.goldWeight) - (+remmitance.goldWeight)).toFixed(3)
+                await this.estimateWeight.estimateWeight(remmitance.goldWeight , 1)
             }
+            console.log( 'goldweights logs', remmitance.buyer.wallet.goldWeight
+                ,remmitance.seller.wallet.goldBlock)
             await queryRunner.manager.save(remmitance.buyer.wallet)
             await queryRunner.manager.save(remmitance.seller.wallet)
             await queryRunner.manager.save(remmitance)
@@ -246,7 +248,7 @@ export class RemittanceController {
             }            
             return next(new responseModel(req, res,'', 'approve remmitance ', 200, null, remmitance))
         }catch (err) {
-            console.log(`${err}`);
+            console.log(err);
             await queryRunner.rollbackTransaction() 
             return next(new responseModel(req, res,'', ' approve remmitance', 500, err, null))
         }
