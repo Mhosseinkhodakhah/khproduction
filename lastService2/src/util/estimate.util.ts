@@ -91,7 +91,7 @@ export class estimatier{
                         date: 'localDate'
                     }
                 })
-                totalEstimate.boughtGold = (parseFloat(((+totalEstimate.boughtGold) + goldWeight).toFixed(3))).toString()
+                totalEstimate.boughtGold = (parseFloat(((+totalEstimate.boughtGold) + +goldWeight).toFixed(3))).toString()
                 await this.estimate.save(totalEstimate)
                 if (estimate2) {
                     let exEstimate = await this.estimate.findOne({
@@ -99,7 +99,7 @@ export class estimatier{
                             date: new Date().toLocaleString("fa-IR").split(",")[0]
                         }
                     })
-                    exEstimate.boughtGold = (parseFloat(((+exEstimate.boughtGold) + goldWeight).toFixed(3))).toString()
+                    exEstimate.boughtGold = (parseFloat(((+exEstimate.boughtGold) + +goldWeight).toFixed(3))).toString()
                     await this.estimate.save(exEstimate)
                 } else {
                     let estimate2 = this.estimate.create({
