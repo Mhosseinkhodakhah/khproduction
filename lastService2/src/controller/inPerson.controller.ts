@@ -490,7 +490,7 @@ export default class inPersonController {
                     goldWeight: oldUserData.isExist ? oldUserData.updatedUser.wallet.goldWeight : 0,
                     user: savedUser,
                 });
-                let token = await this.jwtService.generateToken(savedUser)
+                // let token = await this.jwtService.generateToken(savedUser)
                 let trackIdData: trackIdInterface = {
                     trackId: res2.headers['track-code'],
                     firstName: firstName,
@@ -514,6 +514,7 @@ export default class inPersonController {
                 let DBStatus = await trackIdService.saveData(trackIdData)
                 console.log('returned db status>>>>', DBStatus)
                 await queryRunner.manager.save(wallet)
+                await queryRunner.commitTransaction()
                 await this.smsService.sendGeneralMessage(wallet.user.phoneNumber, "identify", firstName, null, null)
                 let logRespons = await this.interservice.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , '' , ` را انجام داد  ${nationalCode} فرایند احراز هویت مربوط به  ${req.user.firstName} کارشناس` , {
                     action : ` را ایجاد کرد ${user.firstName} تراکنش خرید حضوری مربوط به کاربر ${req.user.firstName} حسابدار`
