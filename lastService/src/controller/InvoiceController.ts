@@ -334,6 +334,7 @@ export class InvoiceController {
                 }
             }
             goldWeight = formatGoldWeight(goldWeight)
+            totalPrice = goldPrice * +goldWeight
             console.log('body>>>>>' , goldPrice, goldWeight, type, totalPrice )
             const queryRunner = AppDataSource.createQueryRunner()
             await queryRunner.connect()
