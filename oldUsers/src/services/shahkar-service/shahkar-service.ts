@@ -187,7 +187,6 @@ export class ShahkarService {
                 const DBStatus=await saveData.saveData(trackObj)
                 // console.log('returned db status>>>>' , DBStatus)
                 return user 
-
             }else {
                 const trackObj : trackIdInterface = {
                     phoneNumber:phoneNumber,

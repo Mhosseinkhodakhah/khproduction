@@ -327,6 +327,7 @@ export class UserController {
         if(!userInfo){
             return next(new response(req, res, 'approve old user', 400, " مشکلی در استعلام اطلاعات کاربر رخ داده است لطفا از درست بودن اطلاعات اطمینان حاصل کنید", null))
         }
+        console.log('respoonse of the shahkar>>>' , userInfo)
         user.fatherName=userInfo.fatherName,
         user.gender=userInfo.gender
         user.officeName=userInfo.officeName
