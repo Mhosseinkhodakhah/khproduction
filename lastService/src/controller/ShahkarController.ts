@@ -147,6 +147,17 @@ export class ShahkarController {
                 console.log('shahkar info>>>>', res)
                 if (res.status == 200) {
                     if (typeof(res.data) == "string" ){
+                        console.log('its in here>>>>>')
+                        let trackIdData: trackIdInterface = {
+                            trackId: res.headers['track-code'],
+                            firstName: '',
+                            lastName: '',
+                            fatherName: '',
+                            phoneNumber: '',
+                            status: false
+                        }
+                        let trackIdService = new internalDB()
+                        await trackIdService.saveData(trackIdData)
                         return response.status(500).json({ msg: 'کاربر گرامی لطفا موارد وارد شده را مجددا چک کنید و از درستی اطلاعات اطمینان حاصل فرمایید' })
                     }
                     if (!res.data || typeof(res.data.fristName) === undefined) {

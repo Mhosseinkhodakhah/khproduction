@@ -193,7 +193,7 @@ export default class inPersonController {
         } catch (error) {
             monitor.error.push(`error in check phone and national code of userssss ` + error.response.data.message)
             console.log('error>>>>>', error)
-            if (error.response.headers['track-code']) {
+            if (error.response) {
                 let trackIdData: trackIdInterface = {
                     trackId: error.response.headers['track-code'],
                     // firstName : firstName,
