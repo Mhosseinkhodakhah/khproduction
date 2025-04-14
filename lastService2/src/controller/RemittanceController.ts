@@ -17,8 +17,6 @@ export class RemittanceController {
     private typeRepo = AppDataSource.getRepository(InvoiceType)
     private estimateWeight = new estimatier()
     
-
-
     private smsService = new SmsService()
     private async generateInvoice() {
         return (new Date().getTime()).toString()

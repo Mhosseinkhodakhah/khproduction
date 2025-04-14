@@ -45,6 +45,23 @@ export class UserController {
             console.log('trach code . . .',res.headers['track-code'])
             console.log('shahkar info>>>>' , res)
             if(res.status == 200){
+                if (typeof(res.data) == "string" ){
+                    return 400
+                }
+                if (!res.data  || typeof(res.data.fristName) === undefined) {
+                    let trackIdData: trackIdInterface = {
+                        trackId: res.headers['track-code'],
+                        firstName: '',
+                        lastName: '',
+                        fatherName: '',
+                        phoneNumber: '',
+                        status: false
+                    }
+                    let trackIdService = new internalDB()
+                    let DBStatus = await trackIdService.saveData(trackIdData)
+                    console.log('returned db status>>>>', DBStatus)
+                    return 500
+                }
                 let  {
                     firstName,
                     lastName,
@@ -278,6 +295,12 @@ export class UserController {
             console.log("after Is Match");
             console.log(phoneNumber)
             const userInfo = await this.identityInformationOfUser(phoneNumber, birthDate, nationalCode)
+            if (userInfo == 400){
+                return next(new responseModel(req, res,'', 'approve new user', 400, "ورودی های خود را چک کرده و مجددا تلاش کنید", null))
+            }
+            if (userInfo ==500){
+                return next(new responseModel(req, res,'', 'approve new user', 500, " سرویس استعلام هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.", null))
+            }
             if (!userInfo) {
                 return next(new responseModel(req, res,'', 'approve new user', 400, " مشکلی در استعلام اطلاعات کاربر رخ داده است لطفا از درست بودن اطلاعات اطمینان حاصل کنید", null))
             }
