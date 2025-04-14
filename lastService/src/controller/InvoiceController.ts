@@ -228,9 +228,9 @@ export class InvoiceController {
     }
 
     async createTransaction(request: Request, response: Response) {
-        let trade = instance.getter()
+        let trade = await instance.getter()
         console.log('permision is >>>>>' , trade)
-        if (trade) {
+        if (!trade) {
             return response.status(400).json({ msg: 'کاربر گرامی با عرض پوزش امکان ثبت معامله برای دقایقی امکان پذیر نمی باشد.لطفا دقایقی دیگر مجددا تلاش کنید.' });
         }
 
