@@ -135,7 +135,10 @@ export class ShahkarService {
             console.log('trach code . . .',res.headers['track-code'])
             console.log('shahkar info>>>>' , res)
             if(res.status == 200){
-                if (!res.data || typeof(res.data) == "string"  || typeof(res.data.fristName) === undefined) {
+                if (typeof(res.data) == "string" ){
+                    return 400
+                }
+                if (!res.data || typeof(res.data.fristName) === undefined) {
                     let trackIdData: trackIdInterface = {
                         trackId: res.headers['track-code'],
                         firstName: '',

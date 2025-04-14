@@ -321,6 +321,9 @@ export class UserController {
             return res.status(400).json({ error: 'شماره تلفن با شماره ملی مطابقت ندارد' })
         }
         const userInfo=await this.shakarService.identityInformationOfUser(phoneNumber,birthDate,nationalCode)
+        if (userInfo == 400){
+            return next(new response(req, res,'', 'approve new user', 400, "ورودی های خود را چک کرده و مجددا تلاش کنید", null))
+        }
         if (userInfo == 500){
             return next(new response(req, res, 'approve old user', 400, "سیستم احراز هویت موقتا در دسترس نمیباشد لطفا دقایقی دیگر مجددا تلاش کنید.", null))
         }
