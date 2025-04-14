@@ -19,6 +19,7 @@ import {createBuyPhone,createSellPhone,approveBuyPhone,rejectBuyPhone,updatePhon
 import inPersonController from "./controller/inPerson.controller";
 import { createNewUser } from "./DTO/applicationDTo";
 import invoiceConvertorController from "./controller/inpersonConvert.controller";
+import { RemittanceController } from "./controller/RemittanceController";
 
 
 export const Routes = [
@@ -664,6 +665,34 @@ export const Routes = [
     route: "/test/:phone",
     controller: InvoiceTypeController,
     action: "test",
+    middlwares: []
+},
+
+,{
+    method: "get",
+    route: "/buy/:status",
+    controller: RemittanceController,
+    action: "getByStatusBuyRemmitance",
+    middlwares: [adminMiddleware]
+},
+{
+    method: "get",
+    route: "/sell/:status",
+    controller: RemittanceController,
+    action: "getByStatusSellRemmitance",
+    middlwares: [adminMiddleware]
+},{
+    method: "get",
+    route: "/invoice/sell/:phone/:status",
+    controller: interServiceController,
+    action: "getAllSellInvoices",
+    middlwares: []
+},
+, {
+    method: "get",
+    route: "/invoice/buy/:phone/:status",
+    controller: interServiceController,
+    action: "getAllBuyInvoices",
     middlwares: []
 },
 

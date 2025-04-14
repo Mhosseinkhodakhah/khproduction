@@ -915,8 +915,6 @@ export class InvoiceController {
                 .orderBy('invoice.createdAt', 'DESC')
                 .getMany();
 
-               
-                
             const all=transactions
 
             monitor.addStatus({
