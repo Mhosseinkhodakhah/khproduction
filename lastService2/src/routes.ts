@@ -38,14 +38,14 @@ export const Routes = [
     //     action: "getTradePermision",
     //     middlwares: [ adminMiddleware]
     // },
-//      {
-//         method: "get",
-//         route: "/token/check",
-//         controller: UserController,
-//         action: "checkToken",
-//         middlwares: [ authenticate]
-//     },
-//     {
+     {
+        method: "get",
+        route: "/token/check",
+        controller: UserController,
+        action: "checkToken",
+        middlwares: [ adminMiddleware]
+    },
+    // {
 //     method: "get",
 //     route: "/users",
 //     controller: UserController,
