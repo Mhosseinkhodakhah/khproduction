@@ -426,7 +426,7 @@ export default class inPersonController {
 
             let shahkarToken = await this.getToken()
             if (shahkarToken == null || shahkarToken == undefined) {
-                return res.status(500).json({ err: "error get token from server" })
+                return res.status(500).json({ err: "کاربر گرامی سیستم احراز هویت موقتا در دسترس نمی باشد.لطفا دقایقی دیگر مجددا تلاش بفرمایید" })
             }
             let body = { birthDate: birthDate, nationalCode: nationalCode }
             let res2 = await axios.post(identityInfoUrl, body, { headers: { 'Authorization': shahkarToken } })
@@ -434,6 +434,23 @@ export default class inPersonController {
             // console.log('trach code . . .',res.headers['track-code'])
             console.log('shahkar info>>>>', res2)
             if (res2.status == 200) {
+                if (typeof(res.data) == "string" ){
+                    return next(new responseModel(req, res, 'کاربر گرامی لطفا مقادیر ورودی را چک و از صحت اطلاعات اطمینان حاصل فرمایید' ,'admin service', 502, 'کاربر گرامی لطفا مقادیر ورودی را چک و از صحت اطلاعات اطمینان حاصل فرمایید', null))
+                }
+                if (!res.data  || typeof(res.data.fristName) === undefined) {
+                    let trackIdData: trackIdInterface = {
+                        trackId: res.headers['track-code'],
+                        firstName: '',
+                        lastName: '',
+                        fatherName: '',
+                        phoneNumber: '',
+                        status: false
+                    }
+                    let trackIdService = new internalDB()
+                    let DBStatus = await trackIdService.saveData(trackIdData)
+                    console.log('returned db status>>>>', DBStatus)
+                    return next(new responseModel(req, res, 'کاربر گرامی سیستم احراز هویت موقتا در دسترس نمیباشد' ,'admin service', 502, 'کاربر گرامی سیستم احراز هویت موقتا در دسترس نمیباشد', null))
+                }
                 let {
                     firstName,
                     lastName,
