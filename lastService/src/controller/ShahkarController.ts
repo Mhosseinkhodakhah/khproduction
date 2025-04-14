@@ -146,7 +146,10 @@ export class ShahkarController {
                 // console.log('trach code . . .',res.headers['track-code'])
                 console.log('shahkar info>>>>', res)
                 if (res.status == 200) {
-                    if (!res.data || res.data == '' || typeof(res.data.fristName) === undefined) {
+                    if (typeof(res.data) == "string" ){
+                        return response.status(500).json({ msg: 'کاربر گرامی لطفا موارد وارد شده را مجددا چک کنید و از درستی اطلاعات اطمینان حاصل فرمایید' })
+                    }
+                    if (!res.data || typeof(res.data.fristName) === undefined) {
                         console.log('its in here>>>>>')
                         let trackIdData: trackIdInterface = {
                             trackId: res.headers['track-code'],

@@ -36,7 +36,6 @@ export class WalletController {
         return Math.floor(firstRandomoe)
     }
 
-
     /**
      * first step for transport the gold by user
      * @param req 
@@ -94,9 +93,7 @@ export class WalletController {
             await queryRunner.release()
         }
     }
-
-
-
+    
     /**
      * its for confirm the transport for user to another user
      * @param req 
@@ -151,8 +148,6 @@ export class WalletController {
             await queryRunner.release()
         }
     }
-
-
 
     async getWallet(request: Request, response: Response) {
         try {
@@ -261,7 +256,6 @@ export class WalletController {
                 where: { id: userId },
                 relations: ["wallet"],
             });
-
             if (!user) {
                 monitor.addStatus({
                     scope : 'wallet controller',
@@ -394,8 +388,6 @@ export class WalletController {
                 return response.status(500).json({msg : "خطای داخلی سیستم"})
             }
     }   
-
-
 
     async verifyDeposit(request: Request, response: Response){
         try {
