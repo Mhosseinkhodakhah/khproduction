@@ -17,6 +17,7 @@ import { validationResult } from "express-validator"
 import { internalDB } from "../selfDB/saveDATA.service"
 import { Like } from "typeorm"
 
+
 export class UserController {
 
     private userRepository = AppDataSource.getRepository(User)
@@ -75,22 +76,24 @@ export class UserController {
     async checkIdentity(req: Request, res: Response, next: NextFunction) {
         const {phoneNumber}=req.body
         const resultFromLastService=await this.lastServiceService.checkExistUserInLastService(phoneNumber)
-        try{ let user = await this.userRepository.findOne({
+        try{ 
+            let user = await this.userRepository.findOne({
             where: {
                 phoneNumber
             }
         })
+        user.verificationStatus = 2
+        await this.userRepository.save(user)
         if(resultFromLastService.exist){
             return next(new response(req, res, 'checkIdentity', 200, null, {userExist:true, userVerified: true ,user:resultFromLastService.user}))
         }else{
-            return next(new response(req, res, 'checkIdentity', 200, null, {userExist:false, userVerified: false ,user:{}}))
-            // if(user){
-            //     return next(new response(req, res, 'checkIdentity', 200, null, {userExist:true,userVerified: false ,user:user }))
-
-            // }else{
-
-            //     return next(new response(req, res, 'checkIdentity', 200, null, {userExist:false, userVerified: false,user:{}}))
-            // }
+            if(user){
+                return next(new response(req, res, 'checkIdentity', 200, null, {userExist:true,userVerified: false ,user:user }))
+                
+            }else{
+                // return next(new response(req, res, 'checkIdentity', 200, null, {userExist:false, userVerified: false ,user:{}}))
+                return next(new response(req, res, 'checkIdentity', 200, null, {userExist:false, userVerified: false,user:{}}))
+            }
         }
         
     }
@@ -276,7 +279,7 @@ export class UserController {
         }   
         const userId=+req.params.id
         let {phoneNumber ,birthDate ,nationalCode,otp} = req.body
-
+        
         try{
         // const otpResult= await this.otpService.checkOtpVerification(phoneNumber,otp)  
         // if(!otpResult.success){
@@ -288,10 +291,12 @@ export class UserController {
             },
             relations:["wallet"]
         })
+        user.verificationStatus == 2
+        await this.userRepository.save(user)
         if(!user){
             return next(new response(req, res, 'approve old user', 400, "کاربر پیدا نشد", null))
         }
-        if (user.verificationStatus==1) {
+        if (user.verificationStatus == 1) {
             return next(new response(req, res, 'approve old user', 400, "کاربر قبلا احراز شده است", user))
         }
              
@@ -382,7 +387,6 @@ export class UserController {
             // } 
             const exist = await this.userRepository.findOne({where:{phoneNumber}})
             if(exist){
-
                 return next(new response(req, res, 'approve new User', 400, "کاربر در سیستم وجود دارد", exist))
             }
 
