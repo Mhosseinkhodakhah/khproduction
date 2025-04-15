@@ -83,7 +83,7 @@ export const Routes = [
     route: "/otp",
     controller: OtpController,
     action: "sendOtpMessage",
-    middlwares: [ratelimit]
+    middlwares: []
 
 }, {
     method: "post",
