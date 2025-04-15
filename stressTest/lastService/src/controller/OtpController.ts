@@ -119,8 +119,20 @@ export class OtpController {
                 phoneNumber : phoneNumber
             }});
             console.log('otpExisttttttt' , otpExist)
-            // console.log('time' , ((new Date().getTime())-(+otpExist.time)))
-            // console.log(parseInt(otpExist.time))
+            console.log('time' , ((new Date().getTime())-(+otpExist.time)))
+            console.log(parseInt(otpExist.time))
+            if (otpExist) {
+                console.log('otp existtt')
+                otpExist.time = new Date().getTime().toString();
+                otpExist.otp = otp;
+                let saved = await this.otpRepository.save(otpExist);
+                console.log('saved transActions', saved)
+            } else {
+                let createdOtp = this.otpRepository.create({ otp, phoneNumber, time: new Date().getTime().toString() });
+                console.log('created>>>', createdOtp)
+                let saved = await this.otpRepository.save(createdOtp);
+                console.log('saved transActions2222', saved)
+            }
             // console.log()
             // if (otpExist && ((new Date().getTime())-(+otpExist.time)) < 110*1000){
             //     return response.status(429).json({msg : "لطفا پس از چند ثانیه دوباره تلاش کنید "})
