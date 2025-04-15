@@ -368,7 +368,7 @@ export class WalletController {
                 //     status :  1,
                 //     error : null
                 // })
-                return response.status(200).json({msg : "انتقال به درگاه پرداخت" , url : 'test for url' , authority : })
+                return response.status(200).json({msg : "انتقال به درگاه پرداخت" , url : 'test for url' , authority : addedAuthority.authority})
             } catch (error) {
                await queryRunner.rollbackTransaction()
                console.log('error in initiate payment>>>' , `${error}` )
