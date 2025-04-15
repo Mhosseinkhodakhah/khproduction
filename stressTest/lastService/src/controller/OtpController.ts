@@ -180,6 +180,7 @@ export class OtpController {
 
     async checkOtpVerification(request: Request, response: Response, next: NextFunction) {
         const { phoneNumber, otp } = request.body;
+        console.log(request.body)
             if (!phoneNumber || !otp) {
                 // await this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: phoneNumber }, 'otp sms', `getting otp code failed for user : ${phoneNumber}`, {
                 //     statusCode: 400,
