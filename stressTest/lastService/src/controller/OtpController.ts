@@ -23,90 +23,90 @@ export class OtpController {
     private smsService = new SmsService()
     private loggerService =new logger()
 
-    async getToken() {
-        let authUrl = process.env.AUTH_URL
-        try {
-            let res = await axios.post(authUrl, { username: "TLS_khanetalla", password: "1M@k8|H43O9S" })
-            let token = `Bearer ${res.data.access_token}`
-            console.log(res?.headers)
-            return token
+    // async getToken() {
+    //     let authUrl = process.env.AUTH_URL
+    //     try {
+    //         let res = await axios.post(authUrl, { username: "TLS_khanetalla", password: "1M@k8|H43O9S" })
+    //         let token = `Bearer ${res.data.access_token}`
+    //         console.log(res?.headers)
+    //         return token
 
-        } catch (error) {
-            console.log(error?.response?.headers)
-            // monitor.error.push(`error in get token shahkar :: ${error.response}`)
-            monitor.error.push(`error in get token shahkar :: ${error}`)
-            console.log("error in getToken ShahkarController   " + error);
-            return null
-        }
-    }
+    //     } catch (error) {
+    //         console.log(error?.response?.headers)
+    //         // monitor.error.push(`error in get token shahkar :: ${error.response}`)
+    //         monitor.error.push(`error in get token shahkar :: ${error}`)
+    //         console.log("error in getToken ShahkarController   " + error);
+    //         return null
+    //     }
+    // }
     
-    async checkMatchOfPhoneAndNationalCode(body) {
-        let { phoneNumber, nationalCode } = body
-        let checkMatchationUrl = process.env.SHAHKAR_BASE_URL + '/istelamshahkar'
-        let isMatch = false
-        let token = await this.getToken()
-        if (token == null || token == undefined) {
-            console.log('token is not defined....')
-            return 'noToken'
-        }
-        try {
-            let res = await axios.post(checkMatchationUrl, {
-                mobileNumber: phoneNumber
-                , nationalCode
-            }, { headers: { 'Authorization': token } })
+    // async checkMatchOfPhoneAndNationalCode(body) {
+    //     let { phoneNumber, nationalCode } = body
+    //     let checkMatchationUrl = process.env.SHAHKAR_BASE_URL + '/istelamshahkar'
+    //     let isMatch = false
+    //     let token = await this.getToken()
+    //     if (token == null || token == undefined) {
+    //         console.log('token is not defined....')
+    //         return 'noToken'
+    //     }
+    //     try {
+    //         let res = await axios.post(checkMatchationUrl, {
+    //             mobileNumber: phoneNumber
+    //             , nationalCode
+    //         }, { headers: { 'Authorization': token } })
 
-            isMatch = res.data.isMatched ? true : false
+    //         isMatch = res.data.isMatched ? true : false
 
-            if (isMatch) {
-                let trackIdData: trackIdInterface = {
-                    trackId: res.headers['track-code'],
-                    // firstName : firstName,
-                    // lastName : lastName,
-                    // fatherName : fatherName,
-                    phoneNumber: phoneNumber,
-                    status: true
-                }
-                let trackIdService = new internalDB()
-                let DBStatus = await trackIdService.saveData(trackIdData)
-                // console.log('returned db status>>>>', DBStatus)
-                return isMatch
-            } else {
-                let trackIdData: trackIdInterface = {
-                    trackId: res.headers['track-code'],
-                    // firstName : firstName,
-                    // lastName : lastName,
-                    // fatherName : fatherName,
-                    phoneNumber: phoneNumber,
-                    status: false
-                }
-                let trackIdService = new internalDB()
-                let DBStatus = await trackIdService.saveData(trackIdData)
-                // console.log('returned db status>>>>', DBStatus)
-                return isMatch
-            }
-        } catch (error) {
-            monitor.error.push(`error in check phone and national code of userssss ` + error.response.data.message)
-            console.log('error>>>>>', error)
-            if (error.response.headers['track-code']) {
-                let trackIdData: trackIdInterface = {
-                    trackId: error.response.headers['track-code'],
-                    // firstName : firstName,
-                    // lastName : lastName,
-                    // fatherName : fatherName,
-                    phoneNumber: phoneNumber,
-                    status: false
-                }
-                let trackIdService = new internalDB()
-                let DBStatus = await trackIdService.saveData(trackIdData)
-                // console.log('data base saver result>>>', DBStatus)
-                if (+error.response.status >= 500) {
-                    return 500
-                }
-            }
-            // console.log('error in ismatch national code', `${error}`)
-            return 'unknown'
-        }
-    }
+    //         if (isMatch) {
+    //             let trackIdData: trackIdInterface = {
+    //                 trackId: res.headers['track-code'],
+    //                 // firstName : firstName,
+    //                 // lastName : lastName,
+    //                 // fatherName : fatherName,
+    //                 phoneNumber: phoneNumber,
+    //                 status: true
+    //             }
+    //             let trackIdService = new internalDB()
+    //             let DBStatus = await trackIdService.saveData(trackIdData)
+    //             // console.log('returned db status>>>>', DBStatus)
+    //             return isMatch
+    //         } else {
+    //             let trackIdData: trackIdInterface = {
+    //                 trackId: res.headers['track-code'],
+    //                 // firstName : firstName,
+    //                 // lastName : lastName,
+    //                 // fatherName : fatherName,
+    //                 phoneNumber: phoneNumber,
+    //                 status: false
+    //             }
+    //             let trackIdService = new internalDB()
+    //             let DBStatus = await trackIdService.saveData(trackIdData)
+    //             // console.log('returned db status>>>>', DBStatus)
+    //             return isMatch
+    //         }
+    //     } catch (error) {
+    //         monitor.error.push(`error in check phone and national code of userssss ` + error.response.data.message)
+    //         console.log('error>>>>>', error)
+    //         if (error.response.headers['track-code']) {
+    //             let trackIdData: trackIdInterface = {
+    //                 trackId: error.response.headers['track-code'],
+    //                 // firstName : firstName,
+    //                 // lastName : lastName,
+    //                 // fatherName : fatherName,
+    //                 phoneNumber: phoneNumber,
+    //                 status: false
+    //             }
+    //             let trackIdService = new internalDB()
+    //             let DBStatus = await trackIdService.saveData(trackIdData)
+    //             // console.log('data base saver result>>>', DBStatus)
+    //             if (+error.response.status >= 500) {
+    //                 return 500
+    //             }
+    //         }
+    //         // console.log('error in ismatch national code', `${error}`)
+    //         return 'unknown'
+    //     }
+    // }
 
 
     async sendOtpMessage(request: Request, response: Response, next: NextFunction) {
@@ -125,42 +125,43 @@ export class OtpController {
             // if (otpExist && ((new Date().getTime())-(+otpExist.time)) < 110*1000){
             //     return response.status(429).json({msg : "لطفا پس از چند ثانیه دوباره تلاش کنید "})
             // }
-            let res : any = await this.smsService.sendOtpMessage(phoneNumber , otp);                // Await the response
+            // let res : any = await this.smsService.sendOtpMessage(phoneNumber , otp);                // Await the response
             // console.log('res from code sender' , res)            
-            if (res.success) {
-                if (otpExist) {
-                    console.log('otp existtt')
-                    otpExist.time = new Date().getTime().toString();
-                    otpExist.otp = otp;
-                    let saved = await this.otpRepository.save(otpExist);
-                    console.log('saved transActions' , saved)
-                } else {
-                    let createdOtp = this.otpRepository.create({ otp, phoneNumber, time: new Date().getTime().toString()});
-                    console.log('created>>>' , createdOtp)
-                    let saved =  await this.otpRepository.save(createdOtp);
-                    console.log('saved transActions2222' , saved)
-                }
-                await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , `getting otp code succeed for user : ${phoneNumber}` , otpExist , 1) 
-                monitor.addStatus({
-                    scope: 'otp controller controller',
-                    status: 1,
-                    error: null
-                })
-                response.status(200).json({ msg: res.msg });
-            } else {
-                await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , `getting otp code failed for user : ${phoneNumber}` , {
-                    statusCode : 500,
-                    error : 'kavenegar error . . .',
-                    msg : res.msg
-                } , 0) 
-                monitor.addStatus({
-                    scope: 'otp  controller',
-                    status: 0,
-                    error: `${res.msg}`
-                })
+            // if (res.success) {
+            //     if (otpExist) {
+            //         console.log('otp existtt')
+            //         otpExist.time = new Date().getTime().toString();
+            //         otpExist.otp = otp;
+            //         let saved = await this.otpRepository.save(otpExist);
+            //         console.log('saved transActions' , saved)
+            //     } else {
+            //         let createdOtp = this.otpRepository.create({ otp, phoneNumber, time: new Date().getTime().toString()});
+            //         console.log('created>>>' , createdOtp)
+            //         let saved =  await this.otpRepository.save(createdOtp);
+            //         console.log('saved transActions2222' , saved)
+            //     }
+            //     await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , `getting otp code succeed for user : ${phoneNumber}` , otpExist , 1) 
+            //     monitor.addStatus({
+            //         scope: 'otp controller controller',
+            //         status: 1,
+            //         error: null
+            //     })
+            //     response.status(200).json({ msg: res.msg });
+            // } else {
+            //     await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , `getting otp code failed for user : ${phoneNumber}` , {
+            //         statusCode : 500,
+            //         error : 'kavenegar error . . .',
+            //         msg : res.msg
+            //     } , 0) 
+            //     monitor.addStatus({
+            //         scope: 'otp  controller',
+            //         status: 0,
+            //         error: `${res.msg}`
+            //     })
     
-                return response.status(500).json({ msg: res.msg });
-            }
+            //     return response.status(500).json({ msg: res.msg });
+            // }
+                response.status(200).json({ data :  otp });
         } catch (error) {
             console.log(error);
             monitor.addStatus({
@@ -168,11 +169,11 @@ export class OtpController {
                 status: 0,
                 error: `${error}`
             })
-            await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , `getting otp code failed for user : ${phoneNumber}` , {
-                statusCode : 500,
-                error : 'internal error . . .',
-                msg : `${error}`
-            } , 0) 
+            // await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , `getting otp code failed for user : ${phoneNumber}` , {
+            //     statusCode : 500,
+            //     error : 'internal error . . .',
+            //     msg : `${error}`
+            // } , 0) 
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
     }
@@ -180,17 +181,17 @@ export class OtpController {
     async checkOtpVerification(request: Request, response: Response, next: NextFunction) {
         const { phoneNumber, otp } = request.body;
             if (!phoneNumber || !otp) {
-                await this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: phoneNumber }, 'otp sms', `getting otp code failed for user : ${phoneNumber}`, {
-                    statusCode: 400,
-                    error: 'bad request',
-                    msg: `Phone number and OTP are required`
-                }, 0) 
+                // await this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: phoneNumber }, 'otp sms', `getting otp code failed for user : ${phoneNumber}`, {
+                //     statusCode: 400,
+                //     error: 'bad request',
+                //     msg: `Phone number and OTP are required`
+                // }, 0) 
                 monitor.addStatus({
                     scope: 'otp controller',
                     status: 0,
                     error: `مقادیر لازم را وارد کنید`
                 })
-            return response.status(400).json({ msg: 'Phone number and OTP are required' });
+            return response.status(400).json({ data: 'Phone number and OTP are required' });
         }
         try {
             const foundUserOtp = await this.otpRepository.findOneByOrFail({ phoneNumber });
@@ -198,7 +199,6 @@ export class OtpController {
             const currentTime = new Date();
             const otpCreationTime = foundUserOtp.time; 
             const otpExpirationTime = new Date(+otpCreationTime + 2 * 60 * 1000); 
-            // console.log()
             if (currentTime > otpExpirationTime) {
                 // await this.otpRepository.delete({ phoneNumber });
                 monitor.addStatus({
@@ -206,7 +206,7 @@ export class OtpController {
                     status: 0,
                     error: `کد وارد شده منقضی شده است`
                 })
-                return response.status(400).json({ msg: 'کد تایید منقضی شده است ' });
+                return response.status(400).json({ data: 'کد تایید منقضی شده است ' });
             }
     
             if (foundUserOtp.otp !== otp) {
@@ -216,7 +216,7 @@ export class OtpController {
                     error: `کد وارد شده نادرست است`
                 })
 
-                return response.status(400).json({ msg: 'کد تایید صحیح نیست .لطفا دوباه تلاش کنید.' });
+                return response.status(400).json({ data: 'کد تایید صحیح نیست .لطفا دوباه تلاش کنید.' });
             }
             
             const user = await this.userRepository.findOneBy({ phoneNumber });
@@ -229,7 +229,7 @@ export class OtpController {
                     error: null
                 })
                 return response.status(200).json({ 
-                    msg: 'با موفقیت وارد شدید', 
+                    data: 'با موفقیت وارد شدید', 
                     userVerificationStatus: "FAILED" 
                 });
             }
@@ -253,37 +253,37 @@ export class OtpController {
                 await this.userRepository.save(user)
             }
 
-            let isMatch = await this.checkMatchOfPhoneAndNationalCode({ phoneNumber : user.phoneNumber , nationalCode : user.nationalCode})
-            let isNotMatch = await this.notMatchRepo.exists({where : {nationalCode : user.nationalCode}})
-            if (!isNotMatch){
-                try {
-                    if (isMatch == false){
-                        console.log('isMatch is false',isMatch)
-                        let isNotMatch = await this.notMatchRepo.exists({where : {nationalCode : user.nationalCode}})
-                        if (isNotMatch){
-                            console.log('isNotMatch exist >>>>')
-                        }else{
-                            let newNotMatch = this.notMatchRepo.create({
-                                firstName : user.firstName,
-                                lastName : user.lastName,
-                                phoneNumber : user.phoneNumber,
-                                nationalCode : user.nationalCode
-                            })
-                            let addIsNOtMatch = await this.notMatchRepo.save(newNotMatch)
-                            console.log('saved to database >>>>>>>>>>>>' , addIsNOtMatch)
-                        }
-                    }
-                } catch (error) {
-                    console.log(error)
-                }
-            }
+            // let isMatch = await this.checkMatchOfPhoneAndNationalCode({ phoneNumber : user.phoneNumber , nationalCode : user.nationalCode})
+            // let isNotMatch = await this.notMatchRepo.exists({where : {nationalCode : user.nationalCode}})
+            // if (!isNotMatch){
+            //     try {
+            //         if (isMatch == false){
+            //             console.log('isMatch is false',isMatch)
+            //             let isNotMatch = await this.notMatchRepo.exists({where : {nationalCode : user.nationalCode}})
+            //             if (isNotMatch){
+            //                 console.log('isNotMatch exist >>>>')
+            //             }else{
+            //                 let newNotMatch = this.notMatchRepo.create({
+            //                     firstName : user.firstName,
+            //                     lastName : user.lastName,
+            //                     phoneNumber : user.phoneNumber,
+            //                     nationalCode : user.nationalCode
+            //                 })
+            //                 let addIsNOtMatch = await this.notMatchRepo.save(newNotMatch)
+            //                 console.log('saved to database >>>>>>>>>>>>' , addIsNOtMatch)
+            //             }
+            //         }
+            //     } catch (error) {
+            //         console.log(error)
+            //     }
+            // }
 
             return response.status(200).json({ 
                 token, 
                 msg: 'با موفقیت وارد شدید', 
                 userVerificationStatus: "SUCCESS" 
             });
-    
+            
         } catch (error) {
             monitor.addStatus({
                 scope: 'otp controller',
@@ -294,6 +294,8 @@ export class OtpController {
             return response.status(500).json({ msg: 'An error occurred during verification' });
         }
     }
+
+
     async clearOtpTable(request: Request, response: Response, next: NextFunction){
         try {
             this.otpRepository.delete({})
@@ -302,6 +304,7 @@ export class OtpController {
             response.status(500).json("error")
         }
     }
+
     generateOTP(limit) {          
         var digits = '0123456789';
         let OTP = '';
@@ -310,5 +313,4 @@ export class OtpController {
         }
         return OTP;
     }
-    
 }
