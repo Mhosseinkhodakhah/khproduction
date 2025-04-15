@@ -93,214 +93,269 @@ export class ShahkarController {
 
     async identityInformationOfUser(request: Request, response: Response, next: NextFunction) {
         let { phoneNumber, birthDate, nationalCode } = request.body
-        let identityInfoUrl = process.env.IDENTITY_INFO_URL
-        console.log('start the identity')
-        let isMatch = await this.checkMatchOfPhoneAndNationalCode({ phoneNumber, nationalCode })
-        console.log('isMatch is>>>>' , isMatch)
-
-        if (isMatch == 'noToken') {
-            console.log('111')
-            return response.status(400).json({ msg: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
-        }
-
-        if (isMatch == 'unknown') {
-            console.log('222')
-            return response.status(400).json({ msg: 'مشکلی در در احراز هویت بوجود آمده است.لطفا دقایقی دیگر مجددا تلاش کنید.' })
-        }
-        if (isMatch == 500) {
-            console.log('333')
-            return response.status(400).json({ msg: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
-        }
-
-        if (isMatch === false) {
-            console.log('444')
-            return response.status(400).json({ msg: 'شماره تلفن با شماره ملی مطابقت ندارد' })
-        }
-        if (nationalCode) {
-            let user = await this.userRepository.findOneBy({ nationalCode })
-            if (user) {
-                monitor.addStatus({
-                    scope: 'shahkar controller',
-                    status: 0,
-                    error: `کاربر قبلا با شماره دیگری ثبت نام کرده`
-                })
-                return response.status(500).json({ msg: "کاربر قبلا با شماره دیگری در سامانه خانه طلا ثبت نام کرده است" })
+        let queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        try {
+            const oldUserData = await this.oldUSerService.checkExistAndGetGoldWallet(phoneNumber, nationalCode, { phoneNumber, birthDate, nationalCode })
+            if (oldUserData == 500) {
+                return response.status(500).json({ msg: 'کاربر گرامی سیستم احراز هویت در دسترس نمی باشد.' })
             }
+
+            const time = new Date().toLocaleString('fa-IR').split(',')[1]
+            const date = new Date().toLocaleString('fa-IR').split(',')[0]
+
+            let user = this.userRepository.create({
+                fatherName: `test${phoneNumber}`,
+            // identityTraceCode: res.headers['track-code'],
+            gender: true
+            , officeName : `test${phoneNumber}`,
+            birthDate,
+            time: time,
+            date: date,
+            identityNumber: `test${phoneNumber}`,
+            identitySeri: `test${phoneNumber}`,
+            identitySerial: `test${phoneNumber}`,
+            firstName : `test${phoneNumber}`,
+            lastName : `test${phoneNumber}`,
+            phoneNumber, 
+            nationalCode, liveStatus : true ,
+            verificationStatus: VerificationStatus.SUCCESS
+        })
+        let savedUser = await queryRunner.manager.save(user)
+        console.log(savedUser)
+        const wallet = this.walletRepository.create({
+            balance: 0,
+            goldWeight: oldUserData.isExist ? oldUserData.updatedUser.wallet.goldWeight : 0,
+            // goldWeight: 0,
+            user: savedUser,
+        });
+        // await this.walletRepository.save(wallet)
+        await queryRunner.manager.save(wallet)
+        let token = await this.jwtService.generateToken(savedUser)
+        await queryRunner.commitTransaction()
+
+        monitor.addStatus({
+            scope: 'shahkar controller',
+            status: 1,
+            error: null
+        })
+        return response.json({ user: savedUser, msg: "ثبت نام شما با موفقیت انجام شد", token })
+        } catch (error) {
+            await queryRunner.rollbackTransaction()
+        }finally{
+            await queryRunner.release()
         }
-        let shahkarToken = await this.getToken()
-        if (shahkarToken == null || shahkarToken == undefined) {
-            monitor.addStatus({
-                scope: 'shahkar controller',
-                status: 0,
-                error: `error from get token in shahkar get token identityInformationOfUser endPoint`
-            })
-            return response.status(500).json({ msg: "کاربر سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید." })
-        } else {
-            let body = { birthDate: birthDate, nationalCode: nationalCode }
-            let queryRunner = AppDataSource.createQueryRunner()
-            await queryRunner.connect()
-            await queryRunner.startTransaction()
-            try {
-                let res = await axios.post(identityInfoUrl, body, { headers: { 'Authorization': shahkarToken } })
-                let info = res.data
-                // console.log('trach code . . .',res.headers['track-code'])
-                console.log('shahkar info>>>>', res)
-                if (res.status == 200) {
-                    if (typeof(res.data) == "string" ){
-                        console.log('its in here>>>>>')
-                        let trackIdData: trackIdInterface = {
-                            trackId: res.headers['track-code'],
-                            firstName: '',
-                            lastName: '',
-                            fatherName: '',
-                            phoneNumber: '',
-                            status: false
-                        }
-                        let trackIdService = new internalDB()
-                        await trackIdService.saveData(trackIdData)
-                        return response.status(500).json({ msg: 'کاربر گرامی لطفا موارد وارد شده را مجددا چک کنید و از درستی اطلاعات اطمینان حاصل فرمایید' })
-                    }
-                    if (!res.data || typeof(res.data.fristName) === undefined) {
-                        console.log('its in here>>>>>')
-                        let trackIdData: trackIdInterface = {
-                            trackId: res.headers['track-code'],
-                            firstName: '',
-                            lastName: '',
-                            fatherName: '',
-                            phoneNumber: '',
-                            status: false
-                        }
-                        let trackIdService = new internalDB()
-                        let DBStatus = await trackIdService.saveData(trackIdData)
-                        // console.log('returned db status>>>>', DBStatus)
-                        return response.status(500).json({ msg: 'کاربر گرامی موقتا سیستم احراز هویت ثبت احوال در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید' })
-                    }
-                    let {
-                        firstName,
-                        lastName,
-                        gender,
-                        liveStatus,
-                        identificationNo,
-                        fatherName,
-                        identificationSerial,
-                        identificationSeri,
-                        officeName,
-                    } = info
 
-                    // check the oldUser existance
-                    const oldUserData = await this.oldUSerService.checkExistAndGetGoldWallet(phoneNumber, nationalCode, info)
-                    if (oldUserData == 500) {
-                        return response.status(500).json({ msg: 'کاربر گرامی سیستم احراز هویت در دسترس نمی باشد.' })
-                    }
-                    console.log("oldUserData", oldUserData);
-                    // setting date and time
-                    const time = new Date().toLocaleString('fa-IR').split(',')[1]
-                    const date = new Date().toLocaleString('fa-IR').split(',')[0]
 
-                    let user = this.userRepository.create({
-                        fatherName,
-                        identityTraceCode: res.headers['track-code'],
-                        gender: (gender == 0) ? false : true
-                        , officeName,
-                        birthDate,
-                        time: time,
-                        date: date,
-                        identityNumber: identificationNo,
-                        identitySeri: identificationSeri,
-                        identitySerial: identificationSerial,
-                        firstName, lastName, phoneNumber, nationalCode, liveStatus,
-                        verificationStatus: VerificationStatus.SUCCESS
-                    })
-                    let savedUser = await queryRunner.manager.save(user)
-                    console.log(savedUser)
-                    const wallet = this.walletRepository.create({
-                        balance: 0,
-                        goldWeight: oldUserData.isExist ? oldUserData.updatedUser.wallet.goldWeight : 0,
-                        // goldWeight: 0,
-                        user: savedUser,
-                    });
-                    // await this.walletRepository.save(wallet)
-                    await queryRunner.manager.save(wallet)
-                    let token = await this.jwtService.generateToken(savedUser)
-                    await queryRunner.commitTransaction()
-                    let trackIdData: trackIdInterface = {
-                        trackId: res.headers['track-code'],
-                        firstName: firstName,
-                        lastName: lastName,
-                        fatherName: fatherName,
-                        phoneNumber: phoneNumber,
-                        status: true
-                    }
-                    let trackIdService = new internalDB()
-                    let DBStatus = await trackIdService.saveData(trackIdData)
-                    // console.log('returned db status>>>>', DBStatus)
-                    // let nameFamily = firstName + ' ' + lastName
-                    this.smsService.sendGeneralMessage(wallet.user.phoneNumber, "identify", firstName, null, null)
+        // // let identityInfoUrl = process.env.IDENTITY_INFO_URL
+        // console.log('start the identity')
+        // // let isMatch = await this.checkMatchOfPhoneAndNationalCode({ phoneNumber, nationalCode })
+        // // console.log('isMatch is>>>>' , isMatch)
 
-                    monitor.addStatus({
-                        scope: 'shahkar controller',
-                        status: 1,
-                        error: null
-                    })
+        // // if (isMatch == 'noToken') {
+        // //     console.log('111')
+        // //     return response.status(400).json({ msg: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
+        // // }
 
-                    return response.json({ user: savedUser, msg: "ثبت نام شما با موفقیت انجام شد", token })
-                } else if (res.status == 400) {
-                    console.log('track id>>>>', res.headers['track-code'])
-                    let trackIdData: trackIdInterface = {
-                        trackId: res.headers['track-code'],
-                        // firstName : firstName,
-                        // lastName : lastName,
-                        // fatherName : fatherName,
-                        phoneNumber: phoneNumber,
-                        status: false
-                    }
-                    let trackIdService = new internalDB()
-                    let DBStatus = await trackIdService.saveData(trackIdData)
-                    // console.log('returned db status>>>>', DBStatus)
+        // // if (isMatch == 'unknown') {
+        // //     console.log('222')
+        // //     return response.status(400).json({ msg: 'مشکلی در در احراز هویت بوجود آمده است.لطفا دقایقی دیگر مجددا تلاش کنید.' })
+        // // }
+        // // if (isMatch == 500) {
+        // //     console.log('333')
+        // //     return response.status(400).json({ msg: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
+        // // }
 
-                    monitor.addStatus({
-                        scope: 'shahkar controller',
-                        status: 0,
-                        error: 'خطا در احراز هویت کاربر در اند پوینت شاهکار'
-                    })
-                    await queryRunner.rollbackTransaction()
-                    return response.status(500).json({ err: res.data.details, msg: "خطا در احراز هویت کاربر" })
-                } else if (+res.status >= 500) {
-                    return response.status(500).json({ msg: 'کاربر گرامی موقتا سیستم احراز هویت ثبت احوال در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید' })
-                }
-            } catch (error) {
-                // console.log(error.response.data.error);
+        // // if (isMatch === false) {
+        // //     console.log('444')
+        // //     return response.status(400).json({ msg: 'شماره تلفن با شماره ملی مطابقت ندارد' })
+        // // }
+        // if (nationalCode) {
+        //     let user = await this.userRepository.findOneBy({ nationalCode })
+        //     if (user) {
+        //         monitor.addStatus({
+        //             scope: 'shahkar controller',
+        //             status: 0,
+        //             error: `کاربر قبلا با شماره دیگری ثبت نام کرده`
+        //         })
+        //         return response.status(400).json({ msg: "کاربر قبلا با شماره دیگری در سامانه خانه طلا ثبت نام کرده است" })
+        //     }
+        // }
+        // // let shahkarToken = await this.getToken()
+        // // if (shahkarToken == null || shahkarToken == undefined) {
+        // //     monitor.addStatus({
+        // //         scope: 'shahkar controller',
+        // //         status: 0,
+        // //         error: `error from get token in shahkar get token identityInformationOfUser endPoint`
+        // //     })
+        //     // return response.status(500).json({ msg: "کاربر سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید." })
+        // // } else {
+        //     let body = { birthDate: birthDate, nationalCode: nationalCode }
+        //     let queryRunner = AppDataSource.createQueryRunner()
+        //     await queryRunner.connect()
+        //     await queryRunner.startTransaction()
+        //     try {
+        //         // let res = await axios.post(identityInfoUrl, body, { headers: { 'Authorization': shahkarToken } })
+        //         let info = res.data
+        //         // console.log('trach code . . .',res.headers['track-code'])
+        //         console.log('shahkar info>>>>', res)
+        //         if (res.status == 200) {
+        //             if (typeof(res.data) == "string" ){
+        //                 console.log('its in here>>>>>')
+        //                 let trackIdData: trackIdInterface = {
+        //                     trackId: res.headers['track-code'],
+        //                     firstName: '',
+        //                     lastName: '',
+        //                     fatherName: '',
+        //                     phoneNumber: '',
+        //                     status: false
+        //                 }
+        //                 let trackIdService = new internalDB()
+        //                 await trackIdService.saveData(trackIdData)
+        //                 return response.status(500).json({ msg: 'کاربر گرامی لطفا موارد وارد شده را مجددا چک کنید و از درستی اطلاعات اطمینان حاصل فرمایید' })
+        //             }
+        //             if (!res.data || typeof(res.data.fristName) === undefined) {
+        //                 console.log('its in here>>>>>')
+        //                 let trackIdData: trackIdInterface = {
+        //                     trackId: res.headers['track-code'],
+        //                     firstName: '',
+        //                     lastName: '',
+        //                     fatherName: '',
+        //                     phoneNumber: '',
+        //                     status: false
+        //                 }
+        //                 let trackIdService = new internalDB()
+        //                 let DBStatus = await trackIdService.saveData(trackIdData)
+        //                 // console.log('returned db status>>>>', DBStatus)
+        //                 return response.status(500).json({ msg: 'کاربر گرامی موقتا سیستم احراز هویت ثبت احوال در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید' })
+        //             }
+        //             let {
+        //                 firstName,
+        //                 lastName,
+        //                 gender,
+        //                 liveStatus,
+        //                 identificationNo,
+        //                 fatherName,
+        //                 identificationSerial,
+        //                 identificationSeri,
+        //                 officeName,
+        //             } = info
 
-                console.log(`${error}`, 'transAction rollback')
-                await queryRunner.rollbackTransaction()
-                monitor.addStatus({
-                    scope: 'shahkar controller',
-                    status: 0,
-                    error: error
-                })
+        //             // check the oldUser existance
+        //             const oldUserData = await this.oldUSerService.checkExistAndGetGoldWallet(phoneNumber, nationalCode, info)
+        //             if (oldUserData == 500) {
+        //                 return response.status(500).json({ msg: 'کاربر گرامی سیستم احراز هویت در دسترس نمی باشد.' })
+        //             }
+        //             console.log("oldUserData", oldUserData);
+        //             // setting date and time
+        //             const time = new Date().toLocaleString('fa-IR').split(',')[1]
+        //             const date = new Date().toLocaleString('fa-IR').split(',')[0]
 
-                if (error.response) {
-                    let trackIdData: trackIdInterface = {
-                        trackId: error.response.headers['track-code'],
-                        // firstName : firstName,
-                        // lastName : lastName,
-                        // fatherName : fatherName,
-                        phoneNumber: phoneNumber,
-                        status: false
-                    }
-                    let trackIdService = new internalDB()
-                    let DBStatus = await trackIdService.saveData(trackIdData)
-                    // console.log('data base saver result>>>', DBStatus)
-                    if (+error.response.status >= 500) {
-                        return response.status(500).json({ msg: 'کاربر گرامی موقتا سیستم احراز هویت ثبت احوال در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید' })
-                    }
-                }
-                return response.status(500).json({ msg: "خطای داخلی سیستم" })
-            } finally {
-                console.log('transaction released')
-                await queryRunner.release()
-            }
-        }
+        //             let user = this.userRepository.create({
+        //                 fatherName,
+        //                 identityTraceCode: res.headers['track-code'],
+        //                 gender: (gender == 0) ? false : true
+        //                 , officeName,
+        //                 birthDate,
+        //                 time: time,
+        //                 date: date,
+        //                 identityNumber: identificationNo,
+        //                 identitySeri: identificationSeri,
+        //                 identitySerial: identificationSerial,
+        //                 firstName, lastName, phoneNumber, nationalCode, liveStatus,
+        //                 verificationStatus: VerificationStatus.SUCCESS
+        //             })
+        //             let savedUser = await queryRunner.manager.save(user)
+        //             console.log(savedUser)
+        //             const wallet = this.walletRepository.create({
+        //                 balance: 0,
+        //                 goldWeight: oldUserData.isExist ? oldUserData.updatedUser.wallet.goldWeight : 0,
+        //                 // goldWeight: 0,
+        //                 user: savedUser,
+        //             });
+        //             // await this.walletRepository.save(wallet)
+        //             await queryRunner.manager.save(wallet)
+        //             let token = await this.jwtService.generateToken(savedUser)
+        //             await queryRunner.commitTransaction()
+        //             let trackIdData: trackIdInterface = {
+        //                 trackId: res.headers['track-code'],
+        //                 firstName: firstName,
+        //                 lastName: lastName,
+        //                 fatherName: fatherName,
+        //                 phoneNumber: phoneNumber,
+        //                 status: true
+        //             }
+        //             let trackIdService = new internalDB()
+        //             let DBStatus = await trackIdService.saveData(trackIdData)
+        //             // console.log('returned db status>>>>', DBStatus)
+        //             // let nameFamily = firstName + ' ' + lastName
+        //             this.smsService.sendGeneralMessage(wallet.user.phoneNumber, "identify", firstName, null, null)
+
+        //             monitor.addStatus({
+        //                 scope: 'shahkar controller',
+        //                 status: 1,
+        //                 error: null
+        //             })
+
+        //             return response.json({ user: savedUser, msg: "ثبت نام شما با موفقیت انجام شد", token })
+        //         } else if (res.status == 400) {
+        //             console.log('track id>>>>', res.headers['track-code'])
+        //             let trackIdData: trackIdInterface = {
+        //                 trackId: res.headers['track-code'],
+        //                 // firstName : firstName,
+        //                 // lastName : lastName,
+        //                 // fatherName : fatherName,
+        //                 phoneNumber: phoneNumber,
+        //                 status: false
+        //             }
+        //             let trackIdService = new internalDB()
+        //             let DBStatus = await trackIdService.saveData(trackIdData)
+        //             // console.log('returned db status>>>>', DBStatus)
+
+        //             monitor.addStatus({
+        //                 scope: 'shahkar controller',
+        //                 status: 0,
+        //                 error: 'خطا در احراز هویت کاربر در اند پوینت شاهکار'
+        //             })
+        //             await queryRunner.rollbackTransaction()
+        //             return response.status(500).json({ err: res.data.details, msg: "خطا در احراز هویت کاربر" })
+        //         } else if (+res.status >= 500) {
+        //             return response.status(500).json({ msg: 'کاربر گرامی موقتا سیستم احراز هویت ثبت احوال در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید' })
+        //         }
+        //     } catch (error) {
+        //         // console.log(error.response.data.error);
+
+        //         console.log(`${error}`, 'transAction rollback')
+        //         await queryRunner.rollbackTransaction()
+        //         monitor.addStatus({
+        //             scope: 'shahkar controller',
+        //             status: 0,
+        //             error: error
+        //         })
+
+        //         if (error.response) {
+        //             let trackIdData: trackIdInterface = {
+        //                 trackId: error.response.headers['track-code'],
+        //                 // firstName : firstName,
+        //                 // lastName : lastName,
+        //                 // fatherName : fatherName,
+        //                 phoneNumber: phoneNumber,
+        //                 status: false
+        //             }
+        //             let trackIdService = new internalDB()
+        //             let DBStatus = await trackIdService.saveData(trackIdData)
+        //             // console.log('data base saver result>>>', DBStatus)
+        //             if (+error.response.status >= 500) {
+        //                 return response.status(500).json({ msg: 'کاربر گرامی موقتا سیستم احراز هویت ثبت احوال در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید' })
+        //             }
+        //         }
+        //         return response.status(500).json({ msg: "خطای داخلی سیستم" })
+        //     } finally {
+        //         console.log('transaction released')
+        //         await queryRunner.release()
+        //     }
+        // }
     }
 
     async checkMatchPhoneNumberAndCartNumber(info) {
