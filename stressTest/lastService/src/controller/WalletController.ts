@@ -305,11 +305,11 @@ export class WalletController {
             const {amount} = request.body
             const userId = request.user_id;
             if (+amount < 100000) {
-                monitor.addStatus({
-                    scope : 'wallet controller',
-                    status :  0,
-                    error : 'مبلغ وارد شده برای واریزی باید حداقل 100 هزارتومن باشد.'
-                })
+                // monitor.addStatus({
+                //     scope : 'wallet controller',
+                //     status :  0,
+                //     error : 'مبلغ وارد شده برای واریزی باید حداقل 100 هزارتومن باشد.'
+                // })
                 return response.status(400).json({msg : "مبلغ وارد شده از حداقل مبلغ واریز کمتر است"})
             }
             const info = {
@@ -323,11 +323,11 @@ export class WalletController {
             }
             let wallet = await this.walletRepository.findOne({where : {user : {id :userId}},relations:{user : {bankAccounts : true}}})
             if (!wallet.user.isHaveBank){
-                monitor.addStatus({
-                    scope : 'wallet controller',
-                    status :  0,
-                    error : 'تلاش برای واریز قبل از ثبت کارت بانکی'
-                })    
+                // monitor.addStatus({
+                //     scope : 'wallet controller',
+                //     status :  0,
+                //     error : 'تلاش برای واریز قبل از ثبت کارت بانکی'
+                // })    
                 return response.status(400).json({msg : "ابتدا کارت بانکی خود را ثبت کنید"})
             }
             let date = new Date().toLocaleString('fa-IR').split(',')[0]
@@ -342,33 +342,33 @@ export class WalletController {
                 info.invoiceId = savedTransaction.id
                 info.cardPan = wallet.user.bankAccounts[0].cardNumber
                 info.phoneNumber = wallet.user.phoneNumber
-                const url = await this.zpService.initiatePayment(info);
-                if (url === 'tooMuch'){
-                    return response.status(500).json({
-                        msg : 'مبلغ وارد شده بیش از حد مجاز است.'
-                    }) 
-                }
-                if (url == 'error'){
-                    return response.status(500).json({
-                        msg : 'درگاه پرداخت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.'
-                    })
-                }
-                if (!url.authority){
-                    return response.status(500).json({
-                        msg : 'درگاه پرداخت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.'
-                    })
-                }
+                // const url = await this.zpService.initiatePayment(info);
+                // if (url === 'tooMuch'){
+                //     return response.status(500).json({
+                //         msg : 'مبلغ وارد شده بیش از حد مجاز است.'
+                //     }) 
+                // }
+                // if (url == 'error'){
+                //     return response.status(500).json({
+                //         msg : 'درگاه پرداخت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.'
+                //     })
+                // }
+                // if (!url.authority){
+                //     return response.status(500).json({
+                //         msg : 'درگاه پرداخت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.'
+                //     })
+                // }
                 let transAction = await this.walletTransactionRepository.findOne({where : {id : savedTransaction.id}})
-                transAction.authority = url.authority;
                 transAction.invoiceId = await this.generateInvoice();
+                transAction.authority = `authorityTest-${userId}-${await this.generateInvoice()}`;
                 let addedAuthority = await queryRunner.manager.save(transAction)
                 console.log('added authority >>>>' , addedAuthority)
-                monitor.addStatus({
-                    scope : 'wallet controller',
-                    status :  1,
-                    error : null
-                })
-                return response.status(200).json({msg : "انتقال به درگاه پرداخت" , url : url.url})
+                // monitor.addStatus({
+                //     scope : 'wallet controller',
+                //     status :  1,
+                //     error : null
+                // })
+                return response.status(200).json({msg : "انتقال به درگاه پرداخت" , url : 'test for url' , authority : })
             } catch (error) {
                await queryRunner.rollbackTransaction()
                console.log('error in initiate payment>>>' , `${error}` )
