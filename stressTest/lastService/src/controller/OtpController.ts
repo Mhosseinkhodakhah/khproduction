@@ -119,9 +119,9 @@ export class OtpController {
                 phoneNumber : phoneNumber
             }});
             console.log('otpExisttttttt' , otpExist)
-            console.log('time' , ((new Date().getTime())-(+otpExist.time)))
-            console.log(parseInt(otpExist.time))
             if (otpExist) {
+                console.log('time' , ((new Date().getTime())-(+otpExist.time)))
+                console.log(parseInt(otpExist.time))
                 console.log('otp existtt')
                 otpExist.time = new Date().getTime().toString();
                 otpExist.otp = otp;
