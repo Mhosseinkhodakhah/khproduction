@@ -87,11 +87,11 @@ export class BankAccountController {
         let ownerId = request.user_id
         console.log(ownerId)
         if ( !cardNumber || !ownerId) {
-            monitor.addStatus({
-                scope : 'bank account controller',
-                status : 0,
-                error: `وارد کردن شماره کارت الزامی`
-            })
+            // monitor.addStatus({
+            //     scope : 'bank account controller',
+            //     status : 0,
+            //     error: `وارد کردن شماره کارت الزامی`
+            // })
             return response.status(400).json({ msg: "فیلد شماره کارت نمیتواند خالی باشد" });
         }
 
@@ -99,11 +99,11 @@ export class BankAccountController {
             const owner = await this.userRepository.findOneBy({ id: ownerId });
             console.log(owner)
             if (!owner) {
-                monitor.addStatus({
-                    scope : 'bank account controller',
-                    status : 0,
-                    error: `مالک شماره کارت یافت نشد`
-                })
+                // monitor.addStatus({
+                //     scope : 'bank account controller',
+                //     status : 0,
+                //     error: `مالک شماره کارت یافت نشد`
+                // })
                 return response.status(400).json({ error: "Owner not found" });
             }
             const bankAccount = this.bankAccountRepository.create({
@@ -116,55 +116,55 @@ export class BankAccountController {
                 birthDate : owner.birthDate
                 }
                 console.log(info)
-                let isMatch = await this.checkCard.checkCardNuber(info)
+                // let isMatch = await this.checkCard.checkCardNuber(info)
                 // let isMatch = await  this.shahkarController.checkMatchPhoneNumberAndCartNumber(info)
-                console.log('its returned data>>>' , isMatch)
-                if (isMatch == 500){
-                    return response.status(500).json({msg : 'سیستم ثبت کارت بانکی موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید'})
-                }
+                // console.log('its returned data>>>' , isMatch)
+                // if (isMatch == 500){
+                //     return response.status(500).json({msg : 'سیستم ثبت کارت بانکی موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید'})
+                // }
                 // if (typeof(isMatch) === undefined){
                 //     return response.status(500).json({msg : 'سیستم ثبت کارت بانکی موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید'})
                 // }
-                if (isMatch == false){
-                    monitor.addStatus({
-                        scope : 'bank account controller',
-                        status : 0,
-                        error: `کارت نامعتبر `
-                    })
-                    return response.status(400).json({ msg: "کارت نامعتبر است" });
-                }
-                bankAccount.isVerified = isMatch;
-                
+                // if (isMatch == false){
+                //     monitor.addStatus({
+                //         scope : 'bank account controller',
+                //         status : 0,
+                //         error: `کارت نامعتبر `
+                //     })
+                //     return response.status(400).json({ msg: "کارت نامعتبر است" });
+                // }
+                bankAccount.isVerified = true;
+                let isMatch = true;
                 if (isMatch) {                
-                    let res =  await this.shahkarController.convertCardToSheba(cardNumber)
-                    if (res) {
-                        bankAccount.shebaNumber = res.ibanInfo.iban
-                        bankAccount.name = res.ibanInfo.bank
-                    }
-                    console.log(res)
+                    // let res =  await this.shahkarController.convertCardToSheba(cardNumber)
+                    // if (res) {
+                    //     bankAccount.shebaNumber = res.ibanInfo.iban
+                    //     bankAccount.name = res.ibanInfo.bank
+                    // }
+                    // console.log(res)
                     owner.isHaveBank = true;
                     await this.userRepository.save(owner)
                     const createBankAccount = await this.bankAccountRepository.save(bankAccount);
-                    await this.smsService.sendGeneralMessage(owner.phoneNumber,"verifyCart" , bankAccount.cardNumber,null,null)
-                    monitor.addStatus({
-                        scope : 'bank account controller',
-                        status : 1,
-                        error: null
-                    })
+                    // await this.smsService.sendGeneralMessage(owner.phoneNumber,"verifyCart" , bankAccount.cardNumber,null,null)
+                    // monitor.addStatus({
+                    //     scope : 'bank account controller',
+                    //     status : 1,
+                    //     error: null
+                    // })
                     return response.status(200).json({bank: createBankAccount , msg : "کارت با موفقیت ایجاد شد"});
                 }
-                monitor.addStatus({
-                    scope : 'bank account controller',
-                    status : 0,
-                    error: `کارت نامعتبر `
-                })
+                // monitor.addStatus({
+                //     scope : 'bank account controller',
+                //     status : 0,
+                //     error: `کارت نامعتبر `
+                // })
                 return response.status(400).json({ msg: "کارت نامعتبر است" });
             } catch (error) {
-                monitor.addStatus({
-                    scope : 'bank account controller',
-                    status : 0,
-                    error: `${error}`
-                })
+                // monitor.addStatus({
+                //     scope : 'bank account controller',
+                //     status : 0,
+                //     error: `${error}`
+                // })
                 console.log("Error in creating bank account", error);
                 return response.status(500).json({msg : "خطا در ثبت کارت بانکی"})
             }

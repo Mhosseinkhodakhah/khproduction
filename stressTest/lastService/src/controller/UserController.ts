@@ -60,12 +60,11 @@ export class UserController {
                 where: { id: Equal(userId) }, relations: ['bankAccounts' , 'wallet']})
 
             if (!user) {
-                monitor.addStatus({
-                    scope : 'user controller',
-                    status :  0,
-                    error :'account not found in user controller profile'
-                })
-    
+                // monitor.addStatus({
+                //     scope : 'user controller',
+                //     status :  0,
+                //     error :'account not found in user controller profile'
+                // })
                 return response.status(404).json({ err: "User with this id not found" })
             }
             if (!user.isHaveBank && (user.bankAccounts || user.bankAccounts.length > 0)) {
@@ -75,21 +74,20 @@ export class UserController {
                 }
             }
             // return response.sta
-            monitor.addStatus({
-                scope : 'user controller',
-                status :  1,
-                error : null
-            })
+            // monitor.addStatus({
+            //     scope : 'user controller',
+            //     status :  1,
+            //     error : null
+            // })
 
             return response.json(user).status(200)
 
         } catch (error) {
-            monitor.addStatus({
-                scope : 'user controller',
-                status :  0,
-                error : `${error}`
-            })
-
+            // monitor.addStatus({
+            //     scope : 'user controller',
+            //     status :  0,
+            //     error : `${error}`
+            // })
             console.log("error in find user by id ", error);
             return response.status(500).json({ err: "error in find user by id" })
         }
