@@ -1,0 +1,50 @@
+{
+  meta: {
+    req: {
+      url: '/v1/logger/status',
+      headers: {
+        'user-agent': 'PostmanRuntime/7.43.2',
+        accept: '*/*',
+        'postman-token': 'b183a3c8-0716-4b05-b4d3-477e65aee6f6',
+        host: 'localhost:5010',
+        'accept-encoding': 'gzip, deflate, br',
+        connection: 'keep-alive'
+      },
+      method: 'GET',
+      httpVersion: '1.1',
+      originalUrl: '/v1/logger/status',
+      query: {}
+    },
+    res: { statusCode: 404 },
+    responseTime: 7
+  },
+  level: 'warn',
+  message: 'GET /v1/logger/status 404 7ms',
+  label: 'right meow!',
+  timestamp: '2025-03-29 00:09:03'
+}
+{
+  meta: {
+    req: {
+      url: '/status',
+      headers: {
+        'user-agent': 'PostmanRuntime/7.43.2',
+        accept: '*/*',
+        'postman-token': 'b8d6726b-05f1-4d51-85df-4978a53d23d0',
+        host: 'localhost:5010',
+        'accept-encoding': 'gzip, deflate, br',
+        connection: 'keep-alive'
+      },
+      method: 'GET',
+      httpVersion: '1.1',
+      originalUrl: '/status',
+      query: {}
+    },
+    res: { statusCode: 200 },
+    responseTime: 9
+  },
+  level: 'info',
+  message: 'GET /status 200 9ms',
+  label: 'right meow!',
+  timestamp: '2025-03-29 00:09:07'
+}
