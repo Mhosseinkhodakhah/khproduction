@@ -394,70 +394,74 @@ export class WalletController {
             let {status,authority
             } = request.body
             
-            let info = {status,authority}
-            let res =  await this.zpService.verifyPayment(info)
-            const paymentInfo = await this.paymentInfoRepository.findOneByOrFail({authority : info.authority})
+            // let info = {status,authority}
+            // let res =  await this.zpService.verifyPayment(info)
+            const paymentInfo = await this.paymentInfoRepository.findOneByOrFail({authority : authority})
             const savedTransaction = await this.walletTransactionRepository.findOneBy({id : paymentInfo.invoiceId})
             if (savedTransaction.status != "pending") {
-                monitor.addStatus({
-                    scope : 'wallet controller',
-                    status :  0,
-                    error : 'واریزی قبلا اعتبار سنچی شده است'
-                })    
+                // monitor.addStatus({
+                //     scope : 'wallet controller',
+                //     status :  0,
+                //     error : 'واریزی قبلا اعتبار سنچی شده است'
+                // })    
                 return response.status(400).json({msg : "تراکنش قبلا اعتبارسنجی شده است"})
             }
             const user = await this.userRepository.findOne({where : {id : paymentInfo.userId},relations : {wallet : true,bankAccounts : true}})
             try {
-                if (!res.status) {
+                let res = 200
+                if (!res) {
                     savedTransaction.status = "failed";
                     let updatedtransaction = await this.walletTransactionRepository.save(savedTransaction);
-                    monitor.addStatus({
-                        scope : 'wallet controller',
-                        status :  1,
-                        error : null
-                    })
+                    // monitor.addStatus({
+                    //     scope : 'wallet controller',
+                    //     status :  1,
+                    //     error : null
+                    // })
                     return response.status(200).json({msg : "پرداخت ناموفق", transaction : savedTransaction , bank : user.bankAccounts[0].cardNumber})
-                }else if(res.status && res.code == 100 ){
+                }else if(res){
                 const currentBalance = +user.wallet.balance;
                 const paymentAmount = +paymentInfo.amount;
                 user.wallet.balance = Math.round(currentBalance + paymentAmount);
                 await this.walletRepository.save([user.wallet]);
                 savedTransaction.status = "completed";
-                savedTransaction.invoiceId = res.data.ref_id;
+                savedTransaction.invoiceId = paymentInfo.invoiceId.toString();
                 let updatedtransaction = await this.walletTransactionRepository.save(savedTransaction);
                 // let nameFamily = user.firstName +' '+  user.lastName
                 this.smsService.sendGeneralMessage(user.phoneNumber,"deposit" ,user.firstName ,paymentAmount ,null)
-                monitor.addStatus({
-                    scope : 'wallet controller',
-                    status :  1,
-                    error : null
-                })    
-                return response.status(200).json({msg : "پرداخت موفق" , transaction : updatedtransaction , bank : res.data.card_pan,referenceId : res.data.ref_id})
+                // monitor.addStatus({
+                //     scope : 'wallet controller',
+                //     status :  1,
+                //     error : null
+                // })    
+                return response.status(200).json({msg : "پرداخت موفق" , transaction : updatedtransaction})
             }
             } catch (error) {
                 let savedTransaction = await this.walletTransactionRepository.findOne({where:{ id : paymentInfo.invoiceId}})
                 savedTransaction.status = "failed";
                 await this.walletTransactionRepository.save(savedTransaction);
-                monitor.addStatus({
-                    scope : 'wallet controller',
-                    status :  0,
-                    error : `${error}`
-                })    
+                // monitor.addStatus({
+                //     scope : 'wallet controller',
+                //     status :  0,
+                //     error : `${error}`
+                // })    
                 console.log("error in save transaction status" , error);
                 return response.status(500).json({ msg: "خطای داخلی سیستم" });
             }
            
         } catch (error) {
-            monitor.addStatus({
-                scope : 'wallet controller',
-                status :  0,
-                error :`${error}`
-            })
+            // monitor.addStatus({
+            //     scope : 'wallet controller',
+            //     status :  0,
+            //     error :`${error}`
+            // })
             console.log("error in verify transaction" , error);
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
     }
 
+
+
+    
     async withdrawFromWallet(request: Request, response: Response){
         try {
             let {amount} = request.body
