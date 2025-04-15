@@ -83,9 +83,9 @@ process.on("unhandledRejection", (err : any, promise) => {
     console.log(`Error: ${err.message}`);
 });
 
-const port = process.env.PORT || 5010;
+const port = process.env.PORT || 7010;
 
-app.listen(port, () => {
+app.listen(7010, () => {
     console.log('server is running successfully . . .')
 })
 

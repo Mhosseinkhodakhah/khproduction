@@ -12,7 +12,7 @@ class interConnection {
         switch (serviceName) {
             case 'gateway':
                 try {
-                    let rawRespons = await fetch('http://localhost:8010/monitor/all', { method: 'GET' })
+                    let rawRespons = await fetch('http://localhost:9010/monitor/all', { method: 'GET' })
                     response = await rawRespons.json()
                     console.log('response from gateway status . . .', response)
                 } catch (error) {
@@ -21,7 +21,7 @@ class interConnection {
                 break;
             case 'product':
                 try {
-                    let rawRespons = await fetch('http://localhost:5000/monitor/all', { method: 'GET' })
+                    let rawRespons = await fetch('http://localhost:7000/monitor/all', { method: 'GET' })
                     response = await rawRespons.json()
                     console.log('response from product status . . .', response)
                 } catch (error) {
@@ -30,7 +30,7 @@ class interConnection {
                 break;
             case 'user':
                 try {
-                    let rawRespons = await fetch('http://localhost:3000/monitor/all', { method: 'GET' })
+                    let rawRespons = await fetch('http://localhost:4000/monitor/all', { method: 'GET' })
                     response = await rawRespons.json()
                     console.log('response from user status . . .', response)
                 } catch (error) {
@@ -39,7 +39,7 @@ class interConnection {
                 break;
             case 'adminNode':
                 try {
-                    let rawRespons = await fetch('http://localhost:3002/monitor/all', { method: 'GET' })
+                    let rawRespons = await fetch('http://localhost:4002/monitor/all', { method: 'GET' })
                     response = await rawRespons.json()
                     console.log('response from user status . . .', response)
                 } catch (error) {
@@ -48,7 +48,7 @@ class interConnection {
                 break;
             case 'queryService':
                 try {
-                    let rawRespons = await fetch('http://localhost:3003/monitor/all', { method: 'GET' })
+                    let rawRespons = await fetch('http://localhost:4003/monitor/all', { method: 'GET' })
                     response = await rawRespons.json()
                     console.log('response from user status . . .', response)
                 } catch (error) {
@@ -57,7 +57,7 @@ class interConnection {
                 break;
             case 'admin':
                 try {
-                    let rawRespons = await fetch('http://localhost:5005/monitor/all', { method: 'GET' })
+                    let rawRespons = await fetch('http://localhost:7005/monitor/all', { method: 'GET' })
                     response = await rawRespons.json()
                     console.log('response from admin status . . .', response)
                 } catch (error) {
@@ -66,7 +66,7 @@ class interConnection {
                 break;
             case 'oldUser':
                 try {
-                    let rawRespons = await fetch('http://localhost:5004/monitor/all', { method: 'GET' })
+                    let rawRespons = await fetch('http://localhost:7004/monitor/all', { method: 'GET' })
                     response = await rawRespons.json()
                     console.log('response from olduser status . . .', response)
                 } catch (error) {
@@ -75,7 +75,7 @@ class interConnection {
                 break;
             case 'installment':
                 try {
-                    let rawRespons = await fetch('http://localhost:5008/monitor/all', { method: 'GET' })
+                    let rawRespons = await fetch('http://localhost:7008/monitor/all', { method: 'GET' })
                     response = await rawRespons.json()
                     console.log('response from installment status . . .', response)
                 } catch (error) {
@@ -84,7 +84,7 @@ class interConnection {
                 break;
             case 'product':
                 try {
-                    let rawRespons = await fetch('http://localhost:5000/monitor/all', { method: 'GET' })
+                    let rawRespons = await fetch('http://localhost:7000/monitor/all', { method: 'GET' })
                     response = await rawRespons.json()
                     console.log('response from product status . . .', response)
                 } catch (error) {
@@ -93,7 +93,7 @@ class interConnection {
                 break;
             case 'userSideCar':
                 try {
-                    let rawRespons = await fetch('http://localhost:3001/monitor/all', { method: 'GET' })
+                    let rawRespons = await fetch('http://localhost:4001/monitor/all', { method: 'GET' })
                     response = await rawRespons.json()
                     console.log('response from installment status . . .', response)
                 } catch (error) {
@@ -102,7 +102,7 @@ class interConnection {
                 break;
                 case 'remmitance':
                 try {
-                    let rawRespons = await fetch('http://localhost:5007/monitor/all', { method: 'GET' })
+                    let rawRespons = await fetch('http://localhost:7007/monitor/all', { method: 'GET' })
                     response = await rawRespons.json()
                     console.log('response from remmitance status . . .', response)
                 } catch (error) {
@@ -111,7 +111,7 @@ class interConnection {
                 break;
             case 'product':
                 try {
-                    let rawRespons = await fetch('http://localhost:5000/monitor/all', { method: 'GET' })
+                    let rawRespons = await fetch('http://localhost:7000/monitor/all', { method: 'GET' })
                     response = await rawRespons.json()
                     console.log('response from product status . . .', response)
                 } catch (error) {

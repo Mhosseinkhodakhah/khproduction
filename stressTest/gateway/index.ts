@@ -84,7 +84,7 @@ process.on('unhandledException', (error) => {
 })
 
 
-const port = process.env.PORT || 8010
+const port = process.env.PORT || 9010
 
 app.listen(port, () => {
     console.log('server connecting successfully . . .')
@@ -99,15 +99,16 @@ import { adminMiddleware } from './auth/auth.middleware'
 
 //proxeing
 // app.use('/' , routing.proxy(`http://localhost:3000`))     // proxing to product service
-app.use('/v1/main' , routing.proxy(`http://localhost:3000`))     // proxing to django for report service
-app.use('/v1/query' , routing.proxy(`http://localhost:3003`))     // roxy to query service
-app.use('/v1/secondmain' , routing.proxy(`http://localhost:3002`))     // proxing to django for report service
-app.use('/v1/admin' , routing.proxy(`http://localhost:5005`))     // proxing to admin service
-app.use('/v1/logger' , routing.proxy(`http://localhost:5010`))     // proxing to admin service
-app.use('/v1/old' , routing.proxy(`http://localhost:5004`))     // proxing to oldusers service
-app.use('/v1/installment' , routing.proxy(`http://localhost:5008`))     // proxing to installments service
-app.use('/v1/report'  ,routing.proxy(`http://localhost:8000`))     // proxing to django for report service
-app.use('/v1/remmitance' , routing.proxy(`http://localhost:5007`))     // proxing to django for report service
+app.use('/v1/main' , routing.proxy(`http://localhost:4000`))     // proxing to django for report service
+app.use('/v1/query' , routing.proxy(`http://localhost:4003`))     // roxy to query service
+app.use('/v1/secondmain' , routing.proxy(`http://localhost:4002`))     // proxing to django for report service
+app.use('/v1/admin' , routing.proxy(`http://localhost:7005`))     // proxing to admin service
+app.use('/v1/logger' , routing.proxy(`http://localhost:7010`))     // proxing to admin service
+app.use('/v1/old' , routing.proxy(`http://localhost:7004`))     // proxing to oldusers service
+app.use('/v1/installment' , routing.proxy(`http://localhost:7008`))     // proxing to installments service
+app.use('/v1/report'  ,routing.proxy(`http://localhost:7000`))     // proxing to django for report service
+app.use('/v1/remmitance' , routing.proxy(`http://localhost:7007`))     // proxing to django for report service
+
 
 
 

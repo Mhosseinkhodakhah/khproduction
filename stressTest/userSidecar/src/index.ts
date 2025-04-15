@@ -26,7 +26,6 @@ const { combine, timestamp, label, prettyPrint } = format;
 
 AppDataSource.initialize().then(async () => {
 
-
       let all = await axios.get("https://khaneetala.ir/api/test/09123460671")
     //   console.log(all.data[0])
     //     let goldPrice2 = AppDataSource.getRepository(goldPrice)
@@ -88,7 +87,7 @@ AppDataSource.initialize().then(async () => {
         monitor.error.push(`${error}`)
         console.log('error occured . . .', error)
     })
-   
+    
     config({path : './config.env'})
     
     // register express routes from defined application routes
@@ -106,8 +105,7 @@ AppDataSource.initialize().then(async () => {
 
 
     // start express server
-    app.listen(3001)
-
+    app.listen(4001)
 
     console.log("Express server has started on port 3000. Open http://localhost:3001/users to see results")
 

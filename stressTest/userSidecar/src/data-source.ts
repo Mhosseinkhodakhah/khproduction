@@ -25,7 +25,7 @@ export const AppDataSource = new DataSource({
     port: 5432,
     password: process.env.DB_PASS,
     username: 'postgres',
-    database: 'gold_home', // Database name
+    database: 'gold_home2', // Database name
     synchronize: true,
     logging: false,
     entities: [User,Otp,Invoice,InvoiceType,NotMatch,Wallet,PaymentInfo,BankAccount,WalletTransaction,goldPrice , EstimateTransactions , transportInvoice , convertTradeInvoice , productList],

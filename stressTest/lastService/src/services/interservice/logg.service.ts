@@ -14,7 +14,7 @@ export default class logger{
                 action,
                 status
             }
-            let rawRespons = await axios.put('http://localhost:5010/log/interservice/logg/user' , data)
+            let rawRespons = await axios.put('http://localhost:7010/log/interservice/logg/user' , data)
             console.log('response of the logger' ,rawRespons.data)
             return true
         } catch (error) {
@@ -48,7 +48,7 @@ export default class logger{
                 action,
                 status
             }
-            let rawRespons = await axios.put('http://localhost:5010/log/interservice/logg/admin' , data)
+            let rawRespons = await axios.put('http://localhost:7010/log/interservice/logg/admin' , data)
             console.log('response of the logger' ,rawRespons.data)
             return true
         } catch (error) {
@@ -62,7 +62,7 @@ export default class logger{
 
     async getAllOldUser(){
         try {
-            let resss = await axios.get('http://localhost:5004/interservice/getAll')
+            let resss = await axios.get('http://localhost:7004/interservice/getAll')
             // let rawRespons = await axios()
             console.log(resss.data)
             return resss.data.users;
@@ -77,7 +77,7 @@ export default class logger{
 
     async getChartData(){
         try {
-            let resss = await axios.get('http://localhost:3001/charts')
+            let resss = await axios.get('http://localhost:4001/charts')
             console.log(resss.data)
             return resss.data;
         } catch (error) {
@@ -90,7 +90,7 @@ export default class logger{
 
     async appChartData(userId : number){
         try {
-            let resss = await axios.get(`http://localhost:3001/charts/app/${userId}`)
+            let resss = await axios.get(`http://localhost:4001/charts/app/${userId}`)
             console.log(resss.data)
             return resss.data;
         } catch (error) {
@@ -105,7 +105,7 @@ export default class logger{
 
     async checkUser(phoneNumber : string){
         try {
-            let resss = await axios.get(`http://localhost:5004/interservice/check-user/${phoneNumber}`)
+            let resss = await axios.get(`http://localhost:7004/interservice/check-user/${phoneNumber}`)
             console.log(resss.data)
             return resss.data;
         } catch (error) {
@@ -118,7 +118,7 @@ export default class logger{
 
     async changeUserStatus(phoneNumber : string , body){
         try {
-            let resss = await axios.post(`http://localhost:5004/interservice/approve-user/${phoneNumber}` , body)
+            let resss = await axios.post(`http://localhost:7004/interservice/approve-user/${phoneNumber}` , body)
             console.log(resss.data)
             return resss.data;
         } catch (error) {

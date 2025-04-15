@@ -86,7 +86,7 @@ AppDataSource.initialize().then(async () => {
     await systemService.initializeSystemUser();
     await systemService.initializeTransactionTypes();
     
-    app.listen(3003)
+    app.listen(4003)
 
 
     process.on('unhandledRejection', (error) => {
@@ -104,6 +104,6 @@ AppDataSource.initialize().then(async () => {
         console.log('error occured . . .', error)
     })
 
-    console.log("Express server has started on port 3003. Open http://localhost:3003/users to see results")
+    console.log("Express server has started on port 3003. Open http://localhost:4003/users to see results")
 
 }).catch(error => console.log(error))

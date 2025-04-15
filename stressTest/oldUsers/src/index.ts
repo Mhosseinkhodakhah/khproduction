@@ -67,7 +67,7 @@ AppDataSource.initialize().then(async () => {
     })
     
 
-    app.listen(5004)
+    app.listen(7004)
 
 
     console.log("Express server has started on port 5004. Open http://localhost:5004/users to see results")

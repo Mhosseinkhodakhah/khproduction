@@ -18,7 +18,7 @@ export const AppDataSource = new DataSource({
     port: 5432,
     password: process.env.DB_PASS,
     username: 'postgres',
-    database: "kh_old-user",
+    database: "kh_old-user2",
     synchronize: true,
     logging: false,
     entities: [User , oldInvoice , InvoiceType , Wallet , WalletTransaction,Otp],

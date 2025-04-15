@@ -84,7 +84,7 @@ AppDataSource.initialize().then(async () => {
     await systemService.initializeSystemUser();
     await systemService.initializeTransactionTypes();
     
-    app.listen(3000)
+    app.listen(4000)
 
 
     process.on('unhandledRejection', (error) => {

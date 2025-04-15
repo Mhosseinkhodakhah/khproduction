@@ -8,7 +8,7 @@ export default class interConnection {
         let response : any = null;
         switch (serviceName) {
             case 'user':
-                let rawRespons = await fetch('http://localhost:3000/monitor/all' , {method : 'GET'})
+                let rawRespons = await fetch('http://localhost:4000/monitor/all' , {method : 'GET'})
                 response = await rawRespons.json()
                 console.log('response from user status . . .')
             break;
