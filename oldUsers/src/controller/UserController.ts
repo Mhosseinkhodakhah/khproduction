@@ -83,8 +83,11 @@ export class UserController {
                 phoneNumber
             }
         })
-        user.verificationStatus = 2
-        await this.userRepository.save(user)
+        // if (user){
+        //     user.verificationStatus = 2
+        //     await this.userRepository.save(user)
+    
+        // }
         if(resultFromLastService.exist){
             return next(new response(req, res, 'checkIdentity', 200, null, {userExist:true, userVerified: true ,user:resultFromLastService.user}))
         }else{
