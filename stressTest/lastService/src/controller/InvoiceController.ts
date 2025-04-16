@@ -532,6 +532,9 @@ export class InvoiceController {
                     createdInvoice.authority = `authority ${invoiceId} ${await this.generateInvoice()}`;
                     createdInvoice.invoiceId = await this.generateInvoice();
                     updated = await queryRunner.manager.save(createdInvoice);
+                    let paymentForSave = this.paymentInfoRepository.create({amount : createdInvoice.totalPrice , authority: createdInvoice.authority, userId: info.userId, invoiceId: createdInvoice.id })
+                    console.log('payment info', paymentForSave)
+                    let payinfo = await this.paymentInfoRepository.save(paymentForSave)
                     await queryRunner.commitTransaction()
                     console.log('coomplete buy from zarinpal', updated)
                     // monitor.addStatus({
