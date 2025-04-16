@@ -92,14 +92,58 @@ app.listen(port, () => {
 
 const routing = new router()
 
+
+import {
+    createProxyMiddleware,
+    debugProxyErrorsPlugin, // subscribe to proxy errors to prevent server from crashing
+    loggerPlugin, // log proxy events to a logger (ie. console)
+    errorResponsePlugin, // return 5xx response on proxy error
+    proxyEventsPlugin, // implements the "on:" option
+    fixRequestBody
+  } from 'http-proxy-middleware';
+
+
+
+// required plugins for proxy middleware
+const plugins = [debugProxyErrorsPlugin, loggerPlugin, errorResponsePlugin, proxyEventsPlugin]
+
+
 import ratelimit from './ratelimit'
 import monitor from './service/statusMonitor'
 import { adminMiddleware } from './auth/auth.middleware'
 
-
+let node = 0
 //proxeing
 // app.use('/' , routing.proxy(`http://localhost:3000`))     // proxing to product service
-app.use('/v1/main' , routing.proxy2(`http://localhost:4000`))     // proxing to django for report service
+app.use('/v1/main' , ()=>{
+        if (node == 0){
+            node =1
+            console.log(node)
+            createProxyMiddleware({
+                    target: "http://localhost:4000",
+                    changeOrigin: true,
+                    pathRewrite: {
+                      [`^/`]: "",
+                    },
+                    plugins: plugins
+                  })
+        }else{
+            node = 0
+            console.log(node)
+            createProxyMiddleware({
+                target: "http://localhost:4005",
+                changeOrigin: true,
+                pathRewrite: {
+                  [`^/`]: "",
+                },
+                plugins: plugins
+              })
+        }
+})     // proxing to django for report service
+
+
+
+
 app.use('/v1/query' , routing.proxy(`http://localhost:4003`))     // roxy to query service
 app.use('/v1/secondmain' , routing.proxy(`http://localhost:4002`))     // proxing to django for report service
 app.use('/v1/admin' , routing.proxy(`http://localhost:7005`))     // proxing to admin service
