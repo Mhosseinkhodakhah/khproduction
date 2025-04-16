@@ -14,8 +14,6 @@ import {
 const plugins = [debugProxyErrorsPlugin, loggerPlugin, errorResponsePlugin, proxyEventsPlugin]
 
 
-let node = 0
-
 
 export default class router{
   proxy(address : string){            
@@ -31,7 +29,7 @@ export default class router{
     }
 
 
-  proxy2(address: string) {
+  proxy2(address: string , node : number) {
     console.log(address)               // proxing the routes to specific service with the address
     if (node == 0) {
       console.log('its her haaaa111111111' , node)
