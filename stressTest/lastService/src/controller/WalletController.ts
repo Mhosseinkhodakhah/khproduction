@@ -359,6 +359,7 @@ export class WalletController {
                 //     })
                 // }
                 let transAction = await this.walletTransactionRepository.findOne({where : {id : savedTransaction.id}})
+                console.log('its the transActions' , transAction)
                 transAction.invoiceId = await this.generateInvoice();
                 transAction.authority = `authorityTest-${userId}-${await this.generateInvoice()}`;
                 let addedAuthority = await queryRunner.manager.save(transAction)
