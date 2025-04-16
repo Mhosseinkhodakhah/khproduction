@@ -343,6 +343,7 @@ export class WalletController {
                 info.cardPan = wallet.user.bankAccounts[0].cardNumber
                 info.phoneNumber = wallet.user.phoneNumber
                 const url = await this.zpService.initiatePayment(info);
+                console.log('after get url' , url)
                 if (url === 'tooMuch'){
                     return response.status(500).json({
                         msg : 'مبلغ وارد شده بیش از حد مجاز است.'
@@ -371,7 +372,7 @@ export class WalletController {
                 return response.status(200).json({msg : "انتقال به درگاه پرداخت" , url : url.url})
             } catch (error) {
                await queryRunner.rollbackTransaction()
-               console.log('error in initiate payment>>>' , `${error}` )
+               console.log('error in initiate payment>>>' , error )
                return response.status(200).json({msg : "ایجاد فاکتور با مشکل مواجه شده است."})
             }finally{
                 console.log('transaction released>>>')
