@@ -96,10 +96,15 @@ import ratelimit from './ratelimit'
 import monitor from './service/statusMonitor'
 import { adminMiddleware } from './auth/auth.middleware'
 
-
+let node = 0
 //proxeing
 // app.use('/' , routing.proxy(`http://localhost:3000`))     // proxing to product service
-app.use('/v1/main' , routing.proxy2(`http://localhost:4000`))     // proxing to django for report service
+app.use('/v1/main' , (req , res , next)=>{
+    node = (node) ? 0 : 1
+    next()
+} ,routing.proxy2((node == 0) ? `http://localhost:4000` : `http://localhost:4005`))     // proxing to django for report service
+
+
 app.use('/v1/query' , routing.proxy(`http://localhost:4003`))     // roxy to query service
 app.use('/v1/secondmain' , routing.proxy(`http://localhost:4002`))     // proxing to django for report service
 app.use('/v1/admin' , routing.proxy(`http://localhost:7005`))     // proxing to admin service
@@ -108,8 +113,6 @@ app.use('/v1/old' , routing.proxy(`http://localhost:7004`))     // proxing to ol
 app.use('/v1/installment' , routing.proxy(`http://localhost:7008`))     // proxing to installments service
 app.use('/v1/report'  ,routing.proxy(`http://localhost:7000`))     // proxing to django for report service
 app.use('/v1/remmitance' , routing.proxy(`http://localhost:7007`))     // proxing to django for report service
-
-
 
 
 app.get('/monitor/all' , async(req :any , res:any , next : any) =>{
