@@ -363,7 +363,7 @@ export class WalletController {
                 savedTransaction.invoiceId = await this.generateInvoice();
                 savedTransaction.authority = `authorityTest-${userId}-${await this.generateInvoice()}`;
                 let addedAuthority = await queryRunner.manager.save(savedTransaction)
-                let paymentForSave = this.paymentInfoRepository.create({ amount, authority: addedAuthority.authority, userId: info.userId, invoiceId: wallet.id })
+                let paymentForSave = this.paymentInfoRepository.create({ amount, authority: addedAuthority.authority, userId: info.userId, invoiceId: savedTransaction.id })
                 console.log('payment info', paymentForSave)
                 let payinfo = await this.paymentInfoRepository.save(paymentForSave)
                 console.log('added authority >>>>', addedAuthority)
@@ -402,7 +402,7 @@ export class WalletController {
             // let info = {status,authority}
             // let res =  await this.zpService.verifyPayment(info)
             const paymentInfo = await this.paymentInfoRepository.findOneByOrFail({authority : authority})
-            const savedTransaction = await this.walletTransactionRepository.findOneBy({id : paymentInfo.invoiceId})
+            const savedTransaction = await this.walletTransactionRepository.findOneBy({authority : authority})
             if (savedTransaction.status != "pending") {
                 // monitor.addStatus({
                 //     scope : 'wallet controller',
