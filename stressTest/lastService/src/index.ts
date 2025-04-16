@@ -85,8 +85,7 @@ AppDataSource.initialize().then(async () => {
     await systemService.initializeTransactionTypes();
     
     app.listen(4000)
-
-
+    
     process.on('unhandledRejection', (error) => {
         monitor.error.push(`${error}`)
         console.log('error occured . . .', error)

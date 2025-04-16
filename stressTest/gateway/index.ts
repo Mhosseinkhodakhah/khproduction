@@ -104,6 +104,7 @@ app.use('/v1/main' , (req , res , next)=>{
     next()
 } ,routing.proxy(`http://localhost:4000`))     // proxing to django for report service
 app.use('/v1/query' , routing.proxy(`http://localhost:4003`))     // roxy to query service
+app.use('/v1/transAction' , routing.proxy(`http://localhost:4005`))     // roxy to query service
 app.use('/v1/secondmain' , routing.proxy(`http://localhost:4002`))     // proxing to django for report service
 app.use('/v1/admin' , routing.proxy(`http://localhost:7005`))     // proxing to admin service
 app.use('/v1/logger' , routing.proxy(`http://localhost:7010`))     // proxing to admin service
