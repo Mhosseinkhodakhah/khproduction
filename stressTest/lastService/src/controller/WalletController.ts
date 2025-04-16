@@ -316,22 +316,19 @@ export class WalletController {
                 description: "شارژ کیف پول",
                 amount,
                 userId: userId,
-                invoiceId : null,
-                callback_url : 'https://khanetala.ir/Bankinfo',
-                cardPan : null,
-                phoneNumber:null
+                invoiceId: null,
+                callback_url: 'https://khanetala.ir/Bankinfo',
+                cardPan: null,
+                phoneNumber: null
             }
-            let wallet = await this.walletRepository.findOne({where : {user : {id :userId}},relations:{user : {bankAccounts : true}}})
-            if (!wallet.user.isHaveBank){
+            let wallet = await this.walletRepository.findOne({ where: { user: { id: userId } }, relations: { user: { bankAccounts: true } } })
+            if (!wallet.user.isHaveBank) {
                 // monitor.addStatus({
                 //     scope : 'wallet controller',
                 //     status :  0,
                 //     error : 'تلاش برای واریز قبل از ثبت کارت بانکی'
                 // })    
-                let paymentForSave =  this.paymentInfoRepository.create({amount , authority: response.data.data.authority,userId : info.userId , invoiceId : wallet.id})
-                console.log('payment info' , paymentForSave)
-                let payinfo = await this.paymentInfoRepository.save(paymentForSave)      
-                return response.status(400).json({msg : "ابتدا کارت بانکی خود را ثبت کنید"})
+                return response.status(400).json({ msg: "ابتدا کارت بانکی خود را ثبت کنید" })
             }
             let date = new Date().toLocaleString('fa-IR').split(',')[0]
             let time = new Date().toLocaleString('fa-IR').split(',')[1]
@@ -339,9 +336,9 @@ export class WalletController {
             await queryRunner.connect()
             await queryRunner.startTransaction()
             try {
-                let transactionToCreate = this.walletTransactionRepository.create({description  : info.description, status : "pending", type : "deposit" ,wallet : wallet,amount,time,date})
+                let transactionToCreate = this.walletTransactionRepository.create({ description: info.description, status: "pending", type: "deposit", wallet: wallet, amount, time, date })
                 let savedTransaction = await queryRunner.manager.save(transactionToCreate)
-                
+
                 info.invoiceId = savedTransaction.id
                 info.cardPan = wallet.user.bankAccounts[0].cardNumber
                 info.phoneNumber = wallet.user.phoneNumber
@@ -366,12 +363,16 @@ export class WalletController {
                 savedTransaction.invoiceId = await this.generateInvoice();
                 savedTransaction.authority = `authorityTest-${userId}-${await this.generateInvoice()}`;
                 let addedAuthority = await queryRunner.manager.save(savedTransaction)
-                console.log('added authority >>>>' , addedAuthority)
-                // monitor.addStatus({
-                //     scope : 'wallet controller',
-                //     status :  1,
-                //     error : null
-                // })
+                let paymentForSave = this.paymentInfoRepository.create({ amount, authority: addedAuthority.authority, userId: info.userId, invoiceId: wallet.id })
+                console.log('payment info', paymentForSave)
+                let payinfo = await this.paymentInfoRepository.save(paymentForSave)
+                console.log('added authority >>>>', addedAuthority)
+            // monitor.addStatus({
+            //     scope : 'wallet controller',
+            //     status :  1,
+            //     error : null
+            // })
+                await queryRunner.commitTransaction()
                 return response.status(200).json({msg : "انتقال به درگاه پرداخت" , url : 'test for url' , authority : addedAuthority.authority})
             } catch (error) {
                await queryRunner.rollbackTransaction()
