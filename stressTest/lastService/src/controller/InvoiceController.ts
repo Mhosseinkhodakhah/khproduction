@@ -266,11 +266,11 @@ export class InvoiceController {
                 return response.status(400).json({ msg: 'حداکثر میزان مجاز خرید در هر روز 10 گرم میباشد' });
             }
             if (goldWeight == '0' || goldPrice == '0' || totalPrice == '0' ){
-                monitor.addStatus({
-                    scope : 'invoice controller',
-                    status :  0,
-                    error : 'ورود مقادیر نادرست'
-                })
+                // monitor.addStatus({
+                //     scope : 'invoice controller',
+                //     status :  0,
+                //     error : 'ورود مقادیر نادرست'
+                // })
                 return response.status(400).json({ msg: 'لطفا مقادیر درست را وارد کنید' });
             }
             const userId = request.user_id;
@@ -470,7 +470,7 @@ export class InvoiceController {
                     savedTransaction = await queryRunner.manager.save(createdInvoice)
                     await queryRunner.commitTransaction()
                     console.log('coomplete buy from wallet', savedTransaction)
-                    await this.estimateWeight(invoiceGoldWeight, 1)
+                    // await this.estimateWeight(invoiceGoldWeight, 1)
                     // monitor.addStatus({
                     //     scope : 'invoice controller',
                     //     status :  1,
@@ -645,7 +645,7 @@ export class InvoiceController {
                 // let nameFamily = user.firstName +' '+  user.lastName
                 // this.smsService.sendGeneralMessage(user.phoneNumber, "sell", user.firstName, invoiceGoldWeight, invoiceTotalPrice)
                 let rr = await this.estimateWeight(invoiceGoldWeight , 0)
-                console.log('rr' , rr)
+                // console.log('rr' , rr)
                 // let estimate2 = await this.estimate.findOne({where : {
                 //     date : new Date().toLocaleString("fa-IR").split(",")[0]
                 // }})
@@ -773,7 +773,7 @@ export class InvoiceController {
                     // let nameFamily = savedTransaction.buyer.firstName +' '+ savedTransaction.buyer.lastName
                     // await this.smsService.sendGeneralMessage(savedTransaction.buyer.phoneNumber, "buy", savedTransaction.buyer.firstName, transactionGoldWeight, transactionTotalPrice)
                     console.log('after completed the transaction buy zarinpal>>>', updatedtransaction)
-                    await this.estimateWeight(transactionGoldWeight , 1)
+                    // await this.estimateWeight(transactionGoldWeight , 1)
                     // let estimate2 = await this.estimate.findOne({where : {
                     //     date : new Date().toLocaleString("fa-IR").split(",")[0]
                     // }})
