@@ -371,8 +371,8 @@ export class WalletController {
                 return response.status(200).json({msg : "انتقال به درگاه پرداخت" , url : 'test for url' , authority : addedAuthority.authority})
             } catch (error) {
                await queryRunner.rollbackTransaction()
-               console.log('error in initiate payment>>>' , `${error}` )
-               return response.status(200).json({msg : "ایجاد فاکتور با مشکل مواجه شده است."})
+               console.log('error in initiate payment>>>' , error )
+               return response.status(400).json({msg : "ایجاد فاکتور با مشکل مواجه شده است."})
             }finally{
                 console.log('transaction released>>>')
                 await queryRunner.release()
@@ -461,7 +461,7 @@ export class WalletController {
 
 
 
-    
+
     async withdrawFromWallet(request: Request, response: Response){
         try {
             let {amount} = request.body

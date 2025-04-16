@@ -166,7 +166,6 @@ export const Routes = [
     controller: WalletController,
     action: "getWallet",
     middlwares: [authenticate]
-
 },
 {
     method: "post",
@@ -174,7 +173,6 @@ export const Routes = [
     controller: WalletController,
     action: "updateWallet",
     middlwares: [authenticate]
-    
 },
 {
     method: "post",
