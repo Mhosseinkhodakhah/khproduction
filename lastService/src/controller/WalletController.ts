@@ -337,6 +337,7 @@ export class WalletController {
             await queryRunner.startTransaction()
             try {
                 let transactionToCreate = this.walletTransactionRepository.create({description  : info.description, status : "pending", type : "deposit" ,wallet : wallet,amount,time,date})
+                let savedTransaction = await queryRunner.manager.save(transactionToCreate)
                 console.log('its here for savedTransActions' , savedTransaction)
                 info.invoiceId = savedTransaction.id
                 info.cardPan = wallet.user.bankAccounts[0].cardNumber
@@ -363,7 +364,6 @@ export class WalletController {
                 transactionToCreate.authority = url.authority;
                 transactionToCreate.invoiceId = await this.generateInvoice();
                 let addedAuthority = await queryRunner.manager.save(transactionToCreate)
-                // let savedTransaction = await queryRunner.manager.save(transactionToCreate)
                 console.log('added authority >>>>' , addedAuthority)
                 monitor.addStatus({
                     scope : 'wallet controller',
