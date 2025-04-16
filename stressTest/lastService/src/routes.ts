@@ -222,7 +222,7 @@ export const Routes = [
     route: "/clean",
     controller: adminController,
     action: "cleanAll",
-    middlwares: [adminMiddleware]
+    middlwares: []
 },
 {
     method: "post",
