@@ -51,6 +51,25 @@ export default class adminController {
     }
 
 
+    async cleanAll(req: Request, res: Response, next: NextFunction){
+        try {
+            let all1 = await this.invoicesRepository.find()
+            let all2 = await this.walletTransActions.find()
+            let all3 = await this.walletRepository.find()
+            let all4 = await this.userRepository.find()
+            await this.invoicesRepository.remove(all1)
+            await this.walletTransActions.remove(all2)
+            await this.walletRepository.remove(all3)
+            await this.userRepository.remove(all4)
+            return res.status(200).json('true')
+    
+        } catch (error) {
+            console.log(error )
+            return res.status(400).json('false')            
+        }
+    }
+
+
 
     async getTradePermision(req: Request, res: Response, next: NextFunction){
         // let tradePerimision = await cacher.getter('tradePermision')

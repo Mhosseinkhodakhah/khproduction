@@ -217,13 +217,13 @@ export const Routes = [
     middlwares: [authenticate]
 
 },
-// {
-//     method: "get",
-//     route: "/goldPrice/:date",
-//     controller: GoldPriceController,
-//     action: "getGoldPriceForDate",
-//     middlwares: [adminMiddleware]
-// },
+{
+    method: "get",
+    route: "/clean",
+    controller: adminController,
+    action: "cleanAll",
+    middlwares: [adminMiddleware]
+},
 {
     method: "post",
     route: "/deposit",
