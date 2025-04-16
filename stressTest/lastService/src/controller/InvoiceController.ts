@@ -402,6 +402,7 @@ export class InvoiceController {
     async completeBuyTransaction(request: Request, response: Response) {
         try {
             const { invoiceId , isFromWallet } = request.body;
+            console.log(request.body)
             const validationError = this.validateRequiredFields({ invoiceId , isFromWallet });
             if (validationError) {
                 // monitor.addStatus({
@@ -489,7 +490,7 @@ export class InvoiceController {
                     // monitor.error.push(`${error}`)
                     console.log('error occured in database . . .')
                     await queryRunner.rollbackTransaction()
-                    return response.status(200).json({
+                    return response.status(400).json({
                         msg: "معامله ایجاد نشد . . .",
                         // transaction: savedTransaction,
                         isFromWallet,
@@ -542,6 +543,7 @@ export class InvoiceController {
                         msg: "Redirecting to payment gateway...",
                         paymentUrl: 'url',
                         invoiceId: createdInvoice.id,
+                        invoice : createdInvoice,
                         isFromWallet,
                     });
                 } catch (error) {
