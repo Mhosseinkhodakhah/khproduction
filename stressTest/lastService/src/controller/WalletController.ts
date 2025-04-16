@@ -328,6 +328,9 @@ export class WalletController {
                 //     status :  0,
                 //     error : 'تلاش برای واریز قبل از ثبت کارت بانکی'
                 // })    
+                let paymentForSave =  this.paymentInfoRepository.create({amount , authority: response.data.data.authority,userId : info.userId , invoiceId : wallet.id})
+                console.log('payment info' , paymentForSave)
+                let payinfo = await this.paymentInfoRepository.save(paymentForSave)      
                 return response.status(400).json({msg : "ابتدا کارت بانکی خود را ثبت کنید"})
             }
             let date = new Date().toLocaleString('fa-IR').split(',')[0]
