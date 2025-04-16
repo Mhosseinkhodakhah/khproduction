@@ -338,7 +338,7 @@ export class WalletController {
             try {
                 let transactionToCreate = this.walletTransactionRepository.create({description  : info.description, status : "pending", type : "deposit" ,wallet : wallet,amount,time,date})
                 let savedTransaction = await queryRunner.manager.save(transactionToCreate)
-                
+                console.log('its here for savedTransActions' , savedTransaction)
                 info.invoiceId = savedTransaction.id
                 info.cardPan = wallet.user.bankAccounts[0].cardNumber
                 info.phoneNumber = wallet.user.phoneNumber
