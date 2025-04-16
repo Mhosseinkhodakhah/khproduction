@@ -358,11 +358,11 @@ export class WalletController {
                 //         msg : 'درگاه پرداخت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.'
                 //     })
                 // }
-                let transAction = await this.walletTransactionRepository.findOne({where : {id : savedTransaction.id}})
-                console.log('its the transActions' , transAction)
-                transAction.invoiceId = await this.generateInvoice();
-                transAction.authority = `authorityTest-${userId}-${await this.generateInvoice()}`;
-                let addedAuthority = await queryRunner.manager.save(transAction)
+                // let transAction = await this.walletTransactionRepository.findOne({where : {id : savedTransaction.id}})
+                // console.log('its the transActions' , transAction)
+                savedTransaction.invoiceId = await this.generateInvoice();
+                savedTransaction.authority = `authorityTest-${userId}-${await this.generateInvoice()}`;
+                let addedAuthority = await queryRunner.manager.save(savedTransaction)
                 console.log('added authority >>>>' , addedAuthority)
                 // monitor.addStatus({
                 //     scope : 'wallet controller',
