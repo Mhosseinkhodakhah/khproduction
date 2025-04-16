@@ -34,6 +34,7 @@ export default class router{
   proxy2(address: string) {
     console.log(address)               // proxing the routes to specific service with the address
     if (node == 0) {
+      console.log('its her haaaa111111111' , node)
       node =1
       return createProxyMiddleware({
         target: "http://localhost:4000",
@@ -44,6 +45,7 @@ export default class router{
         plugins: plugins
       })
     } else {
+      console.log('its her haaaa' , node)
       node =0
       return createProxyMiddleware({
         target: "http://localhost:4005",
