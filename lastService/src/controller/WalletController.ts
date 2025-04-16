@@ -370,6 +370,7 @@ export class WalletController {
                     status :  1,
                     error : null
                 })
+                await queryRunner.commitTransaction()
                 return response.status(200).json({msg : "انتقال به درگاه پرداخت" , url : url.url})
             } catch (error) {
                await queryRunner.rollbackTransaction()
