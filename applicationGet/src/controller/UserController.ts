@@ -352,7 +352,7 @@ export class UserController {
                             nationalCode : i.nationalCode,
                             firstName : i.firstName,
                             lastName : i.lastName,
-                            oldWgoldWeight : i.wallet.goldWeight,
+                            oldWgoldWeight : oldUserData.data.wallet.goldWeight,
                             mainWallet : i.wallet.goldWeight
                         }
                         goodData.push(fData)
