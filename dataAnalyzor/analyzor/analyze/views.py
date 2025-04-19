@@ -12,15 +12,16 @@ from .models import reports , reportList
 import simplejson as json
 from django.core import serializers
 from django.core.serializers import serialize
+from withdrawal import getWithdrawal
 
 
+withdrawal = getWithdrawal()
 datamaker = datamaker2()
 userMaker = userFilter()
 walletFiltering = walletTransActionsFilter()
 hourly = hourlyFilter()
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
-
 
 
 @csrf_exempt 
@@ -58,6 +59,13 @@ def analyze(request):
         if (body['report'] == 4):
             res = hourly.getData()
             print('hourly report')
+        
+        if (body['report'] == 5):
+            res = withdrawal.getData()
+            print('activity>>>' , res[0])
+            print(f'user {decoded['firstName']} {decoded['lastName']} create new report in معاملات  کیف پول')
+
+            
             
         admin = reports.objects.filter(firstName = decoded['firstName']).exists()
         print(admin)

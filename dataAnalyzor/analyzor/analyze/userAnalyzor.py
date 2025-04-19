@@ -254,9 +254,15 @@ class userFilter():
         else:
             fifthFilter = middleForth      
         
-        # print(fifthFilter)
+        print(fifthFilter)
         
-        ###six filter
+       
+        # if (startTime != 'all'):
+        #     timeStart = {'hour' : int(startTime.split(':')[0]) , 'minute' : int(startTime.split(':')[1]) , 'second' : int(startTime.split(':')[2])}
+        #     for i in fifthFilter:
+        #         timeFull = {'hour' : int(i['createTime'].split(':')[0]) , 'minute' : int(i['createTime'].split(':')[1]) , 'second' : int(i['createTime'].split(':')[2])}
+        #         if ((timeFull['hour'] >= timeStart['hour']) and (timeFull['minute'] >= timeStart['minute'])and(timeFull['second'] >= timeStart['second'])):
+        ##six filter
         # if (startTime != 'all' and endTime != 'all'):
         #     timeStart = {'hour' : int(startTime.split(':')[0]) , 'minute' : int(startTime.split(':')[1]) , 'second' : int(startTime.split(':')[2])}
         #     # print( 'start', start)
@@ -267,7 +273,6 @@ class userFilter():
         #             sixFilter.append(i)
         # else:
         sixFilter = fifthFilter
-        
         
         path = self.__excellGeneratedTransActions(sixFilter)
         return [path[1] , path[0]]
