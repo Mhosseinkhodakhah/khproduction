@@ -342,9 +342,10 @@ export class UserController {
                 console.log('oldWallet>>>>' , oldUserData.data.wallet.goldWeight)
                 console.log('mainWallet>>>>' , i.wallet.goldWeight)
                 let fData = {
-                    firstName : oldUserData.data.firstName,
-                    lastName : oldUserData.data.lastName,
-                    oldWgoldWeight : oldUserData.data.wallet.goldWeight,
+                    nationalCode : i.nationalCode,
+                    firstName : i.firstName,
+                    lastName : i.lastName,
+                    oldWgoldWeight : i.wallet.goldWeight,
                     mainWallet : i.wallet.goldWeight
                 }
                 goodData.push(fData)
