@@ -693,6 +693,12 @@ export const Routes = [
     controller: interServiceController,
     action: "getAllBuyInvoices",
     middlwares: []
+},{
+    method: "get",
+    route: "/checkmyfuckedups",
+    controller: UserController,
+    action: "userAndOld",
+    middlwares: []
 },
 
 ]

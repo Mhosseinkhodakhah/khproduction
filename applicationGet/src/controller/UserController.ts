@@ -14,6 +14,7 @@ import { Wallet } from "../entity/Wallet"
 import { convertTradeInvoice } from "../entity/inpersonConvertTrade.entity"
 import { productList } from "../entity/producList.entity"
 import blackList from "../util/blackList"
+import { oldUserService } from "../services/oldUser.service"
 
 
 export class UserController {
@@ -21,6 +22,7 @@ export class UserController {
     private invoiceRepository = AppDataSource.getRepository(Invoice)
     private walletRepository=AppDataSource.getRepository(Wallet)
     private productLists = AppDataSource.getRepository(productList)
+    private oldUSerService = new oldUserService()
     
     private goldPrice = AppDataSource.getRepository(goldPrice)
     private convertInvoice = AppDataSource.getRepository(convertTradeInvoice)
@@ -322,6 +324,29 @@ export class UserController {
         })
         return response.status(200).json(allCharts)
     }
+
+
+
+    async userAndOld(request: Request, response: Response, next: NextFunction){
+        let users = await this.userRepository.find()
+        let allFuckedUps = []
+        for (let i of users){
+            const oldUserData = await this.oldUSerService.checkExistAndGetGoldWallet(i.phoneNumber, i.nationalCode)
+            if (oldUserData == 500) {
+                return response.status(500).json({ msg: 'کاربر گرامی سیستم احراز هویت در دسترس نمی باشد.' })
+            }
+            if (oldUserData.success){
+                allFuckedUps.push(oldUserData.data)
+            }
+            console.log("oldUserData", oldUserData);
+        }
+
+        return response.status(200).json({
+            fuckedUps : allFuckedUps
+        })
+        
+    }
+
 
 
     async logOut(request: Request, response: Response, next: NextFunction) {
