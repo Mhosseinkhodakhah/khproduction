@@ -15,7 +15,7 @@ from django.core.serializers import serialize
 from withdrawal import getWithdrawal
 
 
-withdrawal = getWithdrawal()
+withdrawal1 = getWithdrawal()
 datamaker = datamaker2()
 userMaker = userFilter()
 walletFiltering = walletTransActionsFilter()
@@ -61,7 +61,7 @@ def analyze(request):
             print('hourly report')
         
         if (body['report'] == 5):
-            res = withdrawal.getData()
+            res = withdrawal1.getData()
             print('activity>>>' , res[0])
             print(f'user {decoded['firstName']} {decoded['lastName']} create new report in معاملات  کیف پول')
 
