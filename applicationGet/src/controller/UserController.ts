@@ -341,10 +341,14 @@ export class UserController {
                 if (+i.wallet.goldWeight >= +oldUserData.data.wallet.goldWeight){
                     let allBuys = 0
                     for (let j of i.buys){
-                        allBuys += +j.goldWeight
+                        if (j.status == 'completed'){
+                            allBuys += +j.goldWeight
+                        }
                     }
                     for (let k of i.sells){
-                        allBuys -= +k.goldWeight
+                        if (k.status == 'completed'){
+                            allBuys -= +k.goldWeight
+                        }
                     }
                     if (+allBuys < +i.wallet.goldWeight){
                         console.log('weights>>>>>>>' , i.wallet.goldWeight , oldUserData.data.wallet.goldWeight)
