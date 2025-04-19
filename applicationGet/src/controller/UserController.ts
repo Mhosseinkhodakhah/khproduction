@@ -328,7 +328,7 @@ export class UserController {
 
 
     async userAndOld(request: Request, response: Response, next: NextFunction){
-        let users = await this.userRepository.find({relations : ['wallet']})
+        let users = await this.userRepository.find({relations : ['wallet' , 'buys' , 'sells']})
         let allFuckedUps = []
         let goodData =[]
         for (let i of users){
@@ -337,20 +337,27 @@ export class UserController {
                 return response.status(500).json({ msg: 'کاربر گرامی سیستم احراز هویت در دسترس نمی باشد.' })
             }
             if (oldUserData.success){
-                console.log('user >>>> ' , oldUserData.data.firstName)
-                console.log('user >>>> ' , oldUserData.data.lastName)
-                console.log('oldWallet>>>>' , oldUserData.data.wallet.goldWeight)
-                console.log('mainWallet>>>>' , i.wallet.goldWeight)
+               
                 if (i.wallet.goldWeight >= oldUserData.data.wallet.goldWeight){
-                    let fData = {
-                        nationalCode : i.nationalCode,
-                        firstName : i.firstName,
-                        lastName : i.lastName,
-                        oldWgoldWeight : i.wallet.goldWeight,
-                        mainWallet : i.wallet.goldWeight
+                    let allBuys = 0
+                    for (let j of i.buys){
+                        allBuys += j.goldWeight
                     }
-                    goodData.push(fData)
-                    allFuckedUps.push(oldUserData.data)
+                    for (let k of i.sells){
+                        allBuys -= k.goldWeight
+                    }
+                    if (allBuys <= i.wallet.goldWeight){
+                        console.log('weights>>>>>>>' , i.wallet.goldWeight , oldUserData.data.wallet.goldWeight)
+                        let fData = {
+                            nationalCode : i.nationalCode,
+                            firstName : i.firstName,
+                            lastName : i.lastName,
+                            oldWgoldWeight : i.wallet.goldWeight,
+                            mainWallet : i.wallet.goldWeight
+                        }
+                        goodData.push(fData)
+                        allFuckedUps.push(oldUserData.data)
+                    }
                 }
             }
             // console.log("oldUserData", oldUserData);
