@@ -328,21 +328,33 @@ export class UserController {
 
 
     async userAndOld(request: Request, response: Response, next: NextFunction){
-        let users = await this.userRepository.find()
+        let users = await this.userRepository.find({relations : ['wallet']})
         let allFuckedUps = []
+        let goodData =[]
         for (let i of users){
             const oldUserData = await this.oldUSerService.checkExistAndGetGoldWallet(i.phoneNumber, i.nationalCode)
             if (oldUserData == 500) {
                 return response.status(500).json({ msg: 'کاربر گرامی سیستم احراز هویت در دسترس نمی باشد.' })
             }
             if (oldUserData.success){
+                console.log('user >>>> ' , oldUserData.data.firstName)
+                console.log('user >>>> ' , oldUserData.data.lastName)
+                console.log('oldWallet>>>>' , oldUserData.data.wallet.goldWeight)
+                console.log('mainWallet>>>>' , i.wallet.goldWeight)
+                let fData = {
+                    firstName : oldUserData.data.firstName,
+                    lastName : oldUserData.data.lastName,
+                    oldWgoldWeight : oldUserData.data.wallet.goldWeight,
+                    mainWallet : i.wallet.goldWeight
+                }
+                goodData.push(fData)
                 allFuckedUps.push(oldUserData.data)
             }
-            console.log("oldUserData", oldUserData);
+            // console.log("oldUserData", oldUserData);
         }
 
         return response.status(200).json({
-            fuckedUps : allFuckedUps
+            fuckedUps : goodData
         })
         
     }
