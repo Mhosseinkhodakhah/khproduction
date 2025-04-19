@@ -12,7 +12,7 @@ from .models import reports , reportList
 import simplejson as json
 from django.core import serializers
 from django.core.serializers import serialize
-from withdrawal import getWithdrawal
+from .withdrawal import getWithdrawal
 
 
 withdrawal1 = getWithdrawal()
