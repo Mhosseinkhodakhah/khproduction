@@ -346,7 +346,7 @@ export class UserController {
                     for (let k of i.sells){
                         allBuys -= k.goldWeight
                     }
-                    if (allBuys <= i.wallet.goldWeight){
+                    // if (allBuys < i.wallet.goldWeight){
                         console.log('weights>>>>>>>' , i.wallet.goldWeight , oldUserData.data.wallet.goldWeight)
                         let fData = {
                             nationalCode : i.nationalCode,
@@ -357,7 +357,7 @@ export class UserController {
                         }
                         goodData.push(fData)
                         allFuckedUps.push(oldUserData.data)
-                    }
+                    // }
                 }
             }
             // console.log("oldUserData", oldUserData);
