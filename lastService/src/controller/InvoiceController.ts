@@ -239,6 +239,10 @@ export class InvoiceController {
             totalPrice  = totalPrice.replaceAll(',' , '')
             console.log('new totalPrice , ' , totalPrice)
         }
+        let seperator = goldWeight.split('')
+        if (seperator.length == 4){
+            goldWeight = +`${seperator[0]}${seperator[1]}${seperator[2]}${seperator[3]}0`
+        }
         console.log('tot' , totalPrice)
         try {
             let realGoldPrice = await this.goldPriceRepo.find({order : {createdAt : 'DESC'}})
@@ -311,7 +315,9 @@ export class InvoiceController {
             console.log('start the transaction',goldWeight , totalPrice)
             goldWeight = formatGoldWeight(goldWeight)
             if (type == "buy") {
+                console.log('11111')
                 totalPrice = +realGoldPrice2*(+goldWeight)
+                console.log('after validation' , totalPrice)
                 if (realGoldPrice2 - (+goldPrice) >= 10000){
                     console.log('condition1' , realGoldPrice2 - (+goldPrice))
                     goldPrice = realGoldPrice2
