@@ -14,7 +14,9 @@
  */
 export function formatGoldWeight(weight) {
     let seperator = weight.split('')
-    console.log(  'after validation' , +(`${seperator[0]}${seperator[1]}${seperator[2]}${seperator[3]}${seperator[4]}`))
-    return parseFloat((Math.round(weight * 100) / 100).toFixed(3));
+    let newGoldWeight = `${seperator[0]}${seperator[1]}${seperator[2]}${seperator[3]}${seperator[4]}`
+    console.log(  'after validation' , +newGoldWeight )
+    return +newGoldWeight
+    // return parseFloat((Math.round(weight * 100) / 100).toFixed(3));
 }
 
