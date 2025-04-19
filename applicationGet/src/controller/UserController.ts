@@ -353,7 +353,7 @@ export class UserController {
                     // if (+allBuys < +i.wallet.goldWeight){
                         console.log('weights>>>>>>>' , i.wallet.goldWeight , oldUserData.data.wallet.goldWeight)
                         let fData = {
-                            allBuys,
+                            all : +allBuys.toFixed(3),
                             nationalCode : i.nationalCode,
                             firstName : i.firstName,
                             lastName : i.lastName,
