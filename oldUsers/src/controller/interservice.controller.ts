@@ -90,62 +90,75 @@ export default class interServiceController{
         async checkOldWithPhoneOrNatnialCode(req: Request, res: Response, next: NextFunction){
             console.log("phoneNumber",req.params.phoneNumber);
             console.log("nationalCode",req.params.nationalCode);
-            const  {
-                firstName,
-                lastName,
-                gender,
-                liveStatus,
-                identificationNo,
-                fatherName,
-                identificationSerial,
-                identificationSeri,
-                officeName,
-              } = req.body
 
-              let queryRunner = AppDataSource.createQueryRunner()
-              await queryRunner.connect()
-              await queryRunner.startTransaction()
-
-              try {
-                  console.log(req.body);
-                  
-                  let user = await this.userRepository.findOne({where : [  
-                      { phoneNumber: req.params.phoneNumber },
-                      { nationalCode: req.params.nationalCode }
-                    ] , relations : ['wallet']})
-                    console.log('user is >>>>' , user)
-                if(!user){
-                    console.log("false");
-                    return next(new response(req , res  , 'old user' , 200 , null , {isExist:false,user:null}))   
-                }
-                user.verificationStatus=1
-                user.firstName=firstName,
-                user.lastName=lastName,
-                user.gender=gender,
-                user.liveStatus=liveStatus,
-                user.fullName=`${firstName} ${lastName}`
-                user.identitySeri=identificationSeri,
-                user.nationalCode= req.params.nationalCode,
-                user.identityNumber=identificationNo,
-                user.identitySerial=identificationSerial,
-                user.fatherName=fatherName,
-                user.officeName=officeName
-                
-                let updatedUser = await queryRunner.manager.save(user)
-                
-                await queryRunner.commitTransaction()
-                const newUSer = await this.userRepository.findOne({where:{phoneNumber:req.params.phoneNumber} , relations : ['wallet']})
-                console.log("true");
-                console.log("userrr after updating >>>>" , newUSer);
-                return next(new response(req, res, 'old user', 200, null, { isExist: true, updatedUser }))                            
-            } catch (error) {
-                console.log('error>>>>' , error)
-                await queryRunner.rollbackTransaction()                
-                return next(new response(req, res, 'old user', 500, `${error}` , null))
-            }finally{
-                console.log('release transAction')
-                await queryRunner.release()
+            let userExistance = await this.userRepository.exists({where : [{phoneNumber : req.params.phoneNumber} , {nationalCode : req.params.nationalCode}] , relations:['wallet']})
+            if (userExistance){
+                let user = await this.userRepository.findOne({where : [{phoneNumber : req.params.phoneNumber} , {nationalCode : req.params.nationalCode}] , relations:['wallet']})
+                return res.status(200).json({
+                    success : true,
+                    data : user
+                })
+            }else{
+                return res.status(200).json({
+                    success : false,
+                })
             }
+            // const  {
+            //     firstName,
+            //     lastName,
+            //     gender,
+            //     liveStatus,
+            //     identificationNo,
+            //     fatherName,
+            //     identificationSerial,
+            //     identificationSeri,
+            //     officeName,
+            //   } = req.body
+
+            //   let queryRunner = AppDataSource.createQueryRunner()
+            //   await queryRunner.connect()
+            //   await queryRunner.startTransaction()
+
+            //   try {
+            //       console.log(req.body);
+                  
+            //       let user = await this.userRepository.findOne({where : [  
+            //           { phoneNumber: req.params.phoneNumber },
+            //           { nationalCode: req.params.nationalCode }
+            //         ] , relations : ['wallet']})
+            //         console.log('user is >>>>' , user)
+            //     if(!user){
+            //         console.log("false");
+            //         return next(new response(req , res  , 'old user' , 200 , null , {isExist:false,user:null}))   
+            //     }
+            //     // user.verificationStatus=1
+            //     // user.firstName=firstName,
+            //     // user.lastName=lastName,
+            //     // user.gender=gender,
+            //     // user.liveStatus=liveStatus,
+            //     // user.fullName=`${firstName} ${lastName}`
+            //     // user.identitySeri=identificationSeri,
+            //     // user.nationalCode= req.params.nationalCode,
+            //     // user.identityNumber=identificationNo,
+            //     // user.identitySerial=identificationSerial,
+            //     // user.fatherName=fatherName,
+            //     // user.officeName=officeName
+                
+            //     let updatedUser = await queryRunner.manager.save(user)
+                
+            //     await queryRunner.commitTransaction()
+            //     const newUSer = await this.userRepository.findOne({where:{phoneNumber:req.params.phoneNumber} , relations : ['wallet']})
+            //     console.log("true");
+            //     console.log("userrr after updating >>>>" , newUSer);
+            //     return next(new response(req, res, 'old user', 200, null, { isExist: true, updatedUser }))                            
+            // } catch (error) {
+            //     console.log('error>>>>' , error)
+            //     await queryRunner.rollbackTransaction()                
+            //     return next(new response(req, res, 'old user', 500, `${error}` , null))
+            // }finally{
+            //     console.log('release transAction')
+            //     await queryRunner.release()
+            // }
             
         }
     
