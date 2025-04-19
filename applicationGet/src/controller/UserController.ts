@@ -341,23 +341,23 @@ export class UserController {
                 console.log('user >>>> ' , oldUserData.data.lastName)
                 console.log('oldWallet>>>>' , oldUserData.data.wallet.goldWeight)
                 console.log('mainWallet>>>>' , i.wallet.goldWeight)
-                let fData = {
-                    nationalCode : i.nationalCode,
-                    firstName : i.firstName,
-                    lastName : i.lastName,
-                    oldWgoldWeight : i.wallet.goldWeight,
-                    mainWallet : i.wallet.goldWeight
+                if (i.wallet.goldWeight >= oldUserData.data.wallet.goldWeight){
+                    let fData = {
+                        nationalCode : i.nationalCode,
+                        firstName : i.firstName,
+                        lastName : i.lastName,
+                        oldWgoldWeight : i.wallet.goldWeight,
+                        mainWallet : i.wallet.goldWeight
+                    }
+                    goodData.push(fData)
+                    allFuckedUps.push(oldUserData.data)
                 }
-                goodData.push(fData)
-                allFuckedUps.push(oldUserData.data)
             }
             // console.log("oldUserData", oldUserData);
         }
-
         return response.status(200).json({
             fuckedUps : goodData
         })
-        
     }
 
 
