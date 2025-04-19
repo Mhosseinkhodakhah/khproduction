@@ -307,7 +307,7 @@ export class ShahkarController {
         try {
             const username = 'khanetala_pigsb';
             const password = 'Ttb@78f7hLR';
-
+            console.log('its here>>>>>')
             const credentials = `${username}:${password}`;
             const base64Credentials = Buffer.from(credentials).toString('base64');
             const authHeader = `Basic ${base64Credentials}`;
