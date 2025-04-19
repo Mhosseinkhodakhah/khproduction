@@ -310,7 +310,7 @@ export class InvoiceController {
             // goldWeight = formatGoldWeight(goldWeight)
             console.log('start the transaction',goldWeight , totalPrice)
             goldWeight = formatGoldWeight(goldWeight)
-            if (type === "buy") {
+            if (type == "buy") {
                 totalPrice = +realGoldPrice2*(+goldWeight)
                 if (realGoldPrice2 - (+goldPrice) >= 10000){
                     console.log('condition1' , realGoldPrice2 - (+goldPrice))
@@ -334,7 +334,7 @@ export class InvoiceController {
                     return response.status(400).json({ msg: limitError });
                 }
             }
-            if (type === 'sell'){
+            if (type == 'sell'){
                 totalPrice = +(realGoldPrice2 - (0.01 * realGoldPrice2)) * (+goldWeight)
             }
             // totalPrice = goldPrice * +goldWeight
