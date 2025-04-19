@@ -337,8 +337,8 @@ export class UserController {
                 return response.status(500).json({ msg: 'کاربر گرامی سیستم احراز هویت در دسترس نمی باشد.' })
             }
             if (oldUserData.success){
-               
-                if (+i.wallet.goldWeight >= +oldUserData.data.wallet.goldWeight){
+                
+                // if (+i.wallet.goldWeight >= +oldUserData.data.wallet.goldWeight){
                     let allBuys = 0
                     for (let j of i.buys){
                         allBuys += j.goldWeight
@@ -358,7 +358,7 @@ export class UserController {
                         goodData.push(fData)
                         allFuckedUps.push(oldUserData.data)
                     // }
-                }
+                // }
             }
             // console.log("oldUserData", oldUserData);
         }
