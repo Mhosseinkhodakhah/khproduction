@@ -13,7 +13,7 @@
  * @returns 
  */
 export function formatGoldWeight(weight) {
-    let seperator = weight.split('')
+    let seperator = weight.toString().split('')
     let newGoldWeight = `${seperator[0]}${seperator[1]}${seperator[2]}${seperator[3]}${seperator[4]}`
     console.log(  'after validation' , +newGoldWeight )
     return +newGoldWeight
