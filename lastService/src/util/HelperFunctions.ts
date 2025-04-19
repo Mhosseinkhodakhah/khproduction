@@ -13,7 +13,8 @@
  * @returns 
  */
 export function formatGoldWeight(weight) {
-    console.log(  'after validation' , parseFloat((Math.round(weight * 100) / 100).toFixed(3)))
+    let seperator = weight.split('')
+    console.log(  'after validation' , +(`${seperator[0]}${seperator[1]}${seperator[2]}${seperator[3]}${seperator[4]}`))
     return parseFloat((Math.round(weight * 100) / 100).toFixed(3));
 }
 
