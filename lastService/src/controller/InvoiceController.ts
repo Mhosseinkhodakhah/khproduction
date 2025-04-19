@@ -241,7 +241,7 @@ export class InvoiceController {
         }
         let seperator = goldWeight.split('')
         if (seperator.length == 4){
-            goldWeight = +`${seperator[0]}${seperator[1]}${seperator[2]}${seperator[3]}0`
+            goldWeight = `${seperator[0]}${seperator[1]}${seperator[2]}${seperator[3]}0`
         }
         console.log('tot' , totalPrice)
         try {
