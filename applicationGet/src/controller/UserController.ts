@@ -338,7 +338,7 @@ export class UserController {
             }
             if (oldUserData.success){
                
-                if (i.wallet.goldWeight >= oldUserData.data.wallet.goldWeight){
+                if (+i.wallet.goldWeight >= +oldUserData.data.wallet.goldWeight){
                     let allBuys = 0
                     for (let j of i.buys){
                         allBuys += j.goldWeight
