@@ -173,7 +173,7 @@ export class UserController {
     async remove(request: Request, response: Response, next: NextFunction) {
         const phoneNumber =request.params.phoneNumber
         try {
-            const userToRemove = await this.userRepository.findOne({where : {phoneNumber:phoneNumber},relations:[ "wallet"]})
+            const userToRemove = await this.userRepository.findOne({where : {phoneNumber:phoneNumber}})
             if (!userToRemove) {
                 return response.status(404).json({ err: "User with this id not found" })
             }
@@ -189,7 +189,7 @@ export class UserController {
             // await this.convertInvoice.remove(userToRemove.convertBuys)
             // await this.invoiceRepository.remove(userToRemove.sells)
             // await this.invoiceRepository.remove(userToRemove.buys)
-            await this.walletRepository.remove(userToRemove.wallet)
+            // await this.walletRepository.remove(userToRemove.wallet)
             await this.userRepository.remove(userToRemove)
             
             // const wallet=await this.walletRepository.findOne({where:{
