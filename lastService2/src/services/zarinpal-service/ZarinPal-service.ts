@@ -137,6 +137,7 @@ export class ZarinPalService {
     const inquiryResult = await this.zarinpal.inquiries.inquire({
       authority: authority,
     });
+    console.log(inquiryResult)
     console.log('result of inquery', inquiryResult)
     
     if (inquiryResult.data.status == 'IN_BANK') {

@@ -30,8 +30,6 @@ export class UserController {
     private walletRepository = AppDataSource.getRepository(Wallet)
 
 
-
-
     async identityInformationOfUser(phoneNumber : string ,birthDate : string ,nationalCode : string){
         let identityInfoUrl = process.env.IDENTITY_INFO_URL 
         let shahkarToken = await this.getToken()

@@ -92,8 +92,7 @@ export default class adminController {
             final = 'تراکنش نامشخص'
         }
 
-        return next(new responseModel(req, res,'' ,'admin service', 200, null, final))
-        
+        return next(new responseModel(req, res,'' ,'admin service', 200, null, final))        
     }
 
 
