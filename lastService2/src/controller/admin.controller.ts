@@ -468,7 +468,7 @@ export default class adminController {
             console.log('wallet', walletUpdated)
             console.log('transaction', transaction)
             await queryRunner.commitTransaction()
-            await this.smsService.sendGeneralMessage(transACtion.wallet.user.phoneNumber,"approveWithdrawal" ,transACtion.wallet.user.firstName,transACtion.amount/10 ,transACtion.wallet.user.bankAccounts[0].cardNumber)
+            await this.smsService.sendGeneralMessage(transACtion.wallet.user.phoneNumber,"approveWithdrawal" ,transACtion.wallet.user.firstName,transACtion.amount ,transACtion.wallet.user.bankAccounts[0].cardNumber)
             await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
                  'تایید برداشت' , ` ${req.user.firstName} برداشت کاربر را تایید کرد` , {
                 userName : transACtion.wallet.user.firstName,
