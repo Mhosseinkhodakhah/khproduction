@@ -328,50 +328,14 @@ export class UserController {
 
 
     async userAndOld(request: Request, response: Response, next: NextFunction){
-        let users = await this.userRepository.find({relations : ['wallet' , 'buys' , 'sells']})
+        let users = await this.userRepository.find()
         let allFuckedUps = []
         let goodData =[]
-        for (let i of users){
-            const oldUserData = await this.oldUSerService.checkExistAndGetGoldWallet(i.phoneNumber, i.nationalCode)
-            if (oldUserData == 500) {
-                return response.status(500).json({ msg: 'کاربر گرامی سیستم احراز هویت در دسترس نمی باشد.' })
-            }
-            if (oldUserData.success){
-                
-                if (+i.wallet.goldWeight >= +oldUserData.data.wallet.goldWeight){
-                    let allBuys = 0
-                    for (let j of i.buys){
-                        if (j.status == 'completed'){
-                            allBuys += +j.goldWeight
-                        }
-                    }
-                    for (let k of i.sells){
-                        if (k.status == 'completed'){
-                            allBuys -= +k.goldWeight
-                        }
-                    }
-                    // if (+allBuys < +i.wallet.goldWeight){
-                        console.log('weights>>>>>>>' , i.wallet.goldWeight , oldUserData.data.wallet.goldWeight)
-                        let fData = {
-                            all : +allBuys.toFixed(3),
-                            nationalCode : i.nationalCode,
-                            firstName : i.firstName,
-                            lastName : i.lastName,
-                            oldWgoldWeight : oldUserData.data.wallet.goldWeight,
-                            mainWallet : i.wallet.goldWeight
-                        }
-                        goodData.push(fData)
-                        allFuckedUps.push(oldUserData.data)
-                    // }
-                }
-            }
-            // console.log("oldUserData", oldUserData);
-        }
+        console.log(users)
         return response.status(200).json({
             fuckedUps : goodData
         })
     }
-
 
 
     async logOut(request: Request, response: Response, next: NextFunction) {
