@@ -441,7 +441,7 @@ export default class adminController {
         let transACtion = await this.walletTransActions.findOne({
             where: {
                 id: req.params.transActionId
-            }, relations: ['wallet' , 'wallet.user']
+            }, relations: ['wallet' , 'wallet.user' , 'wallet.user.bankAccounts']
         })
 
         if (!transACtion) {
