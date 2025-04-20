@@ -505,7 +505,7 @@ export class WalletController {
             console.log('wallet creation>>>' , walletUpdated)
             let transactionToCreate = this.walletTransactionRepository.create({description  : "برداشت از کیف پول",date,time, status : "pending", type : "withdraw" ,wallet : wallet , amount})
             let savedTransaction = await this.walletTransactionRepository.save(transactionToCreate)
-            await this.smsService.sendGeneralMessage(wallet.user.phoneNumber,"withdraw" ,withdrawAmount/10 ,wallet.user.bankAccounts[0].cardNumber ,wallet.balance)
+            await this.smsService.sendGeneralMessage(wallet.user.phoneNumber,"withdraw" ,withdrawAmount,wallet.user.bankAccounts[0].cardNumber ,wallet.balance)
             monitor.addStatus({
                 scope : 'wallet controller',
                 status :  1,

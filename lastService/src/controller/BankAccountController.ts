@@ -182,7 +182,6 @@ export class BankAccountController {
                 return response.status(200).json({
                     msg : 'کارت بانکی مورد نظر حذف شد.'
                 })
-    
             } catch (error) {
                 return response.status(200).json({
                     msg : 'کارت مورد نظر حذف نشد.لطفا دقایقی دیگر مجددا تلاش کنید'
