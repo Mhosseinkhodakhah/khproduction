@@ -112,7 +112,7 @@ export class BankAccountController {
                 isVerified: false
             });
             let info = {cardNumber : bankAccount.cardNumber , 
-                nationalCode : owner.nationalCode , 
+                nationalCode : owner.nationalCode,
                 birthDate : owner.birthDate
                 }
                 console.log(info)
@@ -134,8 +134,7 @@ export class BankAccountController {
                     return response.status(400).json({ msg: "کارت نامعتبر است" });
                 }
                 bankAccount.isVerified = isMatch;
-                
-                if (isMatch) {                
+                if (isMatch) {
                     let res =  await this.shahkarController.convertCardToSheba(cardNumber)
                     if (res) {
                         bankAccount.shebaNumber = res.ibanInfo.iban
@@ -170,7 +169,27 @@ export class BankAccountController {
             }
         }
 
-        
+        async deleteCard(request: Request, response: Response, next: NextFunction){
+            try {
+                let cardId = request.params.id;
+                let card = await this.bankAccountRepository.findOne({where : {id : +cardId}})
+                if (!card){
+                    return response.status(400).json({
+                        msg : 'کارت بانکی مورد نظر یافت نشد.'
+                    })
+                }
+                await this.bankAccountRepository.remove(card)
+                return response.status(200).json({
+                    msg : 'کارت بانکی مورد نظر حذف شد.'
+                })
+    
+            } catch (error) {
+                return response.status(200).json({
+                    msg : 'کارت مورد نظر حذف نشد.لطفا دقایقی دیگر مجددا تلاش کنید'
+                })                            
+            }
+        }
+
     async verify(request: Request, response: Response, next: NextFunction) {
         const id = parseInt(request.params.id);
 
