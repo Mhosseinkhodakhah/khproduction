@@ -26,7 +26,7 @@ class getWithdrawal():
             i['شماره همراه کاربر'] = i['wallet']['user']['phoneNumber']
             i['شماره کارت کاربر'] = i['wallet']['user']['bankAccounts'][0]['cardNumber']
             i['شماره شبا کاربر'] = i['wallet']['user']['bankAccounts'][0]['shebaNumber']
-            i['نام بانک کاربر'] = i['wallet']['user']['bankAccounts'][0]['name']
+            # i['نام بانک کاربر'] = i['wallet']['user']['bankAccounts'][0]['name']
             # i['موجودی صندوق طلای کارب'] = i['wallet']['goldWeight']
             # i['موجودی ریالی کاربر'] = int(i['wallet']['balance'])
             
