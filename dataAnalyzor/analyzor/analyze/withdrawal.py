@@ -34,6 +34,9 @@ class getWithdrawal():
             # if (i['type'] == 'withdraw'):                
             i.pop('authority')
             i.pop('invoiceId')
+            i.pop('description')
+            i.pop('time')
+            i.pop('date')
 
             if (i['type'] == 'deposit'):
                 i.pop('withdrawalId')
@@ -58,10 +61,7 @@ class getWithdrawal():
             #     i['status'] = 'پرداخت نشده'
             
             i.pop('status')
-            i.pop('description')
-            i.pop('authority')
-            i.pop('time')
-            i.pop('date')
+            # i.pop('authority')
             
             # i['type'] = 'واریز' if i['type'] == 'deposit' else 'برداشت'
             i.pop('type')
