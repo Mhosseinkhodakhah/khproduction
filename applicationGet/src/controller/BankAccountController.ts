@@ -6,6 +6,7 @@ import { ShahkarController } from "./ShahkarController";
 import { SmsService } from "../services/sms-service/message-service";
 import logger from "../services/interservice/logg.service";
 import monitor from "../util/statusMonitor";
+import { responseModel } from "../util/response.model";
 
 export class BankAccountController {
 
@@ -251,5 +252,16 @@ export class BankAccountController {
             })
             return response.status(500).json({msg :"خطا در حذف کارت بانکی"})
         }
+    }
+
+
+    async allBanks(request: Request, response: Response, next: NextFunction){
+        let userId = request['user_id']
+        let user = await this.userRepository.exists({where : {id : userId}})
+        if (!user){
+            return next(new responseModel(request, response, 'کاربر یافت نشد', 'get all bank accounts', 400, 'کاربر یافت نشد', ''))
+        }
+        let bankAccounts = await this.userRepository.findOne({where : {id : userId} , relations : ['bankAccounts']})
+        return next (new responseModel(request , response , ''  , 'get all bank accounts', 200 , '' , bankAccounts.bankAccounts))
     }
 }

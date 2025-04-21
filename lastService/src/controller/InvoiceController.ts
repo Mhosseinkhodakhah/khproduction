@@ -954,7 +954,7 @@ export class InvoiceController {
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
     }
-
+    
     async getAllTransactionsBuyType(request: Request, response: Response) {
         try {
             const userId = request.user_id;

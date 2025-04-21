@@ -204,6 +204,13 @@ export const Routes = [
 },
 {
     method: "get",
+    route: "/carts/all",
+    controller: BankAccountController,
+    action: "allBanks",
+    middlwares: [authenticate]
+},
+{
+    method: "get",
     route: "/carts/:id",
     controller: BankAccountController,
     action: "one",
@@ -223,6 +230,9 @@ export const Routes = [
     action: "getGoldPrice",
     middlwares: [authenticate]
 },
+
+
+
 {
     method: "get",
     route: "/goldPrice/:date",

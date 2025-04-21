@@ -17,6 +17,8 @@ import { convertTradeInvoice } from "./entity/inpersonConvertTrade.entity"
 import { NotMatch } from "./entity/notMatch"
 import { handleGoldPrice } from "./entity/handleGoldPrice.entity"
 
+
+
 config();
 
 export const AppDataSource = new DataSource({

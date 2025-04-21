@@ -21,7 +21,7 @@ export class GoldPriceController {
             }else {
                 console.log('result is not here>>>>' , handleGold[0].price)
             }
-            
+
             result = await this.goldPriceService.getGoldPrice()
             let sellFee = 1
             let buyFee = 0
@@ -46,7 +46,7 @@ export class GoldPriceController {
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
     }
-
+    
     async getGoldPriceForDate(request: Request, response: Response, next: NextFunction){
     const date=parseInt(request.params.date)
     try{

@@ -669,8 +669,6 @@ export default class adminController {
         }
     }
 
-
-
     async allFailedDeposit(req: Request, res: Response, next: NextFunction){
         let failedDposit = await this.walletTransActions.find({where : {
             status : 'failed',
@@ -680,6 +678,5 @@ export default class adminController {
         }})
         return next(new responseModel(req, res,'' ,'admin service', 200, null, failedDposit))
     }
-    
 
 }

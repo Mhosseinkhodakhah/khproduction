@@ -71,7 +71,6 @@ AppDataSource.initialize().then(async () => {
     })
 
 
-
     // register express routes from defined application routes
     Routes.forEach(route => {
         //  const middlewares = route.middlwares ?? null
@@ -87,7 +86,7 @@ AppDataSource.initialize().then(async () => {
     console.log(h)
     
     app.listen(3000)
-    
+
     process.on('unhandledRejection', (error) => {
         monitor.error.push(`${error}`)
         console.log('error occured . . .', error)
