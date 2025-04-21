@@ -13,10 +13,10 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number
     
-    @PrimaryColumn({ 
-        type: 'int',
-      })
-    identityCode : number; 
+    // @PrimaryColumn({ 
+    //     type: 'int',
+    //   })
+    // identityCode : number; 
 
     @Column({nullable : true})
     birthDate: string
