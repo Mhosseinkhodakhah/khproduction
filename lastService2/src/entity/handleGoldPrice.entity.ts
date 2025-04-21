@@ -18,6 +18,8 @@ export class handleGoldPrice{
     updateDates() {
         if (this.price > 0){
             this.active = true;
+        }else { 
+            this.active = false
         }
     }
 
