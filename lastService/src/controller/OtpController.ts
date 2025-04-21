@@ -243,9 +243,8 @@ export class OtpController {
                 error: null
             })
             if (!user.Referral){
-                user.Referral = (user.id + 1000).toString()
+                user.Referral = Math.random().toString(36).substring(8) + user.id.toString()
                 await this.userRepository.save(user)
-
             }
             if (!user.date){
                 const mainDate=new Date(user.createdAt).toLocaleString('fa-IR').split(',')
