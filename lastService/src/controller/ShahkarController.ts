@@ -212,6 +212,8 @@ export class ShahkarController {
                         verificationStatus: VerificationStatus.SUCCESS
                     })
                     let savedUser = await queryRunner.manager.save(user)
+                    savedUser.Referral = Math.random().toString(36).substring(8) + user.id.toString(),
+                    await queryRunner.manager.save(savedUser)
                     console.log(savedUser)
                     const wallet = this.walletRepository.create({
                         balance: 0,
