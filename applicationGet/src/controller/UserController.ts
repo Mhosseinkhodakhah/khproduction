@@ -326,7 +326,6 @@ export class UserController {
     }
 
 
-
     async userAndOld(request: Request, response: Response, next: NextFunction){
         let users = await this.userRepository.find({where : {nationalCode : '2580467742'} , relations : ['wallet']})
         let allFuckedUps = []

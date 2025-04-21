@@ -82,7 +82,7 @@ export class WalletController {
             let newWallet = await queryRunner.manager.save(user.wallet)
             console.log('new wallet after block gold>>>>' , newWallet.goldBlock , newWallet.goldWeight)
             let savedTransACtion = await queryRunner.manager.save(createTransAction)
-            await this.smsService.sendOtpMessage(user.phoneNumber , otpCode)
+            // await this.smsService.sendOtpMessage(user.phoneNumber , otpCode)
             await queryRunner.commitTransaction()
             return res.status(200).json({ msg: "کد تایید ارسال شد"  , data : savedTransACtion});
         } catch (error) {
@@ -413,17 +413,6 @@ export class WalletController {
             }
             const user = await this.userRepository.findOne({where : {id : paymentInfo.userId},relations : {wallet : true,bankAccounts : true}})
             try {
-                let res = 200
-                if (!res) {
-                    savedTransaction.status = "failed";
-                    let updatedtransaction = await this.walletTransactionRepository.save(savedTransaction);
-                    // monitor.addStatus({
-                    //     scope : 'wallet controller',
-                    //     status :  1,
-                    //     error : null
-                    // })
-                    return response.status(200).json({msg : "پرداخت ناموفق", transaction : savedTransaction , bank : user.bankAccounts[0].cardNumber})
-                }else if(res){
                 const currentBalance = +user.wallet.balance;
                 const paymentAmount = +paymentInfo.amount;
                 user.wallet.balance = Math.round(currentBalance + paymentAmount);
@@ -432,14 +421,40 @@ export class WalletController {
                 savedTransaction.invoiceId = paymentInfo.invoiceId.toString();
                 let updatedtransaction = await this.walletTransactionRepository.save(savedTransaction);
                 // let nameFamily = user.firstName +' '+  user.lastName
-                this.smsService.sendGeneralMessage(user.phoneNumber,"deposit" ,user.firstName ,paymentAmount ,null)
+                // this.smsService.sendGeneralMessage(user.phoneNumber,"deposit" ,user.firstName ,paymentAmount ,null)
                 // monitor.addStatus({
                 //     scope : 'wallet controller',
                 //     status :  1,
                 //     error : null
                 // })    
                 return response.status(200).json({msg : "پرداخت موفق" , transaction : updatedtransaction})
-            }
+            //     let res = 200
+            //     if (!res) {
+            //         savedTransaction.status = "failed";
+            //         let updatedtransaction = await this.walletTransactionRepository.save(savedTransaction);
+            //         // monitor.addStatus({
+            //         //     scope : 'wallet controller',
+            //         //     status :  1,
+            //         //     error : null
+            //         // })
+            //         return response.status(200).json({msg : "پرداخت ناموفق", transaction : savedTransaction , bank : user.bankAccounts[0].cardNumber})
+            //     }else if(res){
+            //     const currentBalance = +user.wallet.balance;
+            //     const paymentAmount = +paymentInfo.amount;
+            //     user.wallet.balance = Math.round(currentBalance + paymentAmount);
+            //     await this.walletRepository.save([user.wallet]);
+            //     savedTransaction.status = "completed";
+            //     savedTransaction.invoiceId = paymentInfo.invoiceId.toString();
+            //     let updatedtransaction = await this.walletTransactionRepository.save(savedTransaction);
+            //     // let nameFamily = user.firstName +' '+  user.lastName
+            //     // this.smsService.sendGeneralMessage(user.phoneNumber,"deposit" ,user.firstName ,paymentAmount ,null)
+            //     // monitor.addStatus({
+            //     //     scope : 'wallet controller',
+            //     //     status :  1,
+            //     //     error : null
+            //     // })    
+            //     return response.status(200).json({msg : "پرداخت موفق" , transaction : updatedtransaction})
+            // }
             } catch (error) {
                 let savedTransaction = await this.walletTransactionRepository.findOne({where:{ id : paymentInfo.invoiceId}})
                 savedTransaction.status = "failed";
@@ -511,7 +526,7 @@ export class WalletController {
             console.log('wallet creation>>>' , walletUpdated)
             let transactionToCreate = this.walletTransactionRepository.create({description  : "برداشت از کیف پول",date,time, status : "pending", type : "withdraw" ,wallet : wallet , amount})
             let savedTransaction = await this.walletTransactionRepository.save(transactionToCreate)
-            await this.smsService.sendGeneralMessage(wallet.user.phoneNumber,"withdraw" ,withdrawAmount/10 ,wallet.user.bankAccounts[0].cardNumber ,wallet.balance)
+            // await this.smsService.sendGeneralMessage(wallet.user.phoneNumber,"withdraw" ,withdrawAmount/10 ,wallet.user.bankAccounts[0].cardNumber ,wallet.balance)
             monitor.addStatus({
                 scope : 'wallet controller',
                 status :  1,

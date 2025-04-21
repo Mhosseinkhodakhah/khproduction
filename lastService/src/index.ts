@@ -19,7 +19,7 @@ let workerStarter = new workerRunner()
 
 AppDataSource.initialize().then(async () => {
 
-    let shakc = new ShahkarController()
+    // let shakc = new ShahkarController()
 
 
     // await shakc.checkUsers()
@@ -83,10 +83,11 @@ AppDataSource.initialize().then(async () => {
     const systemService = new SystemService();                   // what the fuck?????
     await systemService.initializeSystemUser();
     await systemService.initializeTransactionTypes();
+    let h = await systemService.createHanldeGoldPrice()
+    console.log(h)
     
     app.listen(3000)
-
-
+    
     process.on('unhandledRejection', (error) => {
         monitor.error.push(`${error}`)
         console.log('error occured . . .', error)

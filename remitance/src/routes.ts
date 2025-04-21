@@ -3,22 +3,23 @@ import { RemittanceController } from "./controller/RemittanceController"
 import { adminMiddleware } from "./middlware/auth"
 import interserviceController from "./controller/interservice.controller"
 
-export const Routes = [{
-    method: "post",
-    route: "/users/check",
-    controller: UserController,
-    action: "checkIdentity",
-    middlware: [adminMiddleware]
-}, {
-    method: "post",
-    route: "/users/newuser",
-    controller: UserController,
-    action: "approveNewUser",
-    middlware: [adminMiddleware]
-}
+export const Routes = [
+    {
+        method: "post",
+        route: "/users/check",
+        controller: UserController,
+        action: "checkIdentity",
+        middlware: [adminMiddleware]
+    }, {
+        method: "post",
+        route: "/users/newuser",
+        controller: UserController,
+        action: "approveNewUser",
+        middlware: [adminMiddleware]
+    }
 
     //! remmitance controller
-
+    
     , {
         method: "post",
         route: "/sell",

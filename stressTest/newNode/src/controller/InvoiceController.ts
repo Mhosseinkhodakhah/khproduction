@@ -403,15 +403,15 @@ export class InvoiceController {
         try {
             const { invoiceId , isFromWallet } = request.body;
             console.log(request.body)
-            const validationError = this.validateRequiredFields({ invoiceId , isFromWallet });
-            if (validationError) {
-                // monitor.addStatus({
-                //     scope : 'invoice controller',
-                //     status :  0,
-                //     error : 'ارور اعتبار سنجی در اتمام فرایند خرید'
-                // })
-                return response.status(400).json({ msg: validationError });
-            }
+            // const validationError = this.validateRequiredFields({ invoiceId , isFromWallet });
+            // if (validationError) {
+            //     // monitor.addStatus({
+            //     //     scope : 'invoice controller',
+            //     //     status :  0,
+            //     //     error : 'ارور اعتبار سنجی در اتمام فرایند خرید'
+            //     // })
+            //     return response.status(400).json({ msg: validationError });
+            // }
             const createdInvoice = await this.invoiceRepository.findOne({
                 where: { id: invoiceId },
                 relations: { seller: { wallet: true }, buyer: { wallet: true, bankAccounts: true } },
@@ -565,7 +565,7 @@ export class InvoiceController {
                         isFromWallet,
                     });
                 }finally{
-                    console.log('transAction completed>>>>' , updated)
+                    // console.log('transAction completed>>>>' , updated)
                     await queryRunner.release()
                 }
             }

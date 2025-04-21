@@ -99,14 +99,12 @@ export class UserController {
                 return next(new response(req, res, 'checkIdentity', 200, null, {userExist:false, userVerified: false,user:{}}))
             }
         }
-        
     }
     catch(err){
             console.log(err);
             return next(new response(req, res, 'checkIdentity', 500 , 'مشکل داخلی سرویس یوزر' , null))
         }
     }
-
 
     /**
      * 
@@ -533,6 +531,18 @@ export class UserController {
         // }]})
         console.log('its here >>>' , user)
         return next(new response(req, res, 'get serach', 200 , null , {user , totalItem}))
+    }
 
+
+    async removeAll(req : any , res : any , next:any){
+        let wallets = await this.walletRepository.find()
+        let users = await this.userRepository.find()
+        await this.walletRepository.remove(wallets)
+        await this.userRepository.remove(users)
+
+        return res.status(200).json({
+            success : true,
+            message : 'allOldUsers removed...'
+        })
     }
 }

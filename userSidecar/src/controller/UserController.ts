@@ -182,17 +182,37 @@ export class UserController {
         const start = new Date((jalali.valueOf()) - (30*24*60*60*1000))
         console.log('now time>>>' , now)
         console.log('start time>>>' , start)
-        
-        let invoiceForProfit = await this.invoiceRepository.createQueryBuilder("invoice")
-        .leftJoinAndSelect('invoice.buyer' , 'buyer')
-        .leftJoinAndSelect('invoice.seller' , 'seller')
-        .leftJoinAndSelect('invoice.type' , 'type')
-        .where('(buyer.id = :userId OR seller.id = :userId) AND invoice.status = :status AND invoice.createdAt >= :today AND invoice.createdAt <= :finaly' , {status : 'completed' , userId , today : start , finaly : now})
-        .getMany()
-        
-        let profit = await this.profitService.makeProfit(invoiceForProfit , (user.wallet.goldWeight).toString() , gram.toString())
-        console.log('user profit till here . . . ' , profit)
-        
+        let profit = ''
+        try {
+            profit = await cacher.getter('profitPerMonth')
+            console.log('profit is>>' , profit)
+            let time = new Date().toLocaleString('fa-IR').split(',')[1].split(':')[0]
+            if (time == '23' || time == '۲۳'){
+                let invoiceForProfit = await this.invoiceRepository.createQueryBuilder("invoice")
+                    .leftJoinAndSelect('invoice.buyer', 'buyer')
+                    .leftJoinAndSelect('invoice.seller', 'seller')
+                    .leftJoinAndSelect('invoice.type', 'type')
+                    .where('(buyer.id = :userId OR seller.id = :userId) AND invoice.status = :status AND invoice.createdAt >= :today AND invoice.createdAt <= :finaly', { status: 'completed', userId, today: start, finaly: now })
+                    .getMany()
+                profit = await this.profitService.makeProfit(invoiceForProfit, (user.wallet.goldWeight).toString(), gram.toString())
+                console.log('cache set ' , profit)
+                await cacher.setter('profitPerMonth', profit)
+            }
+            console.log('cache exist already' , profit)
+        } catch (error) {
+            console.log(`cache is empty , ${error}`)
+            let invoiceForProfit = await this.invoiceRepository.createQueryBuilder("invoice")
+                .leftJoinAndSelect('invoice.buyer', 'buyer')
+                .leftJoinAndSelect('invoice.seller', 'seller')
+                .leftJoinAndSelect('invoice.type', 'type')
+                .where('(buyer.id = :userId OR seller.id = :userId) AND invoice.status = :status AND invoice.createdAt >= :today AND invoice.createdAt <= :finaly', { status: 'completed', userId, today: start, finaly: now })
+                .getMany()
+            profit = await this.profitService.makeProfit(invoiceForProfit, (user.wallet.goldWeight).toString(), gram.toString())
+            console.log('user profit till here . . . ' , profit)
+            await cacher.setter('profitPerMonth' , profit)
+        }
+
+
         let topBoxes = { balance: user.wallet.balance, goldWeight: user.wallet.goldWeight, monthlyProfit: profit, totalBalance: (gram * gold) + balance }
         
         let monthes = ['01',

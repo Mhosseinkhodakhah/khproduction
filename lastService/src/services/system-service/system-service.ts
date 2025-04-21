@@ -6,6 +6,7 @@ import { Wallet } from "../../entity/Wallet";
 import { Invoice } from "../../entity/Invoice";
 import { WalletTransaction } from "../../entity/WalletTransaction";
 import { PaymentInfo } from "../../entity/PaymentInfo";
+import { handleGoldPrice } from "../../entity/handleGoldPrice.entity";
 
 
 export class SystemService {
@@ -13,6 +14,7 @@ export class SystemService {
     private walletRepository = AppDataSource.getRepository(Wallet);
     private typesRepository = AppDataSource.getRepository(InvoiceType)
     private invoiceRepository = AppDataSource.getRepository(Invoice)
+    private handleGoldPrice = AppDataSource.getRepository(handleGoldPrice)
     private piRepo = AppDataSource.getRepository(PaymentInfo)
     private walletTransactionsRepository = AppDataSource.getRepository(WalletTransaction)
 
@@ -68,5 +70,18 @@ export class SystemService {
         await this.invoiceRepository.delete({})
         await this.piRepo.delete({})
         await this.userRepository.delete({})
+    }
+
+
+    async createHanldeGoldPrice(){
+        let all = await this.handleGoldPrice.find()
+        if (!all || all.length == 0) {
+            let creations = this.handleGoldPrice.create({
+                price : 0
+            })
+            await this.handleGoldPrice.save(creations)
+            return 'handle Gold Price Created'
+        }
+        return 'handle goldPrice existance'
     }
 }

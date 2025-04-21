@@ -109,7 +109,6 @@ export class UserController {
             console.log(err);
             return next(new response(req, res, 'checkIdentity', 500, 'مشکل داخلی سرویس یوزر', null))
         }
-
     }
 
 

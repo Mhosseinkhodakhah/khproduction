@@ -460,7 +460,7 @@ export class WalletController {
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
     }
-
+    
     async withdrawFromWallet(request: Request, response: Response){
         try {
             let {amount} = request.body
@@ -511,7 +511,6 @@ export class WalletController {
                 status :  1,
                 error : null
             })
-
             return response.json(savedTransaction)
         } catch (error) {
             monitor.addStatus({

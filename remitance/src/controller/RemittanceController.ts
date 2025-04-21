@@ -47,7 +47,6 @@ export class RemittanceController {
             console.log("error in find remittance by id ", error);
             return next(new response(req, res, 'create sell remmitance ', 500, error, null))
         }
-
     }
 
     async createBuy(req: Request, res: Response, next: NextFunction) {
@@ -64,11 +63,9 @@ export class RemittanceController {
                 return next(new response(req, res, 'create buy remmitance ', 500, "خطای داخلی سرویس", null))
             }
         }
-
         if (resultFromLastService.exist == false ){
             return next(new response(req, res, 'create buy remmitance ', 400 , "کاربر وجود ندارد", null))
         }
-
         if (!resultFromLastService.exist){
             return next(new response(req, res, 'create buy remmitance ', 500 , "خطای داخلی سرویس" , null))
         }

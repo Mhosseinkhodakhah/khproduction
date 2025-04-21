@@ -15,6 +15,7 @@ import logger from "../services/interservice/logg.service";
 import { EstimateTransactions } from "../entity/EstimateTransactions";
 import cacher from "../services/cacher";
 import instance from "../util/tradePerision";
+import { handleGoldPrice } from "../entity/handleGoldPrice.entity";
 
 
 
@@ -25,6 +26,7 @@ export default class adminController {
     private walletTransActions = AppDataSource.getRepository(WalletTransaction)
     private walletTransactionRepository = AppDataSource.getRepository(WalletTransaction);
     private paymentInfoRepository = AppDataSource.getRepository(PaymentInfo);
+    private handleGoldprice = AppDataSource.getRepository(handleGoldPrice)
     private zpService = new ZarinPalService()
     private interservice = new logger()
     private smsService = new SmsService()
@@ -678,4 +680,6 @@ export default class adminController {
         }})
         return next(new responseModel(req, res,'' ,'admin service', 200, null, failedDposit))
     }
+    
+
 }
