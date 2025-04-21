@@ -220,7 +220,6 @@ export class OtpController {
             }
             
             const user = await this.userRepository.findOneBy({ phoneNumber });
-            
             if (!user || user.verificationStatus !== VerificationStatus.SUCCESS) {
                 // await this.otpRepository.delete({ phoneNumber });
                 monitor.addStatus({
@@ -234,7 +233,7 @@ export class OtpController {
                 });
             }
             
-
+            
             const token = await this.jwtService.generateToken(user);
             // await this.otpRepository.delete({ phoneNumber });
             
@@ -243,7 +242,9 @@ export class OtpController {
                 status: 1,
                 error: null
             })
-            
+            if (!user.Referral){
+                user.Referral = (user.id + 1000).toString()
+            }
             if (!user.date){
                 const mainDate=new Date(user.createdAt).toLocaleString('fa-IR').split(',')
                 const date=mainDate[0]

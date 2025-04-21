@@ -18,7 +18,7 @@ export class User {
 
     @Column({nullable : true})
     birthDate: string
-
+    
     @Column()
     firstName: string
 
