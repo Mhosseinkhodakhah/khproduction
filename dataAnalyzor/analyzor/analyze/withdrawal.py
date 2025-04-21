@@ -48,6 +48,7 @@ class getWithdrawal():
             i.pop('updatedAt')
             i.pop('deletedAt')
             i.pop('id')
+            i.pop('withdrawalId')
             
             # if (i['status'] == 'completed'):
             #     i['status'] = 'موفق'
