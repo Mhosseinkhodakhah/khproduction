@@ -212,7 +212,7 @@ export class UserController {
         //     await cacher.setter('profitPerMonth' , profit)
         // }
 
-
+        
         let topBoxes = { balance: user.wallet.balance, goldWeight: user.wallet.goldWeight, monthlyProfit: 0, totalBalance: (gram * gold) + balance }
         
         let monthes = ['01',

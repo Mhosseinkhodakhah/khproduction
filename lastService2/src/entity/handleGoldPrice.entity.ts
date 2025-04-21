@@ -19,7 +19,7 @@ export class handleGoldPrice{
         if (this.price > 0){
             this.active = true;
         }else { 
-            this.active = false
+            this.active = false;
         }
     }
 

@@ -246,17 +246,6 @@ export class BankAccountController {
     }
 
 
-    async allBanks(request: Request, response: Response, next: NextFunction){
-        let userId = request['user_id']
-        let user = await this.userRepository.exists({where : {id : userId}})
-        if (!user){
-            return next(new responseModel(request, response, 'کاربر یافت نشد', 'get all bank accounts', 400, 'کاربر یافت نشد', ''))
-        }
-        let bankAccounts = await this.userRepository.findOne({where : {id : userId} , relations : ['bankAccounts']})
-        return next (new responseModel(request , response , ''  , 'get all bank accounts', 200 , '' , bankAccounts.bankAccounts))
-    }
-
-
     async remove(request: Request, response: Response, next: NextFunction) {
         const id = parseInt(request.params.id);
 

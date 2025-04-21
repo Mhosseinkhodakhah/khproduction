@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany,OneToOne, UpdateDateColumn, DeleteDateColumn, CreateDateColumn  } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany,OneToOne, UpdateDateColumn, DeleteDateColumn, CreateDateColumn, PrimaryColumn  } from "typeorm"
 import { VerificationStatus } from "./enums/VerificationStatus"
 import { Invoice } from "./Invoice"
 import { Wallet } from "./Wallet";
@@ -11,6 +11,12 @@ export class User {
 
     @PrimaryGeneratedColumn()
     id: number
+    
+    @PrimaryColumn({ 
+        type: 'int',
+      })
+    identityCode : number; 
+
 
     @Column({nullable : true})
     birthDate: string

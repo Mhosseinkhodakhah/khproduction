@@ -216,13 +216,13 @@ export const Routes = [
     action: "one",
     middlwares: [authenticate]
 },
-// {
+//{
 //     method: "delete",
 //     route: "/carts/:id",
 //     controller: BankAccountController,
 //     action: "remove",
 //     middlwares: [authenticate]
-// },
+//},
 {
     method: "get",
     route: "/goldPrice",
