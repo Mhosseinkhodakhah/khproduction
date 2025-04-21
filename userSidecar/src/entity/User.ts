@@ -13,10 +13,8 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number
 
-    @PrimaryColumn({ 
-        type: 'int',
-      })
-    identityCode : number; 
+    @Column({type : 'varchar',  nullable : true})
+    Referral : string;
 
 
     @Column({nullable : true})
