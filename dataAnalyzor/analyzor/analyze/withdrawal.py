@@ -71,7 +71,7 @@ class getWithdrawal():
         df = pd.DataFrame.from_dict(newData)
         df.rename(columns={'totalPrice': 'کل مبلغ معامله' ,'withdrawalId' : 'شماره پیگیری تراکنش' ,'amount' : 'مقدار' ,'invoiceId':'شماره تراکنش' , 'status' : 'وضعیت معامله' ,
         'date' : 'تاریخ ثبت تراکنش' , 'time' : 'ساعت ثبت تراکنش' , 'type' : 'نوع معامله' , 
-        'authority' : 'شماره پیگیری درگاه' ,'admin' : 'ادمین فعال در تراکنش','adminDescription' : 'توضیحات ادمین', 'description' : 'توضیحات تراکنش' , 'accounterDescription' : 'توضیحات حسابدار'  }, inplace=True)
+     'admin' : 'ادمین فعال در تراکنش','adminDescription' : 'توضیحات ادمین', 'description' : 'توضیحات تراکنش' , 'accounterDescription' : 'توضیحات حسابدار'  }, inplace=True)
         # print (df)
         df.to_excel(f'/etc/report/walletTransActions-{name}-{number}.xlsx')   
         return [f'https://excell.khanetala.ir/walletTransActions-{name}-{number}.xlsx' , f'واریز برداشت-{name}-{number}']
