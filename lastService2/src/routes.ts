@@ -422,6 +422,13 @@ export const Routes = [
     action: "handleVerifyDeposit",        /**its for verifying the deposit by admin */
     middlwares: [adminMiddleware , verifyTransActinon]
 },
+{
+    method: "post",
+    route: "/goldPrice/set",
+    controller: adminController,
+    action: "setPrice",
+    middlwares: []
+},
 {                          
     method: "put",
     route: "/admin/transAction/:authority",

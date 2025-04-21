@@ -15,6 +15,7 @@ import logger from "../services/interservice/logg.service";
 import { EstimateTransactions } from "../entity/EstimateTransactions";
 import cacher from "../services/cacher";
 import instance from "../util/tradePerision";
+import { handleGoldPrice } from "../entity/handleGoldPrice.entity";
 
 
 
@@ -25,6 +26,7 @@ export default class adminController {
     private walletTransActions = AppDataSource.getRepository(WalletTransaction)
     private walletTransactionRepository = AppDataSource.getRepository(WalletTransaction);
     private paymentInfoRepository = AppDataSource.getRepository(PaymentInfo);
+    private handleGoldPrice = AppDataSource.getRepository(handleGoldPrice)
     private zpService = new ZarinPalService()
     private interservice = new logger()
     private smsService = new SmsService()
@@ -704,4 +706,28 @@ export default class adminController {
         }})
         return next(new responseModel(req, res,'' ,'admin service', 200, null, failedDposit))
     }
+
+
+
+    async setPrice(req: Request, res: Response, next: NextFunction){
+        let queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        try {
+            let handleGold = await this.handleGoldPrice.find()
+            let handlePrice = handleGold[0]
+            let {price} = req.body
+            handlePrice.price = +price
+            await queryRunner.manager.save(handlePrice)
+            await queryRunner.commitTransaction()
+            let handleGoldUpdated = await this.handleGoldPrice.find()
+            return next(new responseModel(req, res,'قیمت طلا با موفقیت ثبت شد' ,'admin service', 200, null, handleGoldUpdated))
+        } catch (error) {
+            await queryRunner.rollbackTransaction()
+            return next(new responseModel(req, res,'قیمت طلا ثبت نشد.لطفا دقایقی دیگر مجددا تلاش کنید.' ,'admin service', 500, null, null))
+        }finally{
+            await queryRunner.release()
+        }
+    }
+
 }
