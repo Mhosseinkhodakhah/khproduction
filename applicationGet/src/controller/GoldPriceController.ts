@@ -3,16 +3,26 @@ import { Wallet } from "../entity/Wallet";
 import { GoldPriceService } from "../services/gold-price-service/gold-price-service";
 import { NextFunction, Request, Response } from "express";
 import monitor from "../util/statusMonitor";
+import { handleGoldPrice } from "../entity/handleGoldPrice.entity";
 
 export class GoldPriceController {
 
     private goldPriceService = new GoldPriceService()
-    private 
+    private handleGoldPrice = AppDataSource.getRepository(handleGoldPrice)
 
     async getGoldPrice(request: Request, response: Response, next: NextFunction) {
         try {
+
             let userId = request["userId"]
-            let result :any = await this.goldPriceService.getGoldPrice()
+            let handleGold = await this.handleGoldPrice.find()
+            let result;
+            if (handleGold[0].active){
+                console.log('result is here>>>>' , handleGold[0].price)
+            }else {
+                console.log('result is not here>>>>' , handleGold[0].price)
+            }
+            
+            result = await this.goldPriceService.getGoldPrice()
             let sellFee = 1
             let buyFee = 0
             let data = {
