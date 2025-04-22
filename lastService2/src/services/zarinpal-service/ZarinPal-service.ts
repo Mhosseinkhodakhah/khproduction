@@ -143,7 +143,7 @@ export class ZarinPalService {
     if (inquiryResult.data.status == 'IN_BANK') {
       return { status: 'IN_BANK' }
     }
-    else if(inquiryResult.data.status == 'FAILED'){
+    else if(inquiryResult.data.status == 'PAID'){
       return {status : 'PAID'}
     }
 

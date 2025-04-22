@@ -600,6 +600,7 @@ export default class adminController {
                 return next(new responseModel(req, res, '', 'admin service', 400, error['errors'][0].msg, null))
             }
             let statusOfTransAction = await this.zpService.getTransActionStatus(authority)
+            console.log('returned data >>> ' , statusOfTransAction)
             if (statusOfTransAction.status == 'IN_BANK') {
                 return next(new responseModel(req, res, 'تراکنش در درگاه میباشد', 'admin service', 400, 'تراکنش در درگاه میباشد', null))
             }
