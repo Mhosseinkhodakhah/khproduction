@@ -183,7 +183,9 @@ export class BankAccountController {
             try {
                 let cardId = request.params.id;
                 let userId = request['user_id']
+                console.log(cardId , userId)
                 let card = await this.bankAccountRepository.findOne({where : {id : +cardId} , relations : ['owner']})
+                console.log('card is' , card)
                 if (+card.owner.id != +userId){
                     return response.status(403).json({
                         msg : 'شما اجازه حذف این کارت بانکی را ندارید.'
@@ -199,7 +201,8 @@ export class BankAccountController {
                     msg : 'کارت بانکی مورد نظر حذف شد.'
                 })
             } catch (error) {
-                return response.status(200).json({
+                console.log(error)
+                return response.status(500).json({
                     msg : 'کارت مورد نظر حذف نشد.لطفا دقایقی دیگر مجددا تلاش کنید'
                 })                            
             }
