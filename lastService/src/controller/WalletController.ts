@@ -96,7 +96,7 @@ export class WalletController {
         }
     }
     
-    
+
     /**
      * its for confirm the transport for user to another user
      * @param req 
@@ -320,7 +320,7 @@ export class WalletController {
                 amount,
                 userId: userId,
                 invoiceId : null,
-                callback_url : 'https://khanetala.ir/Bankinfo',
+                callback_url : 'https://app.khanetala.ir/Bankinfo',
                 cardPan : null,
                 phoneNumber:null
             }
