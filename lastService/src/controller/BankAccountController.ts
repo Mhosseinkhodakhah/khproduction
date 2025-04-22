@@ -181,7 +181,7 @@ export class BankAccountController {
 
         async deleteCard(request: Request, response: Response, next: NextFunction){
             try {
-                let cardId = request.params.id;
+                let cardId = request.params.cartId;
                 let userId = request['user_id']
                 console.log(cardId , userId)
                 let card = await this.bankAccountRepository.findOne({where : {id : +cardId} , relations : ['owner']})
