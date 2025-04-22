@@ -107,6 +107,15 @@ export class BankAccountController {
                 })
                 return response.status(400).json({ error: "Owner not found" });
             }
+            let cartExistance = await this.bankAccountRepository.exists({where : {cardNumber : cardNumber}})
+            if (cartExistance){
+                monitor.addStatus({
+                    scope : 'bank account controller',
+                    status : 0,
+                    error: `شماره کارت قبلا ثبت شده است. `
+                })
+                return response.status(400).json({ msg: "شماره کارت قبلا ثبت شده است" });
+            }
             const bankAccount = this.bankAccountRepository.create({
                 cardNumber,
                 owner,
