@@ -255,16 +255,16 @@ export class BankAccountController {
     }
 
 
-    async allBanks(request: Request, response: Response, next: NextFunction){
+    async allBanks(request: Request, response: Response, next: NextFunction) {
         let userId = request['user_id']
-        let user = await this.userRepository.exists({where : {id : userId}})
-        if (!user){
+        let user = await this.userRepository.exists({ where: { id: userId } })
+        if (!user) {
             return next(new responseModel(request, response, 'کاربر یافت نشد', 'get all bank accounts', 400, 'کاربر یافت نشد', ''))
         }
         let bankAccounts = await this.userRepository.createQueryBuilder('banks')
-        .leftJoinAndSelect('banks.bankAccounts' , 'bankAccounts')
-        .where('banks.id = :id' , {id : userId})
-        .select(['user.firstName' , 'banks.lastName' , 'banks.nationalCode' , 'banks.phoneNumber']).getOne()
-        return next (new responseModel(request , response , ''  , 'get all bank accounts', 200 , '' , bankAccounts))
+            .leftJoinAndSelect('banks.bankAccounts', 'bankAccounts')
+            .where('banks.id = :id', { id: userId })
+            .select(['banks.firstName', 'banks.lastName', 'banks.nationalCode', 'banks.phoneNumber']).getOne()
+        return next(new responseModel(request, response, '', 'get all bank accounts', 200, '', bankAccounts))
     }
 }
