@@ -197,6 +197,11 @@ export class BankAccountController {
                     })
                 }
                 await this.bankAccountRepository.remove(card)
+                let user = await this.userRepository.findOne({where : {id : userId} , relations : ['bankAccounts']})
+                if (user.bankAccounts.length == 0){
+                    user.isHaveBank = false;
+                    await this.userRepository.save(user)
+                }
                 return response.status(200).json({
                     msg : 'کارت بانکی مورد نظر حذف شد.'
                 })
