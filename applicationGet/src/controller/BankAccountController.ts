@@ -261,7 +261,10 @@ export class BankAccountController {
         if (!user){
             return next(new responseModel(request, response, 'کاربر یافت نشد', 'get all bank accounts', 400, 'کاربر یافت نشد', ''))
         }
-        let bankAccounts = await this.userRepository.findOne({where : {id : userId} , relations : ['bankAccounts']})
-        return next (new responseModel(request , response , ''  , 'get all bank accounts', 200 , '' , bankAccounts.bankAccounts))
+        let bankAccounts = await this.userRepository.createQueryBuilder('banks')
+        .leftJoinAndSelect('banks.bankAccounts' , 'bankAccounts')
+        .where('banks.id = :id' , {id : userId})
+        .select(['user.firstName' , 'banks.lastName' , 'banks.nationalCode' , 'banks.phoneNumber']).getOne()
+        return next (new responseModel(request , response , ''  , 'get all bank accounts', 200 , '' , bankAccounts))
     }
 }
