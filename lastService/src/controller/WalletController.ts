@@ -305,7 +305,7 @@ export class WalletController {
             if (!trade[0].tradePermision) {
                 return response.status(400).json({ msg: 'کاربر گرامی با عرض پوزش امکان ثبت معامله برای دقایقی امکان پذیر نمی باشد.لطفا دقایقی دیگر مجددا تلاش کنید.' });
             }
-            const {amount} = request.body
+            const {amount , cartId} = request.body
             const userId = request.user_id;
             if (+amount < 100000) {
                 monitor.addStatus({
