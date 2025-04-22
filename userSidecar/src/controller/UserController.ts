@@ -213,7 +213,7 @@ export class UserController {
         // }
 
         
-        let topBoxes = { balance: user.wallet.balance, goldWeight: user.wallet.goldWeight, monthlyProfit: 0, totalBalance: (gram * gold) + balance }
+        let topBoxes = { balance: user.wallet.balance, goldWeight: user.wallet.goldWeight, monthlyProfit: 0, totalBalance: ((gram * gold) + balance).toFixed() }
         
         let monthes = ['01',
             '02',
