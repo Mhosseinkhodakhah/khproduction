@@ -415,6 +415,14 @@ export class InvoiceController {
     async completeBuyTransaction(request: Request, response: Response) {
         try {
             const { invoiceId , isFromWallet , cartId } = request.body;
+            if (!cartId || cartId == ''){
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  0,
+                    error : 'خرید بدون انتخاب کارت بانکی'
+                })
+                return response.status(400).json({ msg: 'لطفا کارت بانکی خود را انتخاب کنید' });
+            }
             const validationError = this.validateRequiredFields({ invoiceId , isFromWallet });
             if (validationError) {
                 monitor.addStatus({
