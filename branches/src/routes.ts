@@ -1,6 +1,9 @@
+import branchController from "./controller/branch.controller"
 import { UserController } from "./controller/UserController"
+import { createBranchDto } from "./entity/dto/branchDto.dto"
 
-export const Routes = [{
+export const Routes = [
+    {
     method: "get",
     route: "/users",
     controller: UserController,
@@ -12,9 +15,10 @@ export const Routes = [{
     action: "one"
 }, {
     method: "post",
-    route: "/users",
-    controller: UserController,
-    action: "save"
+    route: "/branch/create",
+    controller: branchController,
+    middlewares:[createBranchDto],
+    action: "createNewBranch"
 }, {
     method: "delete",
     route: "/users/:id",

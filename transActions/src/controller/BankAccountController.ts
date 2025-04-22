@@ -6,6 +6,9 @@ import { ShahkarController } from "./ShahkarController";
 import { SmsService } from "../services/sms-service/message-service";
 import logger from "../services/interservice/logg.service";
 import monitor from "../util/statusMonitor";
+import { responseModel } from "../util/response.model";
+
+
 
 export class BankAccountController {
 
@@ -14,7 +17,6 @@ export class BankAccountController {
     private shahkarController = new ShahkarController()
     private smsService = new SmsService()
     private checkCard = new logger()
-
 
     async all(request: Request, response: Response, next: NextFunction) {
         try {
@@ -25,7 +27,7 @@ export class BankAccountController {
                 status : 1,
                 error: null
             })
-            response.status(200).json(bankAccounts);
+            return response.status(200).json(bankAccounts);
         } catch (error) {
             monitor.addStatus({
                 scope : 'bank account controller',
@@ -69,7 +71,7 @@ export class BankAccountController {
                 status : 1,
                 error: null
             })
-            response.status(200).json(bankAccount);
+            return response.status(200).json(bankAccount);
         } catch (error) {
             monitor.addStatus({
                 scope : 'bank account controller',
@@ -105,22 +107,44 @@ export class BankAccountController {
                 })
                 return response.status(400).json({ error: "Owner not found" });
             }
+            let cartExistance = await this.bankAccountRepository.exists({where : {cardNumber : cardNumber}})
+            if (cartExistance){
+                monitor.addStatus({
+                    scope : 'bank account controller',
+                    status : 0,
+                    error: `شماره کارت قبلا ثبت شده است. `
+                })
+                return response.status(400).json({ msg: "شماره کارت قبلا ثبت شده است" });
+            }
             const bankAccount = this.bankAccountRepository.create({
-                cardNumber, 
+                cardNumber,
                 owner,
                 isVerified: false
             });
             let info = {cardNumber : bankAccount.cardNumber , 
-                nationalCode : owner.nationalCode , 
+                nationalCode : owner.nationalCode,
                 birthDate : owner.birthDate
                 }
                 console.log(info)
                 let isMatch = await this.checkCard.checkCardNuber(info)
-                // let isMatch = await  this.shahkarController.checkMatchPhoneNumberAndCartNumber(info)
+                // let isMatch = await this.shahkarController.checkMatchPhoneNumberAndCartNumber(info)
                 console.log('its returned data>>>' , isMatch)
+                if (isMatch == 500){
+                    return response.status(500).json({msg : 'سیستم ثبت کارت بانکی موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید'})
+                }
+                // if (typeof(isMatch) === undefined){
+                //     return response.status(500).json({msg : 'سیستم ثبت کارت بانکی موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید'})
+                // }
+                if (isMatch == false){
+                    monitor.addStatus({
+                        scope : 'bank account controller',
+                        status : 0,
+                        error: `کارت نامعتبر `
+                    })
+                    return response.status(400).json({ msg: "کارت نامعتبر است" });
+                }
                 bankAccount.isVerified = isMatch;
-                
-                if (isMatch) {                    
+                if (isMatch) {
                     let res =  await this.shahkarController.convertCardToSheba(cardNumber)
                     if (res) {
                         bankAccount.shebaNumber = res.ibanInfo.iban
@@ -143,7 +167,7 @@ export class BankAccountController {
                     status : 0,
                     error: `کارت نامعتبر `
                 })
-                response.status(400).json({ msg: "کارت نامعتبر است" });
+                return response.status(400).json({ msg: "کارت نامعتبر است" });
             } catch (error) {
                 monitor.addStatus({
                     scope : 'bank account controller',
@@ -152,6 +176,40 @@ export class BankAccountController {
                 })
                 console.log("Error in creating bank account", error);
                 return response.status(500).json({msg : "خطا در ثبت کارت بانکی"})
+            }
+        }
+
+        async deleteCard(request: Request, response: Response, next: NextFunction){
+            try {
+                let cardId = request.params.cartId;
+                let userId = request['user_id']
+                console.log(cardId , userId)
+                let card = await this.bankAccountRepository.findOne({where : {id : +cardId} , relations : ['owner']})
+                console.log('card is' , card)
+                if (+card.owner.id != +userId){
+                    return response.status(403).json({
+                        msg : 'شما اجازه حذف این کارت بانکی را ندارید.'
+                    })
+                }
+                if (!card){
+                    return response.status(400).json({
+                        msg : 'کارت بانکی مورد نظر یافت نشد.'
+                    })
+                }
+                await this.bankAccountRepository.remove(card)
+                let user = await this.userRepository.findOne({where : {id : userId} , relations : ['bankAccounts']})
+                if (user.bankAccounts.length == 0){
+                    user.isHaveBank = false;
+                    await this.userRepository.save(user)
+                }
+                return response.status(200).json({
+                    msg : 'کارت بانکی مورد نظر حذف شد.'
+                })
+            } catch (error) {
+                console.log(error)
+                return response.status(500).json({
+                    msg : 'کارت مورد نظر حذف نشد.لطفا دقایقی دیگر مجددا تلاش کنید'
+                })                            
             }
         }
 
@@ -190,14 +248,14 @@ export class BankAccountController {
                     status : 1,
                     error: null
                 })
-                response.status(200).json(updatedBankAccount);                
+                return response.status(200).json(updatedBankAccount);                
             }else{
                 monitor.addStatus({
                     scope : 'bank account controller',
                     status : 0,
                     error: `خطا در اعتبار سنجی کارت بانکی`
                 })
-                response.status(500).json({ msg: "خطا در اعتبارسنجی کارت بانکی" });
+                return response.status(500).json({ msg: "خطا در اعتبارسنجی کارت بانکی" });
             }
         } catch (error) {
             console.log("Error in verifying bank account", error);
@@ -210,9 +268,10 @@ export class BankAccountController {
         }
     }
 
+
     async remove(request: Request, response: Response, next: NextFunction) {
         const id = parseInt(request.params.id);
-        
+
         if (isNaN(id)) {
             monitor.addStatus({
                 scope : 'bank account controller',
@@ -240,7 +299,7 @@ export class BankAccountController {
                 status : 1,
                 error: null
             })
-            response.status(200).json({ msg: "کارت بانکی با موفقیت حذف شد" });
+            return response.status(200).json({ msg: "کارت بانکی با موفقیت حذف شد" });
         } catch (error) {
             console.log("Error in deleting bank account", error);
             monitor.addStatus({
@@ -251,5 +310,4 @@ export class BankAccountController {
             return response.status(500).json({msg :"خطا در حذف کارت بانکی"})
         }
     }
-
 }
