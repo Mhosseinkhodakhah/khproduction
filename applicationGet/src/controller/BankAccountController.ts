@@ -264,7 +264,17 @@ export class BankAccountController {
         let bankAccounts = await this.userRepository.createQueryBuilder('banks')
             .leftJoinAndSelect('banks.bankAccounts' , 'bankAccounts')
             .where('banks.id = :id', { id: userId })
-            .select(['banks.firstName', 'banks.lastName', 'banks.nationalCode', 'banks.phoneNumber' , 'banks.bankAccounts']).getOne()
-        return next(new responseModel(request, response, '', 'get all bank accounts', 200, '', bankAccounts))
+            .getOne()
+
+            let data = {
+                firstName : bankAccounts.firstName,
+                lastName : bankAccounts.lastName,
+                nationalCode : bankAccounts.nationalCode,
+                phoneNumber : bankAccounts.phoneNumber,
+                bankAccounts : bankAccounts.bankAccounts
+            }
+            console.log(data)
+
+        return next(new responseModel(request, response, '', 'get all bank accounts', 200, '', data))
     }
 }
