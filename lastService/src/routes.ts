@@ -196,6 +196,12 @@ export const Routes = [
     controller: BankAccountController,
     action: "all",
     middlwares: [authenticate]
+},{
+    method: "post",
+    route: "/carts/remove/:cartId",
+    controller: BankAccountController,
+    action: "deleteCard",
+    middlwares: [authenticate]
 },
 {
     method: "get",

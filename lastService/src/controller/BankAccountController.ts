@@ -173,7 +173,13 @@ export class BankAccountController {
         async deleteCard(request: Request, response: Response, next: NextFunction){
             try {
                 let cardId = request.params.id;
-                let card = await this.bankAccountRepository.findOne({where : {id : +cardId}})
+                let userId = request['user_id']
+                let card = await this.bankAccountRepository.findOne({where : {id : +cardId} , relations : ['owner']})
+                if (+card.owner.id != +userId){
+                    return response.status(403).json({
+                        msg : 'شما اجازه حذف این کارت بانکی را ندارید.'
+                    })
+                }
                 if (!card){
                     return response.status(400).json({
                         msg : 'کارت بانکی مورد نظر یافت نشد.'
