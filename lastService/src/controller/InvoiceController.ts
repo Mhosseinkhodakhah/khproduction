@@ -19,6 +19,7 @@ import { goldPrice } from "../entity/goldPrice";
 import monitor from "../util/statusMonitor";
 import instance from "../util/tradePerision";
 import { systemSetting } from "../entity/systemSetting";
+import { BankAccount } from "../entity/BankAccount";
 
 
 export class InvoiceController {
@@ -27,6 +28,7 @@ export class InvoiceController {
     private walletRepository = AppDataSource.getRepository(Wallet);
     private invoiceTypeRepository = AppDataSource.getRepository(InvoiceType)
     private zpService = new ZarinPalService()
+    private bankAccountRepository = AppDataSource.getRepository(BankAccount);
     private paymentInfoRepository = AppDataSource.getRepository(PaymentInfo)
     private smsService = new SmsService()
     private goldPriceRepo = AppDataSource.getRepository(goldPrice)
@@ -412,7 +414,7 @@ export class InvoiceController {
 
     async completeBuyTransaction(request: Request, response: Response) {
         try {
-            const { invoiceId , isFromWallet } = request.body;
+            const { invoiceId , isFromWallet , cartId } = request.body;
             const validationError = this.validateRequiredFields({ invoiceId , isFromWallet });
             if (validationError) {
                 monitor.addStatus({
@@ -512,13 +514,20 @@ export class InvoiceController {
                     await queryRunner.release()
                 }
             } else {                                   // buy with the zarinpal
+                let bankAccount = await this.bankAccountRepository.findOne({where : {id : cartId} , relations : ['owner']})
+                
+                if (+bankAccount.owner.id != createdInvoice.buyer.id){
+                    return response.status(403).json({
+                        msg : 'خرید از مبدا این کارت بانکی مجاز نمیباشد.'
+                    })
+                }
                 const info = {
                     description: "خرید طلای اب شده",
                     amount : +createdInvoice.totalPrice,
                     userId: createdInvoice.buyer.id,
                     invoiceId: createdInvoice.id,
                     callback_url: 'https://app.khanetala.ir/goldBox',
-                    cardPan: createdInvoice.buyer.bankAccounts[0].cardNumber,
+                    cardPan: bankAccount.cardNumber,
                     phoneNumber: createdInvoice.buyer.phoneNumber
                 };
                 console.log('>>>>>>>>>for javad', info.cardPan)
