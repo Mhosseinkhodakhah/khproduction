@@ -15,7 +15,7 @@ export const verifyIdentityInperson=[
     body('phoneNumber').isString().withMessage('phone number is required and should be string'),
     body('birthDate').notEmpty().isString().withMessage('تاریخ تولد نا معتبر است'),
     body('nationalCode').notEmpty().isString().withMessage('کد ملی  نا معتبر است'),
-    body('id').notEmpty().withMessage('   ای نا معتبر است'),
+    body('id').notEmpty().withMessage('   ای دی نا معتبر است'),
 ]
 
 
