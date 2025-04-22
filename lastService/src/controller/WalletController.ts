@@ -10,6 +10,7 @@ import { SmsService } from "../services/sms-service/message-service";
 import { transportInvoice } from "../entity/transport";
 import monitor from "../util/statusMonitor";
 import instance from "../util/tradePerision";
+import { systemSetting } from "../entity/systemSetting";
 
 export class WalletController {
     private walletRepository = AppDataSource.getRepository(Wallet);
@@ -17,6 +18,7 @@ export class WalletController {
     private walletTransactionRepository = AppDataSource.getRepository(WalletTransaction);
     private paymentInfoRepository = AppDataSource.getRepository(PaymentInfo);
     private transportInvoices = AppDataSource.getRepository(transportInvoice)
+    private systemSetting  = AppDataSource.getRepository(systemSetting)
     private zpService = new ZarinPalService()
     private smsService = new SmsService()
     private goldPriceService = new GoldPriceService()
@@ -93,6 +95,7 @@ export class WalletController {
             await queryRunner.release()
         }
     }
+    
     
     /**
      * its for confirm the transport for user to another user
@@ -297,10 +300,10 @@ export class WalletController {
 
     async depositToWallet(request: Request, response: Response){
         try {
-            let trade = await instance.getter()
-            console.log('permision is >>>>>' , trade)
-            if (!trade) {
-                return response.status(400).json({ msg: 'کاربر گرامی با عرض پوزش امکان  واریز وجه برای دقایقی امکان پذیر نمی باشد.لطفا دقایقی دیگر مجددا تلاش کنید.' });
+            let trade = await this.systemSetting.find()
+            console.log('permision is >>>>>', trade[0].tradePermision)
+            if (!trade[0].tradePermision) {
+                return response.status(400).json({ msg: 'کاربر گرامی با عرض پوزش امکان ثبت معامله برای دقایقی امکان پذیر نمی باشد.لطفا دقایقی دیگر مجددا تلاش کنید.' });
             }
             const {amount} = request.body
             const userId = request.user_id;

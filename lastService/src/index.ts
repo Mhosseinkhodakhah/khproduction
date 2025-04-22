@@ -82,8 +82,12 @@ AppDataSource.initialize().then(async () => {
     const systemService = new SystemService();                   // what the fuck?????
     await systemService.initializeSystemUser();
     await systemService.initializeTransactionTypes();
-    let h = await systemService.createHanldeGoldPrice()
-    console.log(h)
+    let handleGoldPrice = await systemService.createHanldeGoldPrice()
+    let createNewSystemSetting = await systemService.createdTradePermision()
+    
+    console.log(handleGoldPrice)
+    
+    console.log(createNewSystemSetting)
     
     app.listen(3000)
 

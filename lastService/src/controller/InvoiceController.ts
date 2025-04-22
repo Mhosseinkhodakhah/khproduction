@@ -18,6 +18,7 @@ import { validationResult } from "express-validator";
 import { goldPrice } from "../entity/goldPrice";
 import monitor from "../util/statusMonitor";
 import instance from "../util/tradePerision";
+import { systemSetting } from "../entity/systemSetting";
 
 
 export class InvoiceController {
@@ -30,6 +31,7 @@ export class InvoiceController {
     private smsService = new SmsService()
     private goldPriceRepo = AppDataSource.getRepository(goldPrice)
     private estimate = AppDataSource.getRepository(EstimateTransactions)
+    private systemSetting  = AppDataSource.getRepository(systemSetting)
     private remmitanceService=new RemmitanceService()
 
     validateRequiredFields(fields: Record<string, any>): string | null {
@@ -228,9 +230,9 @@ export class InvoiceController {
     }
 
     async createTransaction(request: Request, response: Response) {
-        let trade = await instance.getter()
-        console.log('permision is >>>>>' , trade)
-        if (!trade) {
+        let trade = await this.systemSetting.find()
+        console.log('permision is >>>>>' , trade[0].tradePermision)
+        if (!trade[0].tradePermision) {
             return response.status(400).json({ msg: 'کاربر گرامی با عرض پوزش امکان ثبت معامله برای دقایقی امکان پذیر نمی باشد.لطفا دقایقی دیگر مجددا تلاش کنید.' });
         }
         

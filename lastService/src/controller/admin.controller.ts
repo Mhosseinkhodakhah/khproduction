@@ -16,6 +16,7 @@ import { EstimateTransactions } from "../entity/EstimateTransactions";
 import cacher from "../services/cacher";
 import instance from "../util/tradePerision";
 import { handleGoldPrice } from "../entity/handleGoldPrice.entity";
+import { systemSetting } from "../entity/systemSetting";
 
 
 
@@ -27,6 +28,7 @@ export default class adminController {
     private walletTransactionRepository = AppDataSource.getRepository(WalletTransaction);
     private paymentInfoRepository = AppDataSource.getRepository(PaymentInfo);
     private handleGoldprice = AppDataSource.getRepository(handleGoldPrice)
+    private systemSetting = AppDataSource.getRepository(systemSetting)
     private zpService = new ZarinPalService()
     private interservice = new logger()
     private smsService = new SmsService()
@@ -56,18 +58,28 @@ export default class adminController {
 
     async getTradePermision(req: Request, res: Response, next: NextFunction){
         // let tradePerimision = await cacher.getter('tradePermision')
-        let tradePerimision = await instance.getter()
-        console.log( 'trade permision is >>>>', tradePerimision)
-        return next(new responseModel(req, res,'' ,'admin service', 200, null, tradePerimision))
+        let tradePerimision = await this.systemSetting.find()
+        console.log( 'trade permision is >>>>', tradePerimision[0].tradePermision)
+        return next(new responseModel(req, res,'' ,'admin service', 200, null, tradePerimision[0].tradePermision))
     }
-        
+     
+    
+
     async tradePermision(req: Request, res: Response, next: NextFunction){
-        // let tradePerimision = await cacher.getter('tradePermision')
-        // let tradePerimision = await instance.getter()
-        await instance.setter()
-        let tradePerimision = await instance.getter()
-        console.log(tradePerimision)
-        return next(new responseModel(req, res,'' ,'admin service', 200, null, tradePerimision))
+        let tradePermision = await this.systemSetting.find()
+
+        if (tradePermision[0].tradePermision == 1){
+            tradePermision[0].tradePermision = 0
+        }else{
+            tradePermision[0].tradePermision =1
+        }
+        await this.systemSetting.save(tradePermision[0])
+        console.log(tradePermision)
+        if (tradePermision[0].tradePermision == 1){
+            return next(new responseModel(req, res,'معاملات با موفقیت باز شد' ,'admin service', 200, null, tradePermision[0].tradePermision))
+        }else{
+            return next(new responseModel(req, res,'معاملات با موفقیت بسته شد' ,'admin service', 200, null, tradePermision[0].tradePermision))
+        }
     }
 
 

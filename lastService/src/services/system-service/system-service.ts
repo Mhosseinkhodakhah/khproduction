@@ -7,6 +7,7 @@ import { Invoice } from "../../entity/Invoice";
 import { WalletTransaction } from "../../entity/WalletTransaction";
 import { PaymentInfo } from "../../entity/PaymentInfo";
 import { handleGoldPrice } from "../../entity/handleGoldPrice.entity";
+import { systemSetting } from "../../entity/systemSetting";
 
 
 export class SystemService {
@@ -15,6 +16,7 @@ export class SystemService {
     private typesRepository = AppDataSource.getRepository(InvoiceType)
     private invoiceRepository = AppDataSource.getRepository(Invoice)
     private handleGoldPrice = AppDataSource.getRepository(handleGoldPrice)
+    private systemSetting = AppDataSource.getRepository(systemSetting)
     private piRepo = AppDataSource.getRepository(PaymentInfo)
     private walletTransactionsRepository = AppDataSource.getRepository(WalletTransaction)
 
@@ -83,5 +85,19 @@ export class SystemService {
             return 'handle Gold Price Created'
         }
         return 'handle goldPrice existance'
+    }
+
+
+
+    async createdTradePermision(){
+        let tradePermision = await this.systemSetting.find()
+        if (!tradePermision || tradePermision.length == 0){
+            let newSystemStting = this.systemSetting.create({
+                tradePermision : 1
+            })
+            await this.systemSetting.save(newSystemStting)
+            console.log('system setting created!')
+        }
+        console.log('system setting already exists')
     }
 }
