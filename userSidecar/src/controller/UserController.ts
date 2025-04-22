@@ -226,7 +226,8 @@ export class UserController {
             '09',
             '10',
             '11',
-            '12',]
+            '12',
+        ]
 
         try {
             for (let i = 0; i < monthes.length; i++) {
@@ -268,8 +269,7 @@ export class UserController {
         return response.status(200).json({ buyInMonth, monthlyPrice: monthlyPrice.priceChart, assets, topBoxes })
     }
 
-
-
+    
 
     async one(request: Request, response: Response, next: NextFunction) {
         const id = parseInt(request.params.id)

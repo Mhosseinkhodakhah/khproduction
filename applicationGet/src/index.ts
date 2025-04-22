@@ -21,13 +21,11 @@ AppDataSource.initialize().then(async () => {
 
     let shakc = new ShahkarController()
 
-
     // await shakc.checkUsers()
 
-
-    workerStarter.startWorker()
-    await cacher.setter('tradePermision' , 1)
-    console.log(await cacher.getter('tradePermision'))
+    // workerStarter.startWorker()
+    // await cacher.setter('tradePermision' , 1)
+    // console.log(await cacher.getter('tradePermision'))
     // create express app
     const app = express()
     app.use(bodyParser.json())
@@ -87,7 +85,6 @@ AppDataSource.initialize().then(async () => {
     await systemService.initializeTransactionTypes();
     
     app.listen(3003)
-
 
     process.on('unhandledRejection', (error) => {
         monitor.error.push(`${error}`)

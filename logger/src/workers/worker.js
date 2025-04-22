@@ -55,6 +55,16 @@ class interConnection {
                     console.log(error)
                 }
                 break;
+
+            case 'goldPriceService':
+                try {
+                    let rawRespons = await fetch('http://localhost:3010/monitor/all', { method: 'GET' })
+                    response = await rawRespons.json()
+                    console.log('response from user status . . .', response)
+                } catch (error) {
+                    console.log(error)
+                }
+                break;
             case 'admin':
                 try {
                     let rawRespons = await fetch('http://localhost:5005/monitor/all', { method: 'GET' })
@@ -135,6 +145,7 @@ let interConnectionService = new interConnection()
 setInterval(async () => {
     let gatewayResponse = await interConnectionService.getStatus('gateway')
     let adminNodeResponse = await interConnectionService.getStatus('adminNode')
+    let goldPriceService = await interConnection.getStatus('goldPriceService')
     let queryServiceResponse = await interConnectionService.getStatus('queryService')
     let userResponse = await interConnectionService.getStatus('user')
     let adminResponse = await interConnectionService.getStatus('admin')
@@ -155,6 +166,12 @@ setInterval(async () => {
         result.push({ status: 0, service: 'user' })
     } else {
         result.push({  status: 1,  total : userResponse, service: 'user' })
+    } 
+    if (!goldPriceService) {
+        console.log('goldPrice service service seems like is down . . .')
+        result.push({ status: 0, service: 'goldPrice service' })
+    } else {
+        result.push({  status: 1,  total : goldPriceService, service: 'goldPrice service' })
     } 
     if (!adminNodeResponse) {
         console.log('adminNode service seems like is down . . .')

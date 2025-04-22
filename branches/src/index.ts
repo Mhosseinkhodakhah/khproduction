@@ -3,7 +3,6 @@ import bodyParser from "body-parser"
 import { Request, Response } from "express"
 import { AppDataSource } from "./data-source"
 import { Routes } from "./routes"
-import { User } from "./entity/User"
 import winston from 'winston'
 import expressWinston from 'express-winston'
 import { createLogger, format, transports } from 'winston'
