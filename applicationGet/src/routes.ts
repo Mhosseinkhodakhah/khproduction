@@ -231,6 +231,13 @@ export const Routes = [
     middlwares: [authenticate]
 },{
     method: "get",
+    route: "/admin/goldPrice",
+    controller: GoldPriceController,
+    action: "getGoldPrice",
+    middlwares: [adminMiddleware]
+}
+,{
+    method: "get",
     route: "/goldPrice/handle",
     controller: GoldPriceController,
     action: "getHandleGoldPrice",
