@@ -237,28 +237,49 @@ export class UserController {
                     const endJalali = new Date(Jalali.parse(`1404/${element}/31`).gregorian())
                     console.log('11111', startJalali, endJalali)
                     let allInvoices = await this.invoiceRepository.createQueryBuilder("invoice")
-                        .where('invoice.status = :status' , {status : 'completed'})
+                    .leftJoinAndSelect('invoice.type' , 'type')
+                        .where('invoice.status = :status AND type.title = :type' , {status : 'completed' , type : 'buy'})
                         .select("SUM(CAST(invoice.goldWeight AS decimal))", "total")
                         .andWhere("(invoice.buyerId = :userId) AND invoice.createdAt >= :today AND invoice.createdAt <= :finaly", {
                             userId,
                             today: startJalali,
                             finaly: endJalali
                         }).getRawOne();
-                    buyInMonth.data[+element - 1] = +allInvoices.total
-                    console.log('aggregate the fucking monthly buy', allInvoices)
+                    let allSellInvoices = await this.invoiceRepository.createQueryBuilder("invoice")
+                        .leftJoinAndSelect('invoice.type', 'type')
+                        .where('invoice.status = :status AND type.title = :type', { status: 'completed', type: 'sell' })
+                        .select("SUM(CAST(invoice.goldWeight AS decimal))", "total")
+                        .andWhere("(invoice.buyerId = :userId) AND invoice.createdAt >= :today AND invoice.createdAt <= :finaly", {
+                            userId,
+                            today: startJalali,
+                            finaly: endJalali
+                        }).getRawOne();
+                        buyInMonth.data[+element - 1] = (+allInvoices.total - +allSellInvoices.total)
+                        console.log('aggregate the fucking monthly buy', allInvoices)
 
                 } else {
                     const startJalali = Jalali.parse(`1404/${element}/1`).gregorian()
                     const endJalali = Jalali.parse(`1404/${element}/30`).gregorian()
                     console.log('22222', startJalali, endJalali)
                     let allInvoices = await this.invoiceRepository.createQueryBuilder("invoice")
+                    .leftJoinAndSelect('invoice.type' , 'type')
+                        .where('invoice.status = :status AND type.title = :type' , {status : 'completed' , type : 'buy'})
                         .select("SUM(CAST(invoice.goldWeight AS decimal))", "total")
-                        .where("(invoice.buyerId = :userId) AND invoice.createdAt >= :today AND invoice.createdAt <= :finaly", {
+                        .andWhere("(invoice.buyerId = :userId) AND invoice.createdAt >= :today AND invoice.createdAt <= :finaly", {
                             userId,
                             today: startJalali,
                             finaly: endJalali
                         }).getRawOne();
-                    buyInMonth.data[+element - 1] = +allInvoices.total
+                    let allSellInvoices = await this.invoiceRepository.createQueryBuilder("invoice")
+                        .leftJoinAndSelect('invoice.type', 'type')
+                        .where('invoice.status = :status AND type.title = :type', { status: 'completed', type: 'sell' })
+                        .select("SUM(CAST(invoice.goldWeight AS decimal))", "total")
+                        .andWhere("(invoice.buyerId = :userId) AND invoice.createdAt >= :today AND invoice.createdAt <= :finaly", {
+                            userId,
+                            today: startJalali,
+                            finaly: endJalali
+                        }).getRawOne();
+                    buyInMonth.data[+element - 1] = (+allInvoices.total -  - +allSellInvoices.total)
                     console.log('aggregate the fucking monthly buy', allInvoices)
                 }
             }
