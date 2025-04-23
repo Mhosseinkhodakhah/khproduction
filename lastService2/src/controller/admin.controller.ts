@@ -726,6 +726,7 @@ export default class adminController {
             let handleGoldUpdated = await this.handleGoldPrice.find()
             return next(new responseModel(req, res,'قیمت طلا با موفقیت ثبت شد' ,'admin service', 200, null, handleGoldUpdated))
         } catch (error) {
+            console.log(error)
             await queryRunner.rollbackTransaction()
             return next(new responseModel(req, res,'قیمت طلا ثبت نشد.لطفا دقایقی دیگر مجددا تلاش کنید.' ,'admin service', 500, null, null))
         }finally{
