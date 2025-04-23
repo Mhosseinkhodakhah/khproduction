@@ -254,7 +254,7 @@ export class BankAccountController {
         }
     }
 
-
+    
     async allBanks(request: Request, response: Response, next: NextFunction) {
         let userId = request['user_id']
         let user = await this.userRepository.exists({ where: { id: userId } })

@@ -10,6 +10,7 @@ export class GoldPriceController {
     private goldPriceService = new GoldPriceService()
     private handleGoldPrice = AppDataSource.getRepository(handleGoldPrice)
 
+
     async getGoldPrice(request: Request, response: Response, next: NextFunction) {
         try {
 
@@ -79,5 +80,10 @@ export class GoldPriceController {
         
     }
     }  
+
+    async getHandleGoldPrice(request: Request, response: Response, next: NextFunction){
+        let goldPrice = await this.handleGoldPrice.find()
+        response.status(200).json({ data : goldPrice[0] })
+    }
     
 }

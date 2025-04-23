@@ -229,10 +229,13 @@ export const Routes = [
     controller: GoldPriceController,
     action: "getGoldPrice",
     middlwares: [authenticate]
+},{
+    method: "get",
+    route: "/goldPrice/handle",
+    controller: GoldPriceController,
+    action: "getHandleGoldPrice",
+    middlwares: [adminMiddleware]
 },
-
-
-
 {
     method: "get",
     route: "/goldPrice/:date",
