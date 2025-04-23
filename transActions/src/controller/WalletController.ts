@@ -352,7 +352,7 @@ export class WalletController {
                 let savedTransaction = await queryRunner.manager.save(transactionToCreate)
                 console.log('its here for savedTransActions' , savedTransaction)
                 info.invoiceId = savedTransaction.id
-                info.cardPan = wallet.user.bankAccounts[0].cardNumber
+                info.cardPan = bankAccount.cardNumber
                 info.phoneNumber = wallet.user.phoneNumber
                 const url = await this.zpService.initiatePayment(info);
                 console.log('after get url' , url)
@@ -461,7 +461,6 @@ export class WalletController {
                 console.log("error in save transaction status" , error);
                 return response.status(500).json({ msg: "خطای داخلی سیستم" });
             }
-           
         } catch (error) {
             monitor.addStatus({
                 scope : 'wallet controller',
