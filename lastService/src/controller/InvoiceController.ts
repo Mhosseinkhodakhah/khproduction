@@ -243,9 +243,13 @@ export class InvoiceController {
             totalPrice  = totalPrice.replaceAll(',' , '')
             console.log('new totalPrice , ' , totalPrice)
         }
-        let seperator = goldWeight.split('')
-        if (seperator.length == 4){
-            goldWeight = `${seperator[0]}${seperator[1]}${seperator[2]}${seperator[3]}0`
+        if (+goldWeight < 1) {
+            let seperator = goldWeight.split('')
+            if (seperator.length == 4) {
+                goldWeight = `${seperator[0]}${seperator[1]}${seperator[2]}${seperator[3]}0`
+            } else if (seperator.length == 3) {
+                goldWeight = `${seperator[0]}${seperator[1]}${seperator[2]}00`
+            }
         }
         console.log('tot' , totalPrice)
         try {
