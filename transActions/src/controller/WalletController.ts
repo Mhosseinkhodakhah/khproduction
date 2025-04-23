@@ -25,7 +25,6 @@ export class WalletController {
     private smsService = new SmsService()
     private goldPriceService = new GoldPriceService()
     
-
     private async generateInvoice(){
         return (new Date().getTime()).toString()
     }
@@ -305,7 +304,7 @@ export class WalletController {
             let trade = await this.systemSetting.find()
             console.log('permision is >>>>>', trade[0].tradePermision)
             if (!trade[0].tradePermision) {
-                return response.status(400).json({ msg: 'کاربر گرامی با عرض پوزش امکان ثبت معامله برای دقایقی امکان پذیر نمی باشد.لطفا دقایقی دیگر مجددا تلاش کنید.' });
+                return response.status(400).json({ msg: 'کاربر گرامی با عرض پوزش امکان  واریز وجه برای دقایقی امکان پذیر نمی باشد.لطفا دقایقی دیگر مجددا تلاش کنید.' });
             }
             const {amount , cartId} = request.body
             const userId = request.user_id;
