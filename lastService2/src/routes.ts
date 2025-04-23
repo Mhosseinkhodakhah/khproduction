@@ -428,6 +428,12 @@ export const Routes = [
     controller: adminController,
     action: "setPrice",
     middlwares: [adminMiddleware]
+},{
+    method: "post",
+    route: "/goldPrice/down",
+    controller: adminController,
+    action: "deActiveHandleGoldPrice",
+    middlwares: [adminMiddleware]
 },
 {
     method: "put",

@@ -709,7 +709,6 @@ export default class adminController {
     }
 
 
-
     async setPrice(req: Request, res: Response, next: NextFunction){
         let admin = `${req.user.firstName} ${req.user.lastName}`
         let { price } = req.body
@@ -736,6 +735,39 @@ export default class adminController {
         }finally{
             await queryRunner.release()
         }
+    }
+
+
+    async deActiveHandleGoldPrice(req: Request, res: Response, next: NextFunction){
+        let admin = `${req.user.firstName} ${req.user.lastName}`
+        let handleGold = await this.handleGoldPrice.find()
+        
+        let queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        try {
+            if (handleGold[0].active){
+                handleGold[0].active = false
+            }else {
+                handleGold[0].active = true
+            }
+            handleGold[0].admin = admin;
+            await queryRunner.manager.save(handleGold[0])
+            await queryRunner.commitTransaction()
+            if (handleGold[0].active){
+                return next(new responseModel(req, res,'قیمت دستی طلا با موفقیت فعال شد.' ,'admin service', 200, null, null))
+            }else{
+                return next(new responseModel(req, res,'قیمت دستی طلا با موفقیت غیر فعال شد.' ,'admin service', 200, null, null))
+            }
+
+        } catch (error) {
+            console.log('error in deactive handle gold price' , error)
+            await queryRunner.rollbackTransaction()
+            return next(new responseModel(req, res,'خطای داخلی' ,'admin service', 500, null, null))
+        }finally {
+            await queryRunner.release()
+        }
+
     }
 
 }
