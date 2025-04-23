@@ -14,6 +14,16 @@
  */
 export function formatGoldWeight(weight) {
     let seperator = weight.toString().split('')
+    let mainWeight = ''
+    if (seperator.length == 4) {
+        mainWeight = `${seperator[0]}${seperator[1]}${seperator[2]}${seperator[3]}0`
+    } else if (seperator.length == 3) {
+        mainWeight = `${seperator[0]}${seperator[1]}${seperator[2]}00`
+    } else if (seperator.length == 2) {
+        mainWeight = `${seperator[0]}${seperator[1]}000`
+    } else if (seperator.length == 1) {
+        mainWeight = `${seperator[0]}.000`
+    }
     let newGoldWeight = `${seperator[0]}${seperator[1]}${seperator[2]}${seperator[3]}${seperator[4]}`
     console.log( 'after validation' , +newGoldWeight )
     return +newGoldWeight

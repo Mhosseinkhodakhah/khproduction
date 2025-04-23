@@ -243,14 +243,22 @@ export class InvoiceController {
             totalPrice  = totalPrice.replaceAll(',' , '')
             console.log('new totalPrice , ' , totalPrice)
         }
-        if (+goldWeight < 1) {
-            let seperator = goldWeight.split('')
-            if (seperator.length == 4) {
-                goldWeight = `${seperator[0]}${seperator[1]}${seperator[2]}${seperator[3]}0`
-            } else if (seperator.length == 3) {
-                goldWeight = `${seperator[0]}${seperator[1]}${seperator[2]}00`
-            }
+        if ( +goldWeight < 0.01){
+            monitor.addStatus({
+                scope : 'invoice controller',
+                status :  0,
+                error : 'میزان طلای درخاستی نمیتواند کمتر از 0.01 باشد'
+            })
+            return response.status(400).json({ msg: 'میزان طلای درخاستی نمی تواند کمتر از 0.01 باشد' });
         }
+        // if (+goldWeight < 1) {
+            
+            console.log('start the transaction',goldWeight , totalPrice)
+            goldWeight = formatGoldWeight(goldWeight)
+            console.log('after validating in formatinfgffggg>>>>> ' , goldWeight)
+        // }else{
+            
+        // }
         console.log('tot' , totalPrice)
         try {
             let realGoldPrice = await this.goldPriceRepo.find({order : {createdAt : 'DESC'}})
@@ -260,14 +268,6 @@ export class InvoiceController {
             // console.log('total' , totalPrice , typeof(totalPrice))
             if ((totalPrice.toString()).split('').length > 10){
                 return response.status(400).json({ msg: 'مبلغ بیش از حد مجاز' });
-            }
-            if ( +goldWeight < 0.01){
-                monitor.addStatus({
-                    scope : 'invoice controller',
-                    status :  0,
-                    error : 'میزان طلای درخاستی نمیتواند کمتر از 0.01 باشد'
-                })
-                return response.status(400).json({ msg: 'میزان طلای درخاستی نمی تواند کمتر از 0.01 باشد' });
             }
             if (+goldWeight > 10){
                 monitor.addStatus({
@@ -320,8 +320,6 @@ export class InvoiceController {
             }
             // console.log('walletIs' , user.wallet)
             // goldWeight = formatGoldWeight(goldWeight)
-            console.log('start the transaction',goldWeight , totalPrice)
-            goldWeight = formatGoldWeight(goldWeight)
             if (type == "buy") {
                 console.log('11111')
                 totalPrice = +realGoldPrice2*(+goldWeight)
