@@ -317,8 +317,7 @@ export class WalletController {
                 })
                 return response.status(400).json({msg : "مبلغ وارد شده از حداقل مبلغ واریز کمتر است"})
             }
-            let bankAccount = await this.bankAccountRepository.findOne({where : {id : +cartId} , relations : ['owner']})
-                
+            let bankAccount = await this.bankAccountRepository.findOne({where : {id : +cartId} , relations : ['owner']})    
             if (+bankAccount.owner.id != userId){
                 return response.status(403).json({
                     msg : 'خرید از مبدا این کارت بانکی مجاز نمیباشد.'

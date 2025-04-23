@@ -170,34 +170,34 @@ export const Routes = [
     action: "updateWallet",
     middlwares: [authenticate]
 },
-{
-    method: "post",
-    route: "/clearOtpTable",
-    controller: OtpController,
-    action: "clearOtpTable",
-    middlwares: []
-},
-{
-    method: "post",
-    route: "/createCart",
-    controller: BankAccountController,
-    action: "save",
-    middlwares: [authenticate]
-},
-{
-    method: "get",
-    route: "/carts",
-    controller: BankAccountController,
-    action: "all",
-    middlwares: [authenticate]
-},
-{
-    method: "post",
-    route: "/carts/remove/:cartId",
-    controller: BankAccountController,
-    action: "deleteCard",
-    middlwares: [authenticate]
-},
+// {
+//     method: "post",
+//     route: "/clearOtpTable",
+//     controller: OtpController,
+//     action: "clearOtpTable",
+//     middlwares: []
+// },
+// {
+//     method: "post",
+//     route: "/createCart",
+//     controller: BankAccountController,
+//     action: "save",
+//     middlwares: [authenticate]
+// },
+// {
+//     method: "get",
+//     route: "/carts",
+//     controller: BankAccountController,
+//     action: "all",
+//     middlwares: [authenticate]
+// },
+// {
+//     method: "post",
+//     route: "/carts/remove/:cartId",
+//     controller: BankAccountController,
+//     action: "deleteCard",
+//     middlwares: [authenticate]
+// },
 // {
 //     method: "get",
 //     route: "/carts/:id",
@@ -280,43 +280,43 @@ export const Routes = [
 //     action: "completeWithdraw",
 //     middlwares : [authenticate]
 // },
-{
-    method: "get",
-    route: "/types",
-    controller: InvoiceTypeController,
-    action: "all",
-    middlwares: [authenticate]
+// {
+//     method: "get",
+//     route: "/types",
+//     controller: InvoiceTypeController,
+//     action: "all",
+//     middlwares: [authenticate]
 
-},
-{
-    method: "get",
-    route: "/types/:id",
-    controller: InvoiceTypeController,
-    action: "one",
-    middlwares: [authenticate]
+// },
+// {
+//     method: "get",
+//     route: "/types/:id",
+//     controller: InvoiceTypeController,
+//     action: "one",
+//     middlwares: [authenticate]
 
-},
-{
-    method: "post",
-    route: "/types",
-    controller: InvoiceTypeController,
-    action: "save",
-    middlwares: [authenticate]
+// },
+// {
+//     method: "post",
+//     route: "/types",
+//     controller: InvoiceTypeController,
+//     action: "save",
+//     middlwares: [authenticate]
 
-},
-{
-    method: "delete",
-    route: "/types",
-    controller: InvoiceTypeController,
-    action: "remove",
-    middlwares: [authenticate]
-},{
-    method: "get",
-    route: "/dashboard",
-    controller: UserController,
-    action: "charts",
-    middlwares: [authenticate]
-},
+// },
+// {
+//     method: "delete",
+//     route: "/types",
+//     controller: InvoiceTypeController,
+//     action: "remove",
+//     middlwares: [authenticate]
+// },{
+//     method: "get",
+//     route: "/dashboard",
+//     controller: UserController,
+//     action: "charts",
+//     middlwares: [authenticate]
+// },
 
 /**
  * this routes is for inperson buy and sell 
@@ -575,13 +575,13 @@ export const Routes = [
 //     action: "getBuyPhoneInvoice",
 //     middlwares: [adminMiddleware]
 // },
-{
-    method: "get",
-    route: "/call/user",
-    controller: PhoneInvoiceController,
-    action: "getAllPhoneTransactionForUser",
-    middlwares: [authenticate]
-},
+// {
+//     method: "get",
+//     route: "/call/user",
+//     controller: PhoneInvoiceController,
+//     action: "getAllPhoneTransactionForUser",
+//     middlwares: [authenticate]
+// },
 
 // {
 //     method: "post",
@@ -631,13 +631,13 @@ export const Routes = [
 //     action: "getAllSellPhoneInvoice",
 //     middlwares: [adminMiddleware]
 // },
-{
-    method: "get",
-    route: "/callsell/user",
-    controller: PhoneInvoiceController,
-    action: "getAllSellPhoneTransactionForUser",
-    middlwares: [authenticate]
-},
+// {
+//     method: "get",
+//     route: "/callsell/user",
+//     controller: PhoneInvoiceController,
+//     action: "getAllSellPhoneTransactionForUser",
+//     middlwares: [authenticate]
+// },
 // {
 //     method: "get",
 //     route: "/callsell/status/:status",
