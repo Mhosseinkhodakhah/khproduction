@@ -17,7 +17,7 @@ export class GoldPriceController {
             let handleGold = await this.handleGoldPrice.find()
             let result;
             if (handleGold[0].active){
-                // result = handleGold[0].price
+                result = {price : handleGold[0].price , change : 0}
                 console.log('result is here>>>>' , handleGold[0].price)
             }else {
                 console.log('result is not here>>>>' , handleGold[0].price)
