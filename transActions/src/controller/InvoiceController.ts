@@ -20,6 +20,7 @@ import monitor from "../util/statusMonitor";
 import instance from "../util/tradePerision";
 import { systemSetting } from "../entity/systemSetting";
 import { BankAccount } from "../entity/BankAccount";
+import { handleGoldPrice } from "../entity/handleGoldPrice.entity";
 
 
 export class InvoiceController {
@@ -32,6 +33,7 @@ export class InvoiceController {
     private paymentInfoRepository = AppDataSource.getRepository(PaymentInfo)
     private smsService = new SmsService()
     private goldPriceRepo = AppDataSource.getRepository(goldPrice)
+    private handleGoldPrice = AppDataSource.getRepository(handleGoldPrice)
     private estimate = AppDataSource.getRepository(EstimateTransactions)
     private systemSetting  = AppDataSource.getRepository(systemSetting)
     private remmitanceService=new RemmitanceService()
@@ -246,10 +248,19 @@ export class InvoiceController {
        
         console.log('tot' , totalPrice)
         try {
-            let realGoldPrice = await this.goldPriceRepo.find({order : {createdAt : 'DESC'}})
-            const realGoldPrice2 = +realGoldPrice[0].Geram18
-            console.log('price>>>' , realGoldPrice2 , (+goldPrice))   
-            console.log('weight>>>' , (realGoldPrice2*(+goldWeight)) , totalPrice)
+            let realGoldPrice ;
+            let realGoldPrice2;
+            let handlePrice = await this.handleGoldPrice.find()
+            if (handlePrice[0].active) {
+                realGoldPrice = +handleGoldPrice[0].price
+                realGoldPrice2 = realGoldPrice
+            } else {
+                realGoldPrice = await this.goldPriceRepo.findOne({ order: { createdAt: 'DESC' } })
+                console.log('after getting last fuckiung real gold price >>>>', realGoldPrice)
+                realGoldPrice2 = +realGoldPrice.Geram18
+                console.log('price>>>', realGoldPrice2, (+goldPrice))
+                console.log('weight>>>', (realGoldPrice2 * (+goldWeight)), totalPrice)
+            }
             // console.log('total' , totalPrice , typeof(totalPrice))
             if ((totalPrice.toString()).split('').length > 10){
                 return response.status(400).json({ msg: 'مبلغ بیش از حد مجاز' });
