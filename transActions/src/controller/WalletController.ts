@@ -323,13 +323,14 @@ export class WalletController {
                     msg : 'خرید از مبدا این کارت بانکی مجاز نمیباشد.'
                 })
             }
+            console.log(  'bank account' , bankAccount)
             const info = {
                 description: "شارژ کیف پول",
                 amount,
                 userId: userId,
                 invoiceId : null,
                 callback_url : 'https://app.khanetala.ir/Bankinfo',
-                cardPan : bankAccount.cardNumber,
+                cardPan : null,
                 phoneNumber:null
             }
             let wallet = await this.walletRepository.findOne({where : {user : {id :userId}},relations:{user : {bankAccounts : true}}})
