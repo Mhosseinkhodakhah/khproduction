@@ -711,6 +711,7 @@ export default class adminController {
 
 
     async setPrice(req: Request, res: Response, next: NextFunction){
+        let admin = `${req.user.firstName} ${req.user.lastName}`
         let queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
@@ -719,6 +720,7 @@ export default class adminController {
             let handlePrice = handleGold[0]
             let {price} = req.body
             handlePrice.price = +price
+            handlePrice.admin = admin;
             await queryRunner.manager.save(handlePrice)
             await queryRunner.commitTransaction()
             let handleGoldUpdated = await this.handleGoldPrice.find()

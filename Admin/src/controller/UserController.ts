@@ -22,14 +22,7 @@ export class UserController {
     private InterService = new interservice()
     private adminRepository = AppDataSource.getRepository(Admin)
 
-    // async testApi(req: Request, res: Response, next: any) {
-    //     // const bodyError = validationResult(req)
-    //     // if (!bodyError.isEmpty()) {
-    //     //     return next(new response(req, res, 'create lesson', 400, bodyError['errors'][0].msg, null))
-    //     // }
-    // return next(new response(req , res , 'test' , 200 , null , 'its passed from test . . .'))
-    // }
-
+    
     async createNewAdmin(req: Request, res: Response, next: NextFunction) {
         const newAdmin = new Admin()
         newAdmin.firstName = 'hossein';

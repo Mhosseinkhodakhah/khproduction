@@ -429,7 +429,7 @@ export const Routes = [
     action: "setPrice",
     middlwares: []
 },
-{                          
+{
     method: "put",
     route: "/admin/transAction/:authority",
     controller: adminController,

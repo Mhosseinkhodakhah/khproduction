@@ -13,6 +13,9 @@ export class handleGoldPrice{
     @Column({type : 'int' , default : 0})
     price : number
 
+    @Column({type : 'varchar' , nullable : true})
+    admin : string
+
     @BeforeInsert()
     @BeforeUpdate()
     updateDates() {
@@ -20,6 +23,7 @@ export class handleGoldPrice{
             this.active = true;
         }else { 
             this.active = false;
+            this.admin = ''
         }
     }
 

@@ -19,7 +19,6 @@ import { handleGoldPrice } from "../entity/handleGoldPrice.entity";
 import { systemSetting } from "../entity/systemSetting";
 
 
-
 export default class adminController {
     private userRepository = AppDataSource.getRepository(User)
     private walletRepository = AppDataSource.getRepository(Wallet)

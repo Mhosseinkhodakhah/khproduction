@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, CreateDateColumn, DeleteDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, DeleteDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 
 @Entity()
@@ -13,10 +13,17 @@ export class handleGoldPrice{
     @Column({type : 'int' , default : 0})
     price : number
 
+    @Column({type : 'varchar' , nullable : true})
+    admin : string
+
     @BeforeInsert()
+    @BeforeUpdate()
     updateDates() {
         if (this.price > 0){
             this.active = true;
+        }else { 
+            this.active = false;
+            this.admin = ''
         }
     }
 
