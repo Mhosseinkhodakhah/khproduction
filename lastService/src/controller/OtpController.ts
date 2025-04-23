@@ -255,9 +255,9 @@ export class OtpController {
                 await this.userRepository.save(user)
             }
 
-            let isMatch = await this.checkMatchOfPhoneAndNationalCode({ phoneNumber : user.phoneNumber , nationalCode : user.nationalCode})
             let isNotMatch = await this.notMatchRepo.exists({where : {nationalCode : user.nationalCode}})
             if (!isNotMatch){
+                let isMatch = await this.checkMatchOfPhoneAndNationalCode({ phoneNumber : user.phoneNumber , nationalCode : user.nationalCode})
                 try {
                     if (isMatch == false){
                         console.log('isMatch is false',isMatch)
