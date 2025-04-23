@@ -102,7 +102,7 @@ import { adminMiddleware } from './auth/auth.middleware'
 app.use('/v1/main' , routing.proxy(`http://localhost:3000`))     // proxing to django for report service
 app.use('/v1/query' , routing.proxy(`http://localhost:3003`))     // roxy to query service
 app.use('/v1/secondmain' , routing.proxy(`http://localhost:3002`))     // proxing to django for report service
-app.use('/v1/secondmain' , routing.proxy(`http://localhost:3011`))     // proxing to transaction and wallet
+app.use('/v1/trade' , routing.proxy(`http://localhost:3011`))     // proxing to transaction and wallet
 app.use('/v1/admin' , routing.proxy(`http://localhost:5005`))     // proxing to admin service
 app.use('/v1/logger' , routing.proxy(`http://localhost:5010`))     // proxing to admin service
 app.use('/v1/old' , routing.proxy(`http://localhost:5004`))     // proxing to oldusers service
