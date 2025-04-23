@@ -13,17 +13,17 @@ export class GoldPriceController {
 
     async getGoldPrice(request: Request, response: Response, next: NextFunction) {
         try {
-
             let userId = request["userId"]
             let handleGold = await this.handleGoldPrice.find()
             let result;
             if (handleGold[0].active){
+                result = handleGold[0].price
                 console.log('result is here>>>>' , handleGold[0].price)
             }else {
+                result = await this.goldPriceService.getGoldPrice()
                 console.log('result is not here>>>>' , handleGold[0].price)
             }
 
-            result = await this.goldPriceService.getGoldPrice()
             let sellFee = 1
             let buyFee = 0
             let data = {
@@ -76,8 +76,7 @@ export class GoldPriceController {
             error: `${err}`
         })
         console.log(err);
-        response.status(500).json({ msg: "خطای داخلی سیستم" })
-        
+        response.status(500).json({ msg: "خطای داخلی سیستم" })   
     }
     }  
 
