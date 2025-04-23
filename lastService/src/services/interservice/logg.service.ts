@@ -34,7 +34,7 @@ export default class logger{
         } catch (error) {
            console.log(` error in checkcardnumber :: `, error.response)
            monitor.error.push(` error in checkcardnumber :: ${error}`)
-           return false;
+           return 500;
         }
     }
 
