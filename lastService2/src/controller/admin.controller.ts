@@ -752,9 +752,11 @@ export default class adminController {
                 handleGold[0].active = true
             }
             handleGold[0].admin = admin;
-            await queryRunner.manager.save(handleGold[0])
+            let newHandlePrice = await queryRunner.manager.save(handleGold[0])
             await queryRunner.commitTransaction()
-            if (handleGold[0].active){
+            let handleGold2 = await this.handleGoldPrice.find()
+            console.log(handleGold2)
+            if (handleGold2[0].active){
                 return next(new responseModel(req, res,'قیمت دستی طلا با موفقیت فعال شد.' ,'admin service', 200, null, null))
             }else{
                 return next(new responseModel(req, res,'قیمت دستی طلا با موفقیت غیر فعال شد.' ,'admin service', 200, null, null))
