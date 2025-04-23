@@ -243,10 +243,7 @@ export class InvoiceController {
             totalPrice  = totalPrice.replaceAll(',' , '')
             console.log('new totalPrice , ' , totalPrice)
         }
-        let seperator = goldWeight.split('')
-        if (seperator.length == 4){
-            goldWeight = `${seperator[0]}${seperator[1]}${seperator[2]}${seperator[3]}0`
-        }
+       
         console.log('tot' , totalPrice)
         try {
             let realGoldPrice = await this.goldPriceRepo.find({order : {createdAt : 'DESC'}})
