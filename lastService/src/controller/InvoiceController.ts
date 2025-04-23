@@ -540,12 +540,14 @@ export class InvoiceController {
                     phoneNumber: createdInvoice.buyer.phoneNumber
                 };
                 console.log('>>>>>>>>>for javad', info.cardPan)
+                console.log('cartIasdfasdfdfd>>>>>>>>>>>>>>>>>>>>>>>>>>>' , info)
+
                 // console.log('amount>>>>>><<<<<<<<<<<>>>>>>>>>' , amount)
                 // console.log(Math.floor(amount))
                 const url = await this.zpService.initiatePayment(info);              // get dargah url from zarinpal
                 if (url == 'tooMuch'){
                     return response.status(500).json({
-                        msg : 'مبلغ وارد شده بیش از حد مجاز است.'
+                        msg : 'درحال حاظر مبلغ انتخاب شده توسط درگاه پرداخت مورد پذیرش نمیباشد.'
                     }) 
                 }
                 if (url == 'error'){
