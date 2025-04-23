@@ -389,7 +389,7 @@ export class ShahkarController {
         } catch (error) {
             console.log(error?.response?.headers)
             // monitor.error.push(`error in get token shahkar :: ${error.response}`)
-            monitor.error.push(`error in get token shahkar :: ${error.response}`)
+            monitor.error.push(`error in get token shahkar :: , ` , error.response)
             console.log("error in getToken ShahkarController   " + error);
             return null
         }

@@ -95,7 +95,6 @@ export class BankAccountController {
             })
             return response.status(400).json({ msg: "فیلد شماره کارت نمیتواند خالی باشد" });
         }
-
         try {
             const owner = await this.userRepository.findOneBy({ id: ownerId });
             console.log(owner)

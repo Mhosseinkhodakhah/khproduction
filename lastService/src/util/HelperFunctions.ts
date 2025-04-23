@@ -4,9 +4,6 @@
  *//////////////////////////////////////////////////////////
 
 
-
-
-
 /**
  * this function is for helping for creating the right format for gold weight
  * @param weight 
