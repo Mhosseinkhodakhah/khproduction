@@ -17,12 +17,12 @@ export class GoldPriceController {
             let handleGold = await this.handleGoldPrice.find()
             let result;
             if (handleGold[0].active){
-                result = handleGold[0].price
+                // result = handleGold[0].price
                 console.log('result is here>>>>' , handleGold[0].price)
             }else {
-                result = await this.goldPriceService.getGoldPrice()
                 console.log('result is not here>>>>' , handleGold[0].price)
             }
+            result = await this.goldPriceService.getGoldPrice()
 
             let sellFee = 1
             let buyFee = 0
