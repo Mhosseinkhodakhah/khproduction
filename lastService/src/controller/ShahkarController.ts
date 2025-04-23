@@ -332,6 +332,7 @@ export class ShahkarController {
                 birth_date: info.birthDate
             };
             let response = await axios.post(url, data, { headers })
+            console.log('after response from card' , response)
             if (response.status == 200) {
                 if (response.data) {
                     return response.data.match
@@ -339,7 +340,7 @@ export class ShahkarController {
             } else if (response.status >= 500) {
                 return 500
             } else {
-                return false
+                return 'unknown'
             }
         } catch (error) {
             monitor.error.push(`error in check phone and cartNumber:::: ${error}`)
@@ -348,10 +349,10 @@ export class ShahkarController {
                 if (error.response.status >= 500) {
                     return 500
                 } if (error.response.status >= 400 && error.response.status < 500) {
-                    return false
+                    return 'unknown'
                 }
             }
-            return false
+            return 'unknown'
         }
     }
 
