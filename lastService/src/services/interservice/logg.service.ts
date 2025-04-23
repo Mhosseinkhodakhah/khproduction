@@ -25,7 +25,6 @@ export default class logger{
     }
 
 
-
     async checkCardNuber(info){
         try {
             console.log('its hereeeeeeeee>>>>>>>>>>')
