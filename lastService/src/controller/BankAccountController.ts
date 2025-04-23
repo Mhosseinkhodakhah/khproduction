@@ -125,8 +125,8 @@ export class BankAccountController {
                 birthDate : owner.birthDate
                 }
                 console.log(info)
-                let isMatch = await this.checkCard.checkCardNuber(info)
-                // let isMatch = await this.shahkarController.checkMatchPhoneNumberAndCartNumber(info)
+                // let isMatch = await this.checkCard.checkCardNuber(info)
+                let isMatch = await this.shahkarController.checkMatchPhoneNumberAndCartNumber(info)
                 console.log('its returned data>>>' , isMatch)
                 if (isMatch == null){
                     return response.status(500).json({msg : 'سیستم ثبت کارت بانکی موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید'})

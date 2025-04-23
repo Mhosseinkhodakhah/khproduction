@@ -317,7 +317,7 @@ export class ShahkarController {
             const headers = {
                 'Accept-Language': 'fa',
                 'CLIENT-DEVICE-ID': '',
-                'CLIENT-IP-ADDRESS': '',
+                'CLIENT-IP-ADDRESS': '195.88.208.234',
                 'CLIENT-USER-AGENT': 'User Agent',
                 'CLIENT-USER-ID': '09120000000',
                 'CLIENT-PLATFORM-TYPE': 'WEB',
