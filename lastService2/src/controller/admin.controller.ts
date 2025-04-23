@@ -712,13 +712,17 @@ export default class adminController {
 
     async setPrice(req: Request, res: Response, next: NextFunction){
         let admin = `${req.user.firstName} ${req.user.lastName}`
+        let { price } = req.body
+        if (price.toString().includes(',')){
+            price  = price.replaceAll(',' , '')
+            console.log('new price , ' , price)
+        }
         let queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
         try {
             let handleGold = await this.handleGoldPrice.find()
             let handlePrice = handleGold[0]
-            let {price} = req.body
             handlePrice.price = +price
             handlePrice.admin = admin;
             await queryRunner.manager.save(handlePrice)
@@ -726,7 +730,7 @@ export default class adminController {
             let handleGoldUpdated = await this.handleGoldPrice.find()
             return next(new responseModel(req, res,'قیمت طلا با موفقیت ثبت شد' ,'admin service', 200, null, handleGoldUpdated))
         } catch (error) {
-            console.log(error)
+            console.log('error' , error)
             await queryRunner.rollbackTransaction()
             return next(new responseModel(req, res,'قیمت طلا ثبت نشد.لطفا دقایقی دیگر مجددا تلاش کنید.' ,'admin service', 500, null, null))
         }finally{
