@@ -256,7 +256,7 @@ export class InvoiceController {
                 realGoldPrice2 = realGoldPrice
             } else {
                 realGoldPrice = await this.goldPriceRepo.find({ order: { createdAt: 'DESC' } })
-                console.log('after getting last fuckiung real gold price >>>>', realGoldPrice)
+                // console.log('after getting last fuckiung real gold price >>>>', realGoldPrice)
                 realGoldPrice2 = +realGoldPrice[0].Geram18
                 console.log('price>>>', realGoldPrice2, (+goldPrice))
                 console.log('weight>>>', (realGoldPrice2 * (+goldWeight)), totalPrice)
