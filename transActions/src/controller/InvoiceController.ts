@@ -251,7 +251,7 @@ export class InvoiceController {
             let realGoldPrice ;
             let realGoldPrice2;
             let handlePrice = await this.handleGoldPrice.find()
-            console.log('handle>>>' , handlePrice)
+            console.log('handle>>>' , handlePrice[0].price)
             // if (handlePrice[0].active) {
             //     realGoldPrice = +handleGoldPrice[0].price
             //     realGoldPrice2 = realGoldPrice
