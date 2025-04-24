@@ -251,16 +251,16 @@ export class InvoiceController {
             let realGoldPrice ;
             let realGoldPrice2;
             let handlePrice = await this.handleGoldPrice.find()
-            if (handlePrice[0].active) {
-                realGoldPrice = +handleGoldPrice[0].price
-                realGoldPrice2 = realGoldPrice
-            } else {
-                realGoldPrice = await this.goldPriceRepo.find({ order: { createdAt: 'DESC' } })
-                // console.log('after getting last fuckiung real gold price >>>>', realGoldPrice)
-                realGoldPrice2 = +realGoldPrice[0].Geram18
-                console.log('price>>>', realGoldPrice2, (+goldPrice))
-                console.log('weight>>>', (realGoldPrice2 * (+goldWeight)), totalPrice)
-            }
+            // if (handlePrice[0].active) {
+            //     realGoldPrice = +handleGoldPrice[0].price
+            //     realGoldPrice2 = realGoldPrice
+            // } else {
+            realGoldPrice = await this.goldPriceRepo.find({ order: { createdAt: 'DESC' } })
+            // console.log('after getting last fuckiung real gold price >>>>', realGoldPrice)
+            realGoldPrice2 = +realGoldPrice[0].Geram18
+            console.log('price>>>', realGoldPrice2, (+goldPrice))
+            console.log('weight>>>', (realGoldPrice2 * (+goldWeight)), totalPrice)
+            // }
             // console.log('total' , totalPrice , typeof(totalPrice))
             if ((totalPrice.toString()).split('').length > 10){
                 return response.status(400).json({ msg: 'مبلغ بیش از حد مجاز' });
