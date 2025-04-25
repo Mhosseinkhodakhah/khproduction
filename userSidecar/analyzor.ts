@@ -388,14 +388,11 @@ export class analyzor {
         }
         for (let i = 0; i < data.length; i++) {
             if (+data[i].goldWeight > 0){
-            console.log('innn1>>>>' , +data[i].goldWeight )
             let weight = +data[i].goldWeight
             if (data[i].date) {
-                console.log('innnnn2222>>>>' , data[i].date)
                 let date = data[i].date.split('/')
                 let nowDate = (new Date().toLocaleString('fa-IR').split(',')[0]).split('/')[0]
                 if (date[0] == nowDate) {
-                    console.log( ' its innnn >>>' , nowDate , date[1] , weight)
                     switch (date[1]) {
                         case '۰۱':
                             if (data[i].type.title == 'sell') {
@@ -587,9 +584,9 @@ export class analyzor {
                     if (day[0] == year && day[1] == month) {
                         let numberDay = await this.changeToEnglish(day[2])
                         if (data[i].type.title == 'sell'){
-                            mainMonth2[numberDay - 1] += ((+data[i].goldWeight));
+                            mainMonth2[numberDay - 1] += +((+data[i].goldWeight)).toFixed(2);
                         }else{
-                            mainMonth[numberDay - 1] += ((+data[i].goldWeight));
+                            mainMonth[numberDay - 1] += +((+data[i].goldWeight)).toFixed(2);
                         }
                     }
                 }
