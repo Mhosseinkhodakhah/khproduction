@@ -679,7 +679,7 @@ export function startCronJob() {
             let analyze = new analyzor()
             let users: any = await interConnection.getAllUsers()
             let analyzedData = await analyze.barChart(users.invoices)
-            let lineChart = await analyze.lineChart(users.estimates)
+            let lineChart = await analyze.lineChart(users.invoices)
             let priceChart = await analyze.monthlyPrice(users.prices)
             await cacher.setter('appDashboard', { priceChart: priceChart })
             await cacher.setter('pannelCharts', { barChart: analyzedData, lineChart: lineChart })
