@@ -13,7 +13,7 @@ let goldPrice2 = AppDataSource.getRepository(goldPrice)
 
 export class analyzor {
 
-    
+
 
     private async firstMonthesOrSecondMonthes(month: string) {
         let mainMonth = 0;
@@ -372,7 +372,7 @@ export class analyzor {
 
 
     async barChart(data: any[]) {
-        console.log('firstData >>> ' , data)
+        console.log('firstData >>> ', data)
         let mainMonth = {
             farvardin: 0,
             ordibehesht: 0,
@@ -388,77 +388,160 @@ export class analyzor {
             esfand: 0
         }
         for (let i = 0; i < data.length; i++) {
-            let weight = Math.abs((data[i].boughtGold - data[i].soldGold))
+            let weight = +data[i].goldWeight
             if (data[i].date) {
                 let date = data[i].date.split('/')
                 let nowDate = (new Date().toLocaleString('fa-IR').split(',')[0]).split('/')[0]
                 if (date[0] == nowDate) {
                     switch (date[1]) {
                         case '۰۱':
-                            mainMonth.farvardin += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.farvardin -= weight;
+                            } else {
+                                mainMonth.farvardin += weight;
+                            }
                             break;
                         case '۰۲':
-                            mainMonth.ordibehesht += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.ordibehesht -= weight;
+                            } else {
+                                mainMonth.ordibehesht += weight;
+                            }
                             break;
                         case '۰۳':
-                            mainMonth.khordad += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.khordad -= weight;
+                            } else {
+                                mainMonth.khordad += weight;
+                            }
                             break;
                         case '۰۴':
-                            mainMonth.tir += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.tir -= weight;
+                            } else {
+                                mainMonth.tir += weight;
+                            }
                             break;
                         case '۰۵':
-                            mainMonth.mordad += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.mordad -= weight;
+                            } else {
+                                mainMonth.mordad += weight;
+                            }
                             break;
                         case '۰۶':
-                            mainMonth.shahrivar += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.shahrivar -= weight;
+                            } else {
+                                mainMonth.shahrivar += weight;
+                            }
                             break;
                         case '۰۷':
-                            mainMonth.mehr += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.mehr -= weight;
+                            } else {
+                                mainMonth.mehr += weight;
+                            }
                             break;
                         case '۰۸':
-                            mainMonth.aban += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.aban -= weight;
+                            } else {
+                                mainMonth.aban += weight;
+                            }
                             break;
                         case '۰۹':
-                            mainMonth.azar += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.azar -= weight;
+                            } else {
+                                mainMonth.azar += weight;
+                            }
                             break;
                         case '۱':
-                            mainMonth.farvardin += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.farvardin -= weight;
+                            } else {
+                                mainMonth.farvardin += weight;
+                            }
                             break;
                         case '۲':
-                            mainMonth.ordibehesht += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.ordibehesht -= weight;
+                            } else {
+                                mainMonth.ordibehesht += weight;
+                            }
                             break;
                         case '۳':
-                            mainMonth.khordad += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.khordad -= weight;
+                            } else {
+                                mainMonth.khordad += weight;
+                            }
                             break;
                         case '۴':
-                            mainMonth.tir += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.tir -= weight;
+                            } else {
+                                mainMonth.tir += weight;
+                            }
                             break;
                         case '۵':
-                            mainMonth.mordad += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.mordad -= weight;
+                            } else {
+                                mainMonth.mordad += weight;
+                            }
                             break;
                         case '۶':
-                            mainMonth.shahrivar += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.shahrivar -= weight;
+                            } else {
+                                mainMonth.shahrivar += weight;
+                            }
                             break;
                         case '۷':
-                            mainMonth.mehr += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.mehr -= weight;
+                            } else {
+                                mainMonth.mehr += weight;
+                            }
                             break;
                         case '۸':
-                            mainMonth.aban += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.aban -= weight;
+                            } else {
+                                mainMonth.aban += weight;
+                            }
                             break;
                         case '۹':
-                            mainMonth.azar += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.azar -= weight;
+                            } else {
+                                mainMonth.azar += weight;
+                            }
                             break;
-
                         case '۱۰':
-                            mainMonth.dey += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.dey -= weight;
+                            } else {
+                                mainMonth.dey += weight;
+                            }
                             break;
                         case '۱۱':
-                            mainMonth.bahman += weight;
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.bahman -= weight;
+                            } else {
+                                mainMonth.bahman += weight;
+                            }
                             break;
                         case '۱۲':
+                            if (data[i].type.title == 'sell') {
+                                mainMonth.esfand -= weight;
+                            } else {
+                                mainMonth.esfand += weight;
+                            }
                             mainMonth.esfand += weight;
                             break;
-
                         default:
                             break;
                     }
@@ -505,7 +588,7 @@ export class analyzor {
         }
         return [{ label: label, data: mainMonth }, { label: label, data: mainMonth2 }]
     }
-    
+
 
 
     async monthlyPrice(prices) {
@@ -540,7 +623,7 @@ export class analyzor {
         }
 
         let nowDate = new Date().toLocaleString('fa-IR').split(',')[0]
-        let yearAgo = `${parseInt(nowDate.split('/')[0])-1}/${nowDate.split('/')[1]}/${nowDate.split('/')[2]}`
+        let yearAgo = `${parseInt(nowDate.split('/')[0]) - 1}/${nowDate.split('/')[1]}/${nowDate.split('/')[2]}`
         for (let i = 0; i < prices.length; i++) {
             let year = prices[i].Date.split('/')[0]
             if (year == '1404') {
@@ -558,21 +641,21 @@ export class analyzor {
         }
         let nowDate1 = await this.changeToEnglish(new Date().toLocaleString('fa-IR').split(',')[1])
         let newLabel = {}
-        
-        for(let i =0 ; i < Object.keys(label3).length ; i ++ ){
+
+        for (let i = 0; i < Object.keys(label3).length; i++) {
             let monthName = Object.keys(label3)[i]
-            if (i >= nowDate1+1){
+            if (i >= nowDate1 + 1) {
                 newLabel[monthName] = label3[Object.keys(label3)[i]]
             }
         }
-        
-        for(let i =0 ; i < Object.keys(label).length ; i++ ){
+
+        for (let i = 0; i < Object.keys(label).length; i++) {
             let monthName = Object.keys(label)[i]
-            if (i <= nowDate1){
+            if (i <= nowDate1) {
                 newLabel[monthName] = label[Object.keys(label)[i]]
             }
         }
-        
+
         let data = []
         let label2 = []
         for (let j of Object.keys(newLabel)) {
