@@ -586,8 +586,11 @@ export class analyzor {
                     let year = (new Date().toLocaleString("fa-Ir").split(",")[0]).split('/')[0]
                     if (day[0] == year && day[1] == month) {
                         let numberDay = await this.changeToEnglish(day[2])
-                        mainMonth[numberDay - 1] += +((+data[i].goldWeight).toFixed(2));
-                        mainMonth2[numberDay - 1] += +((+data[i].goldWeight).toFixed(2));
+                        if (data[i].type.title == 'sell'){
+                            mainMonth2[numberDay - 1] += +((+data[i].goldWeight).toFixed(2));
+                        }else{
+                            mainMonth[numberDay - 1] += +((+data[i].goldWeight).toFixed(2));
+                        }
                     }
                 }
             }
@@ -685,6 +688,9 @@ export function startCronJob() {
             await cacher.setter('pannelCharts', { barChart: analyzedData, lineChart: lineChart })
             // here is for analyzing            
         }, 1000 * 60);
+        // setInterval(async()=>{
+
+        // } , 1000*60*60*24*15)
     } catch (error) {
     }
 }
