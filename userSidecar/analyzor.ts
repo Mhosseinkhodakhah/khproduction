@@ -388,6 +388,7 @@ export class analyzor {
             esfand: 0
         }
         for (let i = 0; i < data.length; i++) {
+            if (+data[i].goldWeight > 0){
             let weight = +data[i].goldWeight
             if (data[i].date) {
                 let date = data[i].date.split('/')
@@ -556,6 +557,7 @@ export class analyzor {
         }
         return { label: label, data: finalData };
     }
+    }
 
 
     async lineChart(data) {
@@ -673,7 +675,7 @@ export function startCronJob() {
         setInterval(async () => {
             let analyze = new analyzor()
             let users: any = await interConnection.getAllUsers()
-            let analyzedData = await analyze.barChart(users.estimates)
+            let analyzedData = await analyze.barChart(users.invoices)
             let lineChart = await analyze.lineChart(users.estimates)
             let priceChart = await analyze.monthlyPrice(users.prices)
             await cacher.setter('appDashboard', { priceChart: priceChart })
