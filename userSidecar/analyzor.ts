@@ -586,7 +586,7 @@ export class analyzor {
                         if (data[i].type.title == 'sell'){
                             mainMonth2[numberDay - 1] = ((+mainMonth2[numberDay - 1])+(+data[i].goldWeight)).toFixed(2);
                         }else{
-                            mainMonth[numberDay - 1] += ((+mainMonth[numberDay - 1])+(+data[i].goldWeight)).toFixed(2);
+                            mainMonth[numberDay - 1] = ((+mainMonth[numberDay - 1])+(+data[i].goldWeight)).toFixed(2);
                         }
                     }
                 }
