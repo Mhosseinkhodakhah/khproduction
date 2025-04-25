@@ -23,7 +23,6 @@ export default class connection {
             }else{
                 prices = await this.goldPrice.find()
             }
-            console.log('users>>>' , users)
             let finalDate = {users : users , invoices : invoices , estimates : estimates , prices : prices}
             return finalDate 
     }
