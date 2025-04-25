@@ -372,7 +372,6 @@ export class analyzor {
 
 
     async barChart(data: any[]) {
-        console.log('firstData >>> ', data)
         let mainMonth = {
             farvardin: 0,
             ordibehesht: 0,
@@ -394,6 +393,7 @@ export class analyzor {
                 let date = data[i].date.split('/')
                 let nowDate = (new Date().toLocaleString('fa-IR').split(',')[0]).split('/')[0]
                 if (date[0] == nowDate) {
+                    console.log( ' its innnn >>>' , nowDate , date[1] , weight)
                     switch (date[1]) {
                         case '۰۱':
                             if (data[i].type.title == 'sell') {
