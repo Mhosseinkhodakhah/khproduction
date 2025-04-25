@@ -584,9 +584,9 @@ export class analyzor {
                     if (day[0] == year && day[1] == month) {
                         let numberDay = await this.changeToEnglish(day[2])
                         if (data[i].type.title == 'sell'){
-                            mainMonth2[numberDay - 1] += +data[i].goldWeight;
+                            mainMonth2[numberDay - 1] = ((+mainMonth2[numberDay - 1])+(+data[i].goldWeight)).toString();
                         }else{
-                            mainMonth[numberDay - 1] += +data[i].goldWeight;
+                            mainMonth[numberDay - 1] += ((+mainMonth[numberDay - 1])+(+data[i].goldWeight)).toString();
                         }
                     }
                 }
