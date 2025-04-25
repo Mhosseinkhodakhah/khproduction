@@ -585,14 +585,13 @@ export class analyzor {
                 let year = (new Date().toLocaleString("fa-Ir").split(",")[0]).split('/')[0]
                 if (day[0] == year && day[1] == month) {
                     let numberDay = await this.changeToEnglish(day[2])
-                    mainMonth[numberDay - 1] = +((+data[i].boughtGold).toFixed(2));
-                    mainMonth2[numberDay - 1] = +((+data[i].soldGold).toFixed(2));
+                    mainMonth[numberDay - 1] += +((+data[i].goldWeight).toFixed(2));
+                    mainMonth2[numberDay - 1] += +((+data[i].goldWeight).toFixed(2));
                 }
             }
         }
         return [{ label: label, data: mainMonth }, { label: label, data: mainMonth2 }]
     }
-
 
 
     async monthlyPrice(prices) {
