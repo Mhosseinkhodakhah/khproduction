@@ -688,9 +688,7 @@ export function startCronJob() {
             await cacher.setter('pannelCharts', { barChart: analyzedData, lineChart: lineChart })
             // here is for analyzing            
         }, 1000 * 60);
-        // setInterval(async()=>{
-
-        // } , 1000*60*60*24*15)
     } catch (error) {
+        console.log('errorrrr' , error)
     }
 }
