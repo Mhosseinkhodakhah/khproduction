@@ -551,6 +551,7 @@ export class analyzor {
                 }
             }
         }
+    }
         let finalData = []
         let label = []
         for (let j of Object.keys(mainMonth)) {
@@ -558,7 +559,6 @@ export class analyzor {
             finalData.push((mainMonth[j]).toFixed(2))
         }
         return { label: label, data: finalData };
-    }
     }
 
 
