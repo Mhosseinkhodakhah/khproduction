@@ -388,7 +388,7 @@ export class analyzor {
         }
         for (let i = 0; i < data.length; i++) {
             if (+data[i].goldWeight > 0){
-                console.log('innn1>>>>' , +data[i].goldWeight )
+            console.log('innn1>>>>' , +data[i].goldWeight )
             let weight = +data[i].goldWeight
             if (data[i].date) {
                 console.log('innnnn2222>>>>' , data[i].date)
