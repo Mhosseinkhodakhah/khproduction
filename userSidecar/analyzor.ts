@@ -372,6 +372,7 @@ export class analyzor {
 
 
     async barChart(data: any[]) {
+        console.log('firstData >>> ' , data)
         let mainMonth = {
             farvardin: 0,
             ordibehesht: 0,
@@ -389,13 +390,9 @@ export class analyzor {
         for (let i = 0; i < data.length; i++) {
             let weight = Math.abs((data[i].boughtGold - data[i].soldGold))
             if (data[i].date) {
-                console.log('check it', data[i]?.date.split('/'))
                 let date = data[i].date.split('/')
                 let nowDate = (new Date().toLocaleString('fa-IR').split(',')[0]).split('/')[0]
-                console.log('compare date', nowDate, date[0])
                 if (date[0] == nowDate) {
-                    console.log('its innnnn>>>', date, nowDate)
-                    console.log('data>>', data[i])
                     switch (date[1]) {
                         case '۰۱':
                             mainMonth.farvardin += weight;
@@ -425,7 +422,6 @@ export class analyzor {
                             mainMonth.azar += weight;
                             break;
                         case '۱':
-                            console.log('its here')
                             mainMonth.farvardin += weight;
                             break;
                         case '۲':
@@ -468,7 +464,6 @@ export class analyzor {
                     }
                 }
             }
-            console.log(mainMonth)
         }
         let finalData = []
         let label = []
@@ -481,7 +476,6 @@ export class analyzor {
 
 
     async lineChart(data) {
-        console.log('start the lineChart script>>>>>')
         let mainMonth;
         let mainMonth2;
         let label1 = ['۰۱', '۰۲', '۰۳', '۰۴', '۰۵', '۰۶', '۰۷', '۰۸', '۰۹', '۱۰', '۱۱', '۱۲', '۱۳', '۱۴', '۱۵', '۱۶', '۱۷', '۱۸', '۱۹', '۲۰', '۲۱', '۲۲', '۲۳', '۲۴', '۲۵', '۲۶', '۲۷', '۲۸', '۲۹', '۳۰']
@@ -489,7 +483,6 @@ export class analyzor {
         let label;
         let monthType = await this.firstMonthesOrSecondMonthes(new Date().toLocaleString("fa-IR").split(',')[0].split('/')[1])
         if (monthType == 2) {
-            console.log('the bad format of month')
             label = label1
             mainMonth = new Array(30).fill(0)
             mainMonth2 = new Array(30).fill(0)
@@ -503,18 +496,13 @@ export class analyzor {
                 let day = data[i].date.split('/');
                 let month = (new Date().toLocaleString("fa-Ir").split(",")[0]).split('/')[1]
                 let year = (new Date().toLocaleString("fa-Ir").split(",")[0]).split('/')[0]
-                console.log('in fucking lineChrt>>>', year, month)
                 if (day[0] == year && day[1] == month) {
-                    console.log('day>>>>', day)
                     let numberDay = await this.changeToEnglish(day[2])
-                    console.log('number day in new year', numberDay)
                     mainMonth[numberDay - 1] = +((+data[i].boughtGold).toFixed(2));
                     mainMonth2[numberDay - 1] = +((+data[i].soldGold).toFixed(2));
                 }
             }
         }
-        console.log('finish the lineChart algorithmssssss>>>>')
-        // console.log({label : label , data : mainMonth})
         return [{ label: label, data: mainMonth }, { label: label, data: mainMonth2 }]
     }
     
@@ -553,31 +541,22 @@ export class analyzor {
 
         let nowDate = new Date().toLocaleString('fa-IR').split(',')[0]
         let yearAgo = `${parseInt(nowDate.split('/')[0])-1}/${nowDate.split('/')[1]}/${nowDate.split('/')[2]}`
-        console.log(nowDate)
-        console.log(yearAgo)
         for (let i = 0; i < prices.length; i++) {
             let year = prices[i].Date.split('/')[0]
             if (year == '1404') {
                 let month2 = await this.wichMonth(prices[i].Date.split('/')[1])
-                // console.log('month>>>' , label[month2])
                 if (label[month2] < +prices[i].Geram18) {
-                    // console.log('its in' , prices[i].Geram18 , month2)
                     label[month2] = +prices[i].Geram18;
                 }
             }
             if (year == '1403') {
                 let month3 = await this.wichMonth(prices[i].Date.split('/')[1])
-                // console.log('month>>>' , label[month2])
                 if (label3[month3] < +prices[i].Geram18) {
-                    // console.log('its in' , prices[i].Geram18 , month3)
                     label3[month3] = +prices[i].Geram18;
                 }
             }
         }
-        console.log('labelssss' , label)
-        console.log('labelssss' , label3)
         let nowDate1 = await this.changeToEnglish(new Date().toLocaleString('fa-IR').split(',')[1])
-        console.log('month now>>>' , nowDate1)
         let newLabel = {}
         
         for(let i =0 ; i < Object.keys(label3).length ; i ++ ){
@@ -594,7 +573,6 @@ export class analyzor {
             }
         }
         
-        console.log('month now>>>' , newLabel)
         let data = []
         let label2 = []
         for (let j of Object.keys(newLabel)) {
@@ -611,20 +589,14 @@ export function startCronJob() {
     try {
         setInterval(async () => {
             let analyze = new analyzor()
-            console.log('the timer start successfully');
             let users: any = await interConnection.getAllUsers()
-            // console.log('response', users)
             let analyzedData = await analyze.barChart(users.estimates)
             let lineChart = await analyze.lineChart(users.estimates)
-            console.log('returened data>>>>>>>>>>>>>>', lineChart)
-            console.log('returned>>>>')
             let priceChart = await analyze.monthlyPrice(users.prices)
             await cacher.setter('appDashboard', { priceChart: priceChart })
             await cacher.setter('pannelCharts', { barChart: analyzedData, lineChart: lineChart })
-            // console.log(  'pannelCharts is here >>>>>' , cacher.getter('pannelCharts'))
             // here is for analyzing            
         }, 1000 * 60);
     } catch (error) {
-        console.log("error in runing job", error);
     }
 }
