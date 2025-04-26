@@ -673,10 +673,27 @@ export class analyzor {
 
 
 
-export function startCronJob() {
+export async function startCronJob() {
     try {
-        setInterval(async () => {
-            console.log('start the crobn')
+        try {
+            let cachedLineChart = await cacher.getter('lineChart')
+            let cachedBararChart = await cacher.getter('barChart')
+            if (!cachedBararChart || !cachedLineChart){
+                console.log('cached is empty and make it full')
+                let analyze = new analyzor()
+                let users: any = await interConnection.getAllUsers()
+                console.log('after getting all data' , users.invoices[0])
+                let analyzedData = await analyze.barChart(users.invoices)
+                let lineChart = await analyze.lineChart(users.invoices)
+                let priceChart = await analyze.monthlyPrice(users.prices)
+                await cacher.setter('appDashboard', { priceChart: priceChart })
+                await cacher.setter('barChart', { barChart: analyzedData})
+                await cacher.setter('lineChart', {lineChart: lineChart })
+            }else{
+                console.log('cache was full and start successfully >>>> ')
+            }
+        } catch (error) {
+            console.log('cached is empty and make it full')
             let analyze = new analyzor()
             let users: any = await interConnection.getAllUsers()
             console.log('after getting all data' , users.invoices[0])
@@ -684,9 +701,33 @@ export function startCronJob() {
             let lineChart = await analyze.lineChart(users.invoices)
             let priceChart = await analyze.monthlyPrice(users.prices)
             await cacher.setter('appDashboard', { priceChart: priceChart })
-            await cacher.setter('pannelCharts', { barChart: analyzedData, lineChart: lineChart })
+            await cacher.setter('barChart', { barChart: analyzedData})
+            await cacher.setter('lineChart', {lineChart: lineChart })
+        }
+        setInterval(async () => {
+            console.log('start the monthly')
+            let analyze = new analyzor()
+            let users: any = await interConnection.getAllUsers()
+            console.log('after getting all data' , users.invoices[0])
+            let analyzedData = await analyze.barChart(users.invoices)
+            // let lineChart = await analyze.lineChart(users.invoices)
+            let priceChart = await analyze.monthlyPrice(users.prices)
+            await cacher.setter('appDashboard', { priceChart: priceChart })
+            await cacher.setter('barChart', { barChart: analyzedData})
             // here is for analyzing         
-        }, 1000 * 60);
+        }, 1000 * 60 * 60 * 24 * 30);
+        setInterval(async () => {
+            console.log('start the cron daily')
+            let analyze = new analyzor()
+            let users: any = await interConnection.getAllUsers()
+            console.log('after getting all data' , users.invoices[0])
+            // let analyzedData = await analyze.barChart(users.invoices)
+            let lineChart = await analyze.lineChart(users.invoices)
+            // let priceChart = await analyze.monthlyPrice(users.prices)
+            // await cacher.setter('appDashboard', { priceChart: priceChart })
+            await cacher.setter('lineChart', {lineChart: lineChart })
+            // here is for analyzing         
+        }, 1000 * 60 * 60 * 24);
     } catch (error) {
         console.log('errorrrr' , error)
     }

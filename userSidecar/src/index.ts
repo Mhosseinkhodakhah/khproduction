@@ -72,7 +72,7 @@ AppDataSource.initialize().then(async () => {
         })
     );
 
-    startCronJob()
+    await startCronJob()
 
     process.on('unhandledRejection', (error) => {
         monitor.error.push(`${error}`)
