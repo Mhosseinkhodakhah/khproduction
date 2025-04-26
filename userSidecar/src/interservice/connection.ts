@@ -60,7 +60,7 @@ export default class connection {
             return finalDate 
 
         } catch (error) {
-            console.log('its error in getting data from fucking hewe')            
+            console.log('its error in getting data from fucking hewe' , error)            
         }
     }
 }
