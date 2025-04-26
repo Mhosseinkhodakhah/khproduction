@@ -129,6 +129,10 @@ export class BankAccountController {
                 let isMatch = await this.shahkarController.checkMatchPhoneNumberAndCartNumber(info)
                 console.log('its returned data>>>' , isMatch)
                 
+                if (isMatch == 'unknown'){
+                    return response.status(500).json({msg : 'سیستم ثبت کارت بانکی موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید'})
+                }
+
                 if (isMatch == null){
                     return response.status(500).json({msg : 'سیستم ثبت کارت بانکی موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید'})
                 }
