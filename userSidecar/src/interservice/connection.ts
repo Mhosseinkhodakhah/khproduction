@@ -42,13 +42,15 @@ export default class connection {
 
 
     async getAllUsers(){
+        try {
             let users = await this.userRepository.find({relations : ['buys' , 'sells' , 'wallet' , 'wallet.transactions']})
             let invoices = await this.invoiceRepository.find({where : {status : 'completed'},relations : ['type']})
             // await this.estimateMaker()
             let estimates = await this.estimate.find()
+            console.log('start>>>>')
             let all = await axios.get("https://gateway.khaneetala.ir/v1/main/test/09123460671") 
             let prices;
-            console.log(all)
+            console.log( 'enddd>>>>', all)
             if (all){
                 prices = all.data;
             }else{
@@ -56,5 +58,9 @@ export default class connection {
             }
             let finalDate = {users : users , invoices : invoices , estimates : estimates , prices : prices}
             return finalDate 
+
+        } catch (error) {
+            console.log('its error in getting data from fucking hewe')            
+        }
     }
 }

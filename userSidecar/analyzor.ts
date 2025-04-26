@@ -678,6 +678,7 @@ export function startCronJob() {
         setInterval(async () => {
             let analyze = new analyzor()
             let users: any = await interConnection.getAllUsers()
+            console.log('after getting all data')
             let analyzedData = await analyze.barChart(users.invoices)
             let lineChart = await analyze.lineChart(users.invoices)
             let priceChart = await analyze.monthlyPrice(users.prices)

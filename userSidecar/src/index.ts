@@ -27,7 +27,7 @@ const { combine, timestamp, label, prettyPrint } = format;
 AppDataSource.initialize().then(async () => {
 
 
-      let all = await axios.get("https://gateway.khaneetala.ir/v1/query/test/09123460671")
+    //   let all = await axios.get("https://gateway.khaneetala.ir/v1/query/test/09123460671")
     //   console.log(all.data[0])
     //     let goldPrice2 = AppDataSource.getRepository(goldPrice)
     //     let dataMaker = []  
