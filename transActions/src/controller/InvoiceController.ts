@@ -21,6 +21,7 @@ import instance from "../util/tradePerision";
 import { systemSetting } from "../entity/systemSetting";
 import { BankAccount } from "../entity/BankAccount";
 import { handleGoldPrice } from "../entity/handleGoldPrice.entity";
+import { transActionQeue } from "../entity/transActionQueue.entity";
 
 
 export class InvoiceController {
@@ -31,6 +32,7 @@ export class InvoiceController {
     private zpService = new ZarinPalService()
     private bankAccountRepository = AppDataSource.getRepository(BankAccount);
     private paymentInfoRepository = AppDataSource.getRepository(PaymentInfo)
+    private  transActionQeueu= AppDataSource.getRepository(transActionQeue)
     private smsService = new SmsService()
     private goldPriceRepo = AppDataSource.getRepository(goldPrice)
     private handleGoldPrice = AppDataSource.getRepository(handleGoldPrice)
@@ -397,6 +399,11 @@ export class InvoiceController {
                     })
                     return response.status(400).json({ msg: "موجودی کیف پول کافی نیست" });
                 }
+                let addToQueue = this.transActionQeueu.create({
+                    transActionId : createdInvoice.id,
+                    state : 0
+                })
+                await this.transActionQeueu.save(addToQueue)
                 const queryRunner = AppDataSource.createQueryRunner()
                 await queryRunner.connect()
                 await queryRunner.startTransaction()
@@ -580,6 +587,11 @@ export class InvoiceController {
                     msg: "موجودی صندوق طلا کافی نیست.",
                 });
             }
+            let addToQueue = this.transActionQeueu.create({
+                transActionId : createdInvoice.id,
+                state : 0
+            })
+            await this.transActionQeueu.save(addToQueue)
             const queryRunner = AppDataSource.createQueryRunner()
             await queryRunner.connect()
             await queryRunner.startTransaction()
@@ -672,7 +684,6 @@ export class InvoiceController {
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
     }
-
 
 
     async verifyTransaction(request: Request, response: Response) {
@@ -780,7 +791,6 @@ export class InvoiceController {
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
     }
-
 
 
     async getTransactions(request: Request, response: Response) {
