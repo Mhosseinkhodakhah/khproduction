@@ -655,6 +655,12 @@ export const Routes = [
     controller: InvoiceTypeController,
     action: "test",
     middlwares: []
+},{
+    method: "get",
+    route: "/queue",
+    controller: InvoiceTypeController,
+    action: "queue",
+    middlwares: []
 },
 
 ]

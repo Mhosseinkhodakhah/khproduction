@@ -8,6 +8,7 @@ import { Otp } from "../entity/Otp";
 import { Invoice } from "../entity/Invoice";
 import { EstimateTransactions } from "../entity/EstimateTransactions";
 import monitor from "../util/statusMonitor";
+import { transActionQeue } from "../entity/transActionQueue.entity";
 
 export class InvoiceTypeController {
 
@@ -16,6 +17,7 @@ export class InvoiceTypeController {
     private walletTransActions = AppDataSource.getRepository(WalletTransaction)
     private wallet = AppDataSource.getRepository(Wallet)
     private ivoice = AppDataSource.getRepository(Invoice)
+    private qeueu = AppDataSource.getRepository(transActionQeue)
     private otp = AppDataSource.getRepository(Otp)
     private estimate =AppDataSource.getRepository(EstimateTransactions)
 
@@ -204,4 +206,13 @@ export class InvoiceTypeController {
         // await this.wallet.save(user)
         return response.status(200).json(estimates)
     }
+
+
+    async queue(request: Request, response: Response, next: NextFunction){
+        let all = await this.qeueu.find()
+        return response.status(200).json({
+            all
+        })
+    }
+
 }
