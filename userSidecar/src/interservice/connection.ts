@@ -56,5 +56,4 @@ export default class connection {
             let finalDate = {users : users , invoices : invoices , estimates : estimates , prices : prices}
             return finalDate 
     }
-
 }
