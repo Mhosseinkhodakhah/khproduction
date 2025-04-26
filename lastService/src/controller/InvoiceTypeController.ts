@@ -8,6 +8,7 @@ import { Otp } from "../entity/Otp";
 import { Invoice } from "../entity/Invoice";
 import { EstimateTransactions } from "../entity/EstimateTransactions";
 import monitor from "../util/statusMonitor";
+import { goldPrice } from "../entity/goldPrice";
 
 export class InvoiceTypeController {
 
@@ -17,6 +18,7 @@ export class InvoiceTypeController {
     private wallet = AppDataSource.getRepository(Wallet)
     private ivoice = AppDataSource.getRepository(Invoice)
     private otp = AppDataSource.getRepository(Otp)
+    private goldPrice = AppDataSource.getRepository(goldPrice)
     private estimate =AppDataSource.getRepository(EstimateTransactions)
 
     async all(request: Request, response: Response, next: NextFunction) {
@@ -180,7 +182,7 @@ export class InvoiceTypeController {
         //  ]
         // let newEstimate = this.estimate.create({date : 'localDate' , boughtGold : '0' , soldGold : '0'})
         // await this.estimate.save(newEstimate)
-        let estimates = await this.estimate.find()
+        // let estimates = await this.estimate.find()
         // let system = await this.userRepository.findOne({where : {
         //     isSystemUser : true,
         // } , relations : ['wallet']})
@@ -192,7 +194,7 @@ export class InvoiceTypeController {
         //     isSystemUser : true
         // } , relations : ['wallet']})
 
-        // let estimates = this.estimate.create(monthes)
+        let estimates = await this.goldPrice.find()
         // await this.estimate.save(estimates)
         // let estimate = await this.estimate.find()
         // let estimate = await this.estimate.createQueryBuilder('estimate')
