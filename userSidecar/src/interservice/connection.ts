@@ -48,12 +48,12 @@ export default class connection {
             let estimates = await this.estimate.find()
             let all = await axios.get("https://gateway.khaneetala.ir/v1/main/test/09123460671") 
             let prices;
+            console.log(all)
             if (all){
                 prices = all.data;
             }else{
                 prices = await this.goldPrice.find()
             }
-            console.log(prices)
             let finalDate = {users : users , invoices : invoices , estimates : estimates , prices : prices}
             return finalDate 
     }
