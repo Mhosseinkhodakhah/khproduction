@@ -351,14 +351,6 @@ export class InvoiceController {
     async completeBuyTransaction(request: Request, response: Response) {
         try {
             const { invoiceId , isFromWallet , cartId } = request.body;
-            if (!cartId || cartId == '' || isNaN(cartId)){
-                monitor.addStatus({
-                    scope : 'invoice controller',
-                    status :  0,
-                    error : 'خرید بدون انتخاب کارت بانکی'
-                })
-                return response.status(400).json({ msg: 'لطفا کارت بانکی خود را انتخاب کنید' });
-            }
             console.log('cartId>>>>>>>>>>>>>>>>>>>>>>>>>>>' , cartId)
             const validationError = this.validateRequiredFields({ invoiceId , isFromWallet });
             if (validationError) {
@@ -464,6 +456,15 @@ export class InvoiceController {
                     await queryRunner.release()
                 }
             } else {                                   // buy with the zarinpal
+                if (!cartId || cartId == '' || isNaN(cartId)){
+                    monitor.addStatus({
+                        scope : 'invoice controller',
+                        status :  0,
+                        error : 'خرید بدون انتخاب کارت بانکی'
+                    })
+                    return response.status(400).json({ msg: 'لطفا کارت بانکی خود را انتخاب کنید' });
+                }
+
                 let bankAccount = await this.bankAccountRepository.findOne({where : {id : +cartId} , relations : ['owner']})
                 
                 if (+bankAccount.owner.id != createdInvoice.buyer.id){
