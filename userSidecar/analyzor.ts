@@ -611,7 +611,6 @@ export class analyzor {
             bahman: 0,
             esfand: 0
         }
-
         let label3 = {
             farvardin: 0,
             ordibehesht: 0,
@@ -626,7 +625,6 @@ export class analyzor {
             bahman: 0,
             esfand: 0
         }
-
         let nowDate = new Date().toLocaleString('fa-IR').split(',')[0]
         let yearAgo = `${parseInt(nowDate.split('/')[0]) - 1}/${nowDate.split('/')[1]}/${nowDate.split('/')[2]}`
         for (let i = 0; i < prices.length; i++) {
@@ -653,14 +651,12 @@ export class analyzor {
                 newLabel[monthName] = label3[Object.keys(label3)[i]]
             }
         }
-
         for (let i = 0; i < Object.keys(label).length; i++) {
             let monthName = Object.keys(label)[i]
             if (i <= nowDate1) {
                 newLabel[monthName] = label[Object.keys(label)[i]]
             }
         }
-
         let data = []
         let label2 = []
         for (let j of Object.keys(newLabel)) {
@@ -670,8 +666,6 @@ export class analyzor {
         return { data: data, label: label2 }
     }
 }
-
-
 
 export function startCronJob() {
     try {
@@ -685,8 +679,8 @@ export function startCronJob() {
             let priceChart = await analyze.monthlyPrice(users.prices)
             await cacher.setter('appDashboard', { priceChart: priceChart })
             await cacher.setter('pannelCharts', { barChart: analyzedData, lineChart: lineChart })
-            // here is for analyzing         
-        }, 1000 * 60);
+            // here is for analyzing
+        }, 1000 * 60 * 60);
     } catch (error) {
         console.log('errorrrr' , error)
     }
