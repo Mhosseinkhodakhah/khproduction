@@ -225,78 +225,10 @@ export class UserController {
             '12',
         ]
 
-
-        let buyInMonth;
-        try {
-            buyInMonth = await cacher.getter('buyInMonth')
-            console.log('buy in month>>>' , buyInMonth)
-            if (!buyInMonth){
-                try {
-                    for (let i = 0; i < monthes.length; i++) {
-                        let element: string = monthes[i]
-                        if (+element > 6) {
-                            const startJalali = new Date(Jalali.parse(`1404/${element}/1`).gregorian())
-                            const endJalali = new Date(Jalali.parse(`1404/${element}/31`).gregorian())
-                            console.log('11111', startJalali, endJalali)
-                            let allInvoices = await this.invoiceRepository.createQueryBuilder("invoice")
-                            .leftJoinAndSelect('invoice.type' , 'type')
-                                .where('invoice.status = :status AND type.title = :type' , {status : 'completed' , type : 'buy'})
-                                .select("SUM(CAST(invoice.goldWeight AS decimal))", "total")
-                                .andWhere("(invoice.buyerId = :userId) AND invoice.createdAt >= :today AND invoice.createdAt <= :finaly", {
-                                    userId,
-                                    today: startJalali,
-                                    finaly: endJalali
-                                }).getRawOne();
-                            let allSellInvoices = await this.invoiceRepository.createQueryBuilder("invoice")
-                                .leftJoinAndSelect('invoice.type', 'type')
-                                .where('invoice.status = :status AND type.title = :type', { status: 'completed', type: 'sell' })
-                                .select("SUM(CAST(invoice.goldWeight AS decimal))", "total")
-                                .andWhere("(invoice.buyerId = :userId) AND invoice.createdAt >= :today AND invoice.createdAt <= :finaly", {
-                                    userId,
-                                    today: startJalali,
-                                    finaly: endJalali
-                                }).getRawOne();
-                                buyInMonth.data[+element - 1] = (+allInvoices.total - +allSellInvoices.total)
-                                console.log('aggregate the fucking monthly buy', allInvoices)
-        
-                        } else {
-                            const startJalali = Jalali.parse(`1404/${element}/1`).gregorian()
-                            const endJalali = Jalali.parse(`1404/${element}/30`).gregorian()
-                            console.log('22222', startJalali, endJalali)
-                            let allInvoices = await this.invoiceRepository.createQueryBuilder("invoice")
-                            .leftJoinAndSelect('invoice.type' , 'type')
-                                .where('invoice.status = :status AND type.title = :type' , {status : 'completed' , type : 'buy'})
-                                .select("SUM(CAST(invoice.goldWeight AS decimal))", "total")
-                                .andWhere("(invoice.buyerId = :userId) AND invoice.createdAt >= :today AND invoice.createdAt <= :finaly", {
-                                    userId,
-                                    today: startJalali,
-                                    finaly: endJalali
-                                }).getRawOne();
-                            let allSellInvoices = await this.invoiceRepository.createQueryBuilder("invoice")
-                                .leftJoinAndSelect('invoice.type', 'type')
-                                .where('invoice.status = :status AND type.title = :type', { status: 'completed', type: 'sell' })
-                                .select("SUM(CAST(invoice.goldWeight AS decimal))", "total")
-                                .andWhere("(invoice.buyerId = :userId) AND invoice.createdAt >= :today AND invoice.createdAt <= :finaly", {
-                                    userId,
-                                    today: startJalali,
-                                    finaly: endJalali
-                                }).getRawOne();
-                            buyInMonth.data[+element - 1] = (+allInvoices.total -  - +allSellInvoices.total)
-                            console.log('aggregate the fucking monthly buy', allInvoices)
-                        }
-                    }
-                    await cacher.setter('buyInMonth' , buyInMonth)
-                } catch (error) {
-                    console.log('error occured in data aggregation in buy in month', error)
-                }
-            }
-        } catch (error) {
-                    
-        buyInMonth = {
+        let buyInMonth = {
             label: ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'],
             data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
         }
-
         try {
             for (let i = 0; i < monthes.length; i++) {
                 let element: string = monthes[i]
@@ -351,12 +283,10 @@ export class UserController {
                     console.log('aggregate the fucking monthly buy', allInvoices)
                 }
             }
-            await cacher.setter('buyInMonth' , buyInMonth)
         } catch (error) {
             console.log('error occured in data aggregation in buy in month', error)
         }
-        console.log('app charts is ready . . .')            
-        }
+        console.log('app charts is ready . . .')
         return response.status(200).json({ buyInMonth, monthlyPrice: monthlyPrice.priceChart, assets, topBoxes })
     }
 
