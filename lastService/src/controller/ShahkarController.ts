@@ -330,7 +330,7 @@ export class ShahkarController {
                 national_code: info.nationalCode,
                 birth_date: info.birthDate
             };
-            let response = await axios.post(url, data, { headers })
+            let response = await axios.post(url, data , { timeout: 5000 , headers })
             console.log('after response from card' , response)
             if (response.status == 200) {
                 if (response.data) {
