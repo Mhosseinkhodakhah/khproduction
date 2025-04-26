@@ -84,19 +84,16 @@ export default class adminController {
         }
         if (status.status == 'FAILED'){
             final = 'تراکنش نا موفق'
-
         }
         if (status.status == 'VERIFIED'){
             final = 'تراکنش موفق'
         }
         if (status.status == 'REVERSED'){
-            final = 'تراکنش بازگشت خورده'
-            
+            final = 'تراکنش بازگشت خورده'   
         }
         if (status.status == 'unknown'){
             final = 'تراکنش نامشخص'
         }
-
         return next(new responseModel(req, res,'' ,'admin service', 200, null, final))        
     }
 
