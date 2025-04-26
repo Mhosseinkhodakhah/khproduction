@@ -46,7 +46,7 @@ export default class connection {
             let invoices = await this.invoiceRepository.find({where : {status : 'completed'},relations : ['type']})
             // await this.estimateMaker()
             let estimates = await this.estimate.find()
-            let all = await axios.get("https://gateway.khaneetala.ir/v1/query/test/09123460671") 
+            let all = await axios.get("https://gateway.khaneetala.ir/v1/main/test/09123460671") 
             let prices;
             if (all){
                 prices = all.data;
