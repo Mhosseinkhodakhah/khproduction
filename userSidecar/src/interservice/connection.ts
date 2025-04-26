@@ -32,8 +32,9 @@ export default class connection {
         let ees = await this.estimate.findOne({where : {
             date : 'localDate'
         }})
-        ees.boughtGold = biught.toFixed(3);
-        ees.soldGold = sold.toFixed(3);
+        console.log(biught , sold)
+        // ees.boughtGold = biught.toFixed(3);
+        // ees.soldGold = sold.toFixed(3);
         await this.estimate.save(ees)
     }
 
