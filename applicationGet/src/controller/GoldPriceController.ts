@@ -20,9 +20,9 @@ export class GoldPriceController {
                 result = {price : handleGold[0].price , change : 0}
                 console.log('result is here>>>>' , handleGold[0].price)
             }else {
+                result = await this.goldPriceService.getGoldPrice()
                 console.log('result is not here>>>>' , handleGold[0].price)
             }
-            result = await this.goldPriceService.getGoldPrice()
 
             let sellFee = 1
             let buyFee = 0
