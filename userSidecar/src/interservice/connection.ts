@@ -23,9 +23,9 @@ export default class connection {
         for (let i = 0; i < a.length; i++) {
             if (a[i].goldWeight > 0){
                 if (a[i].type.title == 'sell'){
-                    sold += a[i].goldWeight
+                    sold += +a[i].goldWeight
                 }else{
-                    biught += a[i].goldWeight
+                    biught += +a[i].goldWeight
                 }
             }
         }
