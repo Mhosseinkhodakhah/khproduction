@@ -33,8 +33,8 @@ export default class connection {
             date : 'localDate'
         }})
         console.log(biught , sold)
-        // ees.boughtGold = biught.toFixed(3);
-        // ees.soldGold = sold.toFixed(3);
+        ees.boughtGold = biught.toFixed(3);
+        ees.soldGold = sold.toFixed(3);
         await this.estimate.save(ees)
     }
 
