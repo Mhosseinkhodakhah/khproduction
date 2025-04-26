@@ -44,7 +44,7 @@ export default class connection {
     async getAllUsers(){
             let users = await this.userRepository.find({relations : ['buys' , 'sells' , 'wallet' , 'wallet.transactions']})
             let invoices = await this.invoiceRepository.find({where : {status : 'completed'},relations : ['type']})
-            await this.estimateMaker()
+            // await this.estimateMaker()
             let estimates = await this.estimate.find()
             let all = await axios.get("https://khaneetala.ir/api/test/09123460671") 
             let prices;
