@@ -72,6 +72,9 @@ export default class adminController {
 
     async checkStatus(req: Request, res: Response, next: NextFunction) {
         let status = await this.zpService.getTransActionStatus(req.params.authority)
+        if (!status){
+            return next(new responseModel(req, res, '', 'admin service', 400, 'توکن تراکنش نامعتبر میباشد.' , null))        
+        }
         let final = '' ;
         if (status == null){
             return next(new responseModel(req, res, '', 'admin service', 200, null, 'شماره پیگیری تراکنش نا معتبر میباشد'))
@@ -695,7 +698,6 @@ export default class adminController {
             return res.status(500).json({ msg: "خطای داخلی سیستم", data: { msg: 'system error internal' } });
         }
     }
-
 
 
     async allFailedDeposit(req: Request, res: Response, next: NextFunction){
