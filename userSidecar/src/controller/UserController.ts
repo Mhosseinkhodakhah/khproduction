@@ -88,12 +88,13 @@ export class UserController {
         }]
         
         try {
-            let cachedLineChart = await cacher.getter('lineChart')
-            let cachedBararChart = await cacher.getter('barChart')
+            let data = await cacher.getter('pannelCharts')
             // console.log('pannelCharts' , data)
-            let data = {
-                barChart : cachedBararChart ? cachedBararChart : barChart,
-                lineChart : cachedLineChart ? cachedLineChart : lineChart
+            if (!data){
+                data = {
+                    barChart,
+                    lineChart
+                }
             }
             return next(new response(req, res, 'user sideCar service', 200, null, data))            
         } catch (error) {
