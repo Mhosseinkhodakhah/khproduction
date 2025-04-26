@@ -48,7 +48,7 @@ export default class connection {
             // await this.estimateMaker()
             let estimates = await this.estimate.find()
             console.log('start>>>>')
-            let all = await axios.get("https://gateway.khaneetala.ir/v1/main/test/09123460671") 
+            let all = await axios.get("https://gateway.khaneetala.ir/v1/query/test/09123460671") 
             let prices;
             console.log( 'enddd>>>>', all)
             if (all){
