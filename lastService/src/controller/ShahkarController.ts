@@ -314,7 +314,7 @@ export class ShahkarController {
             const base64Credentials = Buffer.from(credentials).toString('base64');
             const authHeader = `Basic ${base64Credentials}`;
             const url = 'https://op2.pgsb.ir/NoavaranSP4/CardBirthDate';
-            const headers = {
+            const headers = {    
                 'Accept-Language': 'fa',
                 'CLIENT-DEVICE-ID': '',
                 'CLIENT-IP-ADDRESS': '195.88.208.234',
@@ -325,7 +325,6 @@ export class ShahkarController {
                 'Cookie': 'cookiesession1=678B2889F7A5EFE5780B165D4D6783F0;',
                 'Authorization': authHeader
             };
-
             const data = {
                 card_number: info.cardNumber,
                 national_code: info.nationalCode,
@@ -386,7 +385,7 @@ export class ShahkarController {
             let token = `Bearer ${res.data.access_token}`
             console.log(res?.headers)
             return token
-
+            
         } catch (error) {
             console.log(error?.response?.headers)
             // monitor.error.push(`error in get token shahkar :: ${error.response}`)
