@@ -152,15 +152,11 @@ export class UserController {
         let user = await this.userRepository.findOne({ where: { id: +userId }, relations: ['wallet'] })
         // let buyInMonthData = queryBuilder.andWhere('invoice.createdAt BETWEEN :start AND :end' , {})
 
-        let buyInMonth = {
-            label: ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'],
-            data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-        }
-
+        
         let monthlyPrice = await this.appCharts()
 
         console.log('monthlyChart', monthlyPrice.priceChart)
-
+        
         let livePrice = await this.goldPrice.find({ order: { createdAt: 'DESC' } })
         console.log('livePrice', livePrice[0].Geram18, typeof (livePrice[0].Geram18))
         let gram = (+livePrice[0].Geram18)
@@ -184,7 +180,7 @@ export class UserController {
         console.log('start time>>>' , start)
         // let profit = ''
         // try {
-        //     profit = await cacher.getter('profitPerMonth')
+            //     profit = await cacher.getter('profitPerMonth')
         //     console.log('profit is>>' , profit)
         //     let time = new Date().toLocaleString('fa-IR').split(',')[1].split(':')[0]
         //     if (time == '23' || time == '۲۳'){
@@ -229,6 +225,17 @@ export class UserController {
             '12',
         ]
 
+
+        let buyInMonth;
+        try {
+            buyInMonth = await cacher.getter('buyInMonth')
+        } catch (error) {
+                    
+        buyInMonth = {
+            label: ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'],
+            data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        }
+        
         try {
             for (let i = 0; i < monthes.length; i++) {
                 let element: string = monthes[i]
@@ -283,10 +290,12 @@ export class UserController {
                     console.log('aggregate the fucking monthly buy', allInvoices)
                 }
             }
+            await cacher.setter('buyInMonth' , buyInMonth)
         } catch (error) {
             console.log('error occured in data aggregation in buy in month', error)
         }
-        console.log('app charts is ready . . .')
+        console.log('app charts is ready . . .')            
+        }
         return response.status(200).json({ buyInMonth, monthlyPrice: monthlyPrice.priceChart, assets, topBoxes })
     }
 
