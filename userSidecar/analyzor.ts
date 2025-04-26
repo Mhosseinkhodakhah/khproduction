@@ -676,6 +676,7 @@ export class analyzor {
 export function startCronJob() {
     try {
         setInterval(async () => {
+            console.log('start the crobn')
             let analyze = new analyzor()
             let users: any = await interConnection.getAllUsers()
             console.log('after getting all data')
