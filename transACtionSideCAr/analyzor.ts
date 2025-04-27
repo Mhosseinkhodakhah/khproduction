@@ -2,6 +2,9 @@ import { AppDataSource } from "./src/data-source";
 import { Invoice } from "./src/entity/Invoice";
 import { transActionQeue, transPortQueue } from "./src/entity/transActionQueue.entity";
 import { transportInvoice } from "./src/entity/transport";
+import { User } from "./src/entity/User";
+import { Wallet } from "./src/entity/Wallet";
+import { WalletTransaction } from "./src/entity/WalletTransaction";
 
 
 
@@ -12,6 +15,9 @@ class checkTransActions{
     private qeueu = AppDataSource.getRepository(transActionQeue)
     private transportQeueu = AppDataSource.getRepository(transPortQueue)
     private invoice = AppDataSource.getRepository(Invoice)
+    private wallet = AppDataSource.getRepository(Wallet)
+    private user = AppDataSource.getRepository(User)
+    private walletTR = AppDataSource.getRepository(WalletTransaction)
     private transPort = AppDataSource.getRepository(transportInvoice)
     
     async start(){
@@ -25,10 +31,12 @@ class checkTransActions{
                 blackList.push(i)
             }
         }
-        
-        for (let j of blackList){
-            console.log(j)
-        }
+
+        await this.invoice.remove(blackList)
+
+        let userWallet = await this.user.findOne({where : {nationalCode : '2581199458'} , relations : ['wallet']})
+        console.log('its fucking wallet >>>>> ' , userWallet)
+
 
         // let allQeueu = await this.qeueu.find({where : {state : 0}})
         // let allTransPortQueue = await this.transportQeueu.find({where : {state : 0}})
@@ -52,10 +60,8 @@ class checkTransActions{
     async updateTheWalletForTransport(transPortId : number , queue){
         let transport = await this.transPort.findOne({where : {id : transPortId} , relations : ['']})
         
-        
         queue.state = 1;
         let transportQueue = await this.transPort.save(queue)
-
     }
 }
 
