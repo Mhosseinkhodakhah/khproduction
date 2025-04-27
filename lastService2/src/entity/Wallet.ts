@@ -17,7 +17,7 @@ export class Wallet {
     goldWeight: number;
 
     @Column({ type: "numeric", precision: 10, scale: 3, nullable : true})
-    goldBlock: string;
+    goldBlock: number;
     
     @Column({ type: "numeric", precision: 10, scale: 0, default: 0 })
     balance: number;
