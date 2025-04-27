@@ -50,8 +50,9 @@ export class WalletController {
      * @returns 
      */
     async transport(req : Request , res : Response , next : any){
-        const{goldWeight  , nationalCode} = req.body;
-        console.log(goldWeight)
+        let{goldWeight  , nationalCode} = req.body;
+        // console.log(goldWeight)
+        goldWeight = +goldWeight;
         const userId = req['user_id']
         let user = await this.userRepository.findOne({where : {
             id : +userId
@@ -71,7 +72,7 @@ export class WalletController {
         await queryRunner.connect()
         await queryRunner.startTransaction()
         try {
-            user.wallet.goldWeight = +((+user.wallet.goldWeight) - (+goldWeight.toFixed(3))).toFixed(3)
+            user.wallet.goldWeight = +((+user.wallet.goldWeight) - (goldWeight.toFixed(3))).toFixed(3)
             user.wallet.goldBlock = +goldWeight.toFixed(3)
             let createTransAction = this.transportInvoices.create({
                 goldWeight : goldWeight,
