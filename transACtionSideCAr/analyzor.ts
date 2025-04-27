@@ -1,6 +1,7 @@
 import { AppDataSource } from "./src/data-source";
 import { Invoice } from "./src/entity/Invoice";
-import { transActionQeue } from "./src/entity/transActionQueue.entity";
+import { transActionQeue, transPortQueue } from "./src/entity/transActionQueue.entity";
+import { transportInvoice } from "./src/entity/transport";
 
 
 
@@ -9,14 +10,34 @@ import { transActionQeue } from "./src/entity/transActionQueue.entity";
 
 class checkTransActions{
     private qeueu = AppDataSource.getRepository(transActionQeue)
+    private transportQeueu = AppDataSource.getRepository(transPortQueue)
     private invoice = AppDataSource.getRepository(Invoice)
-
-
+    private transPort = AppDataSource.getRepository(transportInvoice)
+    
     async start(){
-        let allQeueu = await this.qeueu.find({where : {state : 0} , order : {'createdAt' : 'DESC'}})
-        for(let i = 0 ; i < allQeueu.length ; i ++){
-            let res = await this.updateTheTransAction(allQeueu[i].transActionId ,allQeueu[i].id)
+        let nanInvoice = await this.invoice.find()
+        let blackList = []
+        for (let i of nanInvoice){
+            if (+i.goldWeight > 0){
+                console.log('its okkkkk')
+            }else{
+                console.log('its not okk>>')
+                blackList.push(i)
+            }
         }
+        
+        for (let j of blackList){
+            console.log(j)
+        }
+
+        // let allQeueu = await this.qeueu.find({where : {state : 0}})
+        // let allTransPortQueue = await this.transportQeueu.find({where : {state : 0}})
+        // if (allQeueu.length){
+        //     let res = await this.updateTheTransAction(allQeueu[0].transActionId, allQeueu[0].id)
+        // }
+        // if (allTransPortQueue.length){
+        //     let res2 = await this.updateTheWalletForTransport(allTransPortQueue[0].transPortId , allTransPortQueue[0])
+        // }
     }
     
     async updateTheTransAction(invoiceId : number , queueId : number){
@@ -26,6 +47,15 @@ class checkTransActions{
         queue2.state = 1;
         await this.qeueu.save(queue2)
         console.log('queue task done successfully >>>> ')
+    }
+
+    async updateTheWalletForTransport(transPortId : number , queue){
+        let transport = await this.transPort.findOne({where : {id : transPortId} , relations : ['']})
+        
+        
+        queue.state = 1;
+        let transportQueue = await this.transPort.save(queue)
+
     }
 }
 

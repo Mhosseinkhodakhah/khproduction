@@ -35,7 +35,6 @@ export class transportInvoice {
     @Column({type : 'varchar'})
     type : string;                           // transport
     
-
     @Column({nullable:true,default:false , type : 'bool'})
     otpApproved : boolean
 
@@ -53,6 +52,5 @@ export class transportInvoice {
            
     @DeleteDateColumn()
     deletedAt : Date
-
 
 }
