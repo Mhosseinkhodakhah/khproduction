@@ -21,32 +21,15 @@ class checkTransActions{
     private transPort = AppDataSource.getRepository(transportInvoice)
     
     async start(){
-        let nanInvoice = await this.invoice.find()
-        let blackList = []
-        for (let i of nanInvoice){
-            if (+i.goldWeight > 0){
-                console.log('its okkkkk')
-            }else{
-                console.log('its not okk>>')
-                blackList.push(i)
-            }
-        }
-
-        // await this.invoice.remove(blackList)
-
-        // let userWallet = await this.user.findOne({where : {nationalCode : '2581199458'} , relations : ['wallet']})
-        // userWallet.wallet.balance = 0;
-        // userWallet.wallet.goldWeight = 0
-        // await this.wallet.save(userWallet.wallet)
         
-        // let allQeueu = await this.qeueu.find({where : {state : 0}})
-        // let allTransPortQueue = await this.transportQeueu.find({where : {state : 0}})
-        // if (allQeueu.length){
-        //     let res = await this.updateTheTransAction(allQeueu[0].transActionId, allQeueu[0].id)
-        // }
-        // if (allTransPortQueue.length){
-        //     let res2 = await this.updateTheWalletForTransport(allTransPortQueue[0].transPortId , allTransPortQueue[0])
-        // }
+        let allQeueu = await this.qeueu.find({where : {state : 0}})
+        let allTransPortQueue = await this.transportQeueu.find({where : {state : 0}})
+        if (allQeueu.length){
+            let res = await this.updateTheTransAction(allQeueu[0].transActionId, allQeueu[0].id)
+        }
+        if (allTransPortQueue.length){
+            let res2 = await this.updateTheWalletForTransport(allTransPortQueue[0].transPortId , allTransPortQueue[0])
+        }
     }
     
     async updateTheTransAction(invoiceId : number , queueId : number){
@@ -60,9 +43,9 @@ class checkTransActions{
 
     async updateTheWalletForTransport(transPortId : number , queue){
         let transport = await this.transPort.findOne({where : {id : transPortId} , relations : ['']})
-        
-        queue.state = 1;
-        let transportQueue = await this.transPort.save(queue)
+        console.log('trtrtr >> ' , transport)
+        // queue.state = 1;
+        // let transportQueue = await this.transPort.save(queue)
     }
 }
 
