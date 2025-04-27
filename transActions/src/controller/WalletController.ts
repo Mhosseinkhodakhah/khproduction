@@ -155,55 +155,54 @@ export class WalletController {
 
 
 
-     /**
-         * its for checking otp and verifing user in the inperson buy
-         * @param req 
-         * @param res 
-         * @param next 
-         * @returns 
-         */
-        async verifyOtp(req: Request, res: Response, next: NextFunction) {
+    /**
+        * its for checking otp and verifing user in the trangport gold
+        * @param req 
+        * @param res 
+        * @param next 
+        * @returns 
+        */
+    async verifyOtp(req: Request, res: Response, next: NextFunction) {
+
+            let { otp, phoneNumber, transPortId } = req.body;
+            let queryRunner = AppDataSource.createQueryRunner()
+            await queryRunner.connect()
+            await queryRunner.startTransaction()
             try {
-                let { otp, phoneNumber , transPortId} = req.body;
-                let transPort = await this.transportInvoices.findOne({where : {id : transPortId}})
-                if (!transPort){
-                    return next(new responseModel(req, res, 'تراکنش یافت نشد' , 'admin service', 400, 'تراکنش یافت نشد', null))
+                let transPort = await this.transportInvoices.findOne({ where: { id: transPortId } })
+                if (!transPort) {
+                    return next(new responseModel(req, res, 'تراکنش یافت نشد', 'admin service', 400, 'تراکنش یافت نشد', null))
                 }
-                // const error = validationResult(req)
-                // if (!error.isEmpty()) {
-                //     return next(new responseModel(req, res, error['errors'][0].msg , 'admin service', 400, error['errors'][0].msg, null))
-                // }
                 let otpData = await this.otpRepository.findOne({
                     where: {
                         phoneNumber: phoneNumber
                     }
                 })
-                // let userExist = await this.userRepository.exists({
-                //     where: {
-                //         phoneNumber: phoneNumber
-                //     }
-                // })
-                let queue = this.transPortQueue.create({
-                    transPortId : transPort.id,
-                })
-                await this.transPortQueue.save(queue)
+
                 if (otpData.otp.toString() != otp.toString()) {
-                    return next(new responseModel(req, res, '' ,'admin service', 412, `کد وارد شده نادرست است`, null))
+                    return next(new responseModel(req, res, '', 'admin service', 412, `کد وارد شده نادرست است`, null))
                 }
                 let timeNow = new Date().getTime()
-        
+                
                 if (timeNow - (+otpData.time) > 2.1 * 60 * 1000) {
-                    return next(new responseModel(req, res, '' ,'admin service', 412, `کد وارد شده منقضی شده است`, null))
+                    return next(new responseModel(req, res, '', 'admin service', 412, `کد وارد شده منقضی شده است`, null))
                 }
-                // اگر کاربر در لیست کاربران جدید باشد
-                // اگر کاربر در لیست کاربران قدیمی باشد
-                return next(new responseModel(req, res, 'درخاست شما با موفقیت ثبت شدو به صف انتقال اضافه شد.' ,'admin service', 200, null, null ))
+                transPort.status = 'pending'
+                let queue = this.transPortQueue.create({
+                    transPortId: transPort.id,
+                })
+                await queryRunner.manager.save(queue)
+                await queryRunner.manager.save(transPort)
+                await queryRunner.commitTransaction()
+                return next(new responseModel(req, res, 'درخاست شما با موفقیت ثبت شدو به صف انتقال اضافه شد.', 'admin service', 200, null, null))
+                
             } catch (error) {
-                return next(new responseModel(req, res, '' ,'admin service', 500, `حطای داخلی سیستم`, null))            
+                await queryRunner.rollbackTransaction()
+                return next(new responseModel(req, res, '', 'admin service', 500, `حطای داخلی سیستم`, null))
+            }finally{
+                await queryRunner.release()
             }
-        }
-
-
+    }
 
 
     /**
