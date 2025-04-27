@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, NextFunction,Response } from "express";
 import { AppDataSource } from "../data-source";
 import { Wallet } from "../entity/Wallet";
 import { User } from "../entity/User";
@@ -12,6 +12,10 @@ import monitor from "../util/statusMonitor";
 import instance from "../util/tradePerision";
 import { systemSetting } from "../entity/systemSetting";
 import { BankAccount } from "../entity/BankAccount";
+import { Otp } from "../entity/Otp";
+import { responseModel } from "../util/response.model";
+import { validationResult } from "express-validator";
+import { transPortQueue } from "../entity/transActionQueue.entity";
 
 export class WalletController {
     private walletRepository = AppDataSource.getRepository(Wallet);
@@ -20,7 +24,9 @@ export class WalletController {
     private paymentInfoRepository = AppDataSource.getRepository(PaymentInfo);
     private transportInvoices = AppDataSource.getRepository(transportInvoice)
     private systemSetting  = AppDataSource.getRepository(systemSetting)
+    private transPortQueue  = AppDataSource.getRepository(transPortQueue)
     private bankAccountRepository = AppDataSource.getRepository(BankAccount);
+    private otpRepository = AppDataSource.getRepository(Otp);
     private zpService = new ZarinPalService()
     private smsService = new SmsService()
     private goldPriceService = new GoldPriceService()
@@ -29,15 +35,12 @@ export class WalletController {
         return (new Date().getTime()).toString()
     }
 
-    private async generateOtp(){
-        let firstRandomoe = Math.random()
-        if (firstRandomoe<0.1){
-            firstRandomoe = firstRandomoe*100000
-        }else{      
-            firstRandomoe = firstRandomoe*10000
-        }
-        return Math.floor(firstRandomoe)
+
+    private async generateOtp() {
+        let firstRandomoe = Math.floor(1000 + Math.random() * 9000)
+        return firstRandomoe
     }
+    
 
     /**
      * first step for transport the gold by user
@@ -96,7 +99,112 @@ export class WalletController {
             await queryRunner.release()
         }
     }
-    
+
+
+
+    async sendOtpForTransPort(req : Request , res : Response , next : any){
+        const userId = req['user_id']
+        let user = await this.userRepository.findOne({where : {id : +userId}})
+        let otp = await this.generateOtp()
+        let phoneNumber = user.phoneNumber;
+        let queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        try {
+            let user = await this.userRepository.findOne({
+                where: {
+                    phoneNumber: phoneNumber
+                }
+            })
+            let otpCode = await this.generateOtp()
+
+            let otpExist = await this.otpRepository.exists({
+                where: {
+                    phoneNumber: phoneNumber
+                }
+            })
+            let userOtp;
+            if (!otpExist) {
+                let newOtp = this.otpRepository.create({
+                    phoneNumber: phoneNumber,
+                    time: new Date().getTime().toString()
+                })
+                userOtp = await this.otpRepository.save(newOtp)
+            } else {
+                userOtp = await this.otpRepository.findOne({
+                    where: {
+                        phoneNumber: phoneNumber
+                    }
+                })
+            }
+            userOtp.otp = otpCode;
+            userOtp.time = new Date().getTime().toString();
+            await this.otpRepository.save(userOtp)
+            await this.smsService.sendOtpMessage(phoneNumber, otpCode)
+            console.log(otpCode)
+            return next(new responseModel(req, res, 'کد تایید برای شما ارسال شد.', 'admin service', 200, null, otpCode))
+        } catch (error) {
+            console.log('error>>>>>', `${error}`)
+            console.log('error in creating otp in buy inperson part')
+            await queryRunner.rollbackTransaction()
+            return next(new responseModel(req, res, 'خطای داخلی سرور', 'admin service', 500, `${error}`, null))
+        } finally {
+            await queryRunner.release()
+        }
+    }   
+
+
+
+     /**
+         * its for checking otp and verifing user in the inperson buy
+         * @param req 
+         * @param res 
+         * @param next 
+         * @returns 
+         */
+        async verifyOtp(req: Request, res: Response, next: NextFunction) {
+            try {
+                let { otp, phoneNumber , transPortId} = req.body;
+                let transPort = await this.transportInvoices.findOne({where : {id : transPortId}})
+                if (!transPort){
+                    return next(new responseModel(req, res, 'تراکنش یافت نشد' , 'admin service', 400, 'تراکنش یافت نشد', null))
+                }
+                // const error = validationResult(req)
+                // if (!error.isEmpty()) {
+                //     return next(new responseModel(req, res, error['errors'][0].msg , 'admin service', 400, error['errors'][0].msg, null))
+                // }
+                let otpData = await this.otpRepository.findOne({
+                    where: {
+                        phoneNumber: phoneNumber
+                    }
+                })
+                // let userExist = await this.userRepository.exists({
+                //     where: {
+                //         phoneNumber: phoneNumber
+                //     }
+                // })
+                let queue = this.transPortQueue.create({
+                    transPortId : transPort.id,
+                })
+                await this.transPortQueue.save(queue)
+                if (otpData.otp.toString() != otp.toString()) {
+                    return next(new responseModel(req, res, '' ,'admin service', 412, `کد وارد شده نادرست است`, null))
+                }
+                let timeNow = new Date().getTime()
+        
+                if (timeNow - (+otpData.time) > 2.1 * 60 * 1000) {
+                    return next(new responseModel(req, res, '' ,'admin service', 412, `کد وارد شده منقضی شده است`, null))
+                }
+                // اگر کاربر در لیست کاربران جدید باشد
+                // اگر کاربر در لیست کاربران قدیمی باشد
+                return next(new responseModel(req, res, 'درخاست شما با موفقیت ثبت شدو به صف انتقال اضافه شد.' ,'admin service', 200, null, null ))
+            } catch (error) {
+                return next(new responseModel(req, res, '' ,'admin service', 500, `حطای داخلی سیستم`, null))            
+            }
+        }
+
+
+
 
     /**
      * its for confirm the transport for user to another user

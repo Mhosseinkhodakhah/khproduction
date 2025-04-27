@@ -233,13 +233,25 @@ export const Routes = [
     controller: WalletController,
     action: "depositToWallet",
     middlwares: [authenticate]
-
 },
 {
     method: "post",
     route: "/verifyDeposit",
     controller: WalletController,
     action: "verifyDeposit",
+    middlwares: [authenticate]
+},
+{
+    method: "post",
+    route: "/transport/otp",
+    controller: WalletController,
+    action: "sendOtpForTransPort",
+    middlwares: [authenticate]
+},{
+    method: "post",
+    route: "/transport/verifyotp",
+    controller: WalletController,
+    action: "verifyOtp",
     middlwares: [authenticate]
 },
 {
