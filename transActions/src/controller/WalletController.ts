@@ -51,8 +51,8 @@ export class WalletController {
      */
     async transport(req : Request , res : Response , next : any){
         let{goldWeight  , nationalCode} = req.body;
-        console.log((+goldWeight).toFixed(3))
-        // goldWeight = +goldWeight;
+        // console.log((+goldWeight).toFixed(3))
+        goldWeight = +goldWeight;
         const userId = req['user_id']
         let user = await this.userRepository.findOne({where : {
             id : +userId
