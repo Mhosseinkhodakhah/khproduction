@@ -16,8 +16,8 @@ export class Wallet {
     @Column({ type: "numeric", precision: 10, scale: 3, default: 0 })
     goldWeight: number;
 
-    @Column({ type: "int" , nullable : true })
-    goldBlock: number;
+    @Column({ type: "varchar" , nullable : true })
+    goldBlock: string;
     
     @Column({ type: "numeric", precision: 10, scale: 0, default: 0 })
     balance: number;
