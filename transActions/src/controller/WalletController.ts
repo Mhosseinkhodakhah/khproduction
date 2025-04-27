@@ -165,7 +165,6 @@ export class WalletController {
         * @returns 
         */
     async verifyOtp(req: Request, res: Response, next: NextFunction) {
-
             let { otp, phoneNumber, transPortId } = req.body;
             let queryRunner = AppDataSource.createQueryRunner()
             await queryRunner.connect()

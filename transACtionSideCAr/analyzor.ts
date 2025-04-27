@@ -44,6 +44,7 @@ class checkTransActions{
     async updateTheWalletForTransport(transPortId : number , queue){
         let transport = await this.transPort.findOne({where : {id : transPortId} , relations : ['']})
         console.log('trtrtr >> ' , transport)
+        
         // queue.state = 1;
         // let transportQueue = await this.transPort.save(queue)
     }
