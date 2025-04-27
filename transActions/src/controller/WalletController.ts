@@ -92,7 +92,7 @@ export class WalletController {
             await queryRunner.commitTransaction()
             return res.status(200).json({ msg: "کد تایید ارسال شد"  , data : savedTransACtion});
         } catch (error) {
-            console.log('error occured and transaction rollback')
+            console.log('error occured and transaction rollback' , error)
             await queryRunner.rollbackTransaction()
             return res.status(500).json({ msg: "فرایند انتقال ناموفق بود.لطفا دقایقی دیگر تلاش کنید" });
         }finally{
@@ -197,6 +197,7 @@ export class WalletController {
                 return next(new responseModel(req, res, 'درخاست شما با موفقیت ثبت شدو به صف انتقال اضافه شد.', 'admin service', 200, null, null))
                 
             } catch (error) {
+
                 await queryRunner.rollbackTransaction()
                 return next(new responseModel(req, res, '', 'admin service', 500, `حطای داخلی سیستم`, null))
             }finally{
