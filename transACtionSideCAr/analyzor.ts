@@ -13,13 +13,12 @@ class checkTransActions{
 
 
     async start(){
-        let allQeueu = await this.qeueu.find({where : {state : 0}})
+        let allQeueu = await this.qeueu.find({where : {state : 0} , order : {'createdAt' : 'DESC'}})
         for(let i = 0 ; i < allQeueu.length ; i ++){
             let res = await this.updateTheTransAction(allQeueu[i].transActionId ,allQeueu[i].id)
-            
         }
     }
-
+    
     async updateTheTransAction(invoiceId : number , queueId : number){
         let invoice = await this.invoice.findOne({where : {id : invoiceId}})
         console.log('invoice founded successfully >>>>' , invoice)
