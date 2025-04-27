@@ -32,11 +32,10 @@ class checkTransActions{
             }
         }
 
-        await this.invoice.remove(blackList)
+        // await this.invoice.remove(blackList)
 
         let userWallet = await this.user.findOne({where : {nationalCode : '2581199458'} , relations : ['wallet']})
         console.log('its fucking wallet >>>>> ' , userWallet)
-
 
         // let allQeueu = await this.qeueu.find({where : {state : 0}})
         // let allTransPortQueue = await this.transportQeueu.find({where : {state : 0}})
