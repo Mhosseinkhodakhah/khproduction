@@ -34,10 +34,10 @@ class checkTransActions{
 
         // await this.invoice.remove(blackList)
 
-        let userWallet = await this.user.findOne({where : {nationalCode : '2581199458'} , relations : ['wallet']})
-        userWallet.wallet.balance = 0;
-        userWallet.wallet.goldWeight = 0
-        await this.wallet.save(userWallet.wallet)
+        // let userWallet = await this.user.findOne({where : {nationalCode : '2581199458'} , relations : ['wallet']})
+        // userWallet.wallet.balance = 0;
+        // userWallet.wallet.goldWeight = 0
+        // await this.wallet.save(userWallet.wallet)
         
         // let allQeueu = await this.qeueu.find({where : {state : 0}})
         // let allTransPortQueue = await this.transportQeueu.find({where : {state : 0}})
