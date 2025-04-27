@@ -135,8 +135,6 @@ export const Routes = [
         middleware: [],
         action: "checkOldWithPhoneOrNatnialCode"                // here is for last service that check user in the oldUsers
     },
-    
-
     {
         method: "get",
         route: "/users/all/:page/:size",

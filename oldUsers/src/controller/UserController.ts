@@ -535,6 +535,7 @@ export class UserController {
 
 
     async removeAll(req : any , res : any , next:any){
+        console.log('its innnnnnnnnnn')
         let wallets = await this.walletRepository.find()
         let users = await this.userRepository.find()
         await this.walletRepository.remove(wallets)
