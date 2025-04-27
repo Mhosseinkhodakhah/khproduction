@@ -73,7 +73,7 @@ export class WalletController {
         await queryRunner.startTransaction()
         try {
             user.wallet.goldWeight = +((+user.wallet.goldWeight) - (+(goldWeight.toFixed(3)))).toFixed(3)
-            user.wallet.goldBlock = (goldWeight.toFixed(3))
+            user.wallet.goldBlock = +(goldWeight.toFixed(3))
             let createTransAction = this.transportInvoices.create({
                 goldWeight : +(+goldWeight).toFixed(3),
                 sender : user,
