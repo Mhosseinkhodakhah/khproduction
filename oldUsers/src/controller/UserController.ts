@@ -136,6 +136,8 @@ export class UserController {
      * @returns 
      */
     async getAllUsersByAdmin(req: Request, res: Response, next: NextFunction) {
+        try {
+            console.log('its here for innnnnnnnn')
         const page = parseInt(req.params.page) || 1; 
         const pageSize =parseInt(req.params.size) || 100;
         let searchWord = req.query.search
@@ -169,6 +171,9 @@ export class UserController {
             return next(new response(req, res, 'get all users', 200, null, {users , totalItem}))
         }else{
             return next(new response(req, res, 'get all users', 400, 'bad request', null))
+        }
+        } catch (error) {
+         console.log('errrrr' , )   
         }
     }
 
@@ -255,9 +260,9 @@ export class UserController {
         wallet.forEach(async(elem)=>{
             await this.walletRepository.remove(elem)
         })   
-        let saver = new analyzor()
-        console.log(await saver.startProcess())
-        let users2 = await this.userRepository.find({relations : ['wallet']})
+        // let saver = new analyzor()
+        // console.log(await saver.startProcess())
+        // let users2 = await this.userRepository.find({relations : ['wallet']})
         return response.status(200).json(users)
     }
 
