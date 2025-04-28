@@ -16,6 +16,7 @@ import { EstimateTransactions } from "../entity/EstimateTransactions";
 import cacher from "../services/cacher";
 import instance from "../util/tradePerision";
 import { handleGoldPrice } from "../entity/handleGoldPrice.entity";
+import { transportInvoice } from "../entity/transport";
 
 
 
@@ -24,6 +25,7 @@ export default class adminController {
     private walletRepository = AppDataSource.getRepository(Wallet)
     private invoicesRepository = AppDataSource.getRepository(Invoice)
     private walletTransActions = AppDataSource.getRepository(WalletTransaction)
+    private transportInvoices = AppDataSource.getRepository(transportInvoice)
     private walletTransactionRepository = AppDataSource.getRepository(WalletTransaction);
     private paymentInfoRepository = AppDataSource.getRepository(PaymentInfo);
     private handleGoldPrice = AppDataSource.getRepository(handleGoldPrice)
@@ -33,6 +35,16 @@ export default class adminController {
     private goldPriceService = new GoldPriceService()
     private esitmate = AppDataSource.getRepository(EstimateTransactions)
     private loggerService = new logger()
+
+
+    private async generateOtp() {
+        let firstRandomoe = Math.floor(1000 + Math.random() * 9000)
+        return firstRandomoe
+    }
+    
+    private async generateInvoice(){
+        return (new Date().getTime()).toString()
+    }
 
 
     /**
@@ -771,4 +783,145 @@ export default class adminController {
 
     }
 
+
+
+    /**
+     * first step for transport the gold by user
+     * @param req 
+     * @param res 
+     * @param next 
+     * @returns 
+    */
+    async transport(req : Request , res : Response , next : any){
+        let{goldWeight  , reciever} = req.body;
+        const userId = req.body.sender;
+        // console.log((+goldWeight).toFixed(3))
+        goldWeight = +goldWeight;
+        let user = await this.userRepository.findOne({where : {
+            nationalCode : userId
+        } , relations : ['wallet']})
+
+        let recieverUser = await this.userRepository.findOne({where : {
+            nationalCode : reciever
+        }})
+
+        if (+user.wallet.goldWeight < +goldWeight ){
+            return res.status(400).json({ msg: "موجودی کیف پول شما برای انتقال کافی نیست." });
+        }
+
+        let otpCode = await this.generateOtp()
+        let invoiceId = await this.generateInvoice()
+        let queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        try {
+            let createTransAction = this.transportInvoices.create({
+                goldWeight : +(+goldWeight).toFixed(3),
+                sender : user,
+                reciever : recieverUser,
+                invoiceId : invoiceId,
+                status : 'init',
+                date : new Date().toLocaleString('fa-IR').split(',')[0],
+                time : new Date().toLocaleString('fa-IR').split(',')[1],
+                type : 'transport',
+            })
+            let newWallet = await queryRunner.manager.save(user.wallet)
+            console.log('new wallet after block gold>>>>' , newWallet.goldBlock , newWallet.goldWeight)
+            let savedTransACtion = await queryRunner.manager.save(createTransAction)
+            await queryRunner.commitTransaction()
+            return res.status(200).json({ msg: "کد تایید ارسال شد"  , data : savedTransACtion});
+        } catch (error) {
+            console.log('error occured and transaction rollback' , error)
+            await queryRunner.rollbackTransaction()
+            return res.status(500).json({ msg: "فرایند انتقال ناموفق بود.لطفا دقایقی دیگر تلاش کنید" });
+        }finally{
+            await queryRunner.release()
+        }
+    }
+
+
+    async sendOtpForTransPort(req: Request, res: Response, next: any) {
+        let { transPortId } = req.body;
+        let trasportInvoice = await this.transportInvoices.findOne({ where: { id: transPortId } })
+        if (!trasportInvoice) {
+            return next(new responseModel(req, res, ' تراکنش انتقال یافت نشد ', 'admin service', 400, `تراکنش انتقال یافت نشد`, null))
+        }
+        const userId = +trasportInvoice.sender.id;
+        let user = await this.userRepository.findOne({ where: { id: +userId } })
+        let otp = await this.generateOtp()
+        let phoneNumber = user.phoneNumber;
+        let queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        try {
+            let otpCode = await this.generateOtp()
+            trasportInvoice.otpApproved = false;
+            trasportInvoice.otpCode = otpCode.toString()
+            trasportInvoice.otptime = new Date().getTime().toString()
+            await queryRunner.manager.save(trasportInvoice)
+            await this.smsService.sendOtpMessage(phoneNumber, otpCode)
+            console.log(otpCode)
+            await queryRunner.commitTransaction()
+            return next(new responseModel(req, res, 'کد تایید برای شما ارسال شد.', 'admin service', 200, null, otpCode))
+        } catch (error) {
+            console.log('error>>>>>', `${error}`)
+            console.log('error in creating otp in buy inperson part')
+            await queryRunner.rollbackTransaction()
+            return next(new responseModel(req, res, 'خطای داخلی سرور', 'admin service', 500, `${error}`, null))
+        } finally {
+            await queryRunner.release()
+        }
+    }
+
+
+
+    /**
+        * its for checking otp and verifing user in the trangport gold
+        * @param req 
+        * @param res 
+        * @param next 
+        * @returns 
+    */
+    async verifyOtp(req: Request, res: Response, next: NextFunction) {
+        let { otp, transPortId } = req.body;
+        console.log('trtrtrt', transPortId)
+        let queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        try {
+            let transPort = await this.transportInvoices.findOne({ where: { id: +transPortId }, relations: ['sender', 'reciever', 'sender.wallet', 'reciever.wallet'] })
+            if (!transPort) {
+                return next(new responseModel(req, res, 'تراکنش یافت نشد', 'admin service', 400, 'تراکنش یافت نشد', null))
+            }
+
+            if (transPort.otpCode.toString() != otp.toString()) {
+                return next(new responseModel(req, res, 'کد وارد شده نادرست است', 'admin service', 412, `کد وارد شده نادرست است`, null))
+            }
+            let timeNow = new Date().getTime()
+
+            if (timeNow - (+transPort.otptime) > 2.1 * 60 * 1000) {
+                return next(new responseModel(req, res, 'کد وارد شده منقضی شده است', 'admin service', 412, `کد وارد شده منقضی شده است`, null))
+            }
+            console.log('what the fuck is this ???? ', (+transPort.goldWeight).toFixed(3))
+            transPort.sender.wallet.goldWeight = +((+transPort.sender.wallet.goldWeight) - (+((+transPort.goldWeight).toFixed(3)))).toFixed(3)
+            transPort.sender.wallet.goldBlock = +((+transPort.goldWeight).toFixed(3))
+            transPort.status = 'pending'
+            transPort.otpApproved = true;
+            let transferAmount = +transPort.goldWeight
+            transPort.reciever.wallet.goldWeight = (+transPort.reciever.wallet.goldWeight) + (+transferAmount);
+            transPort.sender.wallet.goldBlock = (+transPort.sender.wallet.goldBlock) - (+transferAmount);
+            transPort.status = 'completed';
+            await queryRunner.manager.save(transPort.sender.wallet)
+            await queryRunner.manager.save(transPort)
+
+            await queryRunner.commitTransaction()
+            return next(new responseModel(req, res, 'انتقال طلا با موفقیت انجام شد.', 'admin service', 200, null, null))
+        } catch (error) {
+            console.log('error in verify otp ', error)
+            await queryRunner.rollbackTransaction()
+            return next(new responseModel(req, res, '', 'admin service', 500, `حطای داخلی سیستم`, null))
+        } finally {
+            await queryRunner.release()
+        }
+    }
 }

@@ -782,7 +782,25 @@ export const Routes = [
     action: "getAllBuyInvoices",
     middlwares: []
 },
-
+{
+    method: "post",
+    route: "/admin/transport/otp",
+    controller: adminController,
+    action: "sendOtpForTransPort",
+    middlwares: [adminMiddleware]
+},{
+    method: "post",
+    route: "/admin/transport/verifyotp",
+    controller: adminController,
+    action: "verifyOtp",
+    middlwares: [adminMiddleware]
+},{
+    method: "post",
+    route: "/admin/transPort",
+    controller: adminController,
+    action: "transport",
+    middlwares: [adminMiddleware]
+},
 
 ]
 
