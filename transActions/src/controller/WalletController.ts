@@ -154,8 +154,7 @@ export class WalletController {
                 if (!transPort) {
                     return next(new responseModel(req, res, 'تراکنش یافت نشد', 'admin service', 400, 'تراکنش یافت نشد', null))
                 }
-               
-
+                
                 if (transPort.otpCode.toString() != otp.toString()) {
                     return next(new responseModel(req, res, 'کد وارد شده نادرست است', 'admin service', 412, `کد وارد شده نادرست است`, null))
                 }
@@ -177,7 +176,6 @@ export class WalletController {
                 await queryRunner.manager.save(queue)
                 await queryRunner.commitTransaction()
                 return next(new responseModel(req, res, 'درخاست شما با موفقیت ثبت شدو به صف انتقال اضافه شد.', 'admin service', 200, null, null))
-                
             } catch (error) {
                 console.log('error in verify otp ' , error)
                 await queryRunner.rollbackTransaction()

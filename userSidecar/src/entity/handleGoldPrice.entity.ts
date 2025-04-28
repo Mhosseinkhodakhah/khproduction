@@ -16,16 +16,16 @@ export class handleGoldPrice{
     @Column({type : 'varchar' , nullable : true})
     admin : string
 
-    @BeforeInsert()
-    @BeforeUpdate()
-    updateDates() {
-        if (this.price > 0){
-            this.active = true;
-        }else { 
-            this.active = false;
-            this.admin = ''
-        }
-    }
+    // @BeforeInsert()
+    // @BeforeUpdate()
+    // updateDates() {
+    //     if (this.price > 0){
+    //         this.active = true;
+    //     }else { 
+    //         this.active = false;
+    //         this.admin = ''
+    //     }
+    // }
 
     @CreateDateColumn()
     createdAt : Date;

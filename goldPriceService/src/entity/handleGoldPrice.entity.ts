@@ -13,12 +13,6 @@ export class handleGoldPrice{
     @Column({type : 'int' , default : 0})
     price : number
 
-    @BeforeInsert()
-    updateDates() {
-        if (this.price > 0){
-            this.active = true;
-        }
-    }
 
     @CreateDateColumn()
     createdAt : Date;
