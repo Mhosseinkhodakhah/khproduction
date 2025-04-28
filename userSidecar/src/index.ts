@@ -71,11 +71,11 @@ AppDataSource.initialize().then(async () => {
             },
         })
     );
-
+    
     startCronJob()
     
     GoldWeightsIn24()
-    
+
 
     process.on('unhandledRejection', (error) => {
         monitor.error.push(`${error}`)

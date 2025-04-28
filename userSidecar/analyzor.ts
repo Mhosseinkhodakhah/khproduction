@@ -696,7 +696,7 @@ export function GoldWeightsIn24(){
             if (date[0] == '۲۱' && date[1] == '۵۹' ) {
                 console.log('its here and done >>>>>>> ')
             }
-        } , 1000*60*60)
+        } , 1000*60)
     } catch (error) {
         console.log('error occured in fucking goldWeight estimator' , error)
     }
