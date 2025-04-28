@@ -74,7 +74,7 @@ AppDataSource.initialize().then(async () => {
     
     startCronJob()
     
-    // GoldWeightsIn24()
+    GoldWeightsIn24()
 
 
     process.on('unhandledRejection', (error) => {
