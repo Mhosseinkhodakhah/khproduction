@@ -10,17 +10,16 @@ export class transportInvoice {
 
     @ManyToOne(()=> User , (user)=> user.sells)
     sender : User
-   
+    
     @ManyToOne(()=> User , (user)=> user.buys)
     reciever : User
     
-
     @Column({ type: "numeric", precision: 10, scale: 3, default: 0 })
     goldWeight : number
 
     @Column({nullable : true})
     invoiceId : string
-
+    
     @Column({nullable : true})
     status : string                 // init     // pending      // completed     // failed
 

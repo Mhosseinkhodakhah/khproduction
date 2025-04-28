@@ -24,10 +24,10 @@ class checkTransActions{
         
         let allQeueu = await this.qeueu.find({where : {state : 0}})
         let allTransPortQueue = await this.transportQeueu.find({where : {state : 0}})
-        if (allQeueu.length){
+        if (allQeueu.length > 0){
             let res = await this.updateTheTransAction(allQeueu[0].transActionId, allQeueu[0].id)
         }
-        if (allTransPortQueue.length){
+        if (allTransPortQueue.length > 0){
             let res2 = await this.updateTheWalletForTransport(allTransPortQueue[0].transPortId , allTransPortQueue[0])
         }
     }
@@ -42,11 +42,30 @@ class checkTransActions{
     }
 
     async updateTheWalletForTransport(transPortId : number , queue){
-        let transport = await this.transPort.findOne({where : {id : transPortId} , relations : ['']})
-        console.log('trtrtr >> ' , transport)
-        
-        // queue.state = 1;
-        // let transportQueue = await this.transPort.save(queue)
+        let queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        let transport = await this.transPort.findOne({where : {id : transPortId} , relations : ['sender' , 'reciever' , 'sender.wallet' , 'reciever.wallet']})
+        try {
+            console.log('trtrtr >> ' , transport)
+            let transferAmount = transport.sender.wallet.goldBlock
+            transport.reciever.wallet.goldWeight = (+transport.reciever.wallet.goldWeight) + (+transferAmount)
+            transport.sender.wallet.goldBlock = 0;
+            queue.state = 1;
+            let transportQueue = await this.transportQeueu.save(queue)
+            await queryRunner.manager.save(transport)
+            await queryRunner.manager.save(transport.reciever.wallet)
+            await queryRunner.manager.save(transport.sender.wallet)
+            await queryRunner.manager.save(queue)
+            await queryRunner.commitTransaction()
+            console.log('its don the fucking transport for >>> ' , transport)
+        } catch (error) {
+            console.log('error occured in fucking finishing transfer >>>>' , transport)
+            await queryRunner.rollbackTransaction()
+        }finally{
+            await queryRunner.release()
+        }
+
     }
 }
 
