@@ -22,9 +22,7 @@ AppDataSource.initialize().then(async () => {
 
     // let shakc = new ShahkarController()
 
-
     // await shakc.checkUsers()
-
 
     workerStarter.startWorker()
     // await cacher.setter('tradePermision' , 1)
@@ -61,7 +59,6 @@ AppDataSource.initialize().then(async () => {
     // inside logger!!!!
     winston.configure({
         format: format.combine(
-
             label({ label: 'right meow!' }),
             timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
             prettyPrint()
