@@ -233,7 +233,7 @@ export const Routes = [
     method: "get",
     route: "/admin/goldPrice",
     controller: GoldPriceController,
-    action: "getGoldPrice",
+    action: "adminGetGoldPrice",
     middlwares: [adminMiddleware]
 }
 ,{
