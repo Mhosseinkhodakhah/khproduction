@@ -52,7 +52,6 @@ class checkTransActions{
         await queryRunner.startTransaction()
         let transport = await this.transPort.findOne({where : {id : transPortId} , relations : ['sender' , 'reciever' , 'sender.wallet' , 'reciever.wallet']})
         try {
-            // console.log('trtrtr >> ' , transport)
             let transferAmount = +transport.goldWeight
             transport.reciever.wallet.goldWeight = (+transport.reciever.wallet.goldWeight) + (+transferAmount);
             transport.sender.wallet.goldBlock = (+transport.sender.wallet.goldBlock) - (+transferAmount);
@@ -65,7 +64,7 @@ class checkTransActions{
             await queryRunner.manager.save(queue)
             await queryRunner.commitTransaction()
             this.smsService.sendGeneralMessage(transport.sender.phoneNumber , "approveTransport" ,  transport.sender.firstName , transport.goldWeight , transport.reciever.firstName)
-            this.smsService.sendGeneralMessage(transport.sender.phoneNumber,"approveReciever" , transport.reciever.firstName  , transport.goldWeight , transport.sender.firstName)
+            this.smsService.sendGeneralMessage(transport.reciever.phoneNumber,"approveReciever" , transport.reciever.firstName  , transport.goldWeight , transport.sender.firstName)
             console.log('its don the fucking transport for >>> ' , transport)
             console.log('its don the fucking transport for walletssssss >>> ' , transport.sender.wallet)
             console.log('its don the fucking transport for >>> ' , transport.reciever.wallet)
