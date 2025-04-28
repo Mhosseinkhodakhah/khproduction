@@ -12,9 +12,6 @@ let goldPrice2 = AppDataSource.getRepository(goldPrice)
 
 
 export class analyzor {
-
-
-
     private async firstMonthesOrSecondMonthes(month: string) {
         let mainMonth = 0;
         let firstMonthes = ['01',
@@ -687,9 +684,10 @@ export function startCronJob() {
 }
 
 
-
+setInterval
 export function GoldWeightsIn24(){
     try {
+        console.log('its here for test')
         setInterval(()=>{
             let date = new Date().toLocaleString('fa-IR').split(',')[0].split(':')
             console.log('date >>>>> ' , date)
