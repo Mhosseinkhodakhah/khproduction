@@ -157,12 +157,12 @@ export class WalletController {
                
 
                 if (transPort.otpCode.toString() != otp.toString()) {
-                    return next(new responseModel(req, res, '', 'admin service', 412, `کد وارد شده نادرست است`, null))
+                    return next(new responseModel(req, res, 'کد وارد شده نادرست است', 'admin service', 412, `کد وارد شده نادرست است`, null))
                 }
                 let timeNow = new Date().getTime()
                 
                 if (timeNow - (+transPort.otptime) > 2.1 * 60 * 1000) {
-                    return next(new responseModel(req, res, '', 'admin service', 412, `کد وارد شده منقضی شده است`, null))
+                    return next(new responseModel(req, res, 'کد وارد شده منقضی شده است', 'admin service', 412, `کد وارد شده منقضی شده است`, null))
                 }
                 transPort.sender.wallet.goldWeight = +((+transPort.sender.wallet.goldWeight) - (+(transPort.goldWeight.toFixed(3)))).toFixed(3)
                 transPort.sender.wallet.goldBlock = +(transPort.goldWeight.toFixed(3))
