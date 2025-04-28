@@ -678,4 +678,24 @@ export default class adminController {
         }})
         return next(new responseModel(req, res,'' ,'admin service', 200, null, failedDposit))
     }
+
+
+
+    async getWallet(req: Request, res: Response, next: any) {
+        let { nationalCode } = req.body
+        try {
+            let user = await this.userRepository.findOne({ where: { nationalCode: nationalCode }, relations: ['wallet'] })
+            let data = {
+                firstName: user.firstName,
+                lastName: user.lastName,
+                nationalCode: user.nationalCode,
+                phoneNumber: user.phoneNumber,
+                goldWeight: user.wallet.goldWeight,
+                goldBlock: user.wallet.goldBlock,
+            }
+            return next(new responseModel(req, res, 'استعلام کاربر با موفقیت انجام شد.', 'admin service', 200, null, data))
+        } catch (error) {
+            return next(new responseModel(req, res, 'استعللام کاربر با خطا مواجه شد.', 'admin service', 500, null, null))
+        }
+    }
 }

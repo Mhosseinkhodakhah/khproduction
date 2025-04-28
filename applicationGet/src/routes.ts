@@ -720,6 +720,12 @@ export const Routes = [
     action: "userAndOld",
     middlwares: []
 },
-
+{
+    method: "get",
+    route: "/admin/inquiry",
+    controller: adminController,
+    action: "getWallet",
+    middlwares: [adminMiddleware]
+},
 ]
 
