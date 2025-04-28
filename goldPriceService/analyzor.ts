@@ -31,7 +31,7 @@ class checker{
 
 let startChecker = new checker()
 
-export async function smsHandleChecker() {
+export function smsHandleChecker() {
     try {
         console.log('sms checker is started >>>>')
         setInterval(async () => {
