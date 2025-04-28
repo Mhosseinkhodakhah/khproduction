@@ -14,6 +14,9 @@ export class handleGoldPrice{
     price : number
 
 
+    @Column({type : 'varchar' , default : ''  , nullable : true})
+    admin : string
+
     @CreateDateColumn()
     createdAt : Date;
 

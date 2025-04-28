@@ -43,18 +43,3 @@ export function smsHandleChecker() {
         console.log('errorrr' , error)
     }
 }
-
-// export function GoldWeightsIn24(){
-//     try {
-//         console.log('its here for test')
-//         setInterval(()=>{
-//             let date = new Date().toLocaleString('fa-IR').split(',')[0].split(':')
-//             console.log('date >>>>> ' , date)
-//             if (date[0] == '۲۱' && date[1] == '۵۹' ) {
-//                 console.log('its here and done >>>>>>> ')
-//             }
-//         } , 1000*60)
-//     } catch (error) {
-//         console.log('error occured in fucking goldWeight estimator' , error)
-//     }
-// }

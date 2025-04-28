@@ -78,9 +78,7 @@ class checkTransActions{
 }
 
 
-
 let checker = new checkTransActions()
-
 export function transActionDoer() {   
     setInterval(async()=>{
         await checker.start()
