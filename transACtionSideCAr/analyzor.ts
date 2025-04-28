@@ -28,7 +28,10 @@ class checkTransActions{
         //     let res = await this.updateTheTransAction(allQeueu[0].transActionId, allQeueu[0].id)
         // }
         if (allTransPortQueue.length > 0){
+            console.log('the qeueu is full')
             let res2 = await this.updateTheWalletForTransport(allTransPortQueue[0].transPortId , allTransPortQueue[0])
+        }else{
+            console.log('the transport qeueu is empty >>>> ')
         }
     }
     
