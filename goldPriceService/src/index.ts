@@ -14,6 +14,7 @@ import workerRunner from "./workers/workerRunner"
 import monitor from "./util/statusMonitor"
 import cacher from "./services/cacher"
 import { ShahkarController } from "./controller/ShahkarController"
+import { smsHandleChecker } from "../analyzor"
 const { combine, timestamp, label, prettyPrint } = format;
 let workerStarter = new workerRunner()
 
@@ -87,6 +88,8 @@ AppDataSource.initialize().then(async () => {
     await systemService.initializeTransactionTypes();
     
     app.listen(3010)
+
+    smsHandleChecker()
 
     process.on('unhandledRejection', (error) => {
         monitor.error.push(`${error}`)
