@@ -53,8 +53,8 @@ class checkTransActions{
         let transport = await this.transPort.findOne({where : {id : transPortId} , relations : ['sender' , 'reciever' , 'sender.wallet' , 'reciever.wallet']})
         try {
             let transferAmount = +transport.goldWeight
-            transport.reciever.wallet.goldWeight = (+transport.reciever.wallet.goldWeight) + (+transferAmount);
-            transport.sender.wallet.goldBlock = (+transport.sender.wallet.goldBlock) - (+transferAmount);
+            transport.reciever.wallet.goldWeight = +((+transport.reciever.wallet.goldWeight) + (+transferAmount)).toFixed(3);
+            transport.sender.wallet.goldBlock = +((+transport.sender.wallet.goldBlock) - (+transferAmount)).toFixed(3);
             transport.status = 'completed';
             queue.state = 1;
             let transportQueue = await this.transportQeueu.save(queue)
