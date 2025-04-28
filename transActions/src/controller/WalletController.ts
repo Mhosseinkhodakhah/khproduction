@@ -164,8 +164,8 @@ export class WalletController {
                 if (timeNow - (+transPort.otptime) > 2.1 * 60 * 1000) {
                     return next(new responseModel(req, res, 'کد وارد شده منقضی شده است', 'admin service', 412, `کد وارد شده منقضی شده است`, null))
                 }
-                transPort.sender.wallet.goldWeight = +((+transPort.sender.wallet.goldWeight) - (+(+transPort.goldWeight.toFixed(3)))).toFixed(3)
-                transPort.sender.wallet.goldBlock = +(+transPort.goldWeight.toFixed(3))
+                transPort.sender.wallet.goldWeight = +((+transPort.sender.wallet.goldWeight) - (+(+(transPort.goldWeight).toFixed(3)))).toFixed(3)
+                transPort.sender.wallet.goldBlock = +(+(transPort.goldWeight).toFixed(3))
                 transPort.status = 'pending'
                 transPort.otpApproved = true;
                 await queryRunner.manager.save(transPort.sender.wallet)
