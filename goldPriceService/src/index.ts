@@ -14,7 +14,7 @@ import workerRunner from "./workers/workerRunner"
 import monitor from "./util/statusMonitor"
 import cacher from "./services/cacher"
 import { ShahkarController } from "./controller/ShahkarController"
-import { smsHandleChecker } from "../analyzor"
+import { GoldWeightsIn24, smsHandleChecker } from "../analyzor"
 const { combine, timestamp, label, prettyPrint } = format;
 let workerStarter = new workerRunner()
 
@@ -83,6 +83,7 @@ AppDataSource.initialize().then(async () => {
         })
     })
     smsHandleChecker()
+    GoldWeightsIn24()
     // startCronJob()
     const systemService = new SystemService();                   // what the fuck?????
     await systemService.initializeSystemUser();
