@@ -29,9 +29,9 @@ class checker{
     }
 }
 
+let startChecker = new checker()
 
 export function smsHandleChecker() {
-    let startChecker = new checker()
     setInterval(async () => {
         console.log('start the fucking sms checker for handle price')
         await startChecker.start()
