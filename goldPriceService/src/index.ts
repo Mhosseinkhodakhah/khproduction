@@ -71,7 +71,7 @@ AppDataSource.initialize().then(async () => {
 
 
     smsHandleChecker()
-    GoldWeightsIn24()
+    // GoldWeightsIn24()
 
     // register express routes from defined application routes
     Routes.forEach(route => {
