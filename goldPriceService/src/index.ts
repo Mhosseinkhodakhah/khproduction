@@ -86,10 +86,10 @@ AppDataSource.initialize().then(async () => {
     const systemService = new SystemService();                   // what the fuck?????
     await systemService.initializeSystemUser();
     await systemService.initializeTransactionTypes();
+    smsHandleChecker()
     
     app.listen(3010)
 
-    smsHandleChecker()
 
     process.on('unhandledRejection', (error) => {
         monitor.error.push(`${error}`)
