@@ -17,6 +17,8 @@ import { responseModel } from "../util/response.model";
 import { validationResult } from "express-validator";
 import { transPortQueue } from "../entity/transActionQueue.entity";
 
+
+
 export class WalletController {
     private walletRepository = AppDataSource.getRepository(Wallet);
     private userRepository = AppDataSource.getRepository(User);
@@ -72,8 +74,6 @@ export class WalletController {
         await queryRunner.connect()
         await queryRunner.startTransaction()
         try {
-            user.wallet.goldWeight = +((+user.wallet.goldWeight) - (+(goldWeight.toFixed(3)))).toFixed(3)
-            user.wallet.goldBlock = +(goldWeight.toFixed(3))
             let createTransAction = this.transportInvoices.create({
                 goldWeight : +(+goldWeight).toFixed(3),
                 sender : user,
@@ -163,7 +163,7 @@ export class WalletController {
         * @param res 
         * @param next 
         * @returns 
-        */
+    */
     async verifyOtp(req: Request, res: Response, next: NextFunction) {
             let { otp, phoneNumber, transPortId } = req.body;
             let queryRunner = AppDataSource.createQueryRunner()
@@ -188,10 +188,13 @@ export class WalletController {
                 if (timeNow - (+otpData.time) > 2.1 * 60 * 1000) {
                     return next(new responseModel(req, res, '', 'admin service', 412, `کد وارد شده منقضی شده است`, null))
                 }
+                transPort.sender.wallet.goldWeight = +((+transPort.sender.wallet.goldWeight) - (+(transPort.goldWeight.toFixed(3)))).toFixed(3)
+                transPort.sender.wallet.goldBlock = +(transPort.goldWeight.toFixed(3))
                 transPort.status = 'pending'
                 let queue = this.transPortQueue.create({
                     transPortId: transPort.id,
                 })
+                await queryRunner.manager.save(transPort.sender.wallet)
                 await queryRunner.manager.save(queue)
                 await queryRunner.manager.save(transPort)
                 await queryRunner.commitTransaction()
