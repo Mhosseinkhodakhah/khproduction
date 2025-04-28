@@ -83,14 +83,10 @@ export class WalletController {
                 date : new Date().toLocaleString('fa-IR').split(',')[0],
                 time : new Date().toLocaleString('fa-IR').split(',')[1],
                 type : 'transport',
-                otpApproved : false,
-                otpCode : otpCode.toString(),
-                otptime : (new Date().getTime()).toString(),
             })
             let newWallet = await queryRunner.manager.save(user.wallet)
             console.log('new wallet after block gold>>>>' , newWallet.goldBlock , newWallet.goldWeight)
             let savedTransACtion = await queryRunner.manager.save(createTransAction)
-            await this.smsService.sendOtpMessage(user.phoneNumber , otpCode)
             await queryRunner.commitTransaction()
             return res.status(200).json({ msg: "کد تایید ارسال شد"  , data : savedTransACtion});
         } catch (error) {
@@ -103,9 +99,9 @@ export class WalletController {
     }
 
 
-
     async sendOtpForTransPort(req : Request , res : Response , next : any){
         const userId = req['user_id']
+        let { transPortId } = req.body; 
         let user = await this.userRepository.findOne({where : {id : +userId}})
         let otp = await this.generateOtp()
         let phoneNumber = user.phoneNumber;
@@ -113,37 +109,20 @@ export class WalletController {
         await queryRunner.connect()
         await queryRunner.startTransaction()
         try {
-            let user = await this.userRepository.findOne({
-                where: {
-                    phoneNumber: phoneNumber
-                }
-            })
+            let trasportInvoice = await this.transportInvoices.findOne({where : {id : transPortId}})
+            if (!trasportInvoice){
+                return next(new responseModel(req, res, ' تراکنش انتقال یافت نشد ', 'admin service', 400, `تراکنش انتقال یافت نشد`, null))
+            }
+            
             let otpCode = await this.generateOtp()
 
-            let otpExist = await this.otpRepository.exists({
-                where: {
-                    phoneNumber: phoneNumber
-                }
-            })
-            let userOtp;
-            if (!otpExist) {
-                let newOtp = this.otpRepository.create({
-                    phoneNumber: phoneNumber,
-                    time: new Date().getTime().toString()
-                })
-                userOtp = await this.otpRepository.save(newOtp)
-            } else {
-                userOtp = await this.otpRepository.findOne({
-                    where: {
-                        phoneNumber: phoneNumber
-                    }
-                })
-            }
-            userOtp.otp = otpCode;
-            userOtp.time = new Date().getTime().toString();
-            await this.otpRepository.save(userOtp)
+            trasportInvoice.otpApproved = false;
+            trasportInvoice.otpCode = otpCode.toString()
+            trasportInvoice.otptime = new Date().getTime().toString()
+            await queryRunner.manager.save(trasportInvoice)
             await this.smsService.sendOtpMessage(phoneNumber, otpCode)
             console.log(otpCode)
+            await queryRunner.commitTransaction()
             return next(new responseModel(req, res, 'کد تایید برای شما ارسال شد.', 'admin service', 200, null, otpCode))
         } catch (error) {
             console.log('error>>>>>', `${error}`)
@@ -165,7 +144,7 @@ export class WalletController {
         * @returns 
     */
     async verifyOtp(req: Request, res: Response, next: NextFunction) {
-            let { otp, phoneNumber, transPortId } = req.body;
+            let { otp , transPortId } = req.body;
             let queryRunner = AppDataSource.createQueryRunner()
             await queryRunner.connect()
             await queryRunner.startTransaction()
@@ -174,29 +153,26 @@ export class WalletController {
                 if (!transPort) {
                     return next(new responseModel(req, res, 'تراکنش یافت نشد', 'admin service', 400, 'تراکنش یافت نشد', null))
                 }
-                let otpData = await this.otpRepository.findOne({
-                    where: {
-                        phoneNumber: phoneNumber
-                    }
-                })
+               
 
-                if (otpData.otp.toString() != otp.toString()) {
+                if (transPort.otpCode.toString() != otp.toString()) {
                     return next(new responseModel(req, res, '', 'admin service', 412, `کد وارد شده نادرست است`, null))
                 }
                 let timeNow = new Date().getTime()
                 
-                if (timeNow - (+otpData.time) > 2.1 * 60 * 1000) {
+                if (timeNow - (+transPort.otptime) > 2.1 * 60 * 1000) {
                     return next(new responseModel(req, res, '', 'admin service', 412, `کد وارد شده منقضی شده است`, null))
                 }
                 transPort.sender.wallet.goldWeight = +((+transPort.sender.wallet.goldWeight) - (+(transPort.goldWeight.toFixed(3)))).toFixed(3)
                 transPort.sender.wallet.goldBlock = +(transPort.goldWeight.toFixed(3))
                 transPort.status = 'pending'
+                transPort.otpApproved = true;
+                await queryRunner.manager.save(transPort.sender.wallet)
+                await queryRunner.manager.save(transPort)
                 let queue = this.transPortQueue.create({
                     transPortId: transPort.id,
                 })
-                await queryRunner.manager.save(transPort.sender.wallet)
                 await queryRunner.manager.save(queue)
-                await queryRunner.manager.save(transPort)
                 await queryRunner.commitTransaction()
                 return next(new responseModel(req, res, 'درخاست شما با موفقیت ثبت شدو به صف انتقال اضافه شد.', 'admin service', 200, null, null))
                 
