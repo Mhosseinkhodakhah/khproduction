@@ -150,7 +150,7 @@ export class WalletController {
             await queryRunner.connect()
             await queryRunner.startTransaction()
             try {
-                let transPort = await this.transportInvoices.findOne({ where: { id: +transPortId }  , relations : ['sender' , 'reciever' , 'sender.walelt' , 'reciever.walelt']})
+                let transPort = await this.transportInvoices.findOne({ where: { id: +transPortId }  , relations : ['sender' , 'reciever' , 'sender.wallet' , 'reciever.wallet']})
                 if (!transPort) {
                     return next(new responseModel(req, res, 'تراکنش یافت نشد', 'admin service', 400, 'تراکنش یافت نشد', null))
                 }
