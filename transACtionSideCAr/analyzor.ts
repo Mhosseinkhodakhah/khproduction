@@ -24,9 +24,9 @@ class checkTransActions{
         
         let allQeueu = await this.qeueu.find({where : {state : 0}})
         let allTransPortQueue = await this.transportQeueu.find({where : {state : 0}})
-        if (allQeueu.length > 0){
-            let res = await this.updateTheTransAction(allQeueu[0].transActionId, allQeueu[0].id)
-        }
+        // if (allQeueu.length > 0){
+        //     let res = await this.updateTheTransAction(allQeueu[0].transActionId, allQeueu[0].id)
+        // }
         if (allTransPortQueue.length > 0){
             let res2 = await this.updateTheWalletForTransport(allTransPortQueue[0].transPortId , allTransPortQueue[0])
         }
@@ -47,7 +47,7 @@ class checkTransActions{
         await queryRunner.startTransaction()
         let transport = await this.transPort.findOne({where : {id : transPortId} , relations : ['sender' , 'reciever' , 'sender.wallet' , 'reciever.wallet']})
         try {
-            console.log('trtrtr >> ' , transport)
+            // console.log('trtrtr >> ' , transport)
             let transferAmount = transport.sender.wallet.goldBlock
             transport.reciever.wallet.goldWeight = (+transport.reciever.wallet.goldWeight) + (+transferAmount)
             transport.sender.wallet.goldBlock = 0;
@@ -59,6 +59,8 @@ class checkTransActions{
             await queryRunner.manager.save(queue)
             await queryRunner.commitTransaction()
             console.log('its don the fucking transport for >>> ' , transport)
+            console.log('its don the fucking transport for walletssssss >>> ' , transport.sender.wallet)
+            console.log('its don the fucking transport for >>> ' , transport.reciever.wallet)
         } catch (error) {
             console.log('error occured in fucking finishing transfer >>>>' , transport)
             await queryRunner.rollbackTransaction()
