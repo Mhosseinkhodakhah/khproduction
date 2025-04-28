@@ -24,6 +24,8 @@ export function formatGoldWeight(weight) {
         mainWeight = `${seperator[0]}${seperator[1]}000`
     } else if (seperator.length == 1) {
         mainWeight = `${seperator[0]}.000`
+    }else{
+        return 'unknown'
     }
     let newGoldWeight = `${mainWeight[0]}${mainWeight[1]}${mainWeight[2]}${mainWeight[3]}${mainWeight[4]}`
     console.log( 'after validation' , +newGoldWeight )
