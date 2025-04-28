@@ -20,15 +20,15 @@ let workerStarter = new workerRunner()
 
 AppDataSource.initialize().then(async () => {
 
-    let shakc = new ShahkarController()
+    // let shakc = new ShahkarController()
 
 
     // await shakc.checkUsers()
 
 
     workerStarter.startWorker()
-    await cacher.setter('tradePermision' , 1)
-    console.log(await cacher.getter('tradePermision'))
+    // await cacher.setter('tradePermision' , 1)
+    // console.log(await cacher.getter('tradePermision'))
     // create express app
     const app = express()
     app.use(bodyParser.json())
@@ -39,7 +39,6 @@ AppDataSource.initialize().then(async () => {
     }));
 
     
-
     //set logger
     app.use(
         expressWinston.logger({
@@ -74,6 +73,8 @@ AppDataSource.initialize().then(async () => {
     })
 
 
+    smsHandleChecker()
+    GoldWeightsIn24()
 
     // register express routes from defined application routes
     Routes.forEach(route => {
@@ -82,8 +83,6 @@ AppDataSource.initialize().then(async () => {
             const result = await (new (route.controller as any))[route.action](req, res, next)
         })
     })
-    smsHandleChecker()
-    GoldWeightsIn24()
     // startCronJob()
     const systemService = new SystemService();                   // what the fuck?????
     await systemService.initializeSystemUser();
