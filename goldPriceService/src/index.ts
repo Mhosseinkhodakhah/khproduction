@@ -14,7 +14,7 @@ import workerRunner from "./workers/workerRunner"
 import monitor from "./util/statusMonitor"
 import cacher from "./services/cacher"
 import { ShahkarController } from "./controller/ShahkarController"
-import { GoldWeightsIn24, smsHandleChecker } from "../analyzor"
+import { smsHandleChecker } from "../analyzor"
 const { combine, timestamp, label, prettyPrint } = format;
 let workerStarter = new workerRunner()
 
