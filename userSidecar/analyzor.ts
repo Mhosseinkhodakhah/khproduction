@@ -689,7 +689,7 @@ export function GoldWeightsIn24(){
     try {
         console.log('its here for test')
         setInterval(()=>{
-            let date = new Date().toLocaleString('fa-IR').split(',')[0].split(':')
+            let date = new Date().toLocaleString('fa-IR').split(',')[1].split(':')
             console.log('date >>>>> ' , date)
             if (date[0] == '۲۱' && date[1] == '۵۹' ) {
                 console.log('its here and done >>>>>>> ')
