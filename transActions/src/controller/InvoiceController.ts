@@ -289,6 +289,7 @@ export class InvoiceController {
             await queryRunner.connect()
             await queryRunner.startTransaction()
             let savedTransaction: any;
+            if (+goldPrice > 0 && +totalPrice > 0){
             try {
                 const invoiceType = await this.invoiceTypeRepository.findOneBy({ title: type });
                 const transaction = this.invoiceRepository.create({                                    // here is the making the transActions
@@ -335,7 +336,10 @@ export class InvoiceController {
                 console.log('first transAction>>>>>>', savedTransaction);
             }
 
-        } catch (error) {
+        }else{
+            return response.status(500).json({ msg: "خطای داخلی سیستم" });
+        }
+    } catch (error) {
             monitor.addStatus({
                 scope : 'invoice controller',
                 status :  0,
