@@ -5,6 +5,7 @@ import { transportInvoice } from "./src/entity/transport";
 import { User } from "./src/entity/User";
 import { Wallet } from "./src/entity/Wallet";
 import { WalletTransaction } from "./src/entity/WalletTransaction";
+import { SmsService } from "./src/services/sms-service/message-service";
 
 
 
@@ -18,6 +19,7 @@ class checkTransActions{
     private wallet = AppDataSource.getRepository(Wallet)
     private user = AppDataSource.getRepository(User)
     private walletTR = AppDataSource.getRepository(WalletTransaction)
+    private smsService = new SmsService()
     private transPort = AppDataSource.getRepository(transportInvoice)
     
     async start(){
@@ -54,6 +56,7 @@ class checkTransActions{
             let transferAmount = +transport.goldWeight
             transport.reciever.wallet.goldWeight = (+transport.reciever.wallet.goldWeight) + (+transferAmount);
             transport.sender.wallet.goldBlock = (+transport.sender.wallet.goldBlock) - (+transferAmount);
+            transport.status = 'completed';
             queue.state = 1;
             let transportQueue = await this.transportQeueu.save(queue)
             await queryRunner.manager.save(transport)
@@ -61,6 +64,8 @@ class checkTransActions{
             await queryRunner.manager.save(transport.sender.wallet)
             await queryRunner.manager.save(queue)
             await queryRunner.commitTransaction()
+            await this.smsService.sendGeneralMessage(transport.sender.phoneNumber , "approveTransport" ,  transport.sender.firstName , transport.goldWeight , transport.reciever.firstName)
+            await this.smsService.sendGeneralMessage(transport.sender.phoneNumber,"approveReciever" , transport.reciever.firstName  , transport.goldWeight , transport.sender.firstName)
             console.log('its don the fucking transport for >>> ' , transport)
             console.log('its don the fucking transport for walletssssss >>> ' , transport.sender.wallet)
             console.log('its don the fucking transport for >>> ' , transport.reciever.wallet)
@@ -70,7 +75,6 @@ class checkTransActions{
         }finally{
             await queryRunner.release()
         }
-
     }
 }
 
