@@ -755,7 +755,7 @@ export default class adminController {
 
     async deActiveHandleGoldPrice(req: Request, res: Response, next: NextFunction){
         let admin = `${req.user.firstName} ${req.user.lastName}`
-        let validAdmins = [3,4,8,1]
+        let validAdmins = [3,4,8,1,5]
         if (!validAdmins.includes(+req.user.id)){
             return next(new responseModel(req, res,'شما اجازه این فعالیت را ندارید.' ,'admin service', 503, 'شما اجازه این فعالیت را ندارید', null))
         }
