@@ -275,7 +275,6 @@ export const Routes = [
     controller: WalletController,
     action: "confirmTransport",
     middlwares: [authenticate]
-
 },
 {
     method: "post",
