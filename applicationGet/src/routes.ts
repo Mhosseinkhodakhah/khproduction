@@ -722,7 +722,7 @@ export const Routes = [
 },
 {
     method: "get",
-    route: "/admin/inquiry",
+    route: "/admin/inquiry/:nationalCode",
     controller: adminController,
     action: "getWallet",
     middlwares: [adminMiddleware]

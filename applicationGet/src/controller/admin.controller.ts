@@ -682,9 +682,12 @@ export default class adminController {
 
 
     async getWallet(req: Request, res: Response, next: any) {
-        let { nationalCode } = req.body
+        let nationalCode = req.params.nationalCode
         try {
             let user = await this.userRepository.findOne({ where: { nationalCode: nationalCode }, relations: ['wallet'] })
+            if (!user){
+                return next(new responseModel(req, res, 'کاربر یافت نشد.', 'admin service', 400, null, null))
+            }
             let data = {
                 firstName: user.firstName,
                 lastName: user.lastName,
