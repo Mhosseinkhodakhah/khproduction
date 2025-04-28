@@ -780,7 +780,6 @@ export default class adminController {
             }else{
                 return next(new responseModel(req, res,'قیمت دستی طلا با موفقیت غیر فعال شد.' ,'admin service', 200, null, null))
             }
-
         } catch (error) {
             console.log('error in deactive handle gold price' , error)
             await queryRunner.rollbackTransaction()
@@ -788,7 +787,6 @@ export default class adminController {
         }finally {
             await queryRunner.release()
         }
-
     }
 
 
@@ -851,7 +849,7 @@ export default class adminController {
 
     async sendOtpForTransPort(req: Request, res: Response, next: any) {
         let { transPortId } = req.body;
-        let trasportInvoice = await this.transportInvoices.findOne({ where: { id: transPortId } })
+        let trasportInvoice = await this.transportInvoices.findOne({ where: { id: +transPortId }  , relations : ['sender' , 'reciever']})
         if (!trasportInvoice) {
             return next(new responseModel(req, res, ' تراکنش انتقال یافت نشد ', 'admin service', 400, `تراکنش انتقال یافت نشد`, null))
         }
