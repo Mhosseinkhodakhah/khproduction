@@ -4,15 +4,19 @@
  *//////////////////////////////////////////////////////////
 
 
+
 /**
  * this function is for helping for creating the right format for gold weight
  * @param weight 
  * @returns 
  */
 export function formatGoldWeight(weight) {
+    console.log('its here for validation >>>> ' , weight)
     let seperator = weight.toString().split('')
     let mainWeight = ''
-    if (seperator.length == 4) {
+    if (seperator.length == 5) {
+        mainWeight = `${seperator[0]}${seperator[1]}${seperator[2]}${seperator[3]}${seperator[4]}`
+    }else if (seperator.length == 4) {
         mainWeight = `${seperator[0]}${seperator[1]}${seperator[2]}${seperator[3]}0`
     } else if (seperator.length == 3) {
         mainWeight = `${seperator[0]}${seperator[1]}${seperator[2]}00`
