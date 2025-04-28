@@ -254,9 +254,6 @@ export class InvoiceController {
             // goldWeight = formatGoldWeight(goldWeight)
             console.log('start the transaction',goldWeight , totalPrice)
             goldWeight = formatGoldWeight(goldWeight)
-            if (goldWeight == 'unknown'){
-                return response.status(400).json({ msg: "کاربر گرامی لطفا مقادیر صحیح وارد نمایید" });
-            }
             if (type == "buy") {
                 console.log('11111')
                 totalPrice = +realGoldPrice2*(+goldWeight)
