@@ -145,11 +145,12 @@ export class WalletController {
     */
     async verifyOtp(req: Request, res: Response, next: NextFunction) {
             let { otp , transPortId } = req.body;
+            console.log('trtrtrt' , transPortId)
             let queryRunner = AppDataSource.createQueryRunner()
             await queryRunner.connect()
             await queryRunner.startTransaction()
             try {
-                let transPort = await this.transportInvoices.findOne({ where: { id: transPortId } })
+                let transPort = await this.transportInvoices.findOne({ where: { id: +transPortId } })
                 if (!transPort) {
                     return next(new responseModel(req, res, 'تراکنش یافت نشد', 'admin service', 400, 'تراکنش یافت نشد', null))
                 }
@@ -177,7 +178,7 @@ export class WalletController {
                 return next(new responseModel(req, res, 'درخاست شما با موفقیت ثبت شدو به صف انتقال اضافه شد.', 'admin service', 200, null, null))
                 
             } catch (error) {
-
+                console.log('error in verify otp ' , error)
                 await queryRunner.rollbackTransaction()
                 return next(new responseModel(req, res, '', 'admin service', 500, `حطای داخلی سیستم`, null))
             }finally{
