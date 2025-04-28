@@ -684,7 +684,7 @@ export function startCronJob() {
 }
 
 
-setInterval
+
 export function GoldWeightsIn24(){
     try {
         console.log('its here for test')
