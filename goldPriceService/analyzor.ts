@@ -11,8 +11,7 @@ class checker{
     private goldPriceRepository = AppDataSource.getRepository(goldPrice)
     private handleGoldPrice = AppDataSource.getRepository(handleGoldPrice)
     private smsService = new SmsService()
-
-
+    
     async start(){
         let handleGoldPriceData = await this.handleGoldPrice.find()
         let realPrice = await this.goldPriceRepository.find({order : {'createdAt' : "DESC"}})
@@ -28,19 +27,14 @@ class checker{
             console.log('handle gold price is deActive')
         }
     }
-
-
 }
 
 
-
-export function smsHandleChecker(){
+export function smsHandleChecker() {
     let startChecker = new checker()
-    
-    setInterval(async()=>{
+    setInterval(async () => {
         console.log('start the fucking sms checker for handle price')
         await startChecker.start()
         console.log('finish the fucking sms checker for handle price')
-    }  , 1000*60*30)
-
+    }, 1000 * 60 )
 }
