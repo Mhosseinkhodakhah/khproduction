@@ -23,7 +23,7 @@ export class GoldPriceController {
                 result = await this.goldPriceService.getGoldPrice()
                 console.log('result is not here>>>>' , handleGold[0].price)
             }
-
+            
             let sellFee = 1
             let buyFee = 0
             let data = {
