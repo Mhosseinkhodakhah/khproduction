@@ -82,11 +82,11 @@ AppDataSource.initialize().then(async () => {
             const result = await (new (route.controller as any))[route.action](req, res, next)
         })
     })
+    await smsHandleChecker()
     // startCronJob()
     const systemService = new SystemService();                   // what the fuck?????
     await systemService.initializeSystemUser();
     await systemService.initializeTransactionTypes();
-    smsHandleChecker()
     
     app.listen(3010)
 
