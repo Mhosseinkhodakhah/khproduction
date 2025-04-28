@@ -20,6 +20,8 @@ import monitor from "../util/statusMonitor";
 import instance from "../util/tradePerision";
 import { systemSetting } from "../entity/systemSetting";
 import { BankAccount } from "../entity/BankAccount";
+import { handleGoldPrice } from "../entity/handleGoldPrice.entity";
+import { transActionQeue } from "../entity/transActionQueue.entity";
 
 
 export class InvoiceController {
@@ -30,8 +32,10 @@ export class InvoiceController {
     private zpService = new ZarinPalService()
     private bankAccountRepository = AppDataSource.getRepository(BankAccount);
     private paymentInfoRepository = AppDataSource.getRepository(PaymentInfo)
+    private  transActionQeueu= AppDataSource.getRepository(transActionQeue)
     private smsService = new SmsService()
     private goldPriceRepo = AppDataSource.getRepository(goldPrice)
+    private handleGoldPrice = AppDataSource.getRepository(handleGoldPrice)
     private estimate = AppDataSource.getRepository(EstimateTransactions)
     private systemSetting  = AppDataSource.getRepository(systemSetting)
     private remmitanceService=new RemmitanceService()
@@ -50,105 +54,31 @@ export class InvoiceController {
     
     private async estimateWeight(goldWeight: number, type: number) {
         try {
+            if (+goldWeight > 0){
             if (type == 0) {
-                let month = new Date().toLocaleString('fa-IR').split(",")[0].split("/")[1]  
-                console.log('monthhhhh' , month)
-                let monthEstimate = await this.estimate.exists({where : {
-                    month : month
-                }})
-                if (monthEstimate){
-                    let exEstimate1 =  await this.estimate.findOne({where : {
-                        month : month
-                    }})
-                    exEstimate1.soldGold = (parseFloat(((+exEstimate1.soldGold) + goldWeight).toFixed(3))).toString()
-                    await this.estimate.save(exEstimate1)
-                }else{
-                    let newMonth = this.estimate.create({month : month , boughtGold : '0' , soldGold : ((goldWeight).toFixed(3)).toString()})
-                    await this.estimate.save(newMonth)
-                }
-                let estimate2 = await this.estimate.exists({
-                    where: {
-                        date: new Date().toLocaleString("fa-IR").split(",")[0]
-                    }
-                })
+                
                 let totalEstimate = await this.estimate.findOne({
                     where: {
                         date: 'localDate'
                     }
                 })
-                totalEstimate.soldGold = (parseFloat(((+totalEstimate.soldGold) + goldWeight).toFixed(3))).toString()
+                totalEstimate.soldGold = (parseFloat(((+totalEstimate.soldGold) + +goldWeight).toFixed(3))).toString()
                 await this.estimate.save(totalEstimate)
-                if (estimate2) {
-                    let exEstimate = await this.estimate.findOne({
-                        where: {
-                            date: new Date().toLocaleString("fa-IR").split(",")[0]
-                        }
-                    })
-                    exEstimate.soldGold = (parseFloat(((+exEstimate.soldGold) + goldWeight).toFixed(3))).toString()
-                    await this.estimate.save(exEstimate)
-                } else {
-                    let estimate32 = this.estimate.create({
-                        date: new Date().toLocaleString("fa-IR").split(",")[0],
-                        boughtGold: '0', soldGold: (parseFloat(((goldWeight).toFixed(3))).toString())
-                    })
-                    let a = await this.estimate.save(estimate32)
-                    console.log('sold Estimate>>>' , a)
-                }
+            
             }
             if (type == 1) {
-                let month = new Date().toLocaleString('fa-IR').split(",")[0].split("/")[1]
-                let monthEstimate = await this.estimate.exists({where : {
-                    month : month
-                }})
-                console.log('month for creation' , monthEstimate)
                 
-                if (monthEstimate){
-                console.log('month for creation 1')
-
-                    let monthT = await this.estimate.findOne({where : {
-                        month : month
-                    }})
-                    monthT.boughtGold = (parseFloat(((+monthT.boughtGold) + goldWeight).toFixed(3))).toString()
-                    await this.estimate.save(monthT)
-                }else{
-                console.log('month for creation2')
-
-                    let newMonth =  this.estimate.create({month : month , boughtGold : ((goldWeight).toFixed(3)).toString() , soldGold : '0'})
-                    await this.estimate.save(newMonth)
-                }
-                
-                let estimate2 = await this.estimate.exists({
-                    where: {
-                        date: new Date().toLocaleString("fa-IR").split(",")[0]
-                    }
-                })
                 let totalEstimate = await this.estimate.findOne({
                     where: {
                         date: 'localDate'
                     }
                 })
-                totalEstimate.boughtGold = (parseFloat(((+totalEstimate.boughtGold) + goldWeight).toFixed(3))).toString()
+                totalEstimate.boughtGold = (parseFloat(((+totalEstimate.boughtGold) + +goldWeight).toFixed(3))).toString()
                 await this.estimate.save(totalEstimate)
-                if (estimate2) {
-                    let exEstimate = await this.estimate.findOne({
-                        where: {
-                            date: new Date().toLocaleString("fa-IR").split(",")[0]
-                        }
-                    })
-                    exEstimate.boughtGold = (parseFloat(((+exEstimate.boughtGold) + goldWeight).toFixed(3))).toString()
-                    await this.estimate.save(exEstimate)
-                } else {
-                    let estimate2 = this.estimate.create({
-                        date: new Date().toLocaleString("fa-IR").split(",")[0],
-                        boughtGold: (parseFloat((goldWeight).toFixed(3))).toString(),
-                        soldGold: '0'
-                    })
-                    let sold = await this.estimate.save(estimate2)
-                    console.log('soldddddddd?>>>' , sold)
-                }
-            }
             return true
-        } catch (error) {
+        }
+    }
+    } catch (error) {
             monitor.error.push(`${error}`)
             console.log('error>>>>' , error)
             return false
@@ -243,31 +173,33 @@ export class InvoiceController {
             totalPrice  = totalPrice.replaceAll(',' , '')
             console.log('new totalPrice , ' , totalPrice)
         }
-        if ( +goldWeight < 0.01){
-            monitor.addStatus({
-                scope : 'invoice controller',
-                status :  0,
-                error : 'میزان طلای درخاستی نمیتواند کمتر از 0.01 باشد'
-            })
-            return response.status(400).json({ msg: 'میزان طلای درخاستی نمی تواند کمتر از 0.01 باشد' });
-        }
-        // if (+goldWeight < 1) {
-            
-            console.log('start the transaction',goldWeight , totalPrice)
-            goldWeight = formatGoldWeight(goldWeight)
-            console.log('after validating in formatinfgffggg>>>>> ' , goldWeight)
-        // }else{
-            
-        // }
         console.log('tot' , totalPrice)
         try {
-            let realGoldPrice = await this.goldPriceRepo.find({order : {createdAt : 'DESC'}})
-            const realGoldPrice2 = +realGoldPrice[0].Geram18
-            console.log('price>>>' , realGoldPrice2 , (+goldPrice))   
-            console.log('weight>>>' , (realGoldPrice2*(+goldWeight)) , totalPrice)
+            let realGoldPrice ;
+            let realGoldPrice2;
+            let handlePrice = await this.handleGoldPrice.find()
+            console.log('handle>>>' , handlePrice[0].price)
+            if (handlePrice[0].active) {
+                realGoldPrice = +handlePrice[0].price
+                realGoldPrice2 = realGoldPrice
+            } else {
+            realGoldPrice = await this.goldPriceRepo.find({ order: { createdAt: 'DESC' } })
+            // console.log('after getting last fuckiung real gold price >>>>', realGoldPrice)
+            realGoldPrice2 = +realGoldPrice[0].Geram18
+            console.log('price>>>', realGoldPrice2, (+goldPrice))
+            console.log('weight>>>', (realGoldPrice2 * (+goldWeight)), totalPrice)
+            }
             // console.log('total' , totalPrice , typeof(totalPrice))
             if ((totalPrice.toString()).split('').length > 10){
                 return response.status(400).json({ msg: 'مبلغ بیش از حد مجاز' });
+            }
+            if ( +goldWeight < 0.01){
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  0,
+                    error : 'میزان طلای درخاستی نمیتواند کمتر از 0.01 باشد'
+                })
+                return response.status(400).json({ msg: 'میزان طلای درخاستی نمی تواند کمتر از 0.01 باشد' });
             }
             if (+goldWeight > 10){
                 monitor.addStatus({
@@ -320,6 +252,8 @@ export class InvoiceController {
             }
             // console.log('walletIs' , user.wallet)
             // goldWeight = formatGoldWeight(goldWeight)
+            console.log('start the transaction',goldWeight , totalPrice)
+            goldWeight = formatGoldWeight(goldWeight)
             if (type == "buy") {
                 console.log('11111')
                 totalPrice = +realGoldPrice2*(+goldWeight)
@@ -417,14 +351,6 @@ export class InvoiceController {
     async completeBuyTransaction(request: Request, response: Response) {
         try {
             const { invoiceId , isFromWallet , cartId } = request.body;
-            if (!cartId || cartId == '' || isNaN(cartId)){
-                monitor.addStatus({
-                    scope : 'invoice controller',
-                    status :  0,
-                    error : 'خرید بدون انتخاب کارت بانکی'
-                })
-                return response.status(400).json({ msg: 'لطفا کارت بانکی خود را انتخاب کنید' });
-            }
             console.log('cartId>>>>>>>>>>>>>>>>>>>>>>>>>>>' , cartId)
             const validationError = this.validateRequiredFields({ invoiceId , isFromWallet });
             if (validationError) {
@@ -465,6 +391,11 @@ export class InvoiceController {
                     })
                     return response.status(400).json({ msg: "موجودی کیف پول کافی نیست" });
                 }
+                let addToQueue = this.transActionQeueu.create({
+                    transActionId : createdInvoice.id,
+                    state : 0
+                })
+                await this.transActionQeueu.save(addToQueue)
                 const queryRunner = AppDataSource.createQueryRunner()
                 await queryRunner.connect()
                 await queryRunner.startTransaction()
@@ -525,11 +456,20 @@ export class InvoiceController {
                     await queryRunner.release()
                 }
             } else {                                   // buy with the zarinpal
+                if (!cartId || cartId == '' || isNaN(cartId)){
+                    monitor.addStatus({
+                        scope : 'invoice controller',
+                        status :  0,
+                        error : 'خرید بدون انتخاب کارت بانکی'
+                    })
+                    return response.status(400).json({ msg: 'لطفا کارت بانکی خود را انتخاب کنید' });
+                }
+
                 let bankAccount = await this.bankAccountRepository.findOne({where : {id : +cartId} , relations : ['owner']})
                 
                 if (+bankAccount.owner.id != createdInvoice.buyer.id){
                     return response.status(403).json({
-                        msg : 'خرید از مبدا این کارت بانکی مجاز نمیباشد.'
+                        msg : 'خرید از مبدا این کارت بانکی برای شما مجاز نمیباشد.'
                     })
                 }
                 const info = {
@@ -542,14 +482,12 @@ export class InvoiceController {
                     phoneNumber: createdInvoice.buyer.phoneNumber
                 };
                 console.log('>>>>>>>>>for javad', info.cardPan)
-                console.log('cartIasdfasdfdfd>>>>>>>>>>>>>>>>>>>>>>>>>>>' , info)
-
                 // console.log('amount>>>>>><<<<<<<<<<<>>>>>>>>>' , amount)
                 // console.log(Math.floor(amount))
-                const url = await this.zpService.initiatePayment(info);              // get dargah url from zarinpal
+                const url = await this.zpService.initiatePayment(info)              // get dargah url from zarinpal
                 if (url == 'tooMuch'){
                     return response.status(500).json({
-                        msg : 'درحال حاظر مبلغ انتخاب شده توسط درگاه پرداخت مورد پذیرش نمیباشد.'
+                        msg : 'مبلغ وارد شده بیش از حد مجاز است.'
                     }) 
                 }
                 if (url == 'error'){
@@ -650,6 +588,11 @@ export class InvoiceController {
                     msg: "موجودی صندوق طلا کافی نیست.",
                 });
             }
+            let addToQueue = this.transActionQeueu.create({
+                transActionId : createdInvoice.id,
+                state : 0
+            })
+            await this.transActionQeueu.save(addToQueue)
             const queryRunner = AppDataSource.createQueryRunner()
             await queryRunner.connect()
             await queryRunner.startTransaction()
@@ -744,7 +687,6 @@ export class InvoiceController {
     }
 
 
-
     async verifyTransaction(request: Request, response: Response) {
         try {
             let { status, authority
@@ -787,13 +729,8 @@ export class InvoiceController {
                     const transactionTotalPrice = parseFloat(savedTransaction.totalPrice.toString());
                     
                     savedTransaction.buyer.wallet.goldWeight = parseFloat((buyerGoldWeight + transactionGoldWeight).toFixed(3));
-                    console.log('after updating the goldwaeight', savedTransaction.buyer.wallet.goldWeight)
                     systemUser.wallet.goldWeight = parseFloat((systemUserGoldWeight - transactionGoldWeight).toFixed(3));
-                    console.log('after updating the goldwaeight222222', savedTransaction.buyer.wallet.goldWeight)
                     systemUser.wallet.balance = parseFloat((systemUserBalance + transactionTotalPrice).toFixed(3));
-                    console.log('beforrrrrrrrrrrrr', systemUserBalance)
-                    console.log('beforrrrrrrrrrrrr22222222222222', transactionTotalPrice)
-                    console.log('come till here . . .<<<<<<<>>>>>>>>>>>>>', systemUser.wallet.balance)
                     await this.walletRepository.save([savedTransaction.buyer.wallet, systemUser.wallet]);
                 
                     savedTransaction.status = "completed";
@@ -801,7 +738,6 @@ export class InvoiceController {
                     let updatedtransaction = await this.invoiceRepository.save(savedTransaction);
                     // let nameFamily = savedTransaction.buyer.firstName +' '+ savedTransaction.buyer.lastName
                     await this.smsService.sendGeneralMessage(savedTransaction.buyer.phoneNumber, "buy", savedTransaction.buyer.firstName, transactionGoldWeight, transactionTotalPrice)
-                    console.log('after completed the transaction buy zarinpal>>>', updatedtransaction)
                     await this.estimateWeight(transactionGoldWeight , 1)
                     // let estimate2 = await this.estimate.findOne({where : {
                     //     date : new Date().toLocaleString("fa-IR").split(",")[0]
@@ -856,7 +792,6 @@ export class InvoiceController {
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
     }
-
 
 
     async getTransactions(request: Request, response: Response) {
@@ -939,7 +874,7 @@ export class InvoiceController {
             const user=await this.userRepository.findOneBy({id:userId})
             // let remmitance
             console.log("typeInstance for sell", typeInstance);
- 
+
         
             const queryBuilder = this.invoiceRepository.createQueryBuilder('invoice')
                 .leftJoinAndSelect('invoice.seller', 'seller')
@@ -962,7 +897,7 @@ export class InvoiceController {
                 .orderBy('invoice.createdAt', 'DESC')
                 .getMany();
 
-               
+            
                 
             const all=transactions
 
@@ -983,7 +918,7 @@ export class InvoiceController {
         try {
             const userId = request.user_id;
             const { status } = request.body;
-             const error = validationResult(request)
+            const error = validationResult(request)
                             if (!error.isEmpty()) {
                                 return response.status(400).json({ msg: error['errors'][0].msg  });
                             }
@@ -997,7 +932,7 @@ export class InvoiceController {
                 .where('buyer.id = :userId AND type.id = :id', { userId, id: typeInstance.id });
 
             console.log("typeInstance for buy", typeInstance);
-           
+        
             if (status) {
                 if (status == "success") {
                     // remmitance=await this.remmitanceService.getBuyRmmitanceForUser(user.phoneNumber,"completed")
@@ -1021,7 +956,7 @@ export class InvoiceController {
             //     transactions.push(element)
             // }
             
-          const all=transactions
+        const all=transactions
 
         //   console.log("allllll",all);
         //    console.log("remi",remmitance);
