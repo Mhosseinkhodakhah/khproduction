@@ -90,8 +90,8 @@ export class UserController {
                 }else{
                     mainMenu['isAccess'] = false 
                 }
-                finalT.push(mainMenu)
             }
+            finalT.push(mainMenu)
         }
 
         console.log('its finallTests >>>> ' , finalT)
