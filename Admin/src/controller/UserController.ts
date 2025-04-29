@@ -68,13 +68,14 @@ export class UserController {
         // console.log('admin access22222' , menu)
         let access = Adminmenu.accessPoints;
         let accessed = []
+        // console.log('adminAccess,,,' , access)
         for (let i =0 ; i < access.length ; i++ ) {
             access[i]['isAccess'] = true
             console.log('access' , access[i])
             accessed.push(access[i])
         }
 
-        let final = {...menu , ...access}
+        let final = {...menu , ...accessed}
          
         let lastFinal = []
 
@@ -106,7 +107,7 @@ export class UserController {
             1)
         return next(new response(req, res, 'create new admin', 200, null, newAdmin))
     }
-    
+
 
     async login(req: any, res: any, next: any) {
         console.log('body' , req.body)
