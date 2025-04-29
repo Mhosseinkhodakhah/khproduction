@@ -37,6 +37,15 @@ class interConnection {
                     console.log(error)
                 }
                 break;
+            case 'branch':
+                try {
+                    let rawRespons = await fetch('http://localhost:3006/monitor/all', { method: 'GET' })
+                    response = await rawRespons.json()
+                    console.log('response from user status . . .', response)
+                } catch (error) {
+                    console.log(error)
+                }
+                break;
             case 'adminNode':
                 try {
                     let rawRespons = await fetch('http://localhost:3002/monitor/all', { method: 'GET' })
@@ -148,6 +157,7 @@ setInterval(async () => {
     let goldPriceService = await interConnectionService.getStatus('goldPriceService')
     let queryServiceResponse = await interConnectionService.getStatus('queryService')
     let userResponse = await interConnectionService.getStatus('user')
+    let branchResponse = await interConnectionService.getStatus('branch')
     let adminResponse = await interConnectionService.getStatus('admin')
     let oldUserResponse = await interConnectionService.getStatus('oldUser')
     let installmentResponse = await interConnectionService.getStatus('installment')
@@ -220,6 +230,12 @@ setInterval(async () => {
         result.push({ status: 0, service: 'remmitance' })
     } else {
         result.push({  status: 1,  total : remmitanceResponse, service: 'remmitance' })
+    }
+    if (!branchResponse) {
+        console.log('branch service seems like is down . . .')
+        result.push({ status: 0, service: 'branch' })
+    } else {
+        result.push({  status: 1,  total : branchResponse, service: 'branch' })
     }
     parentPort.postMessage(
         result
