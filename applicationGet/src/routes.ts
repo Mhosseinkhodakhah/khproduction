@@ -165,13 +165,19 @@ export const Routes = [
     action: "getTransactionById",
     middlwares: [authenticate]
 },
+
 {
     method: "get",
     route: "/wallet",
     controller: WalletController,
     action: "getWallet",
     middlwares: [authenticate]
-
+},{
+    method: "get",
+    route: "/interService/wallet/:id",
+    controller: interServiceController,
+    action: "getWallet",
+    middlwares: [authenticate]
 },
 // {
 //     method: "post",

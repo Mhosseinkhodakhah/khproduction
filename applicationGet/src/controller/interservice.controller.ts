@@ -111,7 +111,36 @@ export default class interServiceController{
     }
 
 
-   
+    async getWallet(req: Request, res: Response, next: NextFunction) {
+        let id = req.params.id
+        try{
+
+        let user = await this.userRepository.findOne({where : {id : +id} , relations : ['wallet']})
+        if (!user){ 
+            return res.status(400).json ({
+                success : false,
+                stataus : 0,
+                error : 'user not found'
+            })
+        }
+
+        return res.status(200).json({
+            success : true,
+            stataus: 1,
+            data : user
+        })
+
+        }catch (error) {
+            console.log('error in getting data from brancg service >>>> ' , error)
+            return res.status(500).json({
+                success : false,
+                stataus: 2,
+                error : 'internal service error'
+            })
+        }
+
+
+    }
 
     // async getAllUsersData(req : Request , res : Response , next : NextFunction){
     //     let users = await this.userRepository.find({relations : ['buys' , 'sells' , 'wallet' , 'wallet.transactions']})
