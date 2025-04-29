@@ -79,6 +79,23 @@ export class UserController {
 
         console.log('menuuuuu2>>>' , access)
 
+        let finalT = []
+
+        for (let k = 0 ; k < menu.length ; k ++){
+            let mainMenu = menu[k]
+            for (let m = 0 ; m < access.length ; m ++){
+                let accessedMenu = access[m];
+                if (mainMenu.englishName === accessedMenu.englishName){
+                    mainMenu['isAccess'] = true 
+                }else{
+                    mainMenu['isAccess'] = false 
+                }
+                finalT.push(mainMenu)
+            }
+        }
+
+        console.log('its finallTests >>>> ' , finalT)
+
         let final = {...menu , ...access}
         console.log('after finaling the accessed >>>>>' , final)
         let lastFinal = []
