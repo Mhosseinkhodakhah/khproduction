@@ -48,6 +48,13 @@ export class InvoiceController {
         return null;
     }
 
+
+    private async deleteInitInvoices(id){
+        let allInitInvoices = await this.invoiceRepository.find({where : [{id : +id} , {status : 'init'}]})
+        await this.invoiceRepository.remove(allInitInvoices)
+    }
+
+
     private async generateInvoice(){
         return (new Date().getTime()).toString()
     }
@@ -382,7 +389,7 @@ export class InvoiceController {
                 where: { isSystemUser: true },
                 relations: ["wallet"],
             });
-            
+
             if (isFromWallet) {
                 console.log('check check check ...............', typeof (createdInvoice.buyer.wallet.balance), createdInvoice.buyer.wallet.balance)
                 console.log('check check check ...............', typeof (createdInvoice.totalPrice), createdInvoice.totalPrice)
@@ -428,6 +435,7 @@ export class InvoiceController {
                     createdInvoice.invoiceId = await this.generateInvoice();
                     // const savedTransaction = await this.invoiceRepository.save(createdInvoice);
                     savedTransaction = await queryRunner.manager.save(createdInvoice)
+                    this.deleteInitInvoices(createdInvoice.buyer.id)
                     await queryRunner.commitTransaction()
                     console.log('coomplete buy from wallet', savedTransaction)
                     await this.estimateWeight(invoiceGoldWeight, 1)
@@ -642,6 +650,7 @@ export class InvoiceController {
                 //          boughtGold : '0' , soldGold : (parseFloat(((invoiceGoldWeight).toFixed(3))).toString())})
                 //     await this.estimate.save(estimate2)
                 //  }
+                this.deleteInitInvoices(createdInvoice.buyer.id)
                 await queryRunner.commitTransaction()
                 console.log('after failed in complete sell and transaction commited . . .>>>', savedTransaction)
                 monitor.addStatus({
@@ -740,6 +749,7 @@ export class InvoiceController {
                     savedTransaction.status = "completed";
                     savedTransaction.invoiceId = res.data.ref_id
                     let updatedtransaction = await this.invoiceRepository.save(savedTransaction);
+                    this.deleteInitInvoices(updatedtransaction.buyer.id)
                     // let nameFamily = savedTransaction.buyer.firstName +' '+ savedTransaction.buyer.lastName
                     await this.smsService.sendGeneralMessage(savedTransaction.buyer.phoneNumber, "buy", savedTransaction.buyer.firstName, transactionGoldWeight, transactionTotalPrice)
                     await this.estimateWeight(transactionGoldWeight , 1)
