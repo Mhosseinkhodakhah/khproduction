@@ -60,9 +60,18 @@ export class WalletController {
             id : +userId
         } , relations : ['wallet']})
 
+
         let reciever = await this.userRepository.findOne({where : {
             nationalCode : nationalCode
         }})
+
+        if (!reciever){
+            return res.status(400).json({ msg: "کد ملی مقصد در اپلیکیشن ثبت نشده است." });
+        }
+
+        if (reciever.id == user.id){
+            return res.status(400).json({ msg: "مبدا و مقصد انتقال نمیتواند یکسان باشد." });
+        }
 
         if (+user.wallet.goldWeight < +goldWeight ){
             return res.status(400).json({ msg: "موجودی کیف پول شما برای انتقال کافی نیست." });

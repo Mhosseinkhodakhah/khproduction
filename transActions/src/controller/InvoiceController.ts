@@ -382,7 +382,7 @@ export class InvoiceController {
                 where: { isSystemUser: true },
                 relations: ["wallet"],
             });
-
+            
             if (isFromWallet) {
                 console.log('check check check ...............', typeof (createdInvoice.buyer.wallet.balance), createdInvoice.buyer.wallet.balance)
                 console.log('check check check ...............', typeof (createdInvoice.totalPrice), createdInvoice.totalPrice)
