@@ -934,7 +934,7 @@ export default class adminController {
             await queryRunner.manager.save(transPort.reciever.wallet)
             await queryRunner.manager.save(transPort)
             this.smsService.sendGeneralMessage(transPort.sender.phoneNumber , "approveTranport" ,  transPort.sender.firstName , transPort.goldWeight , transPort.reciever.nationalCode)
-            this.smsService.sendGeneralMessage(transPort.reciever.phoneNumber,"approveReciever" , transPort.reciever.firstName  , transPort.goldWeight , transPort.sender.firstName)
+            this.smsService.sendGeneralMessage(transPort.reciever.phoneNumber,"approveReciever" , transPort.reciever.firstName  , transPort.goldWeight , transPort.sender.nationalCode)
 
             await queryRunner.commitTransaction()
             return next(new responseModel(req, res, 'انتقال طلا با موفقیت انجام شد.', 'admin service', 200, null, null))
