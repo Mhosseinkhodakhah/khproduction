@@ -14,8 +14,6 @@ export default class interConnections{
             console.log('error occured in getting data from fucking query service' , error)
             return 'unknown'
         }
-
-
     }
 
 

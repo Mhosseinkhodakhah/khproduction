@@ -32,5 +32,12 @@ export const Routes = [
     middlewares:[],
     action: "getSellers"
 },
+{
+    method: "post",
+    route: "/transAction/create",
+    controller: UserController,
+    middlewares:[],
+    action: "createTransAction"
+}
 
 ]
