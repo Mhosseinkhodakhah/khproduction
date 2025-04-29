@@ -4,6 +4,7 @@ import { AppDataSource } from "../data-source"
 import { sellers } from "../entity/sellers"
 import { branche } from "../entity/branche"
 import { responseModel } from "../util/response.model"
+import { validationResult } from "express-validator"
 
 
 export default class branchController {
@@ -11,9 +12,20 @@ export default class branchController {
     private sellerRepository = AppDataSource.getRepository(sellers)
     private branchRepository = AppDataSource.getRepository(branche)
 
-    
+    /**
+     * its for creating new branch by admin . . .
+     * @param req 
+     * @param res 
+     * @param next 
+     * @returns 
+     */
     async createNewBranch(req: Request, res: Response, next: NextFunction) {
         try {
+            let bodyValidation = validationResult(req.body)
+            console.log(req.body)
+            if (!bodyValidation.isEmpty()){
+                return next(new responseModel(req, res, '' , 'admin', 400, bodyValidation['errors'][0].msg, null))
+            }
             let newBranch = this.branchRepository.create(req.body)
             let newData = await this.branchRepository.save(newBranch)
             return next(new responseModel(req, res, 'ایجاد شعبه جدید با موفقیت انجام شد', 'branch', 200, null, newData))
@@ -23,9 +35,20 @@ export default class branchController {
         }
     }
 
-
+    /**
+     * its for add new seller for specific branch by admin
+     * @param req 
+     * @param res 
+     * @param next 
+     * @returns 
+     */
     async addSeller(req: Request, res: Response, next: NextFunction) {
         try {
+            let bodyValidation = validationResult(req.body)
+            console.log(req.body)
+            if (!bodyValidation.isEmpty()){
+                return next(new responseModel(req, res, '' , 'admin', 400, bodyValidation['errors'][0].msg, null))
+            }
             let branch = await this.branchRepository.findOne({ where: { id: req.params.branchId } })
             if (!branch) {
                 return next(new responseModel(req, res, 'شعبه مورد نظر یافت نشد', 'branch', 400, 'شعبه مورد نظر یافت نشد', null))
@@ -40,6 +63,13 @@ export default class branchController {
     }
 
 
+    /**
+     * its for get all branches by users
+     * @param req 
+     * @param res 
+     * @param next 
+     * @returns 
+     */
     async getAllBranches(req: Request, res: Response, next: NextFunction) {
         try {
             let branches = await this.branchRepository.find()
@@ -51,6 +81,14 @@ export default class branchController {
     }
 
 
+
+    /**
+     * its for get all sellers of specific branch
+     * @param req 
+     * @param res 
+     * @param next 
+     * @returns 
+     */
     async getSellers(req: Request, res: Response, next: NextFunction) {
         try {
             let branchId = req.params.branchId;
@@ -64,6 +102,9 @@ export default class branchController {
             return next(new responseModel(req, res, 'خطای داخلی سیستم', 'branch', 500, 'خطای داخلی سیستم', null))
         }
     }
+
+
+
 
 
 }

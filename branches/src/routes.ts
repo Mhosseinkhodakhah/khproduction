@@ -32,4 +32,5 @@ export const Routes = [
     middlewares:[],
     action: "getSellers"
 },
+
 ]
