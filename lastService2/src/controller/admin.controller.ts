@@ -815,7 +815,7 @@ export default class adminController {
             return res.status(400).json({ msg: "کد ملی مقصد در اپلیکیشن ثبت نشده است." });
         }
 
-        if (reciever.id == user.id){
+        if (+reciever.id == +user.id){
             return res.status(400).json({ msg: "مبدا و مقصد انتقال نمیتواند یکسان باشد." });
         }
 
