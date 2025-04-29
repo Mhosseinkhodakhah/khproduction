@@ -100,19 +100,19 @@ export class UserController {
 
         console.log('its finallTests >>>> ' , finalT)
 
-        let final = {...menu , ...access}
-        // console.log('after finaling the accessed >>>>>' , final)
-        let lastFinal = []
+        // let final = {...menu , ...access}
+        // // console.log('after finaling the accessed >>>>>' , final)
+        // let lastFinal = []
 
-        for (let j of Object.keys(final)){
-            if (final[j].isAccess == undefined){
-                final[j]['isAccess'] = false;
-            }else if (final[j].isAccess == null){
-                final[j]['isAccess'] = false;
-            }
-            lastFinal.push(final[j])
-        }
-        return next(new response(req, res, 'get All SubMenu', 200, null, lastFinal))
+        // for (let j of Object.keys(final)){
+        //     if (final[j].isAccess == undefined){
+        //         final[j]['isAccess'] = false;
+        //     }else if (final[j].isAccess == null){
+        //         final[j]['isAccess'] = false;
+        //     }
+        //     lastFinal.push(final[j])
+        // }
+        return next(new response(req, res, 'get All SubMenu', 200, null, finalT))
     }
 
 
