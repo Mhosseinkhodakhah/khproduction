@@ -201,11 +201,23 @@ setInterval(async () => {
     } else {
         result.push({  status: 1,  total : adminResponse, service: 'admin' })
     }
+    if (!branchResponse) {
+        console.log('branch service seems like is down . . .')
+        result.push({ status: 0, service: 'branch' })
+    } else {
+        result.push({  status: 1,  total : branchResponse, service: 'branch' })
+    }   
     if (!oldUserResponse) {
         console.log('oldUser service seems like is down . . .')
         result.push({ status: 0, service: 'oldUser' })
     } else {
         result.push({ status: 1,  total : oldUserResponse, service: 'oldUser' })
+    }
+    if (!userSideCarResponse) {
+        console.log('userSideCar service seems like is down . . .')
+        result.push({ status: 0, service: 'userSideCar' })
+    } else {
+        result.push({  status: 1,  total : userSideCarResponse, service: 'userSideCar' })
     }
     if (!installmentResponse) {
         console.log('installment service seems like is down . . .')
@@ -219,23 +231,11 @@ setInterval(async () => {
     } else {
         result.push({  status: 1,  total :productResponse, service: 'product' })
     }
-    if (!userSideCarResponse) {
-        console.log('userSideCar service seems like is down . . .')
-        result.push({ status: 0, service: 'userSideCar' })
-    } else {
-        result.push({  status: 1,  total : userSideCarResponse, service: 'userSideCar' })
-    }
     if (!remmitanceResponse) {
         console.log('remmitance service seems like is down . . .')
         result.push({ status: 0, service: 'remmitance' })
     } else {
         result.push({  status: 1,  total : remmitanceResponse, service: 'remmitance' })
-    }
-    if (!branchResponse) {
-        console.log('branch service seems like is down . . .')
-        result.push({ status: 0, service: 'branch' })
-    } else {
-        result.push({  status: 1,  total : branchResponse, service: 'branch' })
     }
     parentPort.postMessage(
         result
