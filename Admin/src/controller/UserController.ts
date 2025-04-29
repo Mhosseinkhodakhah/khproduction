@@ -81,15 +81,19 @@ export class UserController {
 
         let finalT = []
 
-        for (let k = 0 ; k < menu.length ; k ++){
+        for (let k = 0; k < menu.length; k++) {
             let mainMenu = menu[k]
-            for (let m = 0 ; m < access.length ; m ++){
+            let isAccess = 0
+            for (let m = 0; m < access.length; m++) {
                 let accessedMenu = access[m];
-                if (mainMenu.englishName === accessedMenu.englishName){
-                    mainMenu['isAccess'] = true 
-                }else{
-                    mainMenu['isAccess'] = false 
+                if (mainMenu.englishName === accessedMenu.englishName) {
+                    isAccess = 1
                 }
+            }
+            if (isAccess == 0) {
+                mainMenu['isAccess'] = false
+            }else{
+                mainMenu['isAccess'] = true
             }
             finalT.push(mainMenu)
         }
@@ -97,7 +101,7 @@ export class UserController {
         console.log('its finallTests >>>> ' , finalT)
 
         let final = {...menu , ...access}
-        console.log('after finaling the accessed >>>>>' , final)
+        // console.log('after finaling the accessed >>>>>' , final)
         let lastFinal = []
 
         for (let j of Object.keys(final)){
