@@ -811,9 +811,14 @@ export default class adminController {
         let recieverUser = await this.userRepository.findOne({where : {
             nationalCode : reciever
         }})
-        if (!reciever){
+        if (!recieverUser){
             return res.status(400).json({ msg: "کد ملی مقصد در اپلیکیشن ثبت نشده است." });
         }
+
+        if (!user){
+            return res.status(400).json({ msg: "کد ملی مبدا در اپلیکیشن ثبت نشده است." });
+        }
+
 
         if (+recieverUser.id == +user.id){
             return res.status(400).json({ msg: "مبدا و مقصد انتقال نمیتواند یکسان باشد." });
