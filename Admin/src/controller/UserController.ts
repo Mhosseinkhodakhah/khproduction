@@ -117,6 +117,10 @@ export class UserController {
 
 
     async addNewAdmin(req: Request, res: Response, next: NextFunction) {
+        // let validAdmins = [3,4,8,1,5]
+        // if (!validAdmins.includes(+req.user.userId)){
+        //     return next(new response(req, res ,'admin service', 503, 'شما اجازه این فعالیت را ندارید', null))
+        // }
         const admin = req.user.role
         console.log('admin role >>>' , admin)
         if (admin == 0) {
@@ -231,6 +235,7 @@ export class UserController {
         // admin.password = req.body.password;
         // await this.adminRepository.save(admin)
         // await this.adminRepository.remove(admin)
+        admin.role = 1;
         return next(new response(req, res, 'update admin', 200, null, admin))
     }
 
