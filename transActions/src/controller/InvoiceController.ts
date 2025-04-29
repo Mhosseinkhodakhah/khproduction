@@ -50,7 +50,7 @@ export class InvoiceController {
 
 
     private async deleteInitInvoices(id){
-        let allInitInvoices = await this.invoiceRepository.find({where : [{id : +id} , {status : 'init'}]})
+        let allInitInvoices = await this.invoiceRepository.find({where : {id : +id , status : 'init'}})
         await this.invoiceRepository.remove(allInitInvoices)
     }
 
