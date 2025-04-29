@@ -73,9 +73,9 @@ export class UserController {
             branch : branch
         }})
 
-        if (!seller){
-            return next(new responseModel(req, res, 'فروشنده مورد نظر در لیست فروشندگان این شعبه وجود ندارد', 'branch', 400, 'فروشنده مورد نظر در لیست فروشندگان این شعبه وجود ندارد', null))
-        }
+        // if (!seller){
+        //     return next(new responseModel(req, res, 'فروشنده مورد نظر در لیست فروشندگان این شعبه وجود ندارد', 'branch', 400, 'فروشنده مورد نظر در لیست فروشندگان این شعبه وجود ندارد', null))
+        // }
 
         let wallet = await this.interService.getWalletData(2)
         console.log('response of wallet>>>>>>>>', wallet)
