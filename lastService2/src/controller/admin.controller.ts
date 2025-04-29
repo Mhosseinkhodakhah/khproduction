@@ -919,6 +919,7 @@ export default class adminController {
             transPort.sender.wallet.goldBlock = (+transPort.sender.wallet.goldBlock) - (+transferAmount);
             transPort.status = 'completed';
             await queryRunner.manager.save(transPort.sender.wallet)
+            await queryRunner.manager.save(transPort.reciever.wallet)
             await queryRunner.manager.save(transPort)
 
             await queryRunner.commitTransaction()
