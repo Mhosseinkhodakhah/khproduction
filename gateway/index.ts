@@ -109,6 +109,7 @@ app.use('/v1/old' , routing.proxy(`http://localhost:5004`))     // proxing to ol
 app.use('/v1/installment' , routing.proxy(`http://localhost:5008`))     // proxing to installments service
 app.use('/v1/report'  ,routing.proxy(`http://localhost:8000`))     // proxing to django for report service
 app.use('/v1/remmitance' , routing.proxy(`http://localhost:5007`))     // proxing to django for report service
+app.use('/v1/branch' , routing.proxy(`http://localhost:3006`))     // proxing to django for report service
 
 
 
