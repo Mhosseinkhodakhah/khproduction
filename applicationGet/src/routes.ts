@@ -177,7 +177,7 @@ export const Routes = [
     route: "/interService/wallet/:id",
     controller: interServiceController,
     action: "getWallet",
-    middlwares: [authenticate]
+    middlwares: []
 },
 // {
 //     method: "post",
