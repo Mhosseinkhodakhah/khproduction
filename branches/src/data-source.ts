@@ -3,6 +3,7 @@ import { DataSource } from "typeorm"
 import { config } from "dotenv";
 import { sellers } from "./entity/sellers";
 import { branche } from "./entity/branche";
+import { transAction } from "./entity/transAction.entity";
 
 config();
 
@@ -15,7 +16,7 @@ export const AppDataSource = new DataSource({
     database: 'branches', // Database name
     synchronize: true,
     logging: false,
-    entities: [sellers , branche],
+    entities: [sellers , branche , transAction],
     migrations: [],
     subscribers: [],
 })
