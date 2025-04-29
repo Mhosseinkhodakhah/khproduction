@@ -4,24 +4,31 @@ import { createBranchDto } from "./entity/dto/branchDto.dto"
 
 export const Routes = [
     {
-    method: "get",
-    route: "/users",
-    controller: UserController,
-    action: "all"
-}, {
-    method: "get",
-    route: "/users/:id",
-    controller: UserController,
-    action: "one"
-}, {
     method: "post",
-    route: "/branch/create",
+    route: "/create",
     controller: branchController,
     middlewares:[createBranchDto],
     action: "createNewBranch"
-}, {
-    method: "delete",
-    route: "/users/:id",
-    controller: UserController,
-    action: "remove"
-}]
+},
+{
+    method: "post",
+    route: "/seller/create/:branchId",
+    controller: branchController,
+    middlewares:[createBranchDto],
+    action: "addSeller"
+},
+{
+    method: "get",
+    route: "/all",
+    controller: branchController,
+    middlewares:[createBranchDto],
+    action: "getAllBranches"
+},
+{
+    method: "get",
+    route: "/seller/all/:branchId",
+    controller: branchController,
+    middlewares:[createBranchDto],
+    action: "getSellers"
+},
+]

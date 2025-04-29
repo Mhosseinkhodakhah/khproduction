@@ -11,26 +11,59 @@ export default class branchController {
     private sellerRepository = AppDataSource.getRepository(sellers)
     private branchRepository = AppDataSource.getRepository(branche)
 
-
-    async createNewBranch(req: Request, res: Response, next: NextFunction) {
-        let newBranch = this.branchRepository.create(req.body)
-        let newData = await this.branchRepository.save(newBranch)
-        return next(new responseModel(req , res , 'ایجاد شعبه جدید با موفقیت انجام شد' , 'branch' , 200 , null , newData))
-    }
-
-
-    async addSeller(req: Request, res: Response, next: NextFunction){
-        let branch = await this.branchRepository.findOne({where : {id : req.params.branchId}})
-        if (!branch){
-            return next(new responseModel(req, res, 'شعبه مورد نظر یافت نشد', 'branch', 400, 'شعبه مورد نظر یافت نشد', null))
-        }
-        let newSeller = this.sellerRepository.create({...req.body , branch : branch})
-        await this.sellerRepository.save(branch)
-        return next(new responseModel(req , res , 'ایجاد فروشنده با موفقیت انجام شد.' , 'branch' , 200 , null , newSeller))
-    }
-
-
     
+    async createNewBranch(req: Request, res: Response, next: NextFunction) {
+        try {
+            let newBranch = this.branchRepository.create(req.body)
+            let newData = await this.branchRepository.save(newBranch)
+            return next(new responseModel(req, res, 'ایجاد شعبه جدید با موفقیت انجام شد', 'branch', 200, null, newData))
+        } catch (error) {
+            console.log('error in create branch', error)
+            return next(new responseModel(req, res, 'ایجاد شعبه جدید ', 'branch', 500, 'خطای داخلی سیستم', null))
+        }
+    }
+
+
+    async addSeller(req: Request, res: Response, next: NextFunction) {
+        try {
+            let branch = await this.branchRepository.findOne({ where: { id: req.params.branchId } })
+            if (!branch) {
+                return next(new responseModel(req, res, 'شعبه مورد نظر یافت نشد', 'branch', 400, 'شعبه مورد نظر یافت نشد', null))
+            }
+            let newSeller = this.sellerRepository.create({ ...req.body, branch: branch })
+            await this.sellerRepository.save(branch)
+            return next(new responseModel(req, res, 'ایجاد فروشنده با موفقیت انجام شد.', 'branch', 200, null, newSeller))
+        } catch (error) {
+            console.log('eror in add seller', error)
+            return next(new responseModel(req, res, 'ایجاد فروشنده موفق نبود.خطای داخلی سیستم.', 'branch', 200, 'خطای داخلی سیستم', null))
+        }
+    }
+
+
+    async getAllBranches(req: Request, res: Response, next: NextFunction) {
+        try {
+            let branches = await this.branchRepository.find()
+            return next(new responseModel(req, res, '', 'branch', 200, null, branches))
+        } catch (error) {
+            console.log('get all branches hass error >>> ', error)
+            return next(new responseModel(req, res, 'خطای داخلی سیستم', 'branch', 500, 'خطای داخلی سیستم', null))
+        }
+    }
+
+
+    async getSellers(req: Request, res: Response, next: NextFunction) {
+        try {
+            let branchId = req.params.branchId;
+            let branch = await this.branchRepository.findOne({ where: { id: +branchId }, relations: ['sellers'] })
+            if (!branch) {
+                return next(new responseModel(req, res, 'شعبه مورد نظر در سیستم ثبت نشده است', 'branch', 500, 'شعبه مورد نظر در سیستم ثبت نشده است', null))
+            }
+            return next(new responseModel(req, res, '', 'branch', 200, null, branch.sellers))
+        } catch (error) {
+            console.log('error >>> ', error)
+            return next(new responseModel(req, res, 'خطای داخلی سیستم', 'branch', 500, 'خطای داخلی سیستم', null))
+        }
+    }
 
 
 }
