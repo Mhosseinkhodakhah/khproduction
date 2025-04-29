@@ -811,6 +811,13 @@ export default class adminController {
         let recieverUser = await this.userRepository.findOne({where : {
             nationalCode : reciever
         }})
+        if (!reciever){
+            return res.status(400).json({ msg: "کد ملی مقصد در اپلیکیشن ثبت نشده است." });
+        }
+
+        if (reciever.id == user.id){
+            return res.status(400).json({ msg: "مبدا و مقصد انتقال نمیتواند یکسان باشد." });
+        }
 
         if (+user.wallet.goldWeight < +goldWeight ){
             return res.status(400).json({ msg: "موجودی کیف پول شما برای انتقال کافی نیست." });
@@ -921,7 +928,7 @@ export default class adminController {
             await queryRunner.manager.save(transPort.sender.wallet)
             await queryRunner.manager.save(transPort.reciever.wallet)
             await queryRunner.manager.save(transPort)
-
+            
             await queryRunner.commitTransaction()
             return next(new responseModel(req, res, 'انتقال طلا با موفقیت انجام شد.', 'admin service', 200, null, null))
         } catch (error) {
