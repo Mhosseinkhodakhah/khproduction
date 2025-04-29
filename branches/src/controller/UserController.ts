@@ -5,13 +5,14 @@ import { branche } from "../entity/branche"
 import { responseModel } from "../util/response.model"
 import { validationResult } from "express-validator"
 import interConnections from "../services/interconnection.service"
+import { transAction } from "../entity/transAction.entity"
 
 export class UserController {
 
     private sellerRepository = AppDataSource.getRepository(sellers)
     private branchRepository = AppDataSource.getRepository(branche)
     private interService = new interConnections()
-
+    private transAction = AppDataSource.getRepository(transAction)
 
     /**
         * its for get all branches by users
@@ -78,7 +79,33 @@ export class UserController {
         // }
 
         let wallet = await this.interService.getWalletData(2)
+        if (!wallet || wallet == 400 || wallet == 500 || wallet == 'unknown'){
+            return next(new responseModel(req, res, 'در حال حاظر امکان استفاده از سرویس استفاده از صندوق طلا وجود ندارد', 'branch', 500, 'در حال حاظر امکان استفاده از سرویس استفاده از صندوق طلا وجود ندارد', null))
+        }
+
         console.log('response of wallet>>>>>>>>', wallet)
+
+        if (+wallet.wallet.goldWeight < +goldWeight){
+            return next(new responseModel(req, res, 'موجودی صندوق طلای کاربر کافی نمی باشد', 'branch', 500, 'موجودی صندوق طلای کاربر کافی نمی باشد', null))
+        }
+
+        
+
+
+
+        // let createdTrnasAction = this.transAction.create({
+        //     status : 'init',
+        //     user : wallet.id,
+        //     goldPrice ,
+        //     goldWeight :,
+        //     totalPrice,
+        //     invoiceId,
+        //     status,
+        //     date,
+        //     time,
+        //     seller,
+        // })
+
         return next(new responseModel(req, res, 'تراکنش با موفقیت ایجاد شد', 'branch', 200, null, null))
 
 

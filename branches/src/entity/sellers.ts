@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 import { branche } from "./branche"
+import { transAction } from "./transAction.entity";
 
 @Entity()
 export class sellers {
@@ -22,6 +23,11 @@ export class sellers {
 
     @Column({type : 'varchar'})
     nationalCode : string;
+
+
+    @OneToMany(()=>transAction , (transAction) => transAction.seller)
+    transActions : transAction
+
 
     @CreateDateColumn()
     createdAt : Date;

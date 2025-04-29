@@ -1,4 +1,5 @@
 import branchController from "./controller/branch.controller"
+import { interService } from "./controller/interservice.controller"
 import { UserController } from "./controller/UserController"
 import { createBranchDto } from "./entity/dto/branchDto.dto"
 import { addSellerDto } from "./entity/dto/createSellerDto"
@@ -38,6 +39,12 @@ export const Routes = [
     controller: UserController,
     middlewares:[],
     action: "createTransAction"
-}
+},{
+    method: "get",
+    route: "/monitor/all",
+    controller: interService,
+    action: "getStatus",                     // get status by logger service
+    middlwares: []
+},
 
 ]
