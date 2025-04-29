@@ -75,8 +75,12 @@ export class UserController {
             accessed.push(access[i])
         }
 
-        let final = {...menu , ...accessed}
-         
+        console.log('menuuuuuuuu111>>>' , menu)
+
+        console.log('menuuuuu2>>>' , access)
+
+        let final = {...menu , ...access}
+        console.log('after finaling the accessed >>>>>' , final)
         let lastFinal = []
 
         for (let j of Object.keys(final)){
