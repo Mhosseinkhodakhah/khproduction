@@ -1,4 +1,4 @@
-import { monitorInterface } from "../interfaces/interface.interface";
+import { monitorInterface } from "../interfaces.interface";
 
 class interceptor{
     requestCount : number
