@@ -236,6 +236,7 @@ export class UserController {
         // await this.adminRepository.save(admin)
         // await this.adminRepository.remove(admin)
         admin.role = 1;
+        await this.adminRepository.save(admin)
         return next(new response(req, res, 'update admin', 200, null, admin))
     }
 
