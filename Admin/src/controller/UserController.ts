@@ -75,7 +75,7 @@ export class UserController {
         }
 
         let final = {...menu , ...access}
-
+         
         let lastFinal = []
 
         for (let j of Object.keys(final)){
@@ -106,7 +106,7 @@ export class UserController {
             1)
         return next(new response(req, res, 'create new admin', 200, null, newAdmin))
     }
-
+    
 
     async login(req: any, res: any, next: any) {
         console.log('body' , req.body)
@@ -135,7 +135,7 @@ export class UserController {
         let accessPoints = await this.accessPointRepository.find({where : {
             Admin : admin
         }})
-        console.log(accessPoints)
+        console.log('admin accessPoints' , accessPoints)
         let tokenData: jwtGeneratorInterface = {
             id: admin.id,
             firstName: admin.firstName,
@@ -178,13 +178,14 @@ export class UserController {
         //     // admin.accessPoints.push(menu)
         // }
         let finalAccess = []
+        console.log('befor update the accessPoints >>>> ' , req.body.accessPoints)
         for (let i of req.body.accessPoints){
             if (i.isAccess == true){
                 delete i.isAccess
-                // i.Admin.push(admin) 
                 finalAccess.push(i)
             }
         }
+        console.log('after update accessPoints' , finalAccess)
         admin.accessPoints = finalAccess
         await this.adminRepository.save(admin)
         await this.InterService.addNewLog({firstName : '', lastName : '' , phoneNumber : req.user.phone} , 'update new admin accesspoint' , `${req.user.phone} update accesspoint ` , req.body,
