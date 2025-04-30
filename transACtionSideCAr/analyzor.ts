@@ -45,7 +45,7 @@ class checkTransActions{
         .where('invoice.tradeType = :bool AND status = :status AND invoice.createdAt < :today' , {bool : TradeType.ONLINE , status : 'init' ,today : today})
         .getMany()
         await this.invoice.remove(transactionsToday)
-        console.log('len of inits' , transactionsToday)
+        console.log('len of inits' , 'transAction inits removed')
     }
     
     async updateTheTransAction(invoiceId : number , queueId : number){
