@@ -58,15 +58,13 @@ export const Routes = [
     controller: UserController,
     action: "all",
     middlwares: [ authenticate]
-},
-{
+},{
     method: "get",
     route: "/ddellete/:phoneNumber",
     controller: UserController,
     action: "remove",
     middlwares: []
-},
-{
+},{
     method: "get",
     route: "/profile",
     controller: UserController,
@@ -140,33 +138,26 @@ export const Routes = [
     controller: InvoiceController,
     action: "getTransactions",
     middlwares: [authenticate]
-
-},
-{
+},{
     method: "post",
     route: "/selltransactions",
     controller: InvoiceController,
     action: "getAllTransactionsSellType",
     middlwares: [authenticate,transactionStatusBody]
-
-},
-{
+},{
     method: "post",
     route: "/buytransactions",
     controller: InvoiceController,
     action: "getAllTransactionsBuyType",
     middlwares: [authenticate,transactionStatusBody]
 
-},
-{
+},{
     method: "post",
     route: "/specific-transaction/:id",
     controller: InvoiceController,
     action: "getTransactionById",
     middlwares: [authenticate]
-},
-
-{
+},{
     method: "get",
     route: "/wallet",
     controller: WalletController,

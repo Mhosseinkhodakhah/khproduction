@@ -116,6 +116,8 @@ export default class interServiceController{
         try{
 
         let user = await this.userRepository.findOne({where : {id : +id} , relations : ['wallet']})
+        let prices = await this.goldPrice.find({order : {'createdAt' : 'DESC'}})
+        
         if (!user){ 
             return res.status(400).json ({
                 success : false,
@@ -127,7 +129,8 @@ export default class interServiceController{
         return res.status(200).json({
             success : true,
             stataus: 1,
-            data : user
+            data : {user : user ,  goldPrice : prices[0]}
+            
         })
 
         }catch (error) {
