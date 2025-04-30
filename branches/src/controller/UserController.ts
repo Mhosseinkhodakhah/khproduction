@@ -131,7 +131,7 @@ export class UserController {
             }
 
 
-            let totalPrice = +(goldWeight * newDatat.goldPrice).toFixed()
+            let totalPrice = +(goldWeight * newDatat.goldPrice.Geram18).toFixed()
             let invoiceId = await this.generateInvoice()
 
             let TrnasAction = this.transAction.create({
