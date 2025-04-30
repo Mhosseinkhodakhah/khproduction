@@ -204,7 +204,7 @@ export class UserController {
         }
         let {transActionId , otp} = req.body;
 
-        let TrnasAction = await this.transAction.findOne({where : {id : transActionId}})
+        let TrnasAction = await this.transAction.findOne({where : {id : transActionId} ,relations : ['user' , 'seller']})
         if (!TrnasAction){
             return next(new responseModel(req, res, 'تراکنش مورد نظر در سامانه ثبت نشده است', 'branch', 400, 'تراکنش مورد نظر در سامانه ثبت نشده است', null))
         }
