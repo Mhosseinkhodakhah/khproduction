@@ -78,7 +78,7 @@ export class UserController {
         if (!bodyValidation.isEmpty()) {
             return next(new responseModel(req, res, '', 'create transAction', 400, bodyValidation['errors'][0].msg, null))
         }
-        const userId = req['user_id']
+        const userId = req.user_id
         console.log(userId)
         let { branchId, sellerId, goldWeight } = req.body;
 

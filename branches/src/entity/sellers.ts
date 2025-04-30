@@ -14,7 +14,7 @@ export class sellers {
 
     @Column({type : 'varchar' , nullable : true})
     firstName:string;
-
+    
     @Column({type : 'varchar' , nullable : true})
     lastName : string;
 
@@ -23,7 +23,6 @@ export class sellers {
 
     @Column({type : 'varchar' , nullable : true})
     nationalCode : string;
-
 
     @OneToMany(()=>transAction , (transAction) => transAction.seller)
     @JoinColumn()
