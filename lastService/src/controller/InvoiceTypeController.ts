@@ -193,12 +193,12 @@ export class InvoiceTypeController {
         // let newWallet = await this.userRepository.findOne({where : {
         //     isSystemUser : true
         // } , relations : ['wallet']})
-        let user = await this.userRepository.findOne({where : {nationalCode : '2420685628'} , relations : ['wallet']})
-        // console.log('bodyyyyyyyyy' , req.body)
-        let a = 1;
+        // let user = await this.userRepository.findOne({where : {nationalCode : '2420685628'} , relations : ['wallet']})
+        // // console.log('bodyyyyyyyyy' , req.body)
+        // let a = 1;
 
-        user.wallet.goldWeight  = +a.toFixed(3)
-        await this.wallet.save(user.wallet)
+        // user.wallet.goldWeight  = +a.toFixed(3)
+        // await this.wallet.save(user.wallet)
 
         // let estimates = await this.goldPrice.find()
         // await this.estimate.save(estimates)
