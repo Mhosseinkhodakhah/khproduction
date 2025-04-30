@@ -26,6 +26,7 @@ export default class branchController {
             if (!bodyValidation.isEmpty()){
                 return next(new responseModel(req, res, '' , 'admin', 400, bodyValidation['errors'][0].msg, null))
             }
+            console.log('its innnnn create branch')
             let newBranch = this.branchRepository.create(req.body)
             let newData = await this.branchRepository.save(newBranch)
             return next(new responseModel(req, res, 'ایجاد شعبه جدید با موفقیت انجام شد', 'branch', 200, null, newData))
@@ -44,6 +45,7 @@ export default class branchController {
      */
     async addSeller(req: Request, res: Response, next: NextFunction) {
         try {
+            console.log('its in add sellerrrrrrrr')
             let bodyValidation = validationResult(req.body)
             console.log(req.body)
             if (!bodyValidation.isEmpty()){
