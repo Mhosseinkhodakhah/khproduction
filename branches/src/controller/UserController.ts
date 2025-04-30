@@ -137,7 +137,7 @@ export class UserController {
             let TrnasAction = this.transAction.create({
                 status: 'init',
                 user: userData,
-                goldPrice: newDatat.goldPrice,
+                goldPrice: +newDatat.goldPrice.Geram18,
                 goldWeight: goldWeight,
                 totalPrice: totalPrice,
                 invoiceId: invoiceId,
