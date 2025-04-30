@@ -31,7 +31,10 @@ export default class interConnections{
         try {
             let rawResponse = await fetch(`http://localhost:3000/interService/wallet/update/${id}` ,{
                 method : 'POST',
-                body : { amount: amount , state : 0 }
+                headers: {
+                    "Content-Type": "application/json"
+                  },   
+                body : JSON.stringify({ amount: amount , state : 0 })
             })
             let response : any= await rawResponse.json()
             if (response.success == false){
