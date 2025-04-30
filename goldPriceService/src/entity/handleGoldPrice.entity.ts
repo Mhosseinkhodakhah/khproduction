@@ -13,7 +13,7 @@ export class handleGoldPrice{
     @Column({type : 'int' , default : 0})
     price : number
 
-
+    
     @Column({type : 'varchar' , default : ''  , nullable : true})
     admin : string
 

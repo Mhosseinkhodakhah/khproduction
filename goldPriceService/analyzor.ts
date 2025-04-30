@@ -38,7 +38,7 @@ export function smsHandleChecker() {
             console.log('start the fucking sms checker for handle price')
             await startChecker.start()
             console.log('finish the fucking sms checker for handle price')
-        }, 1000*60)
+        }, 1000*60*30)
     } catch (error) {
         console.log('errorrr' , error)
     }
