@@ -161,6 +161,11 @@ export class UserController {
 
 
     async approveTransACtionDataByUser(req: Request, res: Response, next: NextFunction){
+        let bodyValidation = validationResult(req.body)
+        console.log(req.body)
+        if (!bodyValidation.isEmpty()){
+            return next(new responseModel(req, res, '' , 'branch', 400, bodyValidation['errors'][0].msg, null))
+        }
         let {transActionId} = req.body;
         let createdTransAction = await this.transAction.findOne({where : {id : transActionId} , relations : ['user' , 'seller']})
         if (!createdTransAction){
@@ -192,6 +197,11 @@ export class UserController {
 
 
     async approveOtpCodeFor(req: Request, res: Response, next: NextFunction){
+        let bodyValidation = validationResult(req.body)
+        console.log(req.body)
+        if (!bodyValidation.isEmpty()){
+            return next(new responseModel(req, res, '' , 'branch', 400, bodyValidation['errors'][0].msg, null))
+        }
         let {transActionId , otp} = req.body;
 
         let TrnasAction = await this.transAction.findOne({where : {id : transActionId}})
