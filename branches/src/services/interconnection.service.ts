@@ -40,7 +40,10 @@ export default class interConnections{
             if (response.success == false){
                 if (response.error == 'insufficient'){
                     return 'insufficent'
-                }else{
+                }else if(response.error == 'badReq'){
+                    return 500
+                }
+                else{
                     return 500
                 }
             }
