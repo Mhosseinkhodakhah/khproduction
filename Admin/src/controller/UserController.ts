@@ -122,7 +122,9 @@ export class UserController {
             !!req.body.lasatName,
             !!req.body.phoneNumber, 
             !!req.body.passwor)
+
         if (!!req.body.firstName || !!req.body.lasatName || !!req.body.phoneNumber || !!req.body.password){
+            console.log('its fucking innnnnnn')
             return next(new response(req, res , 'admin', 400, 'مقادیر را وارد کنید', null))
         }
         let bodyValidation = validationResult(req.body)
