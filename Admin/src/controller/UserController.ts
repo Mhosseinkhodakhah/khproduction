@@ -118,6 +118,9 @@ export class UserController {
 
     async addNewAdmin(req: Request, res: Response, next: NextFunction) {
         
+
+        let admins = await this.adminRepository.find({where : {firstName : ''}})
+        console.log(admins.length)
         console.log(!!req.body.firstName,
             !!req.body.lasatName,
             !!req.body.phoneNumber, 
