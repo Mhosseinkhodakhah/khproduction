@@ -107,10 +107,10 @@ export class UserController {
             }
 
             console.log('response of data>>>>>>>>', data)
-            if (+data.user.wallet.goldWeight < +goldWeight) {
+            let newDatat = data.data
+            if (+newDatat.user.wallet.goldWeight < +goldWeight) {
                 return next(new responseModel(req, res, 'موجودی صندوق طلای کاربر کافی نمی باشد', 'branch', 500, 'موجودی صندوق طلای کاربر کافی نمی باشد', null))
             }
-            let newDatat = data.data
 
             let userExistance = await this.userRepository.exists({ where: { nationalCode: newDatat.user.nationalCode } })
             let userData;
