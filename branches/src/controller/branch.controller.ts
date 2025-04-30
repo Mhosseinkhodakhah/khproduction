@@ -45,7 +45,7 @@ export default class branchController {
      */
     async addSeller(req: Request, res: Response, next: NextFunction) {
         try {
-            console.log('its in add sellerrrrrrrr')
+            console.log('its in add sellerrrrrrrr' , req.body)
             let bodyValidation = validationResult(req.body)
             if (!bodyValidation.isEmpty()){
                 return next(new responseModel(req, res, '' , 'admin', 400, bodyValidation['errors'][0].msg, null))
