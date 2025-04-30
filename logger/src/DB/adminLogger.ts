@@ -1,5 +1,5 @@
 import mongoose, { Schema, model } from 'mongoose';
-import Joi from 'joi';
+import Joi, { number } from 'joi';
 import { logs } from '../interfaces';
 
 
@@ -19,6 +19,8 @@ const adminLogSchema = new Schema<logs>({                    // this is the logs
     title : {type : String},
 
     description : {type : String},
+
+    actionType : number, 
 
     action : {},
 

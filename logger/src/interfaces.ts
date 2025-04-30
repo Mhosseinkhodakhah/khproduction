@@ -30,6 +30,8 @@ export interface logs {
 
     date : string,
 
+    actionType : number
+
     time : string
 
     title:string,
