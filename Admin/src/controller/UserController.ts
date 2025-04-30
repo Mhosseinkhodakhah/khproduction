@@ -117,6 +117,9 @@ export class UserController {
 
 
     async addNewAdmin(req: Request, res: Response, next: NextFunction) {
+        if (!!req.body.firstName || !!req.body.lasatName || !!req.body.phoneNumber || !!req.body.password){
+            return next(new response(req, res , 'admin', 400, 'مقادیر را وارد کنید', null))
+        }
         let bodyValidation = validationResult(req.body)
         console.log(req.body)
         if (!bodyValidation.isEmpty()){
