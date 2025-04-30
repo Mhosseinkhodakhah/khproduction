@@ -47,15 +47,22 @@ export default class branchController {
         try {
             console.log('its in add sellerrrrrrrr')
             let bodyValidation = validationResult(req.body)
-            console.log(req.body)
             if (!bodyValidation.isEmpty()){
                 return next(new responseModel(req, res, '' , 'admin', 400, bodyValidation['errors'][0].msg, null))
             }
             let branch = await this.branchRepository.findOne({ where: { id: req.params.branchId } })
+            console.log('branch >>>> ' , branch)
             if (!branch) {
                 return next(new responseModel(req, res, 'شعبه مورد نظر یافت نشد', 'branch', 400, 'شعبه مورد نظر یافت نشد', null))
             }
-            let newSeller = this.sellerRepository.create({ ...req.body, branch: branch })
+            let newSeller = this.sellerRepository.create({ 
+                firstName : req.body.firstName,
+                lastName : req.body.lastName,
+                nationalCode : req.body.nationalCode,
+                phoneNumber : req.body.phoneNumber,
+                branch : branch
+             })
+             console.log( 'after entity >>>>> ', newSeller)
             await this.sellerRepository.save(branch)
             return next(new responseModel(req, res, 'ایجاد فروشنده با موفقیت انجام شد.', 'branch', 200, null, newSeller))
         } catch (error) {
