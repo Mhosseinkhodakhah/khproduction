@@ -40,15 +40,11 @@ class checkTransActions{
 
     async checkInits(){
         let today = `${new Date().toISOString().split('T')[0]}T00:00:00.645Z`
-        
         console.log("today",today);
-        
         let transactionsToday =await this.invoice.createQueryBuilder('invoice')
         .where('invoice.tradeType = :bool AND status = :status AND invoice.createdAt < :today' , {bool : TradeType.ONLINE , status : 'init' ,today : today})
         .getMany()
-
-        console.log('len of inits' , transactionsToday.length)
-
+        console.log('len of inits' , transactionsToday)
     }
     
     async updateTheTransAction(invoiceId : number , queueId : number){
@@ -59,7 +55,6 @@ class checkTransActions{
         await this.qeueu.save(queue2)
         console.log('queue task done successfully >>>> ')
     }
-
     async updateTheWalletForTransport(transPortId : number , queue){
         let queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
