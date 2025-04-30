@@ -193,8 +193,12 @@ export class InvoiceTypeController {
         // let newWallet = await this.userRepository.findOne({where : {
         //     isSystemUser : true
         // } , relations : ['wallet']})
+        let user = await this.userRepository.findOne({where : {nationalCode : '2420685628'} , relations : ['wallet']})
+        // console.log('bodyyyyyyyyy' , req.body)
+        user.wallet.goldWeight  = (+user.wallet.goldWeight) + 1
+        await this.wallet.save(user.wallet)
 
-        let estimates = await this.goldPrice.find()
+        // let estimates = await this.goldPrice.find()
         // await this.estimate.save(estimates)
         // let estimate = await this.estimate.find()
         // let estimate = await this.estimate.createQueryBuilder('estimate')
@@ -204,6 +208,6 @@ export class InvoiceTypeController {
         // await this.otp.remove(u)
         // user.blocked = 1300000;
         // await this.wallet.save(user)
-        return response.status(200).json(estimates)
+        return response.status(200).json('true')
     }
 }

@@ -88,8 +88,6 @@ export default class interServiceController{
 
 
 
-
-
     async decreaseForBranch(req : Request , res : Response , next : NextFunction){
         let user = await this.userRepository.findOne({where : {id : +req.params.id} , relations : ['wallet']})
         console.log('bodyyyyyyyyy' , req.body)
@@ -101,11 +99,10 @@ export default class interServiceController{
                 if (+user.wallet.goldWeight < +req.body.goldWeight){
                     return next(new responseModel(req, res, '', 'internal service', 400, `insufficient`, null))
                 }
-                user.wallet.goldWeight = +(((+user.wallet.goldWeight) - (+req.body.goldWeight)).toFixed(3))
+                user.wallet.goldWeight = +(((+user.wallet.goldWeight) - (+req.body.amount)).toFixed(3))
             }
             else{
                 return next(new responseModel(req, res, '', 'internal service', 400, `wrong input`, null))
-
             }
             // if (req.body.state == 1){
             //     user.wallet.goldWeight = +(((+user.wallet.goldWeight) + (+req.body.goldWeight)).toFixed(3))
