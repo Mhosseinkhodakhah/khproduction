@@ -107,37 +107,37 @@ export class UserController {
             }
 
             console.log('response of data>>>>>>>>', data)
-
             if (+data.user.wallet.goldWeight < +goldWeight) {
                 return next(new responseModel(req, res, 'موجودی صندوق طلای کاربر کافی نمی باشد', 'branch', 500, 'موجودی صندوق طلای کاربر کافی نمی باشد', null))
             }
+            let newDatat = data.data
 
-            let userExistance = await this.userRepository.exists({ where: { nationalCode: data.user.nationalCode } })
+            let userExistance = await this.userRepository.exists({ where: { nationalCode: newDatat.user.nationalCode } })
             let userData;
             if (!userExistance) {
                 let newUser = this.userRepository.create({
-                    firstName: data.user.firstName,
-                    lastName: data.user.lastName,
-                    nationalCode: data.user.nationalCode,
-                    birthDate: data.user.birthDate,
-                    age: data.user.age,
-                    fatherName: data.user.fatherName,
-                    phoneNumber: data.user.phoneNumber,
-                    userId : data.user.id
+                    firstName: newDatat.user.firstName,
+                    lastName: newDatat.user.lastName,
+                    nationalCode: newDatat.user.nationalCode,
+                    birthDate: newDatat.user.birthDate,
+                    age: newDatat.user.age,
+                    fatherName: newDatat.user.fatherName,
+                    phoneNumber: newDatat.user.phoneNumber,
+                    userId : newDatat.user.id
                 })
                 userData = await queryRunner.manager.save(newUser)
             } else {
-                userData = await this.userRepository.findOne({ where: { nationalCode: data.user.nationalCode } })
+                userData = await this.userRepository.findOne({ where: { nationalCode: newDatat.user.nationalCode } })
             }
 
 
-            let totalPrice = +(goldWeight * data.goldPrice).toFixed()
+            let totalPrice = +(goldWeight * newDatat.goldPrice).toFixed()
             let invoiceId = await this.generateInvoice()
 
             let TrnasAction = this.transAction.create({
                 status: 'init',
                 user: userData,
-                goldPrice: data.goldPrice,
+                goldPrice: newDatat.goldPrice,
                 goldWeight: goldWeight,
                 totalPrice: totalPrice,
                 invoiceId: invoiceId,
