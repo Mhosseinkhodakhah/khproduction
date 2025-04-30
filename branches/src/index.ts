@@ -57,7 +57,7 @@ AppDataSource.initialize().then(async () => {
 
     // register express routes from defined application routes
     Routes.forEach(route => {
-        (app as any)[route.method](route.route, route.middlwares , (req: Request, res: Response, next: Function) => {
+        (app as any)[route.method](route.route, route.middlewares , (req: Request, res: Response, next: Function) => {
             const result = (new (route.controller as any))[route.action](req, res, next)
         })
     })
