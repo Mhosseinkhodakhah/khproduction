@@ -96,13 +96,13 @@ let checker = new checkTransActions()
 export function transActionDoer() {   
     setInterval(async()=>{
         await checker.start()
-    } , 1000*60)
+    } , 1000*15)
 }
 
 
 
 export function initChecker(){
     setInterval(async()=>{
-        await checker.start()
+        await checker.checkInits()
     } , 1000*60)
 }
