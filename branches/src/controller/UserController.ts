@@ -257,9 +257,10 @@ export class UserController {
             }
 
             TrnasAction.status = 'completed';
+            let finalInvoice = await queryRunner.manager.save(TrnasAction)
             this.smsService.sendGeneralMessage(TrnasAction.seller.phoneNumber, "" ,TrnasAction.seller.firstName , TrnasAction.user.firstName ,TrnasAction.goldWeight)
             await queryRunner.commitTransaction()
-            return next(new responseModel(req, res, 'کد تایید برای فروشنده ارسال شد', 'branch' , 200 , null, null))
+            return next(new responseModel(req, res, 'طلای مورد نظر با موفقیت کسر شد.', 'branch' , 200 , null, finalInvoice))
             
         } catch (error) {
             console.log('error in fucking approve transAction>>>' , error)
