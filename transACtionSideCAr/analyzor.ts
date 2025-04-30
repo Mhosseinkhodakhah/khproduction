@@ -1,4 +1,5 @@
 import { AppDataSource } from "./src/data-source";
+import { TradeType } from "./src/entity/enums/TradeType";
 import { Invoice } from "./src/entity/Invoice";
 import { transActionQeue, transPortQueue } from "./src/entity/transActionQueue.entity";
 import { transportInvoice } from "./src/entity/transport";
@@ -35,6 +36,19 @@ class checkTransActions{
         }else{
             console.log('the transport qeueu is empty >>>> ')
         }
+    }
+
+    async checkInits(){
+        let today = `${new Date().toISOString().split('T')[0]}T00:00:00.645Z`
+        
+        console.log("today",today);
+        
+        let transactionsToday =await this.invoice.createQueryBuilder('invoice')
+        .where('invoice.tradeType = :bool AND status = :status AND invoice.createdAt <= :today' , {bool : TradeType.ONLINE , today : today})
+        .getMany()
+
+        console.log('len of inits' , transactionsToday.length)
+
     }
     
     async updateTheTransAction(invoiceId : number , queueId : number){
@@ -80,6 +94,14 @@ class checkTransActions{
 
 let checker = new checkTransActions()
 export function transActionDoer() {   
+    setInterval(async()=>{
+        await checker.start()
+    } , 1000*60)
+}
+
+
+
+export function initChecker(){
     setInterval(async()=>{
         await checker.start()
     } , 1000*60)
