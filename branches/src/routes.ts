@@ -59,7 +59,7 @@ export const Routes = [
     route: "/monitor/all",
     controller: interService,
     action: "getStatus",                     // get status by logger service
-    middlwares: []
+    middlewares: []
 },{
     method: "get",
     route: "/allbyadmin",
