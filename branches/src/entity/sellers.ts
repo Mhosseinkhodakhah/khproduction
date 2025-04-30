@@ -12,16 +12,16 @@ export class sellers {
     @JoinColumn()
     branch : branche
 
-    @Column({type : 'varchar'})
+    @Column({type : 'varchar' , nullable : true})
     firstName:string;
 
-    @Column({type : 'varchar'})
+    @Column({type : 'varchar' , nullable : true})
     lastName : string;
 
-    @Column({type : 'varchar'})
+    @Column({type : 'varchar' , nullable : true})
     phoneNumber : string;
 
-    @Column({type : 'varchar'})
+    @Column({type : 'varchar' , nullable : true})
     nationalCode : string;
 
 

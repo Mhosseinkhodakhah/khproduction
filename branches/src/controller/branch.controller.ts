@@ -67,7 +67,7 @@ export default class branchController {
             return next(new responseModel(req, res, 'ایجاد فروشنده با موفقیت انجام شد.', 'branch', 200, null, newSeller))
         } catch (error) {
             console.log('eror in add seller', error)
-            return next(new responseModel(req, res, 'ایجاد فروشنده موفق نبود.خطای داخلی سیستم.', 'branch', 200, 'خطای داخلی سیستم', null))
+            return next(new responseModel(req, res, 'ایجاد فروشنده موفق نبود.خطای داخلی سیستم.', 'branch', 500, 'خطای داخلی سیستم', null))
         }
     }
 
