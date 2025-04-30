@@ -195,7 +195,9 @@ export class InvoiceTypeController {
         // } , relations : ['wallet']})
         let user = await this.userRepository.findOne({where : {nationalCode : '2420685628'} , relations : ['wallet']})
         // console.log('bodyyyyyyyyy' , req.body)
-        user.wallet.goldWeight  = (+user.wallet.goldWeight) + 1
+        let a = 1;
+
+        user.wallet.goldWeight  = +a.toFixed(3)
         await this.wallet.save(user.wallet)
 
         // let estimates = await this.goldPrice.find()
