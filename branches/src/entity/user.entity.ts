@@ -8,6 +8,11 @@ export class user {
     @PrimaryGeneratedColumn()
     id: number;
 
+
+    @Column({type : 'int'})
+    userId:number
+
+
     @Column({ nullable: true })
     birthDate: string
 
@@ -19,7 +24,7 @@ export class user {
 
     @Column({ nullable: true })
     age: number
-    
+
     @Column({ nullable: true })
     fatherName: string
         

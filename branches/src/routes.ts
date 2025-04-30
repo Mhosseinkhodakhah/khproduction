@@ -3,6 +3,7 @@ import { interService } from "./controller/interservice.controller"
 import { UserController } from "./controller/UserController"
 import { createBranchDto } from "./entity/dto/branchDto.dto"
 import { addSellerDto } from "./entity/dto/createSellerDto"
+import { authenticate } from "./middleware/authenticate"
 
 export const Routes = [
     {
@@ -37,9 +38,22 @@ export const Routes = [
     method: "post",
     route: "/transAction/create",
     controller: UserController,
-    middlewares:[],
+    middlewares:[authenticate],
     action: "createTransAction"
 },{
+    method: "post",
+    route: "/transAction/otp",
+    controller: UserController,
+    middlewares:[authenticate],
+    action: "approveTransACtionDataByUser"
+},{
+    method: "post",
+    route: "/transAction/otp/verify",
+    controller: UserController,
+    middlewares:[authenticate],
+    action: "approveOtpCodeFor"
+}
+,{
     method: "get",
     route: "/monitor/all",
     controller: interService,
@@ -58,6 +72,5 @@ export const Routes = [
     controller: branchController,
     middlewares:[],
     action: "getSellersByAdmin"
-},
-
+}
 ]

@@ -6,7 +6,7 @@ export default class interConnections{
 
     async getWalletData(id : number){
         try {
-            let rawResponse = await fetch(`http://localhost:3003/interService/wallet/${id}`)
+            let rawResponse = await fetch(`http://localhost:3003/interService/wallet/${id}` , {method : 'GET'})
             let response : any= await rawResponse.json()
             if (response.status == 0){
                 return 400
@@ -25,5 +25,31 @@ export default class interConnections{
         }
     }
 
+
+
+    async updateWallet(id : number , amount){
+        try {
+            let rawResponse = await fetch(`http://localhost:3000/interService/wallet/update/${id}` ,{
+                method : 'POST',
+                body: JSON.stringify({ amount: amount , state : 0 })
+            })
+            let response : any= await rawResponse.json()
+            if (response.success == false){
+                if (response.error == 'insufficient'){
+                    return 'insufficent'
+                }else{
+                    return 500
+                }
+            }
+            if (response.success == true){
+                return response.data
+            }
+            console.log('response of update wallet' , response)
+           return response
+        } catch (error) {
+            console.log('error occured in getting data from fucking query service' , error)
+            return 'unknown'
+        }
+    }
 
 }

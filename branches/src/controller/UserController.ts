@@ -7,6 +7,7 @@ import { validationResult } from "express-validator"
 import interConnections from "../services/interconnection.service"
 import { transAction } from "../entity/transAction.entity"
 import { user } from "../entity/user.entity"
+import { SmsService } from "../services/message-service"
 
 export class UserController {
 
@@ -15,6 +16,7 @@ export class UserController {
     private userRepository = AppDataSource.getRepository(user)
     private interService = new interConnections()
     private transAction = AppDataSource.getRepository(transAction)
+    private smsService = new SmsService()
 
 
     private async generateOtp() {
@@ -76,7 +78,8 @@ export class UserController {
         if (!bodyValidation.isEmpty()) {
             return next(new responseModel(req, res, '', 'create transAction', 400, bodyValidation['errors'][0].msg, null))
         }
-
+        const userId = req['user_id']
+        console.log(userId)
         let { branchId, sellerId, goldWeight } = req.body;
 
         let queryRunner = AppDataSource.createQueryRunner()
@@ -98,7 +101,7 @@ export class UserController {
                 return next(new responseModel(req, res, 'فروشنده مورد نظر در لیست فروشندگان این شعبه وجود ندارد', 'branch', 400, 'فروشنده مورد نظر در لیست فروشندگان این شعبه وجود ندارد', null))
             }
 
-            let data = await this.interService.getWalletData(2)
+            let data = await this.interService.getWalletData(+userId)
             if (!data || data == 400 || data == 500 || data == 'unknown') {
                 return next(new responseModel(req, res, 'در حال حاظر امکان استفاده از سرویس استفاده از صندوق طلا وجود ندارد', 'branch', 500, 'در حال حاظر امکان استفاده از سرویس استفاده از صندوق طلا وجود ندارد', null))
             }
@@ -120,6 +123,7 @@ export class UserController {
                     age: data.user.age,
                     fatherName: data.user.fatherName,
                     phoneNumber: data.user.phoneNumber,
+                    userId : data.user.id
                 })
                 userData = await queryRunner.manager.save(newUser)
             } else {
@@ -157,9 +161,8 @@ export class UserController {
 
 
     async approveTransACtionDataByUser(req: Request, res: Response, next: NextFunction){
-
         let {transActionId} = req.body;
-        let createdTransAction = await this.transAction.findOne({where : {id : transActionId}})
+        let createdTransAction = await this.transAction.findOne({where : {id : transActionId} , relations : ['user' , 'seller']})
         if (!createdTransAction){
             return next(new responseModel(req, res, 'تراکنش مورد نظر در سامانه ثبت نشده است', 'branch', 400, 'تراکنش مورد نظر در سامانه ثبت نشده است', null))
         }
@@ -171,17 +174,88 @@ export class UserController {
             let otp = await this.generateOtp()
             createdTransAction.otpCode = otp.toString()
             createdTransAction.otpApproved = false;
+            createdTransAction.status = 'waitForOtp'
             createdTransAction.otpTime = (new Date().getTime()).toString()
             await queryRunner.manager.save(createdTransAction)
+            this.smsService.sendOtpMessage(createdTransAction.seller.phoneNumber, otp)
             await queryRunner.commitTransaction()
             return next(new responseModel(req, res, 'کد تایید برای فروشنده ارسال شد', 'branch' , 200 , null, null))
         } catch (error) {
+            console.log('error in approve data by user >>>>' , error)            
             await queryRunner.rollbackTransaction()
+            return next(new responseModel(req, res, 'خطای داخلی سرور در  ارسال کد تایید برای فروشنده استفاده از صندوق طلا', 'branch', 500, 'خطای داخلی سرور در  ارسال کدد تایید برای فروشنده استفاده از صندوق طلا', null))
         }finally {
             await queryRunner.release()
         }
-
-
     }
 
+
+
+    async approveOtpCodeFor(req: Request, res: Response, next: NextFunction){
+        let {transActionId , otp} = req.body;
+
+        let TrnasAction = await this.transAction.findOne({where : {id : transActionId}})
+        if (!TrnasAction){
+            return next(new responseModel(req, res, 'تراکنش مورد نظر در سامانه ثبت نشده است', 'branch', 400, 'تراکنش مورد نظر در سامانه ثبت نشده است', null))
+        }
+
+        if (TrnasAction.status != 'waitForOtp'){
+            return next(new responseModel(req, res, 'تراکنش مورد نظر قبلا اعتبار سنجی شده است', 'branch', 400, 'تراکنش مورد نظر قبلا اعتبار سنجی شده است', null))
+        }
+
+        if (TrnasAction.otpCode.toString() != otp.toString()) {
+            return next(new responseModel(req, res, '' ,'branch', 412, `کد وارد شده نادرست است`, null))
+        }
+        let timeNow = new Date().getTime()
+
+        if (timeNow - (+TrnasAction.time) > 2.1 * 60 * 1000) {
+            return next(new responseModel(req, res, '' ,'branch', 412, `کد وارد شده منقضی شده است`, null))
+        }
+
+        let queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        try {
+            TrnasAction.otpApproved = true;
+            TrnasAction.date= new Date().toLocaleString('fa-IR').split(',')[0]
+            TrnasAction.time= new Date().toLocaleString('fa-IR').split(',')[1]
+            let updator = await this.interService.updateWallet(TrnasAction.user.userId , TrnasAction.goldWeight)
+            if (!updator){
+                TrnasAction.status = 'failed';
+                await queryRunner.manager.save(TrnasAction)
+                await queryRunner.commitTransaction()
+                return next(new responseModel(req, res, 'خطای داخلی سرور', 'branch', 500, 'خطای داخلی سرور', null))
+            }
+            if (updator == 'insufficent'){
+                TrnasAction.status = 'failed';
+                await queryRunner.manager.save(TrnasAction)
+                await queryRunner.commitTransaction()
+                return next(new responseModel(req, res, 'موجودی صندوق طلای کاربر کافی نمیباشد', 'branch', 400, 'موجودی صندوق طلای کاربر کافی نمیباشد', null))
+            }
+            if (updator == 500){
+                TrnasAction.status = 'failed';
+                await queryRunner.manager.save(TrnasAction)
+                await queryRunner.commitTransaction()
+                return next(new responseModel(req, res, 'خطای داخلی سرور', 'branch', 500, 'خطای داخلی سرور', null))
+            }
+            if (updator == 'unknown'){
+                TrnasAction.status = 'failed';
+                await queryRunner.manager.save(TrnasAction)
+                await queryRunner.commitTransaction()
+                return next(new responseModel(req, res, 'خطای داخلی سرور', 'branch', 500, 'خطای داخلی سرور', null))
+            }
+
+            TrnasAction.status = 'completed';
+            this.smsService.sendGeneralMessage(TrnasAction.seller.phoneNumber, "" ,TrnasAction.seller.firstName , TrnasAction.user.firstName ,TrnasAction.goldWeight)
+            await queryRunner.commitTransaction()
+            return next(new responseModel(req, res, 'کد تایید برای فروشنده ارسال شد', 'branch' , 200 , null, null))
+            
+        } catch (error) {
+            console.log('error in fucking approve transAction>>>' , error)
+            await queryRunner.rollbackTransaction()
+            return next(new responseModel(req, res, 'خطای داخلی سرور در  ارسال کد تایید برای فروشنده استفاده از صندوق طلا', 'branch', 500, 'خطای داخلی سرور در  ارسال کدد تایید برای فروشنده استفاده از صندوق طلا', null))
+        }finally{
+            await queryRunner.release()
+        }
+    }
 }
