@@ -54,7 +54,7 @@ export default class interServiceController{
         try {
             if (req.body.state == 0){
                 if (+user.wallet.goldWeight < +req.body.goldWeight){
-                    return next(new responseModel(req, res, '', 'internal service', 500, `موجودی صندوق طلای کاربر کافی نمیباشد`, null))
+                    return next(new responseModel(req, res, '', 'internal service', 400, `insufficient`, null))
                 }
                 user.wallet.goldWeight = +(((+user.wallet.goldWeight) - (+req.body.goldWeight)).toFixed(3))
             }
@@ -85,6 +85,56 @@ export default class interServiceController{
             await queryRunner.release()
         }
     }
+
+
+
+
+
+    async decreaseForBranch(req : Request , res : Response , next : NextFunction){
+        let user = await this.userRepository.findOne({where : {id : +req.params.id} , relations : ['wallet']})
+        console.log('bodyyyyyyyyy' , req.body)
+        let queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        try {
+            if (req.body.state == 0){
+                if (+user.wallet.goldWeight < +req.body.goldWeight){
+                    return next(new responseModel(req, res, '', 'internal service', 400, `insufficient`, null))
+                }
+                user.wallet.goldWeight = +(((+user.wallet.goldWeight) - (+req.body.goldWeight)).toFixed(3))
+            }
+            else{
+                return next(new responseModel(req, res, '', 'internal service', 400, `wrong input`, null))
+
+            }
+            // if (req.body.state == 1){
+            //     user.wallet.goldWeight = +(((+user.wallet.goldWeight) + (+req.body.goldWeight)).toFixed(3))
+            // }
+            // console.log('updated wallet' , user.wallet)
+            await queryRunner.manager.save(user.wallet)
+            let wallet = await queryRunner.manager.save(user)
+            await queryRunner.commitTransaction()
+            monitor.addStatus({
+                scope : 'interservice controller',
+                status :  1,
+                error : null
+            })
+            return next(new responseModel(req, res, '' ,'internal service', 200, null, wallet))
+        } catch (error) {
+            monitor.addStatus({
+                scope : 'interservice controller',
+                status :  0,
+                error : `${error}`
+            })
+            console.log('error in erroooooooor' , `${error}`)
+            await queryRunner.rollbackTransaction()
+            return next(new responseModel(req, res, '' ,'internal service', 500, `${error}`, null))
+        }finally {
+            await queryRunner.release()
+        }
+    }
+
+
 
 
     async addNewUser(req : Request , res : Response , next : NextFunction){

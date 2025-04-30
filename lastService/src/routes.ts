@@ -510,6 +510,12 @@ export const Routes = [
     controller: interServiceController,
     action: "updateWallet",                   // add new user by oldUser service
     middlwares: []
+},{
+    method: "post",
+    route: "/interservice/Wallet/update/:id",
+    controller: interServiceController,
+    action: "decreaseForBranch",                   // add new user by oldUser service
+    middlwares: []
 },
 {                          
     method: "put",
