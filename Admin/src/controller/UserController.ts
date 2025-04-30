@@ -117,6 +117,11 @@ export class UserController {
 
 
     async addNewAdmin(req: Request, res: Response, next: NextFunction) {
+        let bodyValidation = validationResult(req.body)
+        console.log(req.body)
+        if (!bodyValidation.isEmpty()){
+            return next(new response(req, res, 'admin', 400, bodyValidation['errors'][0].msg, null))
+        }
         // let validAdmins = [3,4,8,1,5]
         // if (!validAdmins.includes(+req.user.userId)){
         //     return next(new response(req, res ,'admin service', 503, 'شما اجازه این فعالیت را ندارید', null))

@@ -4,6 +4,7 @@ import { authMiddleware } from "./middleware/auth"
 import { accessPointsValidation, adminValidation, menuValidation } from "./validator"
 import interServiceController from "./controller/interservice.controller"
 import { createCooprationRequests } from "./DTO/coorporations"
+import { addAdmin } from "./DTO/addAdmin.dto"
 
 
 export const Routes = [{
@@ -29,7 +30,7 @@ export const Routes = [{
     method: "post",
     route: "/create",
     controller: UserController,
-    middleware: [authMiddleware,adminValidation],
+    middleware: [authMiddleware,addAdmin],
     action: "addNewAdmin"
 }, {
     method: "post",
