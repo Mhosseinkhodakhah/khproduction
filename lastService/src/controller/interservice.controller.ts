@@ -53,6 +53,9 @@ export default class interServiceController{
         await queryRunner.startTransaction()
         try {
             if (req.body.state == 0){
+                if (+user.wallet.goldWeight < +req.body.goldWeight){
+                    return next(new responseModel(req, res, '', 'internal service', 500, `موجودی صندوق طلای کاربر کافی نمیباشد`, null))
+                }
                 user.wallet.goldWeight = +(((+user.wallet.goldWeight) - (+req.body.goldWeight)).toFixed(3))
             }
             
@@ -78,7 +81,6 @@ export default class interServiceController{
             console.log('error in erroooooooor' , `${error}`)
             await queryRunner.rollbackTransaction()
             return next(new responseModel(req, res, '' ,'internal service', 500, `${error}`, null))
-
         }finally {
             await queryRunner.release()
         }
