@@ -63,7 +63,7 @@ export default class branchController {
                 branch : branch
              })
              console.log( 'after entity >>>>> ', newSeller)
-            await this.sellerRepository.save(branch)
+            await this.sellerRepository.save(newSeller)
             return next(new responseModel(req, res, 'ایجاد فروشنده با موفقیت انجام شد.', 'branch', 200, null, newSeller))
         } catch (error) {
             console.log('eror in add seller', error)
