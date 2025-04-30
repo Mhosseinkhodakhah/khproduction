@@ -44,7 +44,7 @@ class checkTransActions{
         console.log("today",today);
         
         let transactionsToday =await this.invoice.createQueryBuilder('invoice')
-        .where('invoice.tradeType = :bool AND invoice.createdAt <= :today' , {bool : TradeType.ONLINE , today : today})
+        .where('invoice.tradeType = :bool AND status = :status AND invoice.createdAt <= :today' , {bool : TradeType.ONLINE , status : 'init' ,today : today})
         .getMany()
 
         console.log('len of inits' , transactionsToday.length)
