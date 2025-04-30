@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { sellers } from "./sellers";
+import { user } from "./user.entity";
 
 
 
@@ -10,9 +11,9 @@ export class transAction{
     @PrimaryGeneratedColumn()
     id : number
 
-    @Column({type : 'int'})
-    user : number
-   
+    @ManyToOne(()=> user , (User)=> User.transActions)
+    @JoinColumn()
+    user : user
     
     @Column({ type: "numeric", precision: 10, scale: 0,default : 0 })
     goldPrice : number
@@ -26,9 +27,14 @@ export class transAction{
     totalPrice : number
     
 
-    // @Column({nullable : true})
-    // authority : string
+    @Column({nullable : true , default : false , type : 'bool'})
+    otpApproved : boolean
 
+    @Column({type : 'varchar' , nullable : true})
+    otpCode : string
+
+    @Column({type : 'varchar' , nullable : true})
+    otpTime : string;
 
     @Column({nullable : true})
     invoiceId : string

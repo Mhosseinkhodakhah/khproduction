@@ -45,6 +45,19 @@ export const Routes = [
     controller: interService,
     action: "getStatus",                     // get status by logger service
     middlwares: []
+},{
+    method: "get",
+    route: "/allbyadmin",
+    controller: branchController,
+    middlewares:[],
+    action: "getAllBranchesByAdmin"
+},
+{
+    method: "get",
+    route: "/seller/allbyadmin/:branchId",
+    controller: branchController,
+    middlewares:[],
+    action: "getSellersByAdmin"
 },
 
 ]

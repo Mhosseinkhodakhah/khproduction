@@ -106,5 +106,48 @@ export default class branchController {
 
 
 
+     /**
+     * its for get all branches by users
+     * @param req 
+     * @param res 
+     * @param next 
+     * @returns 
+     */
+     async getAllBranchesByAdmin(req: Request, res: Response, next: NextFunction) {
+        try {
+            let branches = await this.branchRepository.find()
+            return next(new responseModel(req, res, '', 'branch', 200, null, branches))
+        } catch (error) {
+            console.log('get all branches hass error >>> ', error)
+            return next(new responseModel(req, res, 'خطای داخلی سیستم', 'branch', 500, 'خطای داخلی سیستم', null))
+        }
+    }
+
+
+
+    /**
+     * its for get all sellers of specific branch
+     * @param req 
+     * @param res 
+     * @param next 
+     * @returns 
+     */
+    async getSellersByAdmin(req: Request, res: Response, next: NextFunction) {
+        try {
+            let branchId = req.params.branchId;
+            let branch = await this.branchRepository.findOne({ where: { id: +branchId }, relations: ['sellers'] })
+            if (!branch) {
+                return next(new responseModel(req, res, 'شعبه مورد نظر در سیستم ثبت نشده است', 'branch', 500, 'شعبه مورد نظر در سیستم ثبت نشده است', null))
+            }
+            return next(new responseModel(req, res, '', 'branch', 200, null, branch.sellers))
+        } catch (error) {
+            console.log('error >>> ', error)
+            return next(new responseModel(req, res, 'خطای داخلی سیستم', 'branch', 500, 'خطای داخلی سیستم', null))
+        }
+    }
+
+
+
+
 
 }

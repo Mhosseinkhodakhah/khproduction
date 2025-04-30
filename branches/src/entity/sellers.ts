@@ -26,7 +26,8 @@ export class sellers {
 
 
     @OneToMany(()=>transAction , (transAction) => transAction.seller)
-    transActions : transAction
+    @JoinColumn()
+    transActions : transAction[]
 
 
     @CreateDateColumn()
