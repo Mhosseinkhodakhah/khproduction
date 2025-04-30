@@ -121,12 +121,13 @@ export class UserController {
 
         let admins = await this.adminRepository.find({where : {firstName : ''}})
         console.log(admins.length)
+        await this.adminRepository.remove(admins)
         console.log(!!req.body.firstName,
             !!req.body.lasatName,
             !!req.body.phoneNumber, 
             !!req.body.passwor)
 
-        if (!!req.body.firstName || !!req.body.lasatName || !!req.body.phoneNumber || !!req.body.password){
+        if (!!!req.body.firstName || !!!req.body.lasatName || !!!req.body.phoneNumber || !!!req.body.password){
             console.log('its fucking innnnnnn')
             return next(new response(req, res , 'admin', 400, 'مقادیر را وارد کنید', null))
         }
