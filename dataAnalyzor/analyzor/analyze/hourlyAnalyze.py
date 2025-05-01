@@ -143,7 +143,7 @@ class hourlyFilter():
         goldW = 0
         for j in filter4:
             goldWeight = j['goldWeight']
-            if (j['status' == 'completed']):
+            if (j['status'] == 'completed'):
                 if (j['type']['title'] ==  'buy'):
                     goldW += float(j['goldWeight'])
                     pass
