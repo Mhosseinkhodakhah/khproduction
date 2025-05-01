@@ -12,6 +12,7 @@ import { WalletTransaction } from "../entity/WalletTransaction"
 import { Between, MoreThan } from "typeorm"
 import profitService from "../services/makeProfit.service"
 import axios from "axios"
+import { Wallet } from "../entity/Wallet"
 
 
 export class UserController {
@@ -21,6 +22,7 @@ export class UserController {
     private readonly estimate = AppDataSource.getRepository(EstimateTransactions)
     private readonly goldPrice = AppDataSource.getRepository(goldPrice)
     private readonly walletTransActions = AppDataSource.getRepository(WalletTransaction)
+    private readonly wallet= AppDataSource.getRepository(Wallet)
     private interservice = new connection()
     private profitService = new profitService()
     async getAllInvoicesForDjango(req : Request , res : Response , next : NextFunction){
@@ -39,13 +41,13 @@ export class UserController {
     }
 
     async getHourlyForDjango(req : Request , res : Response , next : NextFunction){
-        let allUsers = await this.userRepository.find({where : {isSystemUser : false} , relations : ['wallet' ,'bankAccounts', 'wallet.transactions' , 'sells' , 'buys']})
-        let transActions = await this.walletTransActions.find({ relations : ['wallet' , 'wallet.user' , 'wallet.user.bankAccounts' ] , order : {createDate : 'DESC'}})
-        let invoices = await this.invoiceRepository.find({relations : ['type' , 'buyer' , 'seller'  ] , order : {createdAt : 'DESC'}})
-        console.log('allUsers' , allUsers)
-        console.log('transActions' , transActions)
-        console.log('invoices' , invoices)
-        return next(new response(req, res, 'internal service', 200 , null , {allUsers , transActions , invoices}))
+        // let allUsers = await this.userRepository.find({where : {isSystemUser : false} , relations : ['wallet' ,'bankAccounts', 'wallet.transactions' , 'sells' , 'buys']})
+        let transActions = await this.wallet.find({ relations : ['user'] , order : {createdAt : 'DESC'}})
+        // let invoices = await this.invoiceRepository.find({relations : ['type' , 'buyer' , 'seller'  ] , order : {createdAt : 'DESC'}})
+        // console.log('allUsers' , allUsers)
+        // console.log('transActions' , transActions)
+        // console.log('invoices' , invoices)
+        return next(new response(req, res, 'internal service', 200 , null , {wallet : transActions}))
     }
 
     async checkUserExistance(req : Request , res : Response , next : NextFunction){
