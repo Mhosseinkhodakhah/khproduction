@@ -14,7 +14,7 @@ import workerRunner from "./workers/workerRunner"
 import monitor from "./util/statusMonitor"
 import cacher from "./services/cacher"
 import { ShahkarController } from "./controller/ShahkarController"
-import { initChecker, transActionDoer, transferGoldWeightInterval } from "../analyzor"
+import { initChecker, transActionDoer } from "../analyzor"
 const { combine, timestamp, label, prettyPrint } = format;
 let workerStarter = new workerRunner()
 
@@ -24,7 +24,7 @@ AppDataSource.initialize().then(async () => {
     transActionDoer()
     initChecker()
 
-    transferGoldWeightInterval()
+    // transferGoldWeightInterval()
     const app = express()
     app.use(bodyParser.json())
     app.use(cors({
@@ -92,7 +92,7 @@ AppDataSource.initialize().then(async () => {
         monitor.error.push(`${error}`)
         console.log('error occured . . .', error)
     })
-    
+
 
     console.log("Express server has started on port 3012. Open http://localhost:3012/users to see results")
 
