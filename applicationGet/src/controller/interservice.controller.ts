@@ -130,7 +130,6 @@ export default class interServiceController{
             success : true,
             stataus: 1,
             data : {user : user ,  goldPrice : prices[0]}
-            
         })
 
         }catch (error) {

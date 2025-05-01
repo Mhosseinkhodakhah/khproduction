@@ -5,28 +5,16 @@ import { AppDataSource } from "./data-source"
 import { Routes } from "./routes"
 import cors from 'cors'
 import { SystemService } from "./services/system-service/system-service"
-import { GoldPriceService } from "./services/gold-price-service/gold-price-service"
-import { startCronJob } from "./jobs/GoldPriceSchedule"
 import winston from 'winston'
 import expressWinston from 'express-winston'
 import { createLogger, format, transports } from 'winston'
 import workerRunner from "./workers/workerRunner"
 import monitor from "./util/statusMonitor"
-import cacher from "./services/cacher"
 import { ShahkarController } from "./controller/ShahkarController"
 const { combine, timestamp, label, prettyPrint } = format;
-let workerStarter = new workerRunner()
 
 AppDataSource.initialize().then(async () => {
 
-    let shakc = new ShahkarController()
-
-    // await shakc.checkUsers()
-
-    // workerStarter.startWorker()
-    // await cacher.setter('tradePermision' , 1)
-    // console.log(await cacher.getter('tradePermision'))
-    // create express app
     const app = express()
     app.use(bodyParser.json())
     app.use(cors({
@@ -79,10 +67,10 @@ AppDataSource.initialize().then(async () => {
             const result = await (new (route.controller as any))[route.action](req, res, next)
         })
     })
-    // startCronJob()
-    const systemService = new SystemService();                   // what the fuck?????
-    await systemService.initializeSystemUser();
-    await systemService.initializeTransactionTypes();
+    // // startCronJob()
+    // const systemService = new SystemService();                   // what the fuck?????
+    // await systemService.initializeSystemUser();
+    // await systemService.initializeTransactionTypes();
     
     app.listen(3003)
 

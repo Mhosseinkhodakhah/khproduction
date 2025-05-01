@@ -239,8 +239,7 @@ export default class inPersonController {
         let firstRandomoe = Math.floor(1000 + Math.random() * 9000)
         return firstRandomoe
     }
-
-
+    
 
     /**
      * its for sending otp for creating the inPerson buy  
