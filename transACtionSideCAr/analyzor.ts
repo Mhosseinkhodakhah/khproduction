@@ -9,6 +9,8 @@ import { Wallet } from "./src/entity/Wallet";
 import { WalletTransaction } from "./src/entity/WalletTransaction";
 import { SmsService } from "./src/services/sms-service/message-service";
 
+import * as cron from 'node-cron'
+
 
 
 
@@ -139,10 +141,17 @@ export function transActionDoer() {
 
 // let qeueuHandler = new transforGoldWeight()
 export function initChecker() {
-    let interValId2 = setInterval(() => {
+
+    cron.schedule('15* * * * *', () => {
+        console.log('running a task every minute');
         checker.checkInits()
-    }, 1000 * 60)
+    });
+
+    // let interValId2 = setInterval(() => {
+    // }, 1000 * 60)
 }
+
+
 
 
 // export function transferGoldWeightInterval(){
