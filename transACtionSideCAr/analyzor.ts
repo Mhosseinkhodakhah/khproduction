@@ -105,11 +105,11 @@ class transforGoldWeight{
     private user = AppDataSource.getRepository(User)
     
     async start(){
+        let all = await this.oldQeue.find()
+        if (all.length){
         let queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
-        let all = await this.oldQeue.find()
-        if (all.length){
             let mainQeue = all[0]
             try {
                 let user = await this.user.findOne({where : {nationalCode : mainQeue.user} , relations : ['wallet']})
