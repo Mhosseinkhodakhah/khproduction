@@ -104,6 +104,7 @@ class checkTransActions {
 class transforGoldWeight{
     private oldQeue = AppDataSource.getRepository(oldUserQeue)
     private user = AppDataSource.getRepository(User)
+    
     async start(){
         let queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
@@ -142,7 +143,7 @@ export function transActionDoer() {
 export function initChecker() {
     setInterval(() => {
         checker.checkInits()
-    }, 1000 * 60 * 60 * 24)
+    }, 1000 * 60)
 }
 
 
