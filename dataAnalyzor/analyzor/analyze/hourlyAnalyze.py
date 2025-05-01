@@ -272,6 +272,7 @@ class hourlyFilter():
         response = requests.get(self.url)
         # response2 = requests.get(self.oldUrl)
         data = response.json()
+        print(data['data']['allUsers'])
         # data2 = response2.json()
         # data = data1['data'] + data2['data']
         typeFilter = self.__filter1(data['data']['allUsers'] , startDate , endDate , startTime , endTime)
