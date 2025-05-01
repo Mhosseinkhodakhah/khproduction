@@ -42,7 +42,7 @@ export class UserController {
 
     async getHourlyForDjango(req : Request , res : Response , next : NextFunction){
         // let allUsers = await this.userRepository.find({where : {isSystemUser : false} , relations : ['wallet' ,'bankAccounts', 'wallet.transactions' , 'sells' , 'buys']})
-        let transActions = await this.wallet.find({ relations : ['user'] , order : {createdAt : 'DESC'}})
+        let transActions = await this.invoiceRepository.find({ relations : ['type'] , order : {createdAt : 'DESC'}})
         // let invoices = await this.invoiceRepository.find({relations : ['type' , 'buyer' , 'seller'  ] , order : {createdAt : 'DESC'}})
         // console.log('allUsers' , allUsers)
         // console.log('transActions' , transActions)
