@@ -133,9 +133,9 @@ class transforGoldWeight{
 
 let checker = new checkTransActions()
 export function transActionDoer() {
-    cron.schedule('1 * * * * *', () => {
+    cron.schedule('1 * * * * *', async() => {
         console.log('1-running a task transActionDoer checker every minute');
-        checker.start()
+        await checker.start()
     });
 }
 
@@ -145,9 +145,9 @@ export function transActionDoer() {
 let qeueuHandler = new transforGoldWeight()
 export function initChecker() {
 
-    cron.schedule('1 * * * * *', () => {
+    cron.schedule('1 * * * * *', async() => {
         console.log('2-running a task init checker every minute');
-        checker.checkInits()
+        await checker.checkInits()
     });
 
     // let interValId2 = setInterval(() => {
@@ -157,11 +157,11 @@ export function initChecker() {
 
 export function transferGoldWeightInterval(){
     try {
-        cron.schedule('1 * * * * *', () => {
+        cron.schedule('1 * * * * *', async() => {
             console.log('its here for transfor goldWeight')
             console.log('3-running a transfer task every minute');
             // checker.checkInits()
-            qeueuHandler.start()
+            await qeueuHandler.start()
         });
         // setInterval(()=>{
         // } , 1000*60)
