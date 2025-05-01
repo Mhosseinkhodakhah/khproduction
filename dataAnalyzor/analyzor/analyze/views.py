@@ -57,7 +57,7 @@ def analyze(request):
             print(f'user {decoded['firstName']} {decoded['lastName']} create new report in کاربران')
 
         if (body['report'] == 4):
-            res = hourly.getData()
+            res = hourly.getData(body['startDate'] , body['endDate'] , body['startTime'] , body['endTime'])
             print('hourly report')
         
         if (body['report'] == 5):

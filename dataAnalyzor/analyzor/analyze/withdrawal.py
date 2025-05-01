@@ -20,18 +20,12 @@ class getWithdrawal():
         newData = []
         for i in data:
             i['نام کاربر'] = f'{i['wallet']['user']['firstName']} {i['wallet']['user']['lastName']}'
-            # i['نام پدر'] = i['wallet']['user']['fatherName']
-            # i['شهر'] = i['wallet']['user']['officeName']
             i['کد ملی کاربر'] = f'{i['wallet']['user']['nationalCode']}'
             i['شماره همراه کاربر'] = i['wallet']['user']['phoneNumber']
             i['شماره کارت کاربر'] = i['wallet']['user']['bankAccounts'][0]['cardNumber']
             i['شماره شبا کاربر'] = i['wallet']['user']['bankAccounts'][0]['shebaNumber']
-            # i['نام بانک کاربر'] = i['wallet']['user']['bankAccounts'][0]['name']
-            # i['موجودی صندوق طلای کارب'] = i['wallet']['goldWeight']
-            # i['موجودی ریالی کاربر'] = int(i['wallet']['balance'])
             
             
-            # if (i['type'] == 'withdraw'):                
             i.pop('authority')
             i.pop('invoiceId')
             i.pop('description')
@@ -50,21 +44,8 @@ class getWithdrawal():
             i.pop('id')
             i.pop('withdrawalId')
             
-            # if (i['status'] == 'completed'):
-            #     i['status'] = 'موفق'
-            # elif(i['status'] == 'pending' and i['type'] == 'withdraw'):
-            #     i['status'] = 'در انتظار واریز'
-            # elif(i['status'] == 'pending' and i['type'] == 'deposit'):
-            #     i['status'] = 'تراکنش نا مشخص از سمت درگاه'
-            # elif (i['status'] == 'failed'):
-            #     i['status'] = 'نا موفق'
-            # elif (i['status'] == 'init'):
-            #     i['status'] = 'پرداخت نشده'
             
             i.pop('status')
-            # i.pop('authority')
-            
-            # i['type'] = 'واریز' if i['type'] == 'deposit' else 'برداشت'
             i.pop('type')
             
             newData.append(i)
