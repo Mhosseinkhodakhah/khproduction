@@ -87,7 +87,7 @@ AppDataSource.initialize().then(async () => {
         monitor.error.push(`${error}`)
         console.log('error occured', error)
     })
-
+    
     process.on('unhandledException', (error) => {
         monitor.error.push(`${error}`)
         console.log('error occured . . .', error)
