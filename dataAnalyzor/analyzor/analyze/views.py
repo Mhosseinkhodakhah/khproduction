@@ -36,7 +36,7 @@ def analyze(request):
             print('decoded token' , decoded)
         except Exception as e:
             print(e)
-            return JsonResponse({"msg" : 'something went wrong'},status=401 , safe=False)
+            return JsonResponse({"msg" : 'شما اجازه دسترسی به این دیتارا ندارید'},status=401 , safe=False)
         
         body = json.loads(request.body.decode('utf-8'))
         for i in body.keys():
