@@ -13,6 +13,7 @@ import { Between, MoreThan } from "typeorm"
 import profitService from "../services/makeProfit.service"
 import axios from "axios"
 import { Wallet } from "../entity/Wallet"
+import { createForFirstTime } from "../../analyzor"
 
 
 export class UserController {
@@ -120,16 +121,14 @@ export class UserController {
             let data = await cacher.getter('appDashboard')
             console.log('appDashboard' , data)
             if (!data){
-                data = {
-                    priceChart,
-                }
+                await createForFirstTime()
+                data = await cacher.getter('appDashboard')
             }
             return data            
         } catch (error) {
             console.log(`${error}`)
-            let data = {
-                priceChart,
-            }
+            await createForFirstTime()
+            let data = await cacher.getter('appDashboard')
             return data
         }
     }

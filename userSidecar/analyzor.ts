@@ -690,7 +690,10 @@ export class analyzor {
 
 
 
-
+export async function createForFirstTime(){
+    let analyze = new analyzor()
+    await analyze.start()
+}
 
 export function startCronJob() {
     try {
