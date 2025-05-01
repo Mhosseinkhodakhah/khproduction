@@ -14,7 +14,7 @@ import workerRunner from "./workers/workerRunner"
 import monitor from "./util/statusMonitor"
 import cacher from "./services/cacher"
 import { ShahkarController } from "./controller/ShahkarController"
-import { initChecker, transActionDoer } from "../analyzor"
+import { initChecker, transActionDoer, transferGoldWeightInterval } from "../analyzor"
 const { combine, timestamp, label, prettyPrint } = format;
 let workerStarter = new workerRunner()
 
@@ -23,6 +23,8 @@ AppDataSource.initialize().then(async () => {
     // console.log(await cacher.getter('tradePermision'))
     transActionDoer()
     initChecker()
+
+    transferGoldWeightInterval()
     const app = express()
     app.use(bodyParser.json())
     app.use(cors({
