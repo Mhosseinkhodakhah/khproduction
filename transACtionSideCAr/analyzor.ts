@@ -140,7 +140,7 @@ export function transActionDoer() {
 
 
 export function initChecker() {
-    setInterval(async () => {
+    setInterval(() => {
         checker.checkInits()
     }, 1000 * 60 * 60 * 24)
 }
