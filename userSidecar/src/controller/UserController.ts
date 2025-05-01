@@ -39,9 +39,6 @@ export class UserController {
     }
 
     async getHourlyForDjango(req : Request , res : Response , next : NextFunction){
-        let start = new Date().toLocaleString('fa-IR').split(',')[0]
-        let now = new Date()
-        console.log('time for analyzor>>>>><<<<<<<' , start , now)
         let allUsers = await this.userRepository.find({where : {isSystemUser : false} , relations : ['wallet' ,'bankAccounts', 'wallet.transactions' , 'sells' , 'buys']})
         let transActions = await this.walletTransActions.find({ relations : ['wallet' , 'wallet.user' , 'wallet.user.bankAccounts' ] , order : {createDate : 'DESC'}})
         let invoices = await this.invoiceRepository.find({relations : ['type' , 'buyer' , 'seller'  ] , order : {createdAt : 'DESC'}})
@@ -145,6 +142,7 @@ export class UserController {
      */
      async applicationCharts(request: Request, response: Response, next: NextFunction) {
          let userId = request.params.id
+         console.log('its here for application chart >>>> ')
         let queryBuilder = this.userRepository.createQueryBuilder('user')
             .leftJoinAndSelect('user.buys', 'buys')
             .where('user.id = :id', { id: +userId })

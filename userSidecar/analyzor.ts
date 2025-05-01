@@ -703,9 +703,6 @@ class transforGoldWeight{
             console.log('old wallet qeueu is empty')
         }
     }
-
-
-
 }
 
 
