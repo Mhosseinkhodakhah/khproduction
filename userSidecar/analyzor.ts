@@ -702,7 +702,7 @@ export function startCronJob() {
             let analyze = new analyzor()
             analyze.start()
             // here is for analyzing
-        }, 1000 * 60);
+        }, 1000 * 60 * 60 * 24);
     } catch (error) {
         console.log('errorrrr' , error)
     }
