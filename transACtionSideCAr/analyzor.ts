@@ -25,8 +25,7 @@ class checkTransActions {
     private transPort = AppDataSource.getRepository(transportInvoice)
 
     async start() {
-
-        let allQeueu = await this.qeueu.find({ where: { state: 0 } })
+        // let allQeueu = await this.qeueu.find({ where: { state: 0 } })
         let allTransPortQueue = await this.transportQeueu.find({ where: { state: 0 } })
         // if (allQeueu.length > 0){
         //     let res = await this.updateTheTransAction(allQeueu[0].transActionId, allQeueu[0].id)
@@ -40,7 +39,6 @@ class checkTransActions {
     }
 
     async checkInits() {
-
         let date = new Date().toLocaleString('fa-IR').split(',')[1].split(':')
         if ((date[0] == '23' && date[1] == '59') || (date[0] == '۲۳' && date[1] == '۵۹')) {
             console.log('its a time for removing the inits transActions')
@@ -56,7 +54,6 @@ class checkTransActions {
             console.log('its not a time for removing the inits transActions')
         }
     }
-
     async updateTheTransAction(invoiceId: number, queueId: number) {
         let invoice = await this.invoice.findOne({ where: { id: invoiceId } })
         console.log('invoice founded successfully >>>>', invoice)
@@ -140,21 +137,21 @@ export function transActionDoer() {
 }
 
 
+// let qeueuHandler = new transforGoldWeight()
 export function initChecker() {
-    setInterval(() => {
+    let interValId2 = setInterval(() => {
         checker.checkInits()
     }, 1000 * 60)
 }
 
 
-export function transferGoldWeightInterval(){
-    try {
-        console.log('its here for transfor goldWeight')
-        let qeueuHandler = new transforGoldWeight()
-        setInterval(()=>{
-            qeueuHandler.start()
-        } , 1000*60)
-    } catch (error) {
-        console.log('error occured in fucking goldWeight estimator' , error)
-    }
-}
+// export function transferGoldWeightInterval(){
+//     try {
+//         console.log('its here for transfor goldWeight')
+//         setInterval(()=>{
+//             qeueuHandler.start()
+//         } , 1000*60)
+//     } catch (error) {
+//         console.log('error occured in fucking goldWeight estimator' , error)
+//     }
+// }

@@ -33,6 +33,8 @@ AppDataSource.initialize().then(async () => {
         allowedHeaders: ["Content-Type", "Authorization"]
     }));
 
+
+
     //set logger
     app.use(
         expressWinston.logger({
@@ -90,7 +92,9 @@ AppDataSource.initialize().then(async () => {
         monitor.error.push(`${error}`)
         console.log('error occured . . .', error)
     })
+    
 
     console.log("Express server has started on port 3012. Open http://localhost:3012/users to see results")
+
 
 }).catch(error => console.log(error))
