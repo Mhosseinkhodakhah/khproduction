@@ -102,7 +102,7 @@ def analyze(request):
             newR.link = res[1]
             newR.admin = admin
             newR.save()
-
+        
         return JsonResponse(res , safe=False)
     else:
         return HttpResponse('not allowed method')
