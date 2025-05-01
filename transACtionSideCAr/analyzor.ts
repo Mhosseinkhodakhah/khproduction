@@ -13,7 +13,7 @@ import { SmsService } from "./src/services/sms-service/message-service";
 
 
 
-class checkTransActions{
+class checkTransActions {
     private qeueu = AppDataSource.getRepository(transActionQeue)
     private transportQeueu = AppDataSource.getRepository(transPortQueue)
     private invoice = AppDataSource.getRepository(Invoice)
@@ -22,45 +22,53 @@ class checkTransActions{
     private walletTR = AppDataSource.getRepository(WalletTransaction)
     private smsService = new SmsService()
     private transPort = AppDataSource.getRepository(transportInvoice)
-    
-    async start(){
-        
-        let allQeueu = await this.qeueu.find({where : {state : 0}})
-        let allTransPortQueue = await this.transportQeueu.find({where : {state : 0}})
+
+    async start() {
+
+        let allQeueu = await this.qeueu.find({ where: { state: 0 } })
+        let allTransPortQueue = await this.transportQeueu.find({ where: { state: 0 } })
         // if (allQeueu.length > 0){
         //     let res = await this.updateTheTransAction(allQeueu[0].transActionId, allQeueu[0].id)
         // }
-        if (allTransPortQueue.length > 0){
+        if (allTransPortQueue.length > 0) {
             console.log('the qeueu is full')
-            let res2 = await this.updateTheWalletForTransport(allTransPortQueue[0].transPortId , allTransPortQueue[0])
-        }else{
+            let res2 = await this.updateTheWalletForTransport(allTransPortQueue[0].transPortId, allTransPortQueue[0])
+        } else {
             console.log('the transport qeueu is empty >>>> ')
         }
     }
 
-    async checkInits(){
-        let today = `${new Date().toISOString().split('T')[0]}T00:00:00.645Z`
-        console.log("today",today);
-        let transactionsToday =await this.invoice.createQueryBuilder('invoice')
-        .where('invoice.tradeType = :bool AND status = :status AND invoice.createdAt < :today' , {bool : TradeType.ONLINE , status : 'init' ,today : today})
-        .getMany()
-        await this.invoice.remove(transactionsToday)
-        console.log('len of inits' , 'transAction inits removed')
+    async checkInits() {
+
+        let date = new Date().toLocaleString('fa-IR').split(',')[1].split(':')
+        if ((date[0] == '23' && date[1] == '59') || (date[0] == '۲۳' && date[1] == '۵۹')) {
+            console.log('its a time for removing the inits transActions')
+            let today = `${new Date().toISOString().split('T')[0]}T00:00:00.645Z`
+            console.log("today", today);
+            let transactionsToday = await this.invoice.createQueryBuilder('invoice')
+                .where('invoice.tradeType = :bool AND status = :status AND invoice.createdAt < :today', { bool: TradeType.ONLINE, status: 'init', today: today })
+                .getMany()
+            await this.invoice.remove(transactionsToday)
+            console.log('len of inits', 'transAction inits removed')
+
+        } else {
+            console.log('its not a time for removing the inits transActions')
+        }
     }
-    
-    async updateTheTransAction(invoiceId : number , queueId : number){
-        let invoice = await this.invoice.findOne({where : {id : invoiceId}})
-        console.log('invoice founded successfully >>>>' , invoice)
-        let queue2 = await this.qeueu.findOne({where : {id : queueId}})
+
+    async updateTheTransAction(invoiceId: number, queueId: number) {
+        let invoice = await this.invoice.findOne({ where: { id: invoiceId } })
+        console.log('invoice founded successfully >>>>', invoice)
+        let queue2 = await this.qeueu.findOne({ where: { id: queueId } })
         queue2.state = 1;
         await this.qeueu.save(queue2)
         console.log('queue task done successfully >>>> ')
     }
-    async updateTheWalletForTransport(transPortId : number , queue){
+    async updateTheWalletForTransport(transPortId: number, queue) {
         let queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
-        let transport = await this.transPort.findOne({where : {id : transPortId} , relations : ['sender' , 'reciever' , 'sender.wallet' , 'reciever.wallet']})
+        let transport = await this.transPort.findOne({ where: { id: transPortId }, relations: ['sender', 'reciever', 'sender.wallet', 'reciever.wallet'] })
         try {
             let transferAmount = +transport.goldWeight
             transport.reciever.wallet.goldWeight = (+transport.reciever.wallet.goldWeight) + (+transferAmount);
@@ -73,15 +81,15 @@ class checkTransActions{
             await queryRunner.manager.save(transport.sender.wallet)
             await queryRunner.manager.save(queue)
             await queryRunner.commitTransaction()
-            this.smsService.sendGeneralMessage(transport.sender.phoneNumber , "approveTranport" ,  transport.sender.firstName , transport.goldWeight , transport.reciever.nationalCode)
-            this.smsService.sendGeneralMessage(transport.reciever.phoneNumber,"approveReciever" , transport.reciever.firstName  , transport.goldWeight , transport.sender.firstName)
-            console.log('its don the fucking transport for >>> ' , transport)
-            console.log('its don the fucking transport for walletssssss >>> ' , transport.sender.wallet)
-            console.log('its don the fucking transport for >>> ' , transport.reciever.wallet)
+            this.smsService.sendGeneralMessage(transport.sender.phoneNumber, "approveTranport", transport.sender.firstName, transport.goldWeight, transport.reciever.nationalCode)
+            this.smsService.sendGeneralMessage(transport.reciever.phoneNumber, "approveReciever", transport.reciever.firstName, transport.goldWeight, transport.sender.firstName)
+            console.log('its don the fucking transport for >>> ', transport)
+            console.log('its don the fucking transport for walletssssss >>> ', transport.sender.wallet)
+            console.log('its don the fucking transport for >>> ', transport.reciever.wallet)
         } catch (error) {
-            console.log('error occured in fucking finishing transfer >>>>' , transport)
+            console.log('error occured in fucking finishing transfer >>>>', transport)
             await queryRunner.rollbackTransaction()
-        }finally{
+        } finally {
             await queryRunner.release()
         }
     }
@@ -89,16 +97,16 @@ class checkTransActions{
 
 
 let checker = new checkTransActions()
-export function transActionDoer() {   
-    setInterval(async()=>{
+export function transActionDoer() {
+    setInterval(async () => {
         await checker.start()
-    } , 1000*15)
+    }, 1000 * 15)
 }
 
 
 
-export function initChecker(){
-    setInterval(async()=>{
+export function initChecker() {
+    setInterval(async () => {
         await checker.checkInits()
-    } , 1000*60)
+    }, 1000 * 60 * 60 * 24)
 }
