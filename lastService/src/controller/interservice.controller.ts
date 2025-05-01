@@ -91,6 +91,9 @@ export default class interServiceController{
     async decreaseForBranch(req : Request , res : Response , next : NextFunction){
         let user = await this.userRepository.findOne({where : {id : +req.params.id} , relations : ['wallet']})
         console.log('bodyyyyyyyyy' , req.body)
+        if (isNaN(req.body.amount) || !req.body.amount || req.body.amount < 0 ){
+            return next(new responseModel(req, res, '', 'internal service', 400, `badReq`, null))
+        }
         let queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
