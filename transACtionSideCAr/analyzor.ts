@@ -98,8 +98,6 @@ class checkTransActions {
 
 
 
-
-
 /**
  * this class is for old user goldweight transfor 
  */
@@ -133,30 +131,27 @@ class transforGoldWeight{
 }
 
 
-
 let checker = new checkTransActions()
 export function transActionDoer() {
-    setInterval(async () => {
-        await checker.start()
+    setInterval(() => {
+        checker.start()
     }, 1000 * 15)
 }
 
 
-
 export function initChecker() {
     setInterval(async () => {
-        await checker.checkInits()
+        checker.checkInits()
     }, 1000 * 60 * 60 * 24)
 }
-
 
 
 export function transferGoldWeightInterval(){
     try {
         console.log('its here for transfor goldWeight')
         let qeueuHandler = new transforGoldWeight()
-        setInterval(async()=>{
-            await qeueuHandler.start()
+        setInterval(()=>{
+            qeueuHandler.start()
         } , 1000*60)
     } catch (error) {
         console.log('error occured in fucking goldWeight estimator' , error)
