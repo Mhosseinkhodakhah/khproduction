@@ -25,35 +25,50 @@ class checkTransActions {
     private walletTR = AppDataSource.getRepository(WalletTransaction)
     private smsService = new SmsService()
     private transPort = AppDataSource.getRepository(transportInvoice)
-
+    transActionQeueInProcess = false
+    checkInitQeueInProcess = false
     async start() {
-        // let allQeueu = await this.qeueu.find({ where: { state: 0 } })
-        let allTransPortQueue = await this.transportQeueu.find({ where: { state: 0 } })
-        // if (allQeueu.length > 0){
-        //     let res = await this.updateTheTransAction(allQeueu[0].transActionId, allQeueu[0].id)
-        // }
-        if (allTransPortQueue.length > 0) {
-            console.log('the qeueu is full')
-            let res2 = await this.updateTheWalletForTransport(allTransPortQueue[0].transPortId, allTransPortQueue[0])
-        } else {
-            console.log('the transport qeueu is empty >>>> ')
+        this.transActionQeueInProcess = true
+        try {
+            let allQeueu = await this.qeueu.find({ where: { state: 0 } })
+            let allTransPortQueue = await this.transportQeueu.find({ where: { state: 0 } })
+            // if (allQeueu.length > 0){
+            //     let res = await this.updateTheTransAction(allQeueu[0].transActionId, allQeueu[0].id)
+            // }
+            if (allTransPortQueue.length > 0) {
+                console.log('the qeueu is full')
+                let res2 = await this.updateTheWalletForTransport(allTransPortQueue[0].transPortId, allTransPortQueue[0])
+            } else {
+                console.log('the transport qeueu is empty >>>> ')
+            }
+        } catch (error) {
+            console.log('error in checking transAction qeueu >>>> ', error)
+        } finally {
+            this.transActionQeueInProcess = false;
         }
     }
 
     async checkInits() {
-        let date = new Date().toLocaleString('fa-IR').split(',')[1].split(':')
-        if ((date[0] == '23' && date[1] == '59') || (date[0] == '۲۳' && date[1] == '۵۹')) {
-            console.log('its a time for removing the inits transActions')
-            let today = `${new Date().toISOString().split('T')[0]}T00:00:00.645Z`
-            console.log("today", today);
-            let transactionsToday = await this.invoice.createQueryBuilder('invoice')
-                .where('invoice.tradeType = :bool AND status = :status AND invoice.createdAt < :today', { bool: TradeType.ONLINE, status: 'init', today: today })
-                .getMany()
-            await this.invoice.remove(transactionsToday)
-            console.log('len of inits', 'transAction inits removed')
+        this.checkInitQeueInProcess = true
+        try {
+            let date = new Date().toLocaleString('fa-IR').split(',')[1].split(':')
+            if ((date[0] == '23' && date[1] == '59') || (date[0] == '۲۳' && date[1] == '۵۹')) {
+                console.log('its a time for removing the inits transActions')
+                let today = `${new Date().toISOString().split('T')[0]}T00:00:00.645Z`
+                console.log("today", today);
+                let transactionsToday = await this.invoice.createQueryBuilder('invoice')
+                    .where('invoice.tradeType = :bool AND status = :status AND invoice.createdAt < :today', { bool: TradeType.ONLINE, status: 'init', today: today })
+                    .getMany()
+                await this.invoice.remove(transactionsToday)
+                console.log('len of inits', 'transAction inits removed')
 
-        } else {
-            console.log('its not a time for removing the inits transActions')
+            } else {
+                console.log('its not a time for removing the inits transActions')
+            }
+        } catch (error) {
+            console.log('error in checking initss >>>> ', error)
+        } finally {
+            this.checkInitQeueInProcess = false;
         }
     }
     async updateTheTransAction(invoiceId: number, queueId: number) {
@@ -100,32 +115,39 @@ class checkTransActions {
 /**
  * this class is for old user goldweight transfor 
  */
-class transforGoldWeight{
+class transforGoldWeight {
     private oldQeue = AppDataSource.getRepository(oldUserQeue)
     private user = AppDataSource.getRepository(User)
-    
-    async start(){
-        let all = await this.oldQeue.find()
-        if (all.length){
-        let queryRunner = AppDataSource.createQueryRunner()
-        await queryRunner.connect()
-        await queryRunner.startTransaction()
-            let mainQeue = all[0]
-            try {
-                let user = await this.user.findOne({where : {nationalCode : mainQeue.user} , relations : ['wallet']})
-                user.wallet.goldWeight = +((+user.wallet.goldWeight) + (+mainQeue.oldGoldWeigth)).toFixed(3)
-                await queryRunner.manager.save(user.wallet.goldWeight)
-                await queryRunner.commitTransaction()
-                console.log(`wallet updated for user ${mainQeue.user}`)
-            } catch (error) {
-                console.log(`error in handling qeue for user ${mainQeue.user}` , error)
-                await queryRunner.rollbackTransaction()
-            }finally{
-                console.log('transaction released>>>>')
-                await queryRunner.release()
+    transForInProcess = false;
+    async start() {
+        this.transForInProcess = true
+        try {
+            let all = await this.oldQeue.find()
+            if (all.length) {
+                let queryRunner = AppDataSource.createQueryRunner()
+                await queryRunner.connect()
+                await queryRunner.startTransaction()
+                let mainQeue = all[0]
+                try {
+                    let user = await this.user.findOne({ where: { nationalCode: mainQeue.user }, relations: ['wallet'] })
+                    user.wallet.goldWeight = +((+user.wallet.goldWeight) + (+mainQeue.oldGoldWeigth)).toFixed(3)
+                    await queryRunner.manager.save(user.wallet.goldWeight)
+                    await queryRunner.commitTransaction()
+                    console.log(`wallet updated for user ${mainQeue.user}`)
+                } catch (error) {
+                    console.log(`error in handling qeue for user ${mainQeue.user}`, error)
+                    await queryRunner.rollbackTransaction()
+                } finally {
+                    console.log('transaction released>>>>')
+                    await queryRunner.release()
+                }
+            } else {
+                console.log('old wallet qeueu is empty')
             }
-        }else{
-            console.log('old wallet qeueu is empty')
+        } catch (error) {
+            console.log('error in transfor checking >>>>', error)
+        } finally {
+            this.transForInProcess = false
         }
     }
 }
@@ -133,39 +155,42 @@ class transforGoldWeight{
 
 let checker = new checkTransActions()
 export function transActionDoer() {
-    cron.schedule('1 * * * * *', async() => {
-        console.log('1-running a task transActionDoer checker every minute');
-        await checker.start()
+    cron.schedule('0.25 * * * * *', async () => {
+        if (!checker.transActionQeueInProcess) {
+            console.log('1-transActionQeue is false');
+            await checker.start()
+        } else {
+            console.log('1-transActionQeue is true');
+        }
     });
 }
-
-
 
 
 let qeueuHandler = new transforGoldWeight()
 export function initChecker() {
-
-    cron.schedule('1 * * * * *', async() => {
-        console.log('2-running a task init checker every minute');
-        await checker.checkInits()
+    cron.schedule('0.25 * * * * *', async () => {
+        if (!checker.checkInitQeueInProcess) {
+            console.log('2-check init is false >> ');
+            await checker.checkInits()
+        } else {
+            console.log('2-check init is true >> ');
+        }
     });
-
-    // let interValId2 = setInterval(() => {
-    // }, 1000 * 60)
 }
 
 
-export function transferGoldWeightInterval(){
+export function transferGoldWeightInterval() {
     try {
-        cron.schedule('1 * * * * *', async() => {
-            console.log('its here for transfor goldWeight')
-            console.log('3-running a transfer task every minute');
-            // checker.checkInits()
-            await qeueuHandler.start()
+        cron.schedule('0.25 * * * * *', async () => {
+            if (!qeueuHandler.transForInProcess) {
+                console.log('3-transFor qeueu checker is false');
+                // checker.checkInits()
+                await qeueuHandler.start()
+            } else {
+                console.log('3-transFor qeueu checker is true');
+            }
         });
-        // setInterval(()=>{
-        // } , 1000*60)
     } catch (error) {
-        console.log('error occured in fucking goldWeight estimator' , error)
+        console.log('error occured in fucking goldWeight estimator', error)
     }
 }
