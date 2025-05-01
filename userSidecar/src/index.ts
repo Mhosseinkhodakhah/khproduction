@@ -18,7 +18,7 @@ import cors from 'cors'
 
 import { createLogger, format, transports } from 'winston'
 import monitor from "./responseModel/statusMonitor"
-import { GoldWeightsIn24, startCronJob } from "../analyzor"
+import { GoldWeightsIn24, startCronJob, transferGoldWeightInterval } from "../analyzor"
 import { goldPrice } from "./entity/goldPrice"
 import axios from "axios"
 
@@ -75,7 +75,7 @@ AppDataSource.initialize().then(async () => {
     startCronJob()
     
     GoldWeightsIn24()
-
+    transferGoldWeightInterval()
 
     process.on('unhandledRejection', (error) => {
         monitor.error.push(`${error}`)
@@ -98,11 +98,6 @@ AppDataSource.initialize().then(async () => {
     Routes.forEach(route => {
         (app as any)[route.method](route.route, (req: Request, res: Response, next: Function) => {
             const result = (new (route.controller as any))[route.action](req, res, next)
-            // if (result instanceof Promise) {
-            //     result.then(result => result !== null && result !== undefined ? res.send(result) : undefined)
-            // } else if (result !== null && result !== undefined) {
-            //     res.json(result)
-            // }
         })
     })
 

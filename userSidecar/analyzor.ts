@@ -5,6 +5,8 @@ import { allDataGetter } from './src/interfaces';
 // import priceHistory from './goldhistory';
 import { AppDataSource } from './src/data-source';
 import { goldPrice } from './src/entity/goldPrice';
+import { oldUserQeue } from './src/entity/oldUserQeue.entity';
+import { User } from './src/entity/User';
 
 let interConnection = new connection()
 
@@ -664,6 +666,39 @@ export class analyzor {
     }
 }
 
+
+
+
+
+class transforGoldWeight{
+    private oldQeue = AppDataSource.getRepository(oldUserQeue)
+    private user = AppDataSource.getRepository(User)
+    async start(){
+        let queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        let all = await this.oldQeue.find()
+        let mainQeue = all[0]
+        try {
+            let user = await this.user.findOne({where : {nationalCode : mainQeue.user} , relations : ['wallet']})
+            user.wallet.goldWeight = +((+user.wallet.goldWeight) + (+mainQeue.oldGoldWeigth)).toFixed(3)
+            await queryRunner.manager.save(user.wallet.goldWeight)
+            await queryRunner.commitTransaction()
+            console.log(`wallet updated for user ${mainQeue.user}`)
+        } catch (error) {
+            console.log(`error in handling qeue for user ${mainQeue.user}` , error)
+            await queryRunner.rollbackTransaction()
+        }finally{
+            console.log('transaction released>>>>')
+            await queryRunner.release()
+        }
+    }
+
+
+
+}
+
+
 export function startCronJob() {
     try {
         setInterval(async () => {
@@ -684,7 +719,6 @@ export function startCronJob() {
 }
 
 
-
 export function GoldWeightsIn24(){
     try {
         console.log('its here for test')
@@ -692,8 +726,21 @@ export function GoldWeightsIn24(){
             let date = new Date().toLocaleString('fa-IR').split(',')[1].split(':')
             console.log('date >>>>> ' , date)
             if (date[0] == '۲۱' && date[1] == '۵۹' ) {
-                console.log('its here and done >>>>>>> ')
+                console.log('its here and done >>>>>>>')
             }
+        } , 1000*60)
+    } catch (error) {
+        console.log('error occured in fucking goldWeight estimator' , error)
+    }
+}
+
+
+export function transferGoldWeightInterval(){
+    try {
+        console.log('its here for transfor goldWeight')
+        let qeueuHandler = new transforGoldWeight()
+        setInterval(async()=>{
+            await qeueuHandler.start()
         } , 1000*60)
     } catch (error) {
         console.log('error occured in fucking goldWeight estimator' , error)

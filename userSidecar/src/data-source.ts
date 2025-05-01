@@ -16,6 +16,7 @@ import { NotMatch } from "./entity/notMatch"
 import { convertTradeInvoice } from "./entity/inpersonConvertTrade.entity"
 import { productList } from "./entity/producList.entity"
 import { handleGoldPrice } from "./entity/handleGoldPrice.entity"
+import { oldUserQeue } from "./entity/oldUserQeue.entity"
 
 config()
 
@@ -29,7 +30,7 @@ export const AppDataSource = new DataSource({
     database: 'gold_home', // Database name
     synchronize: true,
     logging: false,
-    entities: [User,Otp,Invoice,InvoiceType,NotMatch,Wallet,PaymentInfo,BankAccount,WalletTransaction,goldPrice , handleGoldPrice ,EstimateTransactions , transportInvoice , convertTradeInvoice , productList],
+    entities: [User,Otp,Invoice,InvoiceType,NotMatch,Wallet,PaymentInfo , oldUserQeue,BankAccount,WalletTransaction,goldPrice , handleGoldPrice ,EstimateTransactions , transportInvoice , convertTradeInvoice , productList],
     migrations: [],
     subscribers: [],})
 
