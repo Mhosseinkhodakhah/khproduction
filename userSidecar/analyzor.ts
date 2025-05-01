@@ -19,6 +19,23 @@ let goldPrice2 = AppDataSource.getRepository(goldPrice)
  * this class is for making charts data for application and pannel
  */
 export class analyzor {
+
+
+
+
+
+
+    async start(){
+        let users: any = await interConnection.getAllUsers()
+        console.log('after getting data >>>' , users.invoices[0])
+        let analyzedData = await this.barChart(users.invoices)
+        let lineChart = await this.lineChart(users.invoices)
+        let priceChart = await this.monthlyPrice(users.prices)
+        await cacher.setter('appDashboard', { priceChart: priceChart })
+        await cacher.setter('pannelCharts', { barChart: analyzedData, lineChart: lineChart })
+    }
+
+
     private async firstMonthesOrSecondMonthes(month: string) {
         let mainMonth = 0;
         let firstMonthes = ['01',
@@ -677,18 +694,12 @@ export class analyzor {
 
 export function startCronJob() {
     try {
-        setInterval(async () => {
+        setInterval(() => {
             console.log('its started cron')
             let analyze = new analyzor()
-            let users: any = await interConnection.getAllUsers()
-            console.log('after getting data >>>' , users.invoices[0])
-            let analyzedData = await analyze.barChart(users.invoices)
-            let lineChart = await analyze.lineChart(users.invoices)
-            let priceChart = await analyze.monthlyPrice(users.prices)
-            await cacher.setter('appDashboard', { priceChart: priceChart })
-            await cacher.setter('pannelCharts', { barChart: analyzedData, lineChart: lineChart })
+            analyze.start()
             // here is for analyzing
-        }, 1000 * 60 * 60);
+        }, 1000 * 60);
     } catch (error) {
         console.log('errorrrr' , error)
     }
