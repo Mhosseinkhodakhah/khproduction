@@ -290,6 +290,10 @@ export class InvoiceController {
                 }
             }
             if (type == 'sell'){
+                if (+user.wallet.goldWeight < +goldWeight){
+                    monitor.error.push('تلاش برای ثبت معامله در اپ با قیمتی متفاوت از حجم طلای ورودی')
+                    return response.status(400).json({ msg: "موجودی صندوق طلا کافی نمی باشد" });
+                }
                 totalPrice = +(realGoldPrice2 - (0.01 * realGoldPrice2)) * (+goldWeight)
             }
             // totalPrice = goldPrice * +goldWeight
