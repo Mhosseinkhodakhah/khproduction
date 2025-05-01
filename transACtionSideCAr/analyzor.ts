@@ -134,7 +134,7 @@ class transforGoldWeight{
 let checker = new checkTransActions()
 export function transActionDoer() {
     cron.schedule('1 * * * * *', () => {
-        console.log('running a task init checker every minute');
+        console.log('running a task transActionDoer checker every minute');
         checker.start()
     });
 }
