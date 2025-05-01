@@ -155,7 +155,7 @@ class transforGoldWeight {
 
 let checker = new checkTransActions()
 export function transActionDoer() {
-    cron.schedule('0.25 * * * * *', async () => {
+    cron.schedule('*/15 * * * * *', async () => {
         if (!checker.transActionQeueInProcess) {
             console.log('1-transActionQeue is false');
             await checker.start()
@@ -168,7 +168,7 @@ export function transActionDoer() {
 
 let qeueuHandler = new transforGoldWeight()
 export function initChecker() {
-    cron.schedule('0.25 * * * * *', async () => {
+    cron.schedule('*/15 * * * * *', async () => {
         if (!checker.checkInitQeueInProcess) {
             console.log('2-check init is false >> ');
             await checker.checkInits()
@@ -181,7 +181,7 @@ export function initChecker() {
 
 export function transferGoldWeightInterval() {
     try {
-        cron.schedule('0.25 * * * * *', async () => {
+        cron.schedule('*/15 * * * * *', async () => {
             if (!qeueuHandler.transForInProcess) {
                 console.log('3-transFor qeueu checker is false');
                 // checker.checkInits()
