@@ -90,6 +90,7 @@ export default class logger{
 
     async appChartData(userId : number){
         try {
+            console.log('its comming here for getting app charts')
             let resss = await axios.get(`http://localhost:3001/charts/app/${userId}`)
             console.log(resss.data)
             return resss.data;
