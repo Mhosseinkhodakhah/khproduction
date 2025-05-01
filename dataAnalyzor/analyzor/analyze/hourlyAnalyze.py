@@ -57,7 +57,7 @@ class hourlyFilter():
         else:
             filter1=data
             
-        print('ff1' , filter1)
+        print('ff1' , len(filter1))
             
         filter2=[]
         if (endDate != 'all'):
@@ -83,7 +83,7 @@ class hourlyFilter():
             filter2=filter1
             
             
-        print('ff2' , filter2)
+        print('ff2' , len(filter2))
         
         filter3 = []
         
@@ -112,7 +112,7 @@ class hourlyFilter():
                 else:                                                     # در غیر اینصورت باید تاریخ امروز ثبت بشه حتما
                     time = int(i['time'].split(':')[0])
                     
-        print('ff3' , filter3)
+        print('ff3' , len(filter3))
 
                    
         filter4 = [] 
@@ -141,7 +141,7 @@ class hourlyFilter():
                 else:                                                     # در غیر اینصورت باید تاریخ امروز ثبت بشه حتما
                     time = int(i['time'].split(':')[0])
             
-        print('ff4' , filter4)
+        print('ff4' , len(filter4))
         
                     
         finalData= []
