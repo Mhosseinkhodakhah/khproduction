@@ -274,7 +274,7 @@ class hourlyFilter():
         data = response.json()
         # data2 = response2.json()
         # data = data1['data'] + data2['data']
-        typeFilter = self.__filter1(data['data'] , startDate , endDate , startTime , endTime)
+        typeFilter = self.__filter1(data['data']['allUsers'] , startDate , endDate , startTime , endTime)
         return typeFilter
 
             
