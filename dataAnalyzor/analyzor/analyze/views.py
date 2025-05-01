@@ -67,7 +67,7 @@ def analyze(request):
 
             
         if (body['report'] == 4):
-            return JsonResponse(res[0] , safe=False)
+            return JsonResponse({"ret" : res[0]} , safe=False)
         else:
             admin = reports.objects.filter(firstName = decoded['firstName']).exists()
             print(admin)
