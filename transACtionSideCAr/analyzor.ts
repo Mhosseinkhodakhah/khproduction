@@ -133,17 +133,18 @@ class transforGoldWeight{
 
 let checker = new checkTransActions()
 export function transActionDoer() {
-    setInterval(() => {
+    cron.schedule('1 * * * * *', () => {
+        console.log('running a task init checker every minute');
         checker.start()
-    }, 1000 * 15)
+    });
 }
 
 
-// let qeueuHandler = new transforGoldWeight()
+let qeueuHandler = new transforGoldWeight()
 export function initChecker() {
 
-    cron.schedule('15 * * * *', () => {
-        console.log('running a task every minute');
+    cron.schedule('1 * * * *', () => {
+        console.log('running a task init checker every minute');
         checker.checkInits()
     });
 
@@ -154,13 +155,17 @@ export function initChecker() {
 
 
 
-// export function transferGoldWeightInterval(){
-//     try {
-//         console.log('its here for transfor goldWeight')
-//         setInterval(()=>{
-//             qeueuHandler.start()
-//         } , 1000*60)
-//     } catch (error) {
-//         console.log('error occured in fucking goldWeight estimator' , error)
-//     }
-// }
+export function transferGoldWeightInterval(){
+    try {
+        cron.schedule('1 * * * *', () => {
+            console.log('its here for transfor goldWeight')
+            console.log('running a transfer task every minute');
+            // checker.checkInits()
+            qeueuHandler.start()
+        });
+        // setInterval(()=>{
+        // } , 1000*60)
+    } catch (error) {
+        console.log('error occured in fucking goldWeight estimator' , error)
+    }
+}
