@@ -38,10 +38,12 @@ class hourlyFilter():
             mainyear = int(startDate.split('/')[0])
             mainmonth = int(startDate.split('/')[1])
             mainday = int(startDate.split('/')[2])
+            print('its hhh' , mainyear , mainmonth , mainday)
             for i in data:
                 year = int(i['date'].split('/')[0])
                 month = int(i['date'].split('/')[1])
                 day = int(i['date'].split('/')[2])
+                print('inner1' , year , month , day)
                 if (year == mainyear):
                     if (month == mainmonth):
                         if (day >= mainday):
