@@ -32,7 +32,7 @@ class hourlyFilter():
 
     ###this private method is for filtering
     def __filter1(self , data , startDate , endDate , startTime , endTime):
-        
+        print('inputs' , startDate , endDate , startTime , endTime)
         filter1 = []
         if (startDate!='all'):
             mainyear = int(startDate.split('/')[0])
