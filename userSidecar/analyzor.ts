@@ -13,6 +13,11 @@ let interConnection = new connection()
 let goldPrice2 = AppDataSource.getRepository(goldPrice)
 
 
+
+
+/**
+ * this class is for making charts data for application and pannel
+ */
 export class analyzor {
     private async firstMonthesOrSecondMonthes(month: string) {
         let mainMonth = 0;
@@ -668,8 +673,9 @@ export class analyzor {
 
 
 
-
-
+/**
+ * this class is for old user goldweight transfor 
+ */
 class transforGoldWeight{
     private oldQeue = AppDataSource.getRepository(oldUserQeue)
     private user = AppDataSource.getRepository(User)
@@ -703,6 +709,8 @@ class transforGoldWeight{
 }
 
 
+
+
 export function startCronJob() {
     try {
         setInterval(async () => {
@@ -719,22 +727,6 @@ export function startCronJob() {
         }, 1000 * 60 * 60);
     } catch (error) {
         console.log('errorrrr' , error)
-    }
-}
-
-
-export function GoldWeightsIn24(){
-    try {
-        console.log('its here for test')
-        setInterval(()=>{
-            let date = new Date().toLocaleString('fa-IR').split(',')[1].split(':')
-            console.log('date >>>>> ' , date)
-            if (date[0] == '۲۱' && date[1] == '۵۹' ) {
-                console.log('its here and done >>>>>>>')
-            }
-        } , 1000*60)
-    } catch (error) {
-        console.log('error occured in fucking goldWeight estimator' , error)
     }
 }
 

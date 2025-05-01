@@ -18,7 +18,7 @@ import cors from 'cors'
 
 import { createLogger, format, transports } from 'winston'
 import monitor from "./responseModel/statusMonitor"
-import { GoldWeightsIn24, startCronJob, transferGoldWeightInterval } from "../analyzor"
+import { startCronJob, transferGoldWeightInterval } from "../analyzor"
 import { goldPrice } from "./entity/goldPrice"
 import axios from "axios"
 
@@ -73,8 +73,6 @@ AppDataSource.initialize().then(async () => {
     );
     
     startCronJob()
-    
-    GoldWeightsIn24()
     transferGoldWeightInterval()
 
     process.on('unhandledRejection', (error) => {
