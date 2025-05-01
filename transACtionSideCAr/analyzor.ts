@@ -140,10 +140,12 @@ export function transActionDoer() {
 }
 
 
+
+
 let qeueuHandler = new transforGoldWeight()
 export function initChecker() {
 
-    cron.schedule('1 * * * *', () => {
+    cron.schedule('1 * * * * *', () => {
         console.log('running a task init checker every minute');
         checker.checkInits()
     });
@@ -154,10 +156,9 @@ export function initChecker() {
 
 
 
-
 export function transferGoldWeightInterval(){
     try {
-        cron.schedule('1 * * * *', () => {
+        cron.schedule('1 * * * * *', () => {
             console.log('its here for transfor goldWeight')
             console.log('running a transfer task every minute');
             // checker.checkInits()
