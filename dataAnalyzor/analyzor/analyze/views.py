@@ -66,44 +66,46 @@ def analyze(request):
             print(f'user {decoded['firstName']} {decoded['lastName']} create new report in معاملات  کیف پول')
 
             
-            
-        admin = reports.objects.filter(firstName = decoded['firstName']).exists()
-        print(admin)
-        if (admin):
-            admin = reports.objects.filter(firstName = decoded['firstName']).get()
-            newR = reportList()
-            newR.name = res[0]
-            newR.link = res[1]
-            newR.admin = admin
-            newR.save()
-            allReports = reportList.objects.filter(admin = admin).all()
-            # qs = SomeModel.objects.all()
-            serialized_data = serialize("json", allReports)
-            serialized_data = json.loads(serialized_data)
-            dataS = []
-            for i in range(len(serialized_data)):
-                dataS.append(serialized_data[i]['fields'])
-                
-            res.append(dataS)
-                # res.append(data)
-            # print('data>>>' , list(data))
-            # for i in qs_json:
-            #     print(i)
-                
+        if (body['report'] == 4):
+            return JsonResponse(res[0] , safe=False)
         else:
-            newAdmin = reports()
-            newAdmin.firstName = decoded['firstName']
-            newAdmin.lastName = decoded['lastName']
-            print('after stringify' , newAdmin)
-            newAdmin.save()
-            admin = reports.objects.filter(firstName = decoded['firstName']).get()
-            newR = reportList()
-            newR.name = res[0]
-            newR.link = res[1]
-            newR.admin = admin
-            newR.save()
-        
-        return JsonResponse(res , safe=False)
+            admin = reports.objects.filter(firstName = decoded['firstName']).exists()
+            print(admin)
+            if (admin):
+                admin = reports.objects.filter(firstName = decoded['firstName']).get()
+                newR = reportList()
+                newR.name = res[0]
+                newR.link = res[1]
+                newR.admin = admin
+                newR.save()
+                allReports = reportList.objects.filter(admin = admin).all()
+                # qs = SomeModel.objects.all()
+                serialized_data = serialize("json", allReports)
+                serialized_data = json.loads(serialized_data)
+                dataS = []
+                for i in range(len(serialized_data)):
+                    dataS.append(serialized_data[i]['fields'])
+                    
+                res.append(dataS)
+                    # res.append(data)
+                # print('data>>>' , list(data))
+                # for i in qs_json:
+                #     print(i)
+                    
+            else:
+                newAdmin = reports()
+                newAdmin.firstName = decoded['firstName']
+                newAdmin.lastName = decoded['lastName']
+                print('after stringify' , newAdmin)
+                newAdmin.save()
+                admin = reports.objects.filter(firstName = decoded['firstName']).get()
+                newR = reportList()
+                newR.name = res[0]
+                newR.link = res[1]
+                newR.admin = admin
+                newR.save()
+
+            return JsonResponse(res , safe=False)
     else:
         return HttpResponse('not allowed method')
     
