@@ -142,7 +142,7 @@ export function transActionDoer() {
 // let qeueuHandler = new transforGoldWeight()
 export function initChecker() {
 
-    cron.schedule('15* * * * *', () => {
+    cron.schedule('*15 * * * *', () => {
         console.log('running a task every minute');
         checker.checkInits()
     });
