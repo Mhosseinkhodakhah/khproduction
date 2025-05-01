@@ -673,39 +673,6 @@ export class analyzor {
 
 
 
-/**
- * this class is for old user goldweight transfor 
- */
-class transforGoldWeight{
-    private oldQeue = AppDataSource.getRepository(oldUserQeue)
-    private user = AppDataSource.getRepository(User)
-    async start(){
-        let queryRunner = AppDataSource.createQueryRunner()
-        await queryRunner.connect()
-        await queryRunner.startTransaction()
-        let all = await this.oldQeue.find()
-        if (all.length){
-            let mainQeue = all[0]
-            try {
-                let user = await this.user.findOne({where : {nationalCode : mainQeue.user} , relations : ['wallet']})
-                user.wallet.goldWeight = +((+user.wallet.goldWeight) + (+mainQeue.oldGoldWeigth)).toFixed(3)
-                await queryRunner.manager.save(user.wallet.goldWeight)
-                await queryRunner.commitTransaction()
-                console.log(`wallet updated for user ${mainQeue.user}`)
-            } catch (error) {
-                console.log(`error in handling qeue for user ${mainQeue.user}` , error)
-                await queryRunner.rollbackTransaction()
-            }finally{
-                console.log('transaction released>>>>')
-                await queryRunner.release()
-            }
-        }else{
-            console.log('old wallet qeueu is empty')
-        }
-    }
-}
-
-
 
 
 export function startCronJob() {
@@ -727,15 +694,3 @@ export function startCronJob() {
     }
 }
 
-
-export function transferGoldWeightInterval(){
-    try {
-        console.log('its here for transfor goldWeight')
-        let qeueuHandler = new transforGoldWeight()
-        setInterval(async()=>{
-            await qeueuHandler.start()
-        } , 1000*60)
-    } catch (error) {
-        console.log('error occured in fucking goldWeight estimator' , error)
-    }
-}
