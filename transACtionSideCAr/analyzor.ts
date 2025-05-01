@@ -14,8 +14,6 @@ import * as cron from 'node-cron'
 
 
 
-
-
 class checkTransActions {
     private qeueu = AppDataSource.getRepository(transActionQeue)
     private transportQeueu = AppDataSource.getRepository(transPortQueue)
@@ -52,6 +50,7 @@ class checkTransActions {
         this.checkInitQeueInProcess = true
         try {
             let date = new Date().toLocaleString('fa-IR').split(',')[1].split(':')
+            console.log('time>>' , date)
             if ((date[0] == '23' && date[1] == '59') || (date[0] == '۲۳' && date[1] == '۵۹')) {
                 console.log('its a time for removing the inits transActions')
                 let today = `${new Date().toISOString().split('T')[0]}T00:00:00.645Z`
@@ -154,6 +153,8 @@ class transforGoldWeight {
 
 
 let checker = new checkTransActions()
+let qeueuHandler = new transforGoldWeight()
+
 export function transActionDoer() {
     cron.schedule('*/15 * * * * *', async () => {
         if (!checker.transActionQeueInProcess) {
@@ -166,7 +167,6 @@ export function transActionDoer() {
 }
 
 
-let qeueuHandler = new transforGoldWeight()
 export function initChecker() {
     cron.schedule('*/15 * * * * *', async () => {
         if (!checker.checkInitQeueInProcess) {
