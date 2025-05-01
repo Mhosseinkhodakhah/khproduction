@@ -57,6 +57,7 @@ class hourlyFilter():
         else:
             filter1=data
             
+        print('ff1' , filter1)
             
         filter2=[]
         if (endDate != 'all'):
@@ -82,6 +83,7 @@ class hourlyFilter():
             filter2=filter1
             
             
+        print('ff2' , filter2)
         
         filter3 = []
         
@@ -110,7 +112,8 @@ class hourlyFilter():
                 else:                                                     # در غیر اینصورت باید تاریخ امروز ثبت بشه حتما
                     time = int(i['time'].split(':')[0])
                     
-                   
+        print('ff3' , filter3)
+
                    
         filter4 = [] 
         if (endTime != 'all'):
@@ -137,7 +140,9 @@ class hourlyFilter():
                         filter4.append(i)
                 else:                                                     # در غیر اینصورت باید تاریخ امروز ثبت بشه حتما
                     time = int(i['time'].split(':')[0])
-                    
+            
+        print('ff4' , filter4)
+        
                     
         finalData= []
         goldW = 0
@@ -151,6 +156,8 @@ class hourlyFilter():
                     goldW -= float(j['goldWeight'])
                     pass
                 
+        
+        
         return goldW
                 
                     
