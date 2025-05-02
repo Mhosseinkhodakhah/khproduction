@@ -15,7 +15,11 @@ export class runTheWorkers{
             console.log('worker1 message is >>> ' , result)
         })
 
-        this.worker1.postMessage('sending data to worker')
+        this.worker1.postMessage('first task')
+        this.worker2.postMessage('second task')
+        this.worker3.postMessage('thirdTask task')
+        
+        
         
         this.worker2.on('message', async (result) => {
             console.log('worker2 message is >>> ' , result)
