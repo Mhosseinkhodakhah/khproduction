@@ -19,8 +19,8 @@ const { combine, timestamp, label, prettyPrint } = format;
 
 AppDataSource.initialize().then(async () => {
     
-    let workerStarter = new runTheWorkers()
-    workerStarter.start()
+    // let workerStarter = new runTheWorkers()
+    // workerStarter.start()
     // console.log(await cacher.getter('tradePermision'))
     transActionDoer()
     initChecker()
