@@ -1,42 +1,27 @@
-import { Worker } from "worker_threads"
-import cacher from "../services/cacher";
-import { AppDataSource } from "../data-source";
-import { goldPrice } from "../entity/goldPrice";
+
+import { Worker , isMainThread , threadId } from "worker_threads"
 
 
-export default class workerRunner{
 
-    private goldPriceRepository = AppDataSource.getRepository(goldPrice)
+export class runTheWorkers{
+    private worker1 = new Worker('./worker1.ts', {})
+    
+    private worker2 = new Worker('./worker2.ts', {})
 
+    private worker3 = new Worker('./woker3.ts')
 
-    async startWorker(){
-        const worker = new Worker('./src/workers/worker.js', {
-            // workerData: {
-            //     path: './src/worker.ts'
-            // }
-        });
+    async start(){
+        this.worker1.on('message', async(result) => {
+            console.log('worker1 message is >>> ' , result)
+        })
         
-        
-        worker.on('message', async(result) => {
-            console.log('result of workerrrr >>>><<<<<' , result);
-            if (result.token){
-                await cacher.setter('token' , result.token)
-            }
-            if (result.lastPrice){
-                await cacher.setter('price' , result)
-                let newData = this.goldPriceRepository.create({...result.allData , createTime : +result.createTime})
-                let datainDB = await this.goldPriceRepository.save(newData)
-                console.log('data in db' , datainDB)
-            }else{
-                console.log('nothing happended . . .' , result)
-            }
-        });
-        
-        
-        worker.on("error", (msg: any) => {
-            console.log(msg);
-        });
-        
-        }
+        this.worker2.on('message', async (result) => {
+            console.log('worker2 message is >>> ' , result)
+        })
 
-} 
+        this.worker3.on('message' , async(result)=>{
+            console.log('worker3 message is >>> ' , result)
+        })
+    }
+    
+}

@@ -10,16 +10,17 @@ import { startCronJob } from "./jobs/GoldPriceSchedule"
 import winston from 'winston'
 import expressWinston from 'express-winston'
 import { createLogger, format, transports } from 'winston'
-import workerRunner from "./workers/workerRunner"
 import monitor from "./util/statusMonitor"
 import cacher from "./services/cacher"
 import { ShahkarController } from "./controller/ShahkarController"
 import { initChecker, transActionDoer, transferGoldWeightInterval } from "../analyzor"
+import { runTheWorkers } from "./workers/workerRunner"
 const { combine, timestamp, label, prettyPrint } = format;
-let workerStarter = new workerRunner()
 
 AppDataSource.initialize().then(async () => {
-
+    
+    let workerStarter = new runTheWorkers()
+    workerStarter.start()
     // console.log(await cacher.getter('tradePermision'))
     transActionDoer()
     initChecker()
