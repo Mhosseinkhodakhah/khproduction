@@ -14,6 +14,8 @@ export class runTheWorkers{
         this.worker1.on('message', async(result) => {
             console.log('worker1 message is >>> ' , result)
         })
+
+        this.worker1.postMessage('sending data to worker')
         
         this.worker2.on('message', async (result) => {
             console.log('worker2 message is >>> ' , result)
