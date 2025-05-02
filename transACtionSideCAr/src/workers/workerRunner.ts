@@ -4,11 +4,11 @@ import { Worker , isMainThread , threadId } from "worker_threads"
 
 
 export class runTheWorkers{
-    private worker1 = new Worker('./worker1.ts', {})
+    private worker1 = new Worker('./src/workers/worker1.ts', {})
     
-    private worker2 = new Worker('./worker2.ts', {})
+    private worker2 = new Worker('./src/workers/worker2.ts', {})
 
-    private worker3 = new Worker('./woker3.ts')
+    private worker3 = new Worker('./src/workers/woker3.ts')
 
     async start(){
         this.worker1.on('message', async(result) => {
@@ -23,5 +23,5 @@ export class runTheWorkers{
             console.log('worker3 message is >>> ' , result)
         })
     }
-    
+
 }
