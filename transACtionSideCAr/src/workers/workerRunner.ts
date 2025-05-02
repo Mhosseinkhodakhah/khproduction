@@ -20,7 +20,6 @@ export class runTheWorkers{
         this.worker3.postMessage('thirdTask task')
         
         
-        
         this.worker2.on('message', async (result) => {
             console.log('worker2 message is >>> ' , result)
         })
