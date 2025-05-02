@@ -1,14 +1,6 @@
 const {parentPort ,workerData , isMainThread , threadId} =require('worker_threads')
 
 
-function start(){
-    setInterval(()=>{
-        parentPort?.postMessage(
-            `worker1 runed , ${isMainThread} , ${threadId}`
-        );
-    } , 1000)
-}
-
 parentPort.on('message', (data) => {
     console.log('data recieved from main thread >>> ' , data)
     if (data == 'first task'){
@@ -32,4 +24,3 @@ parentPort.on('message', (data) => {
     // }
 });
 
-start()
