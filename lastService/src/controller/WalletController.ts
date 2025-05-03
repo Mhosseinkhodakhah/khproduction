@@ -474,7 +474,7 @@ export class WalletController {
     
     async withdrawFromWallet(request: Request, response: Response){
         try {
-            let {amount , cardPan} = request.body
+            let {amount , cartId} = request.body
             const userId = request.user_id;
             let wallet = await this.walletRepository.findOne({where : {user : {id :userId}},relations : {user : {bankAccounts : true}}})
             if (+amount == 0){
@@ -495,7 +495,7 @@ export class WalletController {
                 })    
                 return response.status(400).json({msg : "حداق میزان برداشت 100 هزارتومن است"})
             }
-            
+
             if (wallet && parseFloat(wallet.balance.toString()) < +amount) {
                 monitor.addStatus({
                     scope : 'wallet controller',
@@ -505,6 +505,7 @@ export class WalletController {
     
                 return response.status(400).json({msg : "مقدار برداشت نمی تواند از موجودی کیف پول بیشتر باشد"})
             }
+            let allCards = await this.bankAccountRepository.findOne({where : {id : +cartId}})
             const withdrawAmount = +amount
             const currentBalance = wallet.balance;
             wallet.balance = Math.round(currentBalance - withdrawAmount)     // decrease wallet balance 
@@ -514,7 +515,7 @@ export class WalletController {
             let time = new Date().toLocaleString('fa-IR').split(',')[1]
             let walletUpdated = await this.walletRepository.save([wallet]);
             console.log('wallet creation>>>' , walletUpdated)
-            let transactionToCreate = this.walletTransactionRepository.create({description  : "برداشت از کیف پول",date,time, status : "pending", type : "withdraw" ,wallet : wallet , amount})
+            let transactionToCreate = this.walletTransactionRepository.create({ description: "برداشت از کیف پول", cardPan: allCards.cardNumber, date, time, status: "pending", type: "withdraw", wallet: wallet, amount })
             let savedTransaction = await this.walletTransactionRepository.save(transactionToCreate)
             await this.smsService.sendGeneralMessage(wallet.user.phoneNumber,"withdraw" ,withdrawAmount,wallet.user.bankAccounts[0].cardNumber ,wallet.balance)
             monitor.addStatus({

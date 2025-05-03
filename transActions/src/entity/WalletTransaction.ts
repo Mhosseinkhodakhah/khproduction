@@ -37,8 +37,8 @@ export class WalletTransaction{
     @Column({nullable : true})
     date : string
 
-    @Column({type : 'varchar' , default : 0 , nullable : true})
-    cardPan : number
+    @Column({type : 'varchar' , default : '' , nullable : true})
+    cardPan : string
 
     @CreateDateColumn()
     createDate : Date
