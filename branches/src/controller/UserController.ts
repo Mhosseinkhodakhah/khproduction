@@ -231,6 +231,7 @@ export class UserController {
             TrnasAction.date = new Date().toLocaleString('fa-IR').split(',')[0]
             TrnasAction.time = new Date().toLocaleString('fa-IR').split(',')[1]
             let updator = await this.interService.updateWallet(TrnasAction.user.userId, TrnasAction.goldWeight)
+            console.log('Traaaa' , TrnasAction.user)
             if (!updator) {
                 TrnasAction.status = 'failed';
                 await queryRunner.manager.save(TrnasAction)
