@@ -618,7 +618,7 @@ export class WalletController {
             let time = new Date().toLocaleString('fa-IR').split(',')[1]
             let walletUpdated = await this.walletRepository.save([wallet]);
             console.log('wallet creation>>>' , walletUpdated)
-            let transactionToCreate = this.walletTransactionRepository.create({description  : "برداشت از کیف پول",date,time, cardPan : cart.cardNumber , status : "pending", type : "withdraw" ,wallet : wallet , amount})
+            let transactionToCreate = this.walletTransactionRepository.create({description  : "برداشت از کیف پول",date,time, cardPan : cart.cardNumber , shebaNumber : cart.shebaNumber , status : "pending", type : "withdraw" ,wallet : wallet , amount})
             let savedTransaction = await this.walletTransactionRepository.save(transactionToCreate)
             await this.smsService.sendGeneralMessage(wallet.user.phoneNumber,"withdraw" ,withdrawAmount, cart.cardNumber ,wallet.balance)
             monitor.addStatus({

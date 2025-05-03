@@ -40,6 +40,9 @@ export class WalletTransaction{
     @Column({type : 'varchar' , default : '' , nullable : true})
     cardPan : string
 
+    @Column({type : 'varchar' , default : '' , nullable : true})
+    shebaNumber: string
+
     @CreateDateColumn()
     createDate : Date
 
