@@ -10,6 +10,14 @@ const { WalletTransaction } = require("../entity/WalletTransaction.ts")
 const { SmsService } = require("../services/sms-service/message-service.ts")
 const {cron} = require('node-cron')
 
+
+// const path = require('path');
+// const { workerData } = require('worker_threads');
+ 
+// require('ts-node').register();
+// require(path.resolve(__dirname, workerData.path));
+
+
 const { parentPort, workerData, isMainThread, threadId } = require('worker_threads')
 
 
