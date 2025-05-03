@@ -16,17 +16,17 @@ const { parentPort, workerData, isMainThread, threadId } = require('worker_threa
 
 class tasks {
 
-    private qeueu = AppDataSource.getRepository(transActionQeue)
-    private transportQeueu = AppDataSource.getRepository(transPortQueue)
-    private invoice = AppDataSource.getRepository(Invoice)
-    private wallet = AppDataSource.getRepository(Wallet)
-    private user = AppDataSource.getRepository(User)
-    private walletTR = AppDataSource.getRepository(WalletTransaction)
-    private smsService = new SmsService()
-    private transPort = AppDataSource.getRepository(transportInvoice)
+    qeueu = AppDataSource.getRepository(transActionQeue)
+    transportQeueu = AppDataSource.getRepository(transPortQueue)
+    invoice = AppDataSource.getRepository(Invoice)
+    wallet = AppDataSource.getRepository(Wallet)
+    user = AppDataSource.getRepository(User)
+    walletTR = AppDataSource.getRepository(WalletTransaction)
+    smsService = new SmsService()
+    transPort = AppDataSource.getRepository(transportInvoice)
     transActionQeueInProcess = false
     checkInitQeueInProcess = false
-    
+
     async start() {
         this.transActionQeueInProcess = true
         try {
@@ -118,8 +118,8 @@ class tasks {
  * this class is for old user goldweight transfor 
  */
 class transforGoldWeight {
-    private oldQeue = AppDataSource.getRepository(oldUserQeue)
-    private user = AppDataSource.getRepository(User)
+    oldQeue = AppDataSource.getRepository(oldUserQeue)
+    user = AppDataSource.getRepository(User)
     transForInProcess = false;
     async start() {
         this.transForInProcess = true
@@ -153,8 +153,6 @@ class transforGoldWeight {
         }
     }
 }
-
-
 
 
 let checker = new tasks()
