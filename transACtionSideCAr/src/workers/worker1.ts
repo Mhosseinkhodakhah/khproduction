@@ -14,8 +14,8 @@ const { parentPort, workerData, isMainThread, threadId } = require('worker_threa
 
 
 
-class tasks {
-
+class tasks {   
+    
     qeueu = AppDataSource.getRepository(transActionQeue)
     transportQeueu = AppDataSource.getRepository(transPortQueue)
     invoice = AppDataSource.getRepository(Invoice)
@@ -72,7 +72,7 @@ class tasks {
             this.checkInitQeueInProcess = false;
         }
     }
-    async updateTheTransAction(invoiceId: number, queueId: number) {
+    async updateTheTransAction(invoiceId, queueId) {
         let invoice = await this.invoice.findOne({ where: { id: invoiceId } })
         console.log('invoice founded successfully >>>>', invoice)
         let queue2 = await this.qeueu.findOne({ where: { id: queueId } })
