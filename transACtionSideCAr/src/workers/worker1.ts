@@ -1,4 +1,4 @@
-import { parentPort, workerData, isMainThread, threadId } from 'worker_threads'
+const { parentPort, workerData, isMainThread, threadId } = require ('worker_threads')
 
 
 parentPort.on('message', (data) => {
