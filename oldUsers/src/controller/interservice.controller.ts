@@ -75,11 +75,6 @@ export default class interServiceController{
     
 
 
-
-
-
-
-
         /**
          * its for last service for checking the fucking oldUser
          * @param req 
@@ -162,13 +157,6 @@ export default class interServiceController{
             
         }
     
-
-
-
-
-
-
-
 }
 
 

@@ -25,7 +25,6 @@ export default class logger{
     }
 
 
-
     async checkCardNuber(info){
         try {
             console.log('its hereeeeeeeee>>>>>>>>>>')
@@ -101,7 +100,6 @@ export default class logger{
             return null
         }
     }
-
 
 
     async checkUser(phoneNumber : string){

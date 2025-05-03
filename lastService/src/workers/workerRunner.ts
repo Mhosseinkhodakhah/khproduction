@@ -7,8 +7,7 @@ import { goldPrice } from "../entity/goldPrice";
 export default class workerRunner{
 
     private goldPriceRepository = AppDataSource.getRepository(goldPrice)
-
-
+    
     async startWorker(){
         const worker = new Worker('./src/workers/worker.js', {
             // workerData: {

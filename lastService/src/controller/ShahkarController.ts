@@ -11,6 +11,7 @@ import { trackIdInterface } from "../interfaces/interface.interface";
 import { internalDB } from "../services/selfDB/saveDATA.service";
 import monitor from "../util/statusMonitor";
 import { oldUserService } from "../services/oldUser.service";
+import { oldUserQeue } from "../entity/oldUserQeue.entity";
 
 
 
@@ -19,6 +20,7 @@ export class ShahkarController {
     private userRepository = AppDataSource.getRepository(User)
     private jwtService = new JwtService()
     private walletRepository = AppDataSource.getRepository(Wallet)
+    private oldWaleltQeueuRepository = AppDataSource.getRepository(oldUserQeue)
     private smsService = new SmsService()
     private oldUSerService = new oldUserService()
 
@@ -192,11 +194,11 @@ export class ShahkarController {
                     // if (oldUserData == 500) {
                     //     return response.status(500).json({ msg: 'کاربر گرامی سیستم احراز هویت در دسترس نمی باشد.' })
                     // }
-                    // console.log("oldUserData", oldUserData);
-                    // setting date and time
+                    // console.log("oldUserData is >>>> ", oldUserData);
+
                     const time = new Date().toLocaleString('fa-IR').split(',')[1]
                     const date = new Date().toLocaleString('fa-IR').split(',')[0]
-
+                    
                     let user = this.userRepository.create({
                         fatherName,
                         identityTraceCode: res.headers['track-code'],

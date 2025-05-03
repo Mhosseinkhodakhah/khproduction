@@ -4,14 +4,15 @@ import { AppDataSource } from "../data-source"
 import { sellers } from "../entity/sellers"
 import { branche } from "../entity/branche"
 import { responseModel } from "../util/response.model"
-import { validationResult } from "express-validator"
+import { query, validationResult } from "express-validator"
+import { transAction } from "../entity/transAction.entity"
 
 
 export default class branchController {
 
     private sellerRepository = AppDataSource.getRepository(sellers)
     private branchRepository = AppDataSource.getRepository(branche)
-
+    private transAction = AppDataSource.getRepository(transAction)
     /**
      * its for creating new branch by admin . . .
      * @param req 
@@ -168,7 +169,23 @@ export default class branchController {
         }
     }
 
-
+    async getAllTransACtions(req: Request, res: Response, next: NextFunction){
+       try {
+        let type = req.query.type;
+        let allTransAction ;
+        if (!!type){
+            allTransAction = await this.transAction.find({
+                where : {
+                    status : type
+                }
+            })
+        }
+        return next(new responseModel(req, res, '', 'branch', 200, null, allTransAction))
+       } catch (error) {
+        console.log('errorororor in get all transActions' , error)
+        return next(new responseModel(req, res, 'خطای داخلی سیستم', 'branch', 500, 'خطای داخلی سیستم', null))
+       }
+    }
 
 
 

@@ -1,35 +1,17 @@
-import cron = require('node-cron');
-import connection from './src/interservice/connection';
-import cacher from './src/cacher';
-import { allDataGetter } from './src/interfaces';
-// import priceHistory from './goldhistory';
-import { AppDataSource } from './src/data-source';
-import { goldPrice } from './src/entity/goldPrice';
-import { oldUserQeue } from './src/entity/oldUserQeue.entity';
-import { User } from './src/entity/User';
-import { Worker , isMainThread , threadId } from "worker_threads"
-
-let interConnection = new connection()
-
-let goldPrice2 = AppDataSource.getRepository(goldPrice)
-
-
-
+import { parentPort } from "worker_threads"
 
 /**
  * this class is for making charts data for application and pannel
  */
 export class analyzor {
 
-    
-    async start(){
-        let users: any = await interConnection.getAllUsers()
+    async start(users){
         console.log('after getting data >>>' , users.invoices[0])
         let analyzedData = await this.barChart(users.invoices)
         let lineChart = await this.lineChart(users.invoices)
         let priceChart = await this.monthlyPrice(users.prices)
-        await cacher.setter('appDashboard', { priceChart: priceChart })
-        await cacher.setter('pannelCharts', { barChart: analyzedData, lineChart: lineChart })
+        parentPort.postMessage({ appDashboard : priceChart})
+        parentPort.postMessage({ pannelCharts :  { barChart: analyzedData, lineChart: lineChart }})
     }
 
 
@@ -685,29 +667,8 @@ export class analyzor {
     }
 }
 
-let worker1 = new Worker('./build/src/workers/worker.js',  {})
 
-export async function createForFirstTime(){
-    let users: any = await interConnection.getAllUsers()
-    worker1.postMessage(users)
-}
-
-
-export function startCronJob() {
-    try {
-        setInterval(async() => {
-            let users: any = await interConnection.getAllUsers()
-            worker1.postMessage(users)
-        }, 1000 * 60 * 60 * 24);
-    } catch (error) {
-        console.log('errorrrr' , error)
-    }
-}
-
-worker1.on('message' , async (data)=>{
-    let appDashboard = data.appDashboard
-    let pannelCharts = data.pannelCharts
-    await cacher.setter('appDashboard', { priceChart: appDashboard })
-    await cacher.setter('pannelCharts', pannelCharts)
+let starter = new analyzor()
+parentPort.on('message' , async(msg)=>{
+    await starter.start(msg)
 })
-

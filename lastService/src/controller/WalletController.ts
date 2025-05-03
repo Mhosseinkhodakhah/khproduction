@@ -474,7 +474,7 @@ export class WalletController {
     
     async withdrawFromWallet(request: Request, response: Response){
         try {
-            let {amount} = request.body
+            let {amount , cardPan} = request.body
             const userId = request.user_id;
             let wallet = await this.walletRepository.findOne({where : {user : {id :userId}},relations : {user : {bankAccounts : true}}})
             if (+amount == 0){
@@ -495,7 +495,7 @@ export class WalletController {
                 })    
                 return response.status(400).json({msg : "حداق میزان برداشت 100 هزارتومن است"})
             }
-
+            
             if (wallet && parseFloat(wallet.balance.toString()) < +amount) {
                 monitor.addStatus({
                     scope : 'wallet controller',

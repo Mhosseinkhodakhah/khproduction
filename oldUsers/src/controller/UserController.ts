@@ -1,11 +1,11 @@
 import { AppDataSource } from "../data-source"
-import {LastService} from "../services/intrnal-service/lastService-serivce"
+import { LastService } from "../services/intrnal-service/lastService-serivce"
 import { ShahkarService } from "../services/shahkar-service/shahkar-service"
 import { OtpSerivce } from "../services/otp-service/otp-service"
 import { NextFunction, query, Request, Response } from "express"
 import { User } from "../entity/User"
 import { oldInvoice } from "../entity/oldInvoice"
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { WalletTransaction } from "../entity/WalletTransaction"
 import { Wallet } from "../entity/wallet"
 import { VerificationStatus } from "../entity/enums/VerificationStatus"
@@ -25,11 +25,11 @@ export class UserController {
     private invoiceRepository = AppDataSource.getRepository(oldInvoice)
     private transActionRepository = AppDataSource.getRepository(WalletTransaction)
     private walletRepository = AppDataSource.getRepository(Wallet)
-    private lastServiceService=new LastService()
-    private shakarService=new ShahkarService()
-    private otpService=new OtpSerivce()
+    private lastServiceService = new LastService()
+    private shakarService = new ShahkarService()
+    private otpService = new OtpSerivce()
     // private saveData = new internalDB()
-    
+
 
     /**
      * get all users
@@ -38,8 +38,8 @@ export class UserController {
      * @param next 
      * @returns 
      */
-    async getAllOldUsers(req: Request, res: Response, next: NextFunction){
-        let data = await this.walletRepository.find({relations : ['user'],take:100})
+    async getAllOldUsers(req: Request, res: Response, next: NextFunction) {
+        let data = await this.walletRepository.find({ relations: ['user'], take: 100 })
         // for (let i =0 ; i < data2.length ; i++){
         //     await this.walletRepository.remove(data2[i])
         // }
@@ -53,19 +53,19 @@ export class UserController {
      * @param next 
      * @returns 
      */
-    async getOneUser(req: Request, res: Response, next: NextFunction){
+    async getOneUser(req: Request, res: Response, next: NextFunction) {
         let userId: number = +req.params.id
         let user = await this.userRepository.findOne({
             where: {
                 id: userId
             }
         })
-        if(!user){
-            return next(new response(req, res, 'get one user', 404, "کاربر پیدا نشد",null))
+        if (!user) {
+            return next(new response(req, res, 'get one user', 404, "کاربر پیدا نشد", null))
         }
-        return next(new response(req, res, 'get one user', 200, null,user))
-    } 
-    
+        return next(new response(req, res, 'get one user', 200, null, user))
+    }
+
 
     /**
      * this function is for checking the user verification of identity 
@@ -75,34 +75,34 @@ export class UserController {
      * @returns 
      */
     async checkIdentity(req: Request, res: Response, next: NextFunction) {
-        const {phoneNumber}=req.body
-        const resultFromLastService=await this.lastServiceService.checkExistUserInLastService(phoneNumber)
-        try{ 
+        const { phoneNumber } = req.body
+        const resultFromLastService = await this.lastServiceService.checkExistUserInLastService(phoneNumber)
+        try {
             let user = await this.userRepository.findOne({
-            where: {
-                phoneNumber
-            }
-        })
-        // if (user){
-        //     user.verificationStatus = 2
-        //     await this.userRepository.save(user)
-    
-        // }
-        if(resultFromLastService.exist){
-            return next(new response(req, res, 'checkIdentity', 200, null, {userExist:true, userVerified: true ,user:resultFromLastService.user}))
-        }else{
-            if(user){
-                return next(new response(req, res, 'checkIdentity', 200, null, {userExist:true,userVerified: false ,user:user }))
-                
-            }else{
-                // return next(new response(req, res, 'checkIdentity', 200, null, {userExist:false, userVerified: false ,user:{}}))
-                return next(new response(req, res, 'checkIdentity', 200, null, {userExist:false, userVerified: false,user:{}}))
+                where: {
+                    phoneNumber
+                }
+            })
+            // if (user){
+            //     user.verificationStatus = 2
+            //     await this.userRepository.save(user)
+
+            // }
+            if (resultFromLastService.exist) {
+                return next(new response(req, res, 'checkIdentity', 200, null, { userExist: true, userVerified: true, user: resultFromLastService.user }))
+            } else {
+                if (user) {
+                    return next(new response(req, res, 'checkIdentity', 200, null, { userExist: true, userVerified: false, user: user }))
+
+                } else {
+                    // return next(new response(req, res, 'checkIdentity', 200, null, {userExist:false, userVerified: false ,user:{}}))
+                    return next(new response(req, res, 'checkIdentity', 200, null, { userExist: false, userVerified: false, user: {} }))
+                }
             }
         }
-    }
-    catch(err){
+        catch (err) {
             console.log(err);
-            return next(new response(req, res, 'checkIdentity', 500 , 'مشکل داخلی سرویس یوزر' , null))
+            return next(new response(req, res, 'checkIdentity', 500, 'مشکل داخلی سرویس یوزر', null))
         }
     }
 
@@ -113,19 +113,19 @@ export class UserController {
      * @param next 
      */
 
-    async sendOtpForApprove(req: Request, res: Response, next: NextFunction){
-          const phoneNumber=req.params.phone
-          try{
-            const otpSendSmsStatus=await this.otpService.sendOtpMessage(phoneNumber)
-            if(!otpSendSmsStatus.success){
-              return next(new response(req, res, 'send otp for approve', 500 , otpSendSmsStatus.msg , null)) 
-            }else{
-              return next(new response(req, res, 'send otp for approve', 200 , null , otpSendSmsStatus.msg)) 
+    async sendOtpForApprove(req: Request, res: Response, next: NextFunction) {
+        const phoneNumber = req.params.phone
+        try {
+            const otpSendSmsStatus = await this.otpService.sendOtpMessage(phoneNumber)
+            if (!otpSendSmsStatus.success) {
+                return next(new response(req, res, 'send otp for approve', 500, otpSendSmsStatus.msg, null))
+            } else {
+                return next(new response(req, res, 'send otp for approve', 200, null, otpSendSmsStatus.msg))
             }
-          }catch(err){
-            return next(new response(req, res, 'checkIdentity', 500 , 'مشکل داخلی سرویس یوزر' , null))
-          }
-         
+        } catch (err) {
+            return next(new response(req, res, 'checkIdentity', 500, 'مشکل داخلی سرویس یوزر', null))
+        }
+
     }
 
     /**
@@ -138,42 +138,44 @@ export class UserController {
     async getAllUsersByAdmin(req: Request, res: Response, next: NextFunction) {
         try {
             console.log('its here for innnnnnnnn')
-        const page = parseInt(req.params.page) || 1; 
-        const pageSize =parseInt(req.params.size) || 100;
-        let searchWord = req.query.search
-        let reg = `%${searchWord}%`
-        console.log('params' , page , pageSize , searchWord)
-        let totalItem = await this.userRepository.count({where : {
-            verificationStatus : 2
-        }})
-        if (searchWord != ''){
-            let users = await this.userRepository.createQueryBuilder('user')
-            .where('user.verificationStatus = :status  AND (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)' , {status : 2 , search : reg})
-            .take(+pageSize)
-            .skip(+((+page - 1) * +pageSize))
-            .getMany()
-
-            totalItem = await this.userRepository.createQueryBuilder('user')
-            .where('user.verificationStatus = :status  AND (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)' , {status : 2 , search : reg})
-            .getCount()
-            console.log('total items >>> ' , totalItem)
-            return next(new response(req, res, 'get all users', 200, null, {users , totalItem}))
-        }else if(searchWord === ''){
-            const users = await this.userRepository.find({
+            const page = parseInt(req.params.page) || 1;
+            const pageSize = parseInt(req.params.size) || 100;
+            let searchWord = req.query.search
+            let reg = `%${searchWord}%`
+            console.log('params', page, pageSize, searchWord)
+            let totalItem = await this.userRepository.count({
                 where: {
                     verificationStatus: 2
-                },
-                relations: ['wallet', 'sells', 'buys'],
-                take: pageSize,  
-                skip: (page - 1) * pageSize 
-            });
-            console.log( 'tedad users', users.length)
-            return next(new response(req, res, 'get all users', 200, null, {users , totalItem}))
-        }else{
-            return next(new response(req, res, 'get all users', 400, 'bad request', null))
-        }
+                }
+            })
+            if (searchWord != '') {
+                let users = await this.userRepository.createQueryBuilder('user')
+                    .where('user.verificationStatus = :status  AND (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { status: 2, search: reg })
+                    .take(+pageSize)
+                    .skip(+((+page - 1) * +pageSize))
+                    .getMany()
+
+                totalItem = await this.userRepository.createQueryBuilder('user')
+                    .where('user.verificationStatus = :status  AND (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { status: 2, search: reg })
+                    .getCount()
+                console.log('total items >>> ', totalItem)
+                return next(new response(req, res, 'get all users', 200, null, { users, totalItem }))
+            } else if (searchWord === '') {
+                const users = await this.userRepository.find({
+                    where: {
+                        verificationStatus: 2
+                    },
+                    relations: ['wallet', 'sells', 'buys'],
+                    take: pageSize,
+                    skip: (page - 1) * pageSize
+                });
+                console.log('tedad users', users.length)
+                return next(new response(req, res, 'get all users', 200, null, { users, totalItem }))
+            } else {
+                return next(new response(req, res, 'get all users', 400, 'bad request', null))
+            }
         } catch (error) {
-         console.log('errrrr' , )   
+            console.log('errrrr',)
         }
     }
 
@@ -181,7 +183,7 @@ export class UserController {
     async all(req: Request, res: Response, next: NextFunction) {
         // const page = parseInt(req.params.page) || 1; 
         // const pageSize =parseInt(req.params.size) || 100;
-        
+
         const users = await this.userRepository.find({
             where: {
                 verificationStatus: 2
@@ -199,12 +201,14 @@ export class UserController {
      * @param next 
      * @returns 
      */
-    async createInvoice(req: Request, res: Response, next: NextFunction){
-        let invoiceBody : {goldWeight : number , goldPrice : number , totalPrice : number , phoneNumber : string} = req.body;
+    async createInvoice(req: Request, res: Response, next: NextFunction) {
+        let invoiceBody: { goldWeight: number, goldPrice: number, totalPrice: number, phoneNumber: string } = req.body;
         let phoneNumber = invoiceBody.phoneNumber;
-        let user = await this.userRepository.findOne({where : {
-            phoneNumber : invoiceBody.phoneNumber
-        }})
+        let user = await this.userRepository.findOne({
+            where: {
+                phoneNumber: invoiceBody.phoneNumber
+            }
+        })
         delete invoiceBody.phoneNumber;
         let invoiceNumber = uuidv4();
         let newInvoice = this.invoiceRepository.create(invoiceBody)
@@ -235,8 +239,8 @@ export class UserController {
     }
 
 
-    async clean(request: Request, response: Response, next: NextFunction){
-        let users = await this.userRepository.find({relations : ['wallet']})
+    async clean(request: Request, response: Response, next: NextFunction) {
+        let users = await this.userRepository.find({ relations: ['wallet'] })
         // users.forEach(async(elem)=>{
         //     await this.userRepository.remove(elem)
         // })
@@ -246,20 +250,20 @@ export class UserController {
         // })
         console.log(await this.userRepository.find())
         console.log(await this.walletRepository.find())
-        return response.status(200).json({users , wallet})
+        return response.status(200).json({ users, wallet })
     }
 
 
-    async script(request: Request, response: Response, next: NextFunction){
-        let users = await this.userRepository.find({relations : ['wallet']})
-        console.log('userssss>>>>' , users)
-        users.forEach(async(elem)=>{
+    async script(request: Request, response: Response, next: NextFunction) {
+        let users = await this.userRepository.find({ relations: ['wallet'] })
+        console.log('userssss>>>>', users)
+        users.forEach(async (elem) => {
             await this.userRepository.remove(elem)
         })
         let wallet = await this.walletRepository.find()
-        wallet.forEach(async(elem)=>{
+        wallet.forEach(async (elem) => {
             await this.walletRepository.remove(elem)
-        })   
+        })
         // let saver = new analyzor()
         // console.log(await saver.startProcess())
         // let users2 = await this.userRepository.find({relations : ['wallet']})
@@ -277,105 +281,105 @@ export class UserController {
      * @param next 
      * @returns 
      */
-    async approveOldUser(req: Request, res: Response, next: NextFunction){
+    async approveOldUser(req: Request, res: Response, next: NextFunction) {
         console.log("approve old user");
-        
+
         const bodyError = validationResult(req)
         if (!bodyError.isEmpty()) {
             return next(new response(req, res, 'approve old user', 400, bodyError['errors'][0].msg, null))
-        }   
-        const userId=+req.params.id
-        let {phoneNumber ,birthDate ,nationalCode,otp} = req.body
-        
-        try{
-        // const otpResult= await this.otpService.checkOtpVerification(phoneNumber,otp)  
-        // if(!otpResult.success){
-        //     return next(new response(req, res, 'approve old user', 400,otpResult.msg, null))
-        // } 
-        let user = await this.userRepository.findOne({
-            where: {
-                id: userId
-            },
-            relations:["wallet"]
-        })
-        user.verificationStatus == 2
-        await this.userRepository.save(user)
-        if(!user){
-            return next(new response(req, res, 'approve old user', 400, "کاربر پیدا نشد", null))
         }
-        if (user.verificationStatus == 1) {
-            return next(new response(req, res, 'approve old user', 400, "کاربر قبلا احراز شده است", user))
-        }
-             
-        const resultMatch=await this.shakarService.checkMatchOfPhoneAndNationalCode({phoneNumber,nationalCode})        
-        if (resultMatch == 'noToken'){
-            console.log('111')
-            return res.status(400).json({ error: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
-        }
-        
-        if (resultMatch == 'unknown'){
-            console.log('222')
-            return res.status(400).json({ error: 'مشکلی در در احراز هویت بوجود آمده است.لطفا دقایقی دیگر مجددا تلاش کنید.' })
-        }
-        if (resultMatch == 500){
-            console.log('333')
-            return res.status(400).json({ error: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
-        }
+        const userId = +req.params.id
+        let { phoneNumber, birthDate, nationalCode, otp } = req.body
 
-        if (resultMatch == false) {
-            console.log('444')
-            return res.status(400).json({ error: 'شماره تلفن با شماره ملی مطابقت ندارد' })
-        }
-        const userInfo=await this.shakarService.identityInformationOfUser(phoneNumber,birthDate,nationalCode)
-        if (userInfo == 400){
-            return next(new response(req, res, 'approve new user', 400, "ورودی های خود را چک کرده و مجددا تلاش کنید", null))
-        }
-        if (userInfo == 500){
-            return next(new response(req, res, 'approve old user', 400, "سیستم احراز هویت موقتا در دسترس نمیباشد لطفا دقایقی دیگر مجددا تلاش کنید.", null))
-        }
-        if(!userInfo){
-            return next(new response(req, res, 'approve old user', 400, " مشکلی در استعلام اطلاعات کاربر رخ داده است لطفا از درست بودن اطلاعات اطمینان حاصل کنید", null))
-        }
-        console.log('respoonse of the shahkar>>>' , userInfo)
-        user.fatherName=userInfo.fatherName,
-        user.gender=userInfo.gender
-        user.officeName=userInfo.officeName
-        user.birthDate=userInfo.birthDate
-        user.identityNumber=userInfo.identityNumber
-        user.identitySeri=userInfo.identitySeri
-        user.identitySerial=userInfo.identitySerial
-        user.firstName=userInfo.firstName
-        user.lastName=userInfo.lastName
-        user.nationalCode=userInfo.nationalCode
-        user.phoneNumber=phoneNumber
-        user.liveStatus=userInfo.liveStatus
-        user.verificationStatus=userInfo.verificationStatus
-        user.identityTraceCode=userInfo.identityTraceCode
-        user.fullName=`${userInfo.firstName} ${userInfo.lastName}`
-
-        await this.userRepository.save(user)
-
-        delete user.id
-        delete user.wallet.id
-        const result=await  this.lastServiceService.sendUserDataToMainService(user)
-        if(!result.data){
-            console.log("resulttttttt",result.response.status);
-            console.log("resulttttttt",result.response.data.error);
-            user.verificationStatus=2
+        try {
+            // const otpResult= await this.otpService.checkOtpVerification(phoneNumber,otp)  
+            // if(!otpResult.success){
+            //     return next(new response(req, res, 'approve old user', 400,otpResult.msg, null))
+            // } 
+            let user = await this.userRepository.findOne({
+                where: {
+                    id: userId
+                },
+                relations: ["wallet"]
+            })
+            user.verificationStatus == 2
             await this.userRepository.save(user)
-            return next(new response(req, res, 'approve old user',result.response.status,result.response.data.error, null))
-        }
-        //! internalRequest 
-        delete user.identityTraceCode
-        return next(new response(req, res, 'approve old user', 200, null,result.data.data))
-        }catch(err){
-           
-            console.log("errr",err);
-            return next(new response(req, res, 'approve old user', 500 , 'مشکل داخلی سرویس یوزر' , null))
+            if (!user) {
+                return next(new response(req, res, 'approve old user', 400, "کاربر پیدا نشد", null))
+            }
+            if (user.verificationStatus == 1) {
+                return next(new response(req, res, 'approve old user', 400, "کاربر قبلا احراز شده است", user))
+            }
+
+            const resultMatch = await this.shakarService.checkMatchOfPhoneAndNationalCode({ phoneNumber, nationalCode })
+            if (resultMatch == 'noToken') {
+                console.log('111')
+                return res.status(400).json({ error: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
+            }
+
+            if (resultMatch == 'unknown') {
+                console.log('222')
+                return res.status(400).json({ error: 'مشکلی در در احراز هویت بوجود آمده است.لطفا دقایقی دیگر مجددا تلاش کنید.' })
+            }
+            if (resultMatch == 500) {
+                console.log('333')
+                return res.status(400).json({ error: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
+            }
+
+            if (resultMatch == false) {
+                console.log('444')
+                return res.status(400).json({ error: 'شماره تلفن با شماره ملی مطابقت ندارد' })
+            }
+            const userInfo = await this.shakarService.identityInformationOfUser(phoneNumber, birthDate, nationalCode)
+            if (userInfo == 400) {
+                return next(new response(req, res, 'approve new user', 400, "ورودی های خود را چک کرده و مجددا تلاش کنید", null))
+            }
+            if (userInfo == 500) {
+                return next(new response(req, res, 'approve old user', 400, "سیستم احراز هویت موقتا در دسترس نمیباشد لطفا دقایقی دیگر مجددا تلاش کنید.", null))
+            }
+            if (!userInfo) {
+                return next(new response(req, res, 'approve old user', 400, " مشکلی در استعلام اطلاعات کاربر رخ داده است لطفا از درست بودن اطلاعات اطمینان حاصل کنید", null))
+            }
+            console.log('respoonse of the shahkar>>>', userInfo)
+            user.fatherName = userInfo.fatherName,
+                user.gender = userInfo.gender
+            user.officeName = userInfo.officeName
+            user.birthDate = userInfo.birthDate
+            user.identityNumber = userInfo.identityNumber
+            user.identitySeri = userInfo.identitySeri
+            user.identitySerial = userInfo.identitySerial
+            user.firstName = userInfo.firstName
+            user.lastName = userInfo.lastName
+            user.nationalCode = userInfo.nationalCode
+            user.phoneNumber = phoneNumber
+            user.liveStatus = userInfo.liveStatus
+            user.verificationStatus = userInfo.verificationStatus
+            user.identityTraceCode = userInfo.identityTraceCode
+            user.fullName = `${userInfo.firstName} ${userInfo.lastName}`
+
+            await this.userRepository.save(user)
+
+            delete user.id
+            delete user.wallet.id
+            const result = await this.lastServiceService.sendUserDataToMainService(user)
+            if (!result.data) {
+                console.log("resulttttttt", result.response.status);
+                console.log("resulttttttt", result.response.data.error);
+                user.verificationStatus = 2
+                await this.userRepository.save(user)
+                return next(new response(req, res, 'approve old user', result.response.status, result.response.data.error, null))
+            }
+            //! internalRequest 
+            delete user.identityTraceCode
+            return next(new response(req, res, 'approve old user', 200, null, result.data.data))
+        } catch (err) {
+
+            console.log("errr", err);
+            return next(new response(req, res, 'approve old user', 500, 'مشکل داخلی سرویس یوزر', null))
         }
     }
 
-     
+
     /**
      * create and approve for user not exist in olduser and lastservice user
      * @param req 
@@ -383,31 +387,31 @@ export class UserController {
      * @param next 
      * @returns 
      */
-    async approveNewUser(req: Request, res: Response, next: NextFunction){
+    async approveNewUser(req: Request, res: Response, next: NextFunction) {
         console.log("approve new user");
-        
+
         const bodyError = validationResult(req)
         if (!bodyError.isEmpty()) {
             return next(new response(req, res, 'approve new user', 400, bodyError['errors'][0].msg, null))
         }
-        let {phoneNumber ,birthDate ,nationalCode,otp} = req.body
+        let { phoneNumber, birthDate, nationalCode, otp } = req.body
         console.log(req.body);
-        
-        try{    
+
+        try {
             // const otpResult= await this.otpService.checkOtpVerification(phoneNumber,otp)  
             // if(!otpResult.success){
             //     return next(new response(req, res,'approve new User', 400,otpResult.msg, null))
             // } 
-            const exist = await this.userRepository.findOne({where:{phoneNumber}})
-            if(exist){
+            const exist = await this.userRepository.findOne({ where: { phoneNumber } })
+            if (exist) {
                 return next(new response(req, res, 'approve new User', 400, "کاربر در سیستم وجود دارد", exist))
             }
 
-            const resultMatch=await this.shakarService.checkMatchOfPhoneAndNationalCode({phoneNumber,nationalCode})        
-            
+            const resultMatch = await this.shakarService.checkMatchOfPhoneAndNationalCode({ phoneNumber, nationalCode })
+
             if (resultMatch == 'unknown') {
                 return res.status(500).json({ error: 'خطای داخلی سیستم' })
-            
+
             }
             if (resultMatch == 500) {
                 return res.status(500).json({ error: 'سیستم شاهکار موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
@@ -419,127 +423,106 @@ export class UserController {
 
 
             console.log("after Is Match");
-    
-            const userInfo=await this.shakarService.identityInformationOfUser(phoneNumber,birthDate,nationalCode)
-            if (userInfo == 400){
+
+            const userInfo = await this.shakarService.identityInformationOfUser(phoneNumber, birthDate, nationalCode)
+            if (userInfo == 400) {
                 return next(new response(req, res, 'approve new user', 400, "ورودی های خود را چک کرده و مجددا تلاش کنید", null))
             }
-            if (userInfo == 500){
+            if (userInfo == 500) {
                 return next(new response(req, res, 'approve old user', 400, "سیستم احراز هویت موقتا در دسترس نمیباشد لطفا دقایقی دیگر مجددا تلاش کنید.", null))
             }
-            if(!userInfo){
+            if (!userInfo) {
                 return next(new response(req, res, 'approve old user', 400, " مشکلی در استعلام اطلاعات کاربر رخ داده است لطفا از درست بودن اطلاعات اطمینان حاصل کنید", null))
             }
 
             console.log("after get user info");
-            
-            let wallet = this.walletRepository.create({ goldWeight:0,balance:0})
-            const user= this.userRepository.create({
-                fatherName:userInfo.fatherName,
-                gender:userInfo.gender,
-                officeName:userInfo.officeName,
-                birthDate:userInfo.birthDate,
-                identityNumber:userInfo.identityNumber,
-                identitySeri:userInfo.identitySeri,
-                identitySerial:userInfo.identitySerial,
-                firstName:userInfo.firstName,
-                lastName:userInfo.lastName,
-                nationalCode:userInfo.nationalCode,
-                phoneNumber:phoneNumber,
-                liveStatus:userInfo.liveStatus,
-                verificationStatus:userInfo.verificationStatus,
-                verificationType:0,
-                identityTraceCode:userInfo.identityTraceCode,
-                fullName:`${userInfo.firstName} ${userInfo.lastName}`,
+
+            let wallet = this.walletRepository.create({ goldWeight: 0, balance: 0 })
+            const user = this.userRepository.create({
+                fatherName: userInfo.fatherName,
+                gender: userInfo.gender,
+                officeName: userInfo.officeName,
+                birthDate: userInfo.birthDate,
+                identityNumber: userInfo.identityNumber,
+                identitySeri: userInfo.identitySeri,
+                identitySerial: userInfo.identitySerial,
+                firstName: userInfo.firstName,
+                lastName: userInfo.lastName,
+                nationalCode: userInfo.nationalCode,
+                phoneNumber: phoneNumber,
+                liveStatus: userInfo.liveStatus,
+                verificationStatus: userInfo.verificationStatus,
+                verificationType: 0,
+                identityTraceCode: userInfo.identityTraceCode,
+                fullName: `${userInfo.firstName} ${userInfo.lastName}`,
                 wallet
             })
-            
-            
+
+
             console.log("after create in local data base");
-            
-            
+
+
             delete user.id
             delete user.wallet.id
-            const result=await  this.lastServiceService.sendUserDataToMainService(user)
-            
+            const result = await this.lastServiceService.sendUserDataToMainService(user)
+
             console.log("after interservice");
-            
+
             console.log("result", result);
-            
-            
-            if(!result.data){
-                console.log("here",result.data);
-                user.verificationStatus=2
+
+
+            if (!result.data) {
+                console.log("here", result.data);
+                user.verificationStatus = 2
                 await this.userRepository.save(user)
-                return next(new response(req, res, 'approve new user',result.response.status,result.response.data.error, null))
+                return next(new response(req, res, 'approve new user', result.response.status, result.response.data.error, null))
             }
             //! internalRequest 
             delete user.identityTraceCode
             console.log("after every thing done");
             await this.userRepository.save(user)
-            
+
             return next(new response(req, res, 'approve new user', 200, null, result.data.data))
-           
-        }catch(err){
-            console.log("errr",err);
-            return next(new response(req, res, 'approve new User', 500 , 'مشکل داخلی سرویس یوزر' , null))
+
+        } catch (err) {
+            console.log("errr", err);
+            return next(new response(req, res, 'approve new User', 500, 'مشکل داخلی سرویس یوزر', null))
         }
     }
 
 
 
-    async delet(){
-        let user = await this.userRepository.findOne({where : {phoneNumber : '09128704093'}})
+    async delet() {
+        let user = await this.userRepository.findOne({ where: { phoneNumber: '09128704093' } })
         await this.userRepository.remove(user)
         return true
     }
 
 
-    async search(req: Request, res: Response, next: NextFunction){
-        
+    async search(req: Request, res: Response, next: NextFunction) {
+
         let serachWord = req.params.search;
-        console.log('query' , req.query.page , req.query.size)
+        console.log('query', req.query.page, req.query.size)
         let reg = `%${serachWord}%`
-        const page = req.query.page ? req.query.page : 1; 
-        const pageSize =req.query.size ? req.query.size : 100;
-        let totalItem = await this.userRepository.count({where : {
-            verificationStatus : 2 , 
-        }})
+        const page = req.query.page ? req.query.page : 1;
+        const pageSize = req.query.size ? req.query.size : 100;
+        let totalItem = await this.userRepository.count({
+            where: {
+                verificationStatus: 2,
+            }
+        })
 
         let user = await this.userRepository.createQueryBuilder('user')
-        .where('user.verificationStatus = :status  AND (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)' , {status : 2 , search : reg})
-        .take(+pageSize)
-        .skip(+((+page - 1) * +pageSize))
-        .getMany()
-        // const users = await this.userRepository.find({
-        //     where: {
-        //         verificationStatus: 2 ,
-            
-        //     },
-        //     relations: ['wallet', 'sells', 'buys'],
-        //     take: pageSize,  
-        //     skip: (page - 1) * pageSize 
-        // });
-        // console.log( 'tedad users', users.length)
-        
-        
-        // console.log(req)
-
-        // let all = await this.userRepository.find({where :[{
-        //     firstName : Like(`%${serachWord}%`)
-        // },{
-        //     lastName : Like(`%${serachWord}%`)
-        // },{
-        //     phoneNumber : Like(`%${serachWord}%`)
-        // } , {
-        //     nationalCode : Like(`%${serachWord}%`)
-        // }]})
-        console.log('its here >>>' , user)
-        return next(new response(req, res, 'get serach', 200 , null , {user , totalItem}))
+            .where('user.verificationStatus = :status  AND (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { status: 2, search: reg })
+            .take(+pageSize)
+            .skip(+((+page - 1) * +pageSize))
+            .getMany()
+        console.log('its here >>>', user)
+        return next(new response(req, res, 'get serach', 200, null, { user, totalItem }))
     }
 
 
-    async removeAll(req : any , res : any , next:any){
+    async removeAll(req: any, res: any, next: any) {
         console.log('its innnnnnnnnnn')
         let wallets = await this.walletRepository.find()
         let users = await this.userRepository.find()
@@ -547,8 +530,8 @@ export class UserController {
         await this.userRepository.remove(users)
 
         return res.status(200).json({
-            success : true,
-            message : 'allOldUsers removed...'
+            success: true,
+            message: 'allOldUsers removed...'
         })
     }
 }

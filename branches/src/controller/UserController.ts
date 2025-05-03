@@ -123,7 +123,7 @@ export class UserController {
                     age: newDatat.user.age,
                     fatherName: newDatat.user.fatherName,
                     phoneNumber: newDatat.user.phoneNumber,
-                    userId : newDatat.user.id
+                    userId: newDatat.user.id
                 })
                 userData = await queryRunner.manager.save(newUser)
             } else {
@@ -160,15 +160,15 @@ export class UserController {
     }
 
 
-    async approveTransACtionDataByUser(req: Request, res: Response, next: NextFunction){
+    async approveTransACtionDataByUser(req: Request, res: Response, next: NextFunction) {
         let bodyValidation = validationResult(req.body)
         console.log(req.body)
-        if (!bodyValidation.isEmpty()){
-            return next(new responseModel(req, res, '' , 'branch', 400, bodyValidation['errors'][0].msg, null))
+        if (!bodyValidation.isEmpty()) {
+            return next(new responseModel(req, res, '', 'branch', 400, bodyValidation['errors'][0].msg, null))
         }
-        let {transActionId} = req.body;
-        let createdTransAction = await this.transAction.findOne({where : {id : transActionId} , relations : ['user' , 'seller']})
-        if (!createdTransAction){
+        let { transActionId } = req.body;
+        let createdTransAction = await this.transAction.findOne({ where: { id: transActionId }, relations: ['user', 'seller'] })
+        if (!createdTransAction) {
             return next(new responseModel(req, res, 'تراکنش مورد نظر در سامانه ثبت نشده است', 'branch', 400, 'تراکنش مورد نظر در سامانه ثبت نشده است', null))
         }
 
@@ -184,42 +184,42 @@ export class UserController {
             await queryRunner.manager.save(createdTransAction)
             this.smsService.sendOtpMessage(createdTransAction.seller.phoneNumber, otp)
             await queryRunner.commitTransaction()
-            return next(new responseModel(req, res, 'کد تایید برای فروشنده ارسال شد', 'branch' , 200 , null, null))
+            return next(new responseModel(req, res, 'کد تایید برای فروشنده ارسال شد', 'branch', 200, null, null))
         } catch (error) {
-            console.log('error in approve data by user >>>>' , error)            
+            console.log('error in approve data by user >>>>', error)
             await queryRunner.rollbackTransaction()
             return next(new responseModel(req, res, 'خطای داخلی سرور در  ارسال کد تایید برای فروشنده استفاده از صندوق طلا', 'branch', 500, 'خطای داخلی سرور در  ارسال کدد تایید برای فروشنده استفاده از صندوق طلا', null))
-        }finally {
+        } finally {
             await queryRunner.release()
         }
     }
 
 
 
-    async approveOtpCodeFor(req: Request, res: Response, next: NextFunction){
+    async approveOtpCodeFor(req: Request, res: Response, next: NextFunction) {
         let bodyValidation = validationResult(req.body)
         console.log(req.body)
-        if (!bodyValidation.isEmpty()){
-            return next(new responseModel(req, res, '' , 'branch', 400, bodyValidation['errors'][0].msg, null))
+        if (!bodyValidation.isEmpty()) {
+            return next(new responseModel(req, res, '', 'branch', 400, bodyValidation['errors'][0].msg, null))
         }
-        let {transActionId , otp} = req.body;
+        let { transActionId, otp } = req.body;
 
-        let TrnasAction = await this.transAction.findOne({where : {id : transActionId} ,relations : ['user' , 'seller']})
-        if (!TrnasAction){
+        let TrnasAction = await this.transAction.findOne({ where: { id: transActionId }, relations: ['user', 'seller'] })
+        if (!TrnasAction) {
             return next(new responseModel(req, res, 'تراکنش مورد نظر در سامانه ثبت نشده است', 'branch', 400, 'تراکنش مورد نظر در سامانه ثبت نشده است', null))
         }
 
-        if (TrnasAction.status != 'waitForOtp'){
+        if (TrnasAction.status != 'waitForOtp') {
             return next(new responseModel(req, res, 'تراکنش مورد نظر قبلا اعتبار سنجی شده است', 'branch', 400, 'تراکنش مورد نظر قبلا اعتبار سنجی شده است', null))
         }
 
         if (TrnasAction.otpCode.toString() != otp.toString()) {
-            return next(new responseModel(req, res, '' ,'branch', 412, `کد وارد شده نادرست است`, null))
+            return next(new responseModel(req, res, '', 'branch', 412, `کد وارد شده نادرست است`, null))
         }
         let timeNow = new Date().getTime()
 
         if (timeNow - (+TrnasAction.time) > 2.1 * 60 * 1000) {
-            return next(new responseModel(req, res, '' ,'branch', 412, `کد وارد شده منقضی شده است`, null))
+            return next(new responseModel(req, res, '', 'branch', 412, `کد وارد شده منقضی شده است`, null))
         }
 
         let queryRunner = AppDataSource.createQueryRunner()
@@ -227,29 +227,28 @@ export class UserController {
         await queryRunner.startTransaction()
         try {
             TrnasAction.otpApproved = true;
-            TrnasAction.date= new Date().toLocaleString('fa-IR').split(',')[0]
-            TrnasAction.time= new Date().toLocaleString('fa-IR').split(',')[1]
-            let updator = await this.interService.updateWallet(TrnasAction.user.userId , TrnasAction.goldWeight)
-            console.log('rrrr >>> ' , updator)
-            if (!updator){
+            TrnasAction.date = new Date().toLocaleString('fa-IR').split(',')[0]
+            TrnasAction.time = new Date().toLocaleString('fa-IR').split(',')[1]
+            let updator = await this.interService.updateWallet(TrnasAction.user.userId, TrnasAction.goldWeight)
+            if (!updator) {
                 TrnasAction.status = 'failed';
                 await queryRunner.manager.save(TrnasAction)
                 await queryRunner.commitTransaction()
                 return next(new responseModel(req, res, 'خطای داخلی سرور', 'branch', 500, 'خطای داخلی سرور', null))
             }
-            if (updator == 'insufficent'){
+            if (updator == 'insufficent') {
                 TrnasAction.status = 'failed';
                 await queryRunner.manager.save(TrnasAction)
                 await queryRunner.commitTransaction()
                 return next(new responseModel(req, res, 'موجودی صندوق طلای کاربر کافی نمیباشد', 'branch', 400, 'موجودی صندوق طلای کاربر کافی نمیباشد', null))
             }
-            if (updator == 500){
+            if (updator == 500) {
                 TrnasAction.status = 'failed';
                 await queryRunner.manager.save(TrnasAction)
                 await queryRunner.commitTransaction()
                 return next(new responseModel(req, res, 'خطای داخلی سرور', 'branch', 500, 'خطای داخلی سرور', null))
             }
-            if (updator == 'unknown'){
+            if (updator == 'unknown') {
                 TrnasAction.status = 'failed';
                 await queryRunner.manager.save(TrnasAction)
                 await queryRunner.commitTransaction()
@@ -258,15 +257,14 @@ export class UserController {
 
             TrnasAction.status = 'completed';
             let finalInvoice = await queryRunner.manager.save(TrnasAction)
-            this.smsService.sendGeneralMessage(TrnasAction.seller.phoneNumber, "" ,TrnasAction.seller.firstName , TrnasAction.user.firstName ,TrnasAction.goldWeight)
+            this.smsService.sendGeneralMessage(TrnasAction.seller.phoneNumber, "", TrnasAction.seller.firstName, TrnasAction.user.firstName, TrnasAction.goldWeight)
             await queryRunner.commitTransaction()
-            return next(new responseModel(req, res, 'طلای مورد نظر با موفقیت کسر شد.', 'branch' , 200 , null, finalInvoice))
-            
+            return next(new responseModel(req, res, 'طلای مورد نظر با موفقیت کسر شد.', 'branch', 200, null, finalInvoice))
         } catch (error) {
-            console.log('error in fucking approve transAction>>>' , error)
+            console.log('error in fucking approve transAction>>>', error)
             await queryRunner.rollbackTransaction()
             return next(new responseModel(req, res, 'خطای داخلی سرور در  ارسال کد تایید برای فروشنده استفاده از صندوق طلا', 'branch', 500, 'خطای داخلی سرور در  ارسال کدد تایید برای فروشنده استفاده از صندوق طلا', null))
-        }finally{
+        } finally {
             await queryRunner.release()
         }
     }

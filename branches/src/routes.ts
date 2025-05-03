@@ -73,5 +73,13 @@ export const Routes = [
     controller: branchController,
     middlewares:[],
     action: "getSellersByAdmin"
+},
+{
+    method: "get",
+    route: "/transaction/all",
+    controller: branchController,
+    middlewares:[],
+    action: "getAllTransACtions"
 }
+
 ]

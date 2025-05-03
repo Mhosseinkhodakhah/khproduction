@@ -124,7 +124,7 @@ export class UserController {
                 await createForFirstTime()
                 data = await cacher.getter('appDashboard')
             }
-            return data            
+            return data
         } catch (error) {
             console.log(`${error}`)
             await createForFirstTime()

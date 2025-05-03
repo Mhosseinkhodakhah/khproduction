@@ -27,18 +27,16 @@ export interface logs {
         profile: string,
     },
 
-
     date : string,
-
-    actionType : number
 
     time : string
 
     title:string,
 
-    description:string
+    description : string
 
     action : {}
+
 }
 
 
