@@ -10,8 +10,6 @@ import { WalletTransaction } from "../entity/WalletTransaction"
 import { SmsService } from "../services/sms-service/message-service"
 import * as cron from 'node-cron'
 
-
-
 import { parentPort, workerData, isMainThread, threadId } from 'worker_threads'
 
 class tasks {   

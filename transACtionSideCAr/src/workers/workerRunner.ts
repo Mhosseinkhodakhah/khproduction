@@ -3,17 +3,17 @@ import path from "path"
 import { Worker , isMainThread , threadId } from "worker_threads"
 
 
+console.log('directory is >>>>>>>>' , __dirname)
 
 
 export class runTheWorkers{
-    private worker1 = new Worker('./worker1.js',  {})
+    private worker1 = new Worker('./worker.js',  {})
     
-    private worker2 = new Worker('./worker1.js', {})
+    private worker2 = new Worker('./worker.js', {})
     
-    private worker3 = new Worker('./worker1.js' , {})
+    private worker3 = new Worker('./worker.js' , {})
     
     async start(){
-        console.log('directory is >>>>>>>>' , __dirname)
         this.worker1.on('message', async(result) => {
             console.log('worker1 message is >>> ' , result)
         })
