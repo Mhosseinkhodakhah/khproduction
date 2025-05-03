@@ -14,7 +14,7 @@ import monitor from "./util/statusMonitor"
 import cacher from "./services/cacher"
 import { ShahkarController } from "./controller/ShahkarController"
 import { initChecker, transActionDoer, transferGoldWeightInterval } from "../analyzor"
-// import { runTheWorkers } from "./workers/workerRunner"
+import { runTheWorkers } from "./workers/workerRunner"
 const { combine, timestamp, label, prettyPrint } = format;
 
 AppDataSource.initialize().then(async () => {
