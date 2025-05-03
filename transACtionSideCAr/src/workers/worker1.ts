@@ -1,6 +1,7 @@
 const { parentPort, workerData, isMainThread, threadId } = require ('worker_threads')
 
 
+
 parentPort.on('message', (data) => {
     if (data == 'first task') {
         setInterval(()=>{

@@ -94,7 +94,7 @@ class checkTransActions {
             await queryRunner.manager.save(queue)
             await queryRunner.commitTransaction()
             this.smsService.sendGeneralMessage(transport.sender.phoneNumber, "approveTranport", transport.sender.firstName, transport.goldWeight, transport.reciever.nationalCode)
-            this.smsService.sendGeneralMessage(transport.reciever.phoneNumber, "approveReciever", transport.reciever.firstName, transport.goldWeight, transport.sender.firstName)
+            this.smsService.sendGeneralMessage(transport.reciever.phoneNumber, "approveReciever", transport.reciever.firstName, transport.goldWeight, transport.sender.nationalCode)
             console.log('its don the fucking transport for >>> ', transport)
             console.log('its don the fucking transport for walletssssss >>> ', transport.sender.wallet)
             console.log('its don the fucking transport for >>> ', transport.reciever.wallet)
