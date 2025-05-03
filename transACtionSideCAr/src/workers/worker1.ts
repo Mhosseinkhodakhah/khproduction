@@ -11,12 +11,6 @@ const { SmsService } = require("../services/sms-service/message-service.js")
 const {cron} = require('node-cron')
 
 
-// const path = require('path');
-// const { workerData } = require('worker_threads');
- 
-// require('ts-node').register();
-// require(path.resolve(__dirname, workerData.path));
-
 
 const { parentPort, workerData, isMainThread, threadId } = require('worker_threads')
 
