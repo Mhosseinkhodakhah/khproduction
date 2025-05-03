@@ -12,8 +12,6 @@ import { SmsService } from "./src/services/sms-service/message-service";
 import * as cron from 'node-cron'
 
 
-
-
 class checkTransActions {
     private qeueu = AppDataSource.getRepository(transActionQeue)
     private transportQeueu = AppDataSource.getRepository(transPortQueue)

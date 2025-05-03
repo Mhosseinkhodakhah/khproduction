@@ -22,9 +22,9 @@ AppDataSource.initialize().then(async () => {
     // let workerStarter = new runTheWorkers()
     // workerStarter.start()
     // console.log(await cacher.getter('tradePermision'))
-    transActionDoer()
-    initChecker()
-    transferGoldWeightInterval()
+    // transActionDoer()
+    // initChecker()
+    // transferGoldWeightInterval()
     // transferGoldWeightInterval()
     const app = express()
     app.use(bodyParser.json())
@@ -94,8 +94,6 @@ AppDataSource.initialize().then(async () => {
         console.log('error occured . . .', error)
     })
 
-
     console.log("Express server has started on port 3012. Open http://localhost:3012/users to see results")
-
 
 }).catch(error => console.log(error))
