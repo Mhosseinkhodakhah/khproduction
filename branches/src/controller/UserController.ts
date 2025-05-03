@@ -260,7 +260,8 @@ export class UserController {
             TrnasAction.status = 'completed';
             let finalInvoice = await queryRunner.manager.save(TrnasAction)
             this.smsService.sendGeneralMessage(TrnasAction.seller.phoneNumber, "approveForAdmin", TrnasAction.seller.lastName, TrnasAction.user.nationalCode, TrnasAction.goldWeight)
-            let branch = (TrnasAction.seller.branch.name).replaceAll(' ' , '')
+            let branchName = (TrnasAction.seller.branch.name).replaceAll(' ' , '')
+            console.log('after done' , branchName)
             this.smsService.sendGeneralMessage(TrnasAction.user.phoneNumber, "tellToUserForUseGildBox", TrnasAction.user.firstName, TrnasAction.goldWeight, branch)
             await queryRunner.commitTransaction()
             return next(new responseModel(req, res, 'طلای مورد نظر با موفقیت کسر شد.', 'branch', 200, null, finalInvoice))
