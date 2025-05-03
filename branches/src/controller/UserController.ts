@@ -262,7 +262,7 @@ export class UserController {
             this.smsService.sendGeneralMessage(TrnasAction.seller.phoneNumber, "approveForAdmin", TrnasAction.seller.lastName, TrnasAction.user.nationalCode, TrnasAction.goldWeight)
             let branchName = (TrnasAction.seller.branch.name).replaceAll(' ' , '')
             console.log('after done' , branchName)
-            this.smsService.sendGeneralMessage(TrnasAction.user.phoneNumber, "tellToUserForUseGildBox", TrnasAction.user.firstName, TrnasAction.goldWeight, branch)
+            this.smsService.sendGeneralMessage(TrnasAction.user.phoneNumber, "tellToUserForUseGildBox", TrnasAction.user.firstName, TrnasAction.goldWeight, branchName)
             await queryRunner.commitTransaction()
             return next(new responseModel(req, res, 'طلای مورد نظر با موفقیت کسر شد.', 'branch', 200, null, finalInvoice))
         } catch (error) {
