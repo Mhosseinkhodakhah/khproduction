@@ -8,6 +8,7 @@ import { goldPrice } from './src/entity/goldPrice';
 import { oldUserQeue } from './src/entity/oldUserQeue.entity';
 import { User } from './src/entity/User';
 import { Worker , isMainThread , threadId } from "worker_threads"
+import path = require('path');
 
 let interConnection = new connection()
 
@@ -684,6 +685,9 @@ export class analyzor {
         return { data: data, label: label2 }
     }
 }
+
+
+console.log('path is >>>> ' , __dirname)
 
 let worker1 = new Worker('./build/src/workers/worker.js',  {})
 
