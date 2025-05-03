@@ -7,11 +7,11 @@ console.log('directory is >>>>>>>>' , __dirname)
 
 
 export class runTheWorkers{
-    private worker1 = new Worker('./worker1.js',  {})
+    private worker1 = new Worker('./src/workers/worker1.js',  {})
     
-    private worker2 = new Worker('./worker1.js', {})
+    private worker2 = new Worker('./src/workers/worker1.js', {})
     
-    private worker3 = new Worker('./worker1.js' , {})
+    private worker3 = new Worker('./src/workers/worker1.js' , {})
     
     async start(){
         this.worker1.on('message', async(result) => {
@@ -21,7 +21,6 @@ export class runTheWorkers{
         this.worker1.postMessage('first task')
         this.worker2.postMessage('second task')
         this.worker3.postMessage('thirdTask task')
-        
         
         this.worker2.on('message', async (result) => {
             console.log('worker2 message is >>> ' , result)
