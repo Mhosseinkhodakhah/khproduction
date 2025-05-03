@@ -66,7 +66,10 @@ export class User {
     
     @Column({nullable : true})
     liveStatus : boolean
-   
+    
+    @Column({type : 'bool' , default : false})
+    oldUserCheck : boolean
+
     @Column()
     phoneNumber : string
 
