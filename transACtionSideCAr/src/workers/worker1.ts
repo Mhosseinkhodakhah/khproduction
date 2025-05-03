@@ -15,7 +15,7 @@ const { parentPort, workerData, isMainThread, threadId } = require('worker_threa
 
 
 class tasks {   
-    
+
     qeueu = AppDataSource.getRepository(transActionQeue)
     transportQeueu = AppDataSource.getRepository(transPortQueue)
     invoice = AppDataSource.getRepository(Invoice)
@@ -80,7 +80,7 @@ class tasks {
         await this.qeueu.save(queue2)
         console.log('queue task done successfully >>>> ')
     }
-    async updateTheWalletForTransport(transPortId: number, queue) {
+    async updateTheWalletForTransport(transPortId, queue) {
         let queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
