@@ -1,14 +1,14 @@
-import { AppDataSource } from "../data-source"
-import { TradeType } from "../entity/enums/TradeType"
-import { Invoice } from "../entity/Invoice"
-import { oldUserQeue } from "../entity/oldUserQeue.entity"
-import { transActionQeue, transPortQueue } from "../entity/transActionQueue.entity"
-import { transportInvoice } from "../entity/transport"
-import { User } from "../entity/User"
-import { Wallet } from "../entity/Wallet"
-import { WalletTransaction } from "../entity/WalletTransaction"
-import { SmsService } from "../services/sms-service/message-service"
-import * as cron from 'node-cron'
+const { AppDataSource } = require("../data-source")
+const { TradeType } = require("../entity/enums/TradeType")
+const { Invoice } = require("../entity/Invoice")
+const { oldUserQeue } = require("../entity/oldUserQeue.entity")
+const { transActionQeue, transPortQueue } = require("../entity/transActionQueue.entity")
+const { transportInvoice } = require("../entity/transport")
+const { User } = require("../entity/User")
+const { Wallet } = require("../entity/Wallet")
+const { WalletTransaction } = require("../entity/WalletTransaction")
+const { SmsService } = require("../services/sms-service/message-service")
+const {cron} = require('node-cron')
 
 const { parentPort, workerData, isMainThread, threadId } = require('worker_threads')
 
