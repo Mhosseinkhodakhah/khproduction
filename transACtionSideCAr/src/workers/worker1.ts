@@ -1,13 +1,13 @@
-const { AppDataSource } = require("../data-source.ts")
-const { TradeType } = require("../entity/enums/TradeType.t")
-const { Invoice } = require("../entity/Invoice.ts")
-const { oldUserQeue } = require("../entity/oldUserQeue.entity.ts")
-const { transActionQeue, transPortQueue } = require("../entity/transActionQueue.entity.ts")
-const { transportInvoice } = require("../entity/transport.ts")
-const { User } = require("../entity/User.ts")
-const { Wallet } = require("../entity/Wallet.ts")
-const { WalletTransaction } = require("../entity/WalletTransaction.ts")
-const { SmsService } = require("../services/sms-service/message-service.ts")
+const { AppDataSource } = require("../data-source.js")
+const { TradeType } = require("../entity/enums/TradeType.js")
+const { Invoice } = require("../entity/Invoice.js")
+const { oldUserQeue } = require("../entity/oldUserQeue.entity.js")
+const { transActionQeue, transPortQueue } = require("../entity/transActionQueue.entity.js")
+const { transportInvoice } = require("../entity/transport.js")
+const { User } = require("../entity/User.js")
+const { Wallet } = require("../entity/Wallet.js")
+const { WalletTransaction } = require("../entity/WalletTransaction.js")
+const { SmsService } = require("../services/sms-service/message-service.js")
 const {cron} = require('node-cron')
 
 
@@ -20,10 +20,7 @@ const {cron} = require('node-cron')
 
 const { parentPort, workerData, isMainThread, threadId } = require('worker_threads')
 
-
-
 class tasks {   
-
     qeueu = AppDataSource.getRepository(transActionQeue)
     transportQeueu = AppDataSource.getRepository(transPortQueue)
     invoice = AppDataSource.getRepository(Invoice)
@@ -118,7 +115,6 @@ class tasks {
         }
     }
 }
-
 
 
 
