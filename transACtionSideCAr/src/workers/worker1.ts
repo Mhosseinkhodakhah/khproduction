@@ -26,7 +26,7 @@ class tasks {
     private transPort = AppDataSource.getRepository(transportInvoice)
     transActionQeueInProcess = false
     checkInitQeueInProcess = false
-
+    
     async start() {
         this.transActionQeueInProcess = true
         try {
