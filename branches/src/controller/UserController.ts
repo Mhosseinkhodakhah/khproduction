@@ -204,7 +204,7 @@ export class UserController {
         }
         let { transActionId, otp } = req.body;
 
-        let TrnasAction = await this.transAction.findOne({ where: { id: transActionId }, relations: ['user', 'seller'] })
+        let TrnasAction = await this.transAction.findOne({ where: { id: transActionId }, relations: ['user', 'seller' , 'seller.branch'] })
         if (!TrnasAction) {
             return next(new responseModel(req, res, 'تراکنش مورد نظر در سامانه ثبت نشده است', 'branch', 400, 'تراکنش مورد نظر در سامانه ثبت نشده است', null))
         }
@@ -257,7 +257,8 @@ export class UserController {
 
             TrnasAction.status = 'completed';
             let finalInvoice = await queryRunner.manager.save(TrnasAction)
-            this.smsService.sendGeneralMessage(TrnasAction.seller.phoneNumber, "", TrnasAction.seller.firstName, TrnasAction.user.firstName, TrnasAction.goldWeight)
+            this.smsService.sendGeneralMessage(TrnasAction.seller.phoneNumber, "approveForAdmin", TrnasAction.seller.firstName, TrnasAction.user.nationalCode, TrnasAction.goldWeight)
+            this.smsService.sendGeneralMessage(TrnasAction.user.phoneNumber, "tellToUserForUseGoldBox", TrnasAction.user.firstName, TrnasAction.goldWeight, TrnasAction.seller.branch.name)
             await queryRunner.commitTransaction()
             return next(new responseModel(req, res, 'طلای مورد نظر با موفقیت کسر شد.', 'branch', 200, null, finalInvoice))
         } catch (error) {
