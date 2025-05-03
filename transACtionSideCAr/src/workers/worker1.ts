@@ -1,5 +1,5 @@
-
 import { parentPort, workerData, isMainThread, threadId } from 'worker_threads'
+
 
 parentPort.on('message', (data) => {
     if (data == 'first task') {
