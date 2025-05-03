@@ -10,8 +10,7 @@ export class analyzor {
         let analyzedData = await this.barChart(users.invoices)
         let lineChart = await this.lineChart(users.invoices)
         let priceChart = await this.monthlyPrice(users.prices)
-        parentPort.postMessage({ appDashboard : priceChart})
-        parentPort.postMessage({ pannelCharts :  { barChart: analyzedData, lineChart: lineChart }})
+        parentPort.postMessage({ appDashboard : priceChart , pannelCharts :  { barChart: analyzedData, lineChart: lineChart }})
     }
 
 
