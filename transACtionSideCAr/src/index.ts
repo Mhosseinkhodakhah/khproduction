@@ -22,10 +22,10 @@ AppDataSource.initialize().then(async () => {
     // let workerStarter = new runTheWorkers()
     // workerStarter.start()
     // console.log(await cacher.getter('tradePermision'))
-    // transActionDoer()
-    // initChecker()
+    transActionDoer()
+    initChecker()
     // transferGoldWeightInterval()
-    // transferGoldWeightInterval()
+    transferGoldWeightInterval()
     const app = express()
     app.use(bodyParser.json())
     app.use(cors({
