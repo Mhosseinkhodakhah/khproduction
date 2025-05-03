@@ -7,11 +7,11 @@ console.log('directory is >>>>>>>>' , __dirname)
 
 
 export class runTheWorkers{
-    private worker1 = new Worker('./src/workers/worker1.js',  {})
+    private worker1 = new Worker('./build/src/workers/worker1.js',  {})
     
-    private worker2 = new Worker('./src/workers/worker1.js', {})
+    private worker2 = new Worker('./build/src/workers/worker1.js', {})
     
-    private worker3 = new Worker('./src/workers/worker1.js' , {})
+    private worker3 = new Worker('./build/src/workers/worker1.js' , {})
     
     async start(){
         this.worker1.on('message', async(result) => {
