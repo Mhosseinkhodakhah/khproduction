@@ -13,7 +13,7 @@ export class runTheWorkers{
     private worker3 = new Worker('./worker1.js' , {})
     
     async start(){
-        console.log(__dirname) 
+        console.log('directory is >>>>>>>>' , __dirname)
         this.worker1.on('message', async(result) => {
             console.log('worker1 message is >>> ' , result)
         })
