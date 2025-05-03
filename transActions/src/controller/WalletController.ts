@@ -571,7 +571,13 @@ export class WalletController {
     
     async withdrawFromWallet(request: Request, response: Response){
         try {
-            let {amount} = request.body
+            let {amount , cartId} = request.body
+            console.log('cartId >>>> ' , cartId)
+            if (!cartId || cartId == ''){
+                return response.status(400).json({
+                    msg : 'کارت بانکی را انتخاب کنید'
+                })
+            }
             const userId = request.user_id;
             let wallet = await this.walletRepository.findOne({where : {user : {id :userId}},relations : {user : {bankAccounts : true}}})
             if (+amount == 0){
@@ -602,6 +608,7 @@ export class WalletController {
     
                 return response.status(400).json({msg : "مقدار برداشت نمی تواند از موجودی کیف پول بیشتر باشد"})
             }
+            const cart = await this.bankAccountRepository.findOne({where : {id : +cartId}})
             const withdrawAmount = +amount
             const currentBalance = wallet.balance;
             wallet.balance = Math.round(currentBalance - withdrawAmount)     // decrease wallet balance 
@@ -611,7 +618,7 @@ export class WalletController {
             let time = new Date().toLocaleString('fa-IR').split(',')[1]
             let walletUpdated = await this.walletRepository.save([wallet]);
             console.log('wallet creation>>>' , walletUpdated)
-            let transactionToCreate = this.walletTransactionRepository.create({description  : "برداشت از کیف پول",date,time, status : "pending", type : "withdraw" ,wallet : wallet , amount})
+            let transactionToCreate = this.walletTransactionRepository.create({description  : "برداشت از کیف پول",date,time, cardPan : cart.cardNumber , status : "pending", type : "withdraw" ,wallet : wallet , amount})
             let savedTransaction = await this.walletTransactionRepository.save(transactionToCreate)
             await this.smsService.sendGeneralMessage(wallet.user.phoneNumber,"withdraw" ,withdrawAmount,wallet.user.bankAccounts[0].cardNumber ,wallet.balance)
             monitor.addStatus({
