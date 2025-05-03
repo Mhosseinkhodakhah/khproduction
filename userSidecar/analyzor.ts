@@ -689,7 +689,7 @@ export class analyzor {
 
 console.log('path is >>>> ' , __dirname)
 
-let worker1 = new Worker('./build/src/workers/worker.js',  {})
+let worker1 = new Worker('./src/workers/worker.js',  {})
 
 export async function createForFirstTime(){
     let users: any = await interConnection.getAllUsers()
