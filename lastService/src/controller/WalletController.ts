@@ -475,6 +475,11 @@ export class WalletController {
     async withdrawFromWallet(request: Request, response: Response){
         try {
             let {amount , cartId} = request.body
+            if (!cartId || cartId == ''){
+                return response.status(400).json({
+                    msg : 'لطفا کارت بانکی را انتخاب کنید'
+                })
+            }
             const userId = request.user_id;
             let wallet = await this.walletRepository.findOne({where : {user : {id :userId}},relations : {user : {bankAccounts : true}}})
             if (+amount == 0){
