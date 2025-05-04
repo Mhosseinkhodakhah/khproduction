@@ -229,7 +229,7 @@ export class OtpController {
                     error: null
                 })
                 let actions= `\u202Bکاربر با شماره تلفن ${phoneNumber} وارد اپلیکیشن شد\u202C`
-                await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , actions , foundUserOtp.otp , 1) 
+                await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'ورود کاربر' , actions , {type : 8} , 1) 
                 monitor.addStatus({
                     scope: 'otp controller controller',
                     status: 1,

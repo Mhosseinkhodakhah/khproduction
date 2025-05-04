@@ -174,7 +174,7 @@ export class BankAccountController {
                         error: null
                     })
                     let actions = `\u202Bکاربر ${owner.firstName} ${owner.lastName} کارت بانکی خود با شماره ${cardNumber} را در اپلیکیشن ثبت کرد\u202C`
-                    await this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: owner.phoneNumber }, 'ثبت کارت بانکی', actions, {} , 1)
+                    await this.loggerService.addNewLog({ firstName: owner.firstName, lastName: owner.lastName, phoneNumber: owner.phoneNumber }, 'ثبت کارت بانکی', actions, {type : 7} , 1)
                     monitor.addStatus({
                         scope: 'otp controller controller',
                         status: 1,
@@ -223,7 +223,7 @@ export class BankAccountController {
                     await this.userRepository.save(user)
                 }
                 let actions = `\u202Bکاربر ${card.owner.firstName} ${card.owner.lastName} کارت بانکی با شماره ${card.cardNumber} را حذف کرد\u202C`
-                await this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: card.owner.phoneNumber }, 'حذف کارت بانکی', actions, {}, 1)
+                await this.loggerService.addNewLog({ firstName: card.owner.firstName, lastName: card.owner.lastName, phoneNumber: card.owner.phoneNumber }, 'حذف کارت بانکی', actions, {type : 6}, 1)
                 monitor.addStatus({
                     scope: 'otp controller controller',
                     status: 1,

@@ -249,7 +249,7 @@ export class ShahkarController {
                         error: null
                     })
                     let actions = `\u202Bکاربر با نام ${firstName} ${lastName} و کد ملی ${nationalCode} در اپلیکیشن احراز هویت کرد \u202C`
-                    await this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: phoneNumber }, 'احراز هویت', actions, {} , 1)
+                    await this.loggerService.addNewLog({ firstName: firstName, lastName: lastName, phoneNumber: phoneNumber }, 'احراز هویت', actions, {type : 9} , 1)
                     monitor.addStatus({
                         scope: 'otp controller controller',
                         status: 1,

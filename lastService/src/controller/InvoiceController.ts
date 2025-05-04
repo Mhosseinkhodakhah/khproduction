@@ -312,15 +312,6 @@ export class InvoiceController {
                     status :  1,
                     error : null
                 })
-                if (type == 'sell'){
-                    let actions = `\u202Bکاربر ${user.firstName} ${user.lastName} تراکنش فروش با حجم ${goldWeight} را ایجاد کرد\u202C`
-                    await this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: savedTransaction.buyer.phoneNumber }, 'ایجاد تراکنش فروش', actions, {}, 1)
-                }
-                if (type == 'buy'){
-                    let actions = `\u202Bکاربر ${user.firstName} ${user.lastName} تراکنش خرید با حجم ${goldWeight} را ایجاد کرد\u202C`
-                    await this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: savedTransaction.buyer.phoneNumber }, 'ایجاد تراکنش خرید', actions, {}, 1)
-                    
-                }
                 return response.status(201).json({
                     msg: "Transaction created successfully",
                     transactionId: savedTransaction.id,
