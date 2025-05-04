@@ -328,11 +328,11 @@ export class InvoiceController {
                 })
                 if (type == 'sell'){
                     let actions = `\u202Bکاربر ${user.firstName} ${user.lastName} تراکنش فروش با حجم ${goldWeight} را ایجاد کرد\u202C`
-                    this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: savedTransaction.buyer.phoneNumber }, 'ایجاد تراکنش فروش', actions, {}, 1)
+                    this.loggerService.addNewLog({ firstName: savedTransaction.buyer.firstName, lastName: savedTransaction.buyer.lastName, phoneNumber: savedTransaction.buyer.phoneNumber }, 'ایجاد تراکنش فروش', actions, {type : 0}, 1)
                 }
                 if (type == 'buy'){
                     let actions = `\u202Bکاربر ${user.firstName} ${user.lastName} تراکنش خرید با حجم ${goldWeight} را ایجاد کرد\u202C`
-                    this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: savedTransaction.buyer.phoneNumber }, 'ایجاد تراکنش خرید', actions, {}, 1)
+                    this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: savedTransaction.buyer.phoneNumber }, 'ایجاد تراکنش خرید', actions, {type : 1}, 1)
                     
                 }
                 return response.status(201).json({
@@ -462,7 +462,7 @@ export class InvoiceController {
                         error : null
                     })
                     let actions = `\u202Bکاربر ${createdInvoice.buyer.firstName} ${createdInvoice.buyer.lastName} تراکنش خرید با حجم ${createdInvoice.goldWeight} را از کیف پول خود پرداخت کرد\u202C`
-                    this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: savedTransaction.buyer.phoneNumber }, 'تایید تراکنش خرید', actions, {}, 1)
+                    this.loggerService.addNewLog({ firstName:savedTransaction.buyer.firstName , lastName: savedTransaction.buyer.lastName, phoneNumber: savedTransaction.buyer.phoneNumber }, 'تایید تراکنش خرید', actions, {type : 1}, 1)
                     return response.status(200).json({
                         msg: "معامله با موفقیت انجام شد.",
                         transaction: savedTransaction,
@@ -584,7 +584,7 @@ export class InvoiceController {
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
     }
-
+    
     async completeSellTransaction(request: Request, response: Response) {
         const { invoiceId } = request.body;
         try {
@@ -677,8 +677,8 @@ export class InvoiceController {
                     status :  1,
                     error : null
                 })
-                let actions = `\u202Bکاربر ${createdInvoice.buyer.firstName} ${createdInvoice.buyer.lastName} تراکنش فروش با حجم ${createdInvoice.goldWeight}زا تایید کرد\u202C`
-                this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: savedTransaction.buyer.phoneNumber }, 'تایید تراکنش فروش', actions, {}, 1)
+                let actions = `\u202Bکاربر ${createdInvoice.seller.firstName} ${createdInvoice.seller.lastName} تراکنش فروش با حجم ${createdInvoice.goldWeight}زا تایید کرد\u202C`
+                this.loggerService.addNewLog({ firstName: savedTransaction.seller.firstName, lastName: savedTransaction.seller.lastName, phoneNumber: savedTransaction.seller.phoneNumber }, 'تایید تراکنش فروش', actions, {type : 0}, 1)
                 return response.status(200).json({
                     msg: "معامله با موفقیت ثبت شد",
                     transaction: savedTransaction,
@@ -797,8 +797,7 @@ export class InvoiceController {
                         error : null
                     })
                     let actions = `\u202Bکاربر ${savedTransaction.buyer.firstName} ${savedTransaction.buyer.lastName} تراکنش خرید از درگاه با حجم ${savedTransaction.goldWeight} تایید شد\u202C`
-                    this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: savedTransaction.buyer.phoneNumber }, 'تایید تراکنش خرید', actions, {}, 1)
-    
+                    this.loggerService.addNewLog({ firstName: savedTransaction.buyer.lastName , lastName:savedTransaction.buyer.lastName , phoneNumber: savedTransaction.buyer.phoneNumber }, 'تایید تراکنش خرید', actions, {type : 1}, 1)
                     return response.status(200).json({ msg: "پرداخت موفق", transaction: updatedtransaction, bank: res.data.card_pan, referenceID: res.data?.ref_id })
                 }
             } catch (error) {
@@ -1015,6 +1014,4 @@ export class InvoiceController {
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
     }
-
-
 }
