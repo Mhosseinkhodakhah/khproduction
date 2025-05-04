@@ -314,21 +314,12 @@ export class InvoiceController {
                 })
                 if (type == 'sell'){
                     let actions = `\u202Bکاربر ${user.firstName} ${user.lastName} تراکنش فروش با حجم ${goldWeight} را ایجاد کرد\u202C`
-                    this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: savedTransaction.buyer.phoneNumber }, 'ایجاد تراکنش فروش', actions, {}, 1)
-                    monitor.addStatus({
-                        scope: 'otp controller controller',
-                        status: 1,
-                        error: null
-                    })
+                    await this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: savedTransaction.buyer.phoneNumber }, 'ایجاد تراکنش فروش', actions, {}, 1)
                 }
                 if (type == 'buy'){
                     let actions = `\u202Bکاربر ${user.firstName} ${user.lastName} تراکنش خرید با حجم ${goldWeight} را ایجاد کرد\u202C`
-                    this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: savedTransaction.buyer.phoneNumber }, 'ایجاد تراکنش خرید', actions, {}, 1)
-                    monitor.addStatus({
-                        scope: 'otp controller controller',
-                        status: 1,
-                        error: null
-                    })
+                    await this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: savedTransaction.buyer.phoneNumber }, 'ایجاد تراکنش خرید', actions, {}, 1)
+                    
                 }
                 return response.status(201).json({
                     msg: "Transaction created successfully",
