@@ -634,8 +634,9 @@ export class PhoneInvoiceController {
             this.smsService.sendGeneralMessage(user.phoneNumber, "selldasti", user.firstName, goldPrice, totalPrice)
             
             try {
+                let action = `\u202Bادمین ${req.user.firstName} تراکنش فروش تلفنی مربوط به کاربر ${updated.buyer.firstName} ${updated.buyer.lastName} و کد ملی ${updated.buyer.nationalCode} راایجاد کرد\u202C`
                 await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
-                    'ایجاد فاکتور فروش تلفنی' , `accountant ${req.user.firstName} approved new sell invoice in phone transAction` ,{
+                    'ایجاد فاکتور فروش تلفنی' , action ,{
                    userName : updated.buyer.firstName,
                    lastName : updated.buyer.lastName,
                    amount : updated.goldWeight,

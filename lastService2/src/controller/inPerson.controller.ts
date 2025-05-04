@@ -367,8 +367,9 @@ export default class inPersonController {
                     console.log('this user is not in the oldUsers')
                 }
             }
+            let action = `\u202B را ایجاد کرد ${data?.firstName} تراکنش خرید حضوری مربوط به کاربر ${req.user.firstName} حسابدار\u202C`
             let logRespons = await this.interservice.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , '' , ` را شروع کرد  ${phoneNumber} فرایند   خرید تلفنی مربوط به  ${req.user.firstName} کارشناس` , {
-                action : ` را ایجاد کرد ${data?.firstName} تراکنش خرید حضوری مربوط به کاربر ${req.user.firstName} حسابدار`
+                action : action
             } , 1) 
             return next(new responseModel(req, res, '' ,'admin service', 200, null, { isVerified: isVerified, ...data }))
         } catch (error) {
@@ -516,8 +517,9 @@ export default class inPersonController {
                 await queryRunner.manager.save(wallet)
                 await queryRunner.commitTransaction()
                 await this.smsService.sendGeneralMessage(wallet.user.phoneNumber, "identify", firstName, null, null)
+                let action = `\u202Bرا ایجاد کرد ${user.firstName} تراکنش خرید حضوری مربوط به کاربر ${req.user.firstName} حسابدار\u202C`
                 let logRespons = await this.interservice.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , '' , ` را انجام داد  ${nationalCode} فرایند احراز هویت مربوط به  ${req.user.firstName} کارشناس` , {
-                    action : ` را ایجاد کرد ${user.firstName} تراکنش خرید حضوری مربوط به کاربر ${req.user.firstName} حسابدار`
+                    action : action
                 } , 1) 
                 return next(new responseModel(req, res, '' ,'admin service', 200, null, { ...savedUser, isVerified: 1 }))
                 // return res.status(200).json({ data: { ...savedUser, isVerified: 1 }, msg: "ثبت نام شما با موفقیت انجام شد" })
@@ -604,8 +606,9 @@ export default class inPersonController {
             let createdInvoice = await queryRunner.manager.save(newInvoice)
             await queryRunner.commitTransaction()
             let finalInvoice = await this.invoicesRepository.findOne({ where: { id: createdInvoice.id }, relations: ['buyer', 'seller', 'buyer.wallet'] })
+            let action = `\u202Bرا ایجاد کرد ${user.firstName} تراکنش خرید حضوری مربوط به کاربر ${req.user.firstName} حسابدار\u202C`
             let logRespons = await this.interservice.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , '' , ` را ایجاد کرد ${user.firstName} تراکنش خرید حضوری مربوط به کاربر ${req.user.firstName} کارشناس` , {
-                action : ` را ایجاد کرد ${user.firstName} تراکنش خرید حضوری مربوط به کاربر ${req.user.firstName} حسابدار`
+                action : action
             } , 1) 
             this.smsService.sendGeneralMessage(user.phoneNumber, "sellcall", user.firstName, goldWeight, totalPrice)
             return next(new responseModel(req, res, '' ,'admin service', 200, null, { ...finalInvoice, wallet: finalInvoice.buyer.wallet }))
@@ -681,8 +684,9 @@ export default class inPersonController {
             let rr = await this.estimateWeight.estimateWeight(+createdInvoice.goldWeight , 0)
             await queryRunner.commitTransaction()
             let finalInvoice = await this.invoicesRepository.findOne({ where: { id: createdInvoice.id }, relations: ['buyer', 'seller', 'seller.wallet'] })
+            let action = `\u202Bرا ایجاد کرد ${user.firstName} تراکنش خرید حضوری مربوط به کاربر ${req.user.firstName} حسابدار\u202C`
             let logRespons = await this.interservice.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , '' , ` را ایجاد کرد ${user.firstName} تراکنش فروش حضوری مربوط به کاربر ${req.user.firstName} کارشناس` , {
-                action : ` را ایجاد کرد ${user.firstName} تراکنش فروش حضوری مربوط به کاربر ${req.user.firstName} حسابدار`
+                action : action
             } , 1)
             this.smsService.sendGeneralMessage(user.phoneNumber, "selldasti", user.firstName, goldPrice, totalPrice)
             return next(new responseModel(req, res, '' ,'admin service', 200, null, { ...finalInvoice, wallet: finalInvoice.seller.wallet }))
@@ -820,8 +824,9 @@ export default class inPersonController {
                 inPersonTransAction.accounterId = accountant;
                 let savedTransActions = await queryRunner.manager.save(inPersonTransAction)
                 await queryRunner.commitTransaction()
+                let action = `\u202Bرا تایید کرد ${inPersonTransAction.buyer.firstName} تراکنش خرید حضوری مربوط به کاربر ${req.user.firstName} حسابدار\u202C`
                 let logRespons = await this.interservice.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , '' , ` را تایید کرد ${inPersonTransAction.buyer.firstName} تراکنش فروش حضوری مربوط به کاربر ${req.user.firstName} حسابدار` , {
-                    action : ` را تایید کرد ${inPersonTransAction.buyer.firstName} تراکنش خرید حضوری مربوط به کاربر ${req.user.firstName} حسابدار`
+                    action : action
                 } , 1)
                 this.smsService.sendGeneralMessage(inPersonTransAction.buyer.phoneNumber, "rejectcall", inPersonTransAction.buyer.firstName, inPersonTransAction.goldWeight, inPersonTransAction.totalPrice)
                 return next(new responseModel(req, res, 'این تراکنش با موفقیت رد شد' ,'admin service', 200, null, savedTransActions))
@@ -842,8 +847,9 @@ export default class inPersonController {
                 let savedTransActions = await queryRunner.manager.save(inPersonTransAction)
                 await this.estimateWeight.estimateWeight(+inPersonTransAction.goldWeight, 1)
                 await queryRunner.commitTransaction()
+                let action = `\u202Bرا تایید کرد ${inPersonTransAction.buyer.firstName} تراکنش خرید حضوری مربوط به کاربر ${req.user.firstName} حسابدار\u202C`
                 let logRespons = await this.interservice.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , '' , ` را تایید کرد ${inPersonTransAction.buyer.firstName} تراکنش خرید حضوری مربوط به کاربر ${req.user.firstName} حسابدار` , {
-                    action : ` را تایید کرد ${inPersonTransAction.buyer.firstName} تراکنش خرید حضوری مربوط به کاربر ${req.user.firstName} حسابدار`
+                    action : action
                 } , 1) 
                 this.smsService.sendGeneralMessage(inPersonTransAction.buyer.phoneNumber, "buy", inPersonTransAction.buyer.firstName, inPersonTransAction.goldWeight, inPersonTransAction.totalPrice)
                 return next(new responseModel(req, res, 'این تراکنش با موفقیت تایید شد' ,'admin service', 200, null, savedTransActions))

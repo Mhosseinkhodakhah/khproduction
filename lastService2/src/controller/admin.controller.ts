@@ -548,8 +548,9 @@ export default class adminController {
                         savedTransaction.status = "failed";                                // set failed transaction status
                         updatedtransaction = await queryRunner.manager.save(savedTransaction)        // save the trasnaction
                         await queryRunner.commitTransaction()
+                        let action = `\u202B${req.user.firstName}-${req.user.lastName} واریز را به صورت دستی اعتبار سنجی کرد\u202C`
                         await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , 
-                            'تایید برداشت' , ` ${req.user.firstName} واریز را به صورت دستی اعتبار سنجی کرد` , {
+                            'تایید برداشت' , action , {
                             userName : user.firstName,
                             lastName : user.lastName,
                             amount : savedTransaction.amount,
@@ -569,9 +570,10 @@ export default class adminController {
                         // let updatedtransaction = await this.walletTransactionRepository.save(savedTransaction);
                         // let nameFamily = user.firstName +' '+  user.lastName
                         await queryRunner.commitTransaction()
+                        let action = `\u202B${req.user.firstName}-${req.user.lastName}  واریز را به صورت دستی اعتبار سنجی کرد\u202C`
                         // this.smsService.sendGeneralMessage(user.phoneNumber, "deposit", user.firstName, paymentAmount / 10, null)
                         await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , 
-                            'تایید برداشت' , ` ${req.user.firstName} واریز را به صورت دستی اعتبار سنجی کرد` , {
+                            'تایید برداشت' , action , {
                             userName : user.firstName,
                             lastName : user.lastName,
                             amount : paymentAmount,
@@ -673,8 +675,9 @@ export default class adminController {
                         this.smsService.sendGeneralMessage(savedTransaction.buyer.phoneNumber, "buy", savedTransaction.buyer.firstName, transactionGoldWeight, transactionTotalPrice / 10)
                         console.log('after completed the transactional db>>>', updatedtransaction)
                         await queryRunner.commitTransaction()
-
-                        await this.loggerService.addNewAdminLog({ firstName: req.user.firstName, lastName: req.user.lastName, phoneNumber: req.user.phoneNumber }, 'اعتبار سنجی خرید از درگاه', ` ${req.user.firstName} خرید انلاین را به صورت دستی اعتبار سنجی کرد`, {
+                        let action = `\u202B${req.user.firstName} خرید انلاین را به صورت دستی اعتبار سنجی کرد\u202C`
+                        await this.loggerService.addNewAdminLog({ firstName: req.user.firstName, lastName: req.user.lastName, 
+                            phoneNumber: req.user.phoneNumber }, 'اعتبار سنجی خرید از درگاه', action, {
                             userName: savedTransaction.buyer.firstName,
                             lastName: savedTransaction.buyer.lastName,
                             amount: savedTransaction.goldWeight,
