@@ -140,7 +140,8 @@ export class OtpController {
                     let saved =  await this.otpRepository.save(createdOtp);
                     console.log('saved transActions2222' , saved)
                 }
-                await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , `getting otp code succeed for user : ${phoneNumber}` , otpExist , 1) 
+                let actions= `\u202Bکاربر با شماره تلفن ${phoneNumber} وارد اپلیکیشن شد\u202C`
+                await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , actions , otpExist , 1) 
                 monitor.addStatus({
                     scope: 'otp controller controller',
                     status: 1,

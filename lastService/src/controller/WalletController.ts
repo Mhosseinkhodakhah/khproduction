@@ -25,7 +25,6 @@ export class WalletController {
     private smsService = new SmsService()
     private goldPriceService = new GoldPriceService()
     
-
     private async generateInvoice(){
         return (new Date().getTime()).toString()
     }
