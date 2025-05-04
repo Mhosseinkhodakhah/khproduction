@@ -16,6 +16,7 @@ import { Otp } from "../entity/Otp";
 import { responseModel } from "../util/response.model";
 import { validationResult } from "express-validator";
 import { transPortQueue } from "../entity/transActionQueue.entity";
+import logger from "../services/interservice/logg.service";
 
 
 
@@ -32,6 +33,7 @@ export class WalletController {
     private zpService = new ZarinPalService()
     private smsService = new SmsService()
     private goldPriceService = new GoldPriceService()
+    private loggerService = new logger()
     
     private async generateInvoice(){
         return (new Date().getTime()).toString()
@@ -183,6 +185,8 @@ export class WalletController {
                 })
                 await queryRunner.manager.save(queue)
                 await queryRunner.commitTransaction()
+                let actions = `\u202Bکاربر ${transPort.sender.firstName} ${transPort.sender.lastName} حجم ${transPort.goldWeight} گرم طلا به کاربر ${transPort.reciever.firstName} ${transPort.reciever.lastName} منتقل کرد\u202C`
+                this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: transPort.sender.phoneNumber }, 'انتقال طلا', actions, {}, 1)
                 return next(new responseModel(req, res, 'درخاست شما با موفقیت ثبت شدو به صف انتقال اضافه شد.', 'admin service', 200, null, null))
             } catch (error) {
                 console.log('error in verify otp ' , error)
@@ -542,6 +546,8 @@ export class WalletController {
                     status :  1,
                     error : null
                 })    
+                let actions = `\u202Bکاربر ${user.firstName} ${user.lastName} مبلغ ${savedTransaction.amount} به کیف پول خود واریز کرد\u202C`
+                this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: user.phoneNumber }, 'واریز وجه', actions, {}, 1)
                 return response.status(200).json({msg : "پرداخت موفق" , transaction : updatedtransaction , bank : res.data.card_pan,referenceId : res.data.ref_id})
             }
             } catch (error) {
@@ -577,6 +583,7 @@ export class WalletController {
                 })
             }
             const userId = request.user_id;
+            let user = await this.userRepository.findOne({where : {id : +userId}})
             let wallet = await this.walletRepository.findOne({where : {user : {id :userId}},relations : {user : {bankAccounts : true}}})
             if (+amount == 0){
                 monitor.addStatus({
@@ -624,6 +631,8 @@ export class WalletController {
                 status :  1,
                 error : null
             })
+            let actions = `\u202Bکاربر ${user.firstName} ${user.lastName} درخواست برداشت از کیف پول به مبلغ ${amount} را ثبت کرد\u202C`
+            this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: user.phoneNumber }, 'برداشت از کیف پول', actions, {}, 1)
             return response.json(savedTransaction)
         } catch (error) {
             monitor.addStatus({
@@ -631,7 +640,6 @@ export class WalletController {
                 status :  0,
                 error : `${error}`
             })
-
             console.log(error);
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
