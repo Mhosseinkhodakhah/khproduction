@@ -17,5 +17,7 @@ router.get('/admin/all' , controller.getAllAdminLogs)
 
 router.get('/status' , controller.statuses)
 
+router.get('/del' , controller.statuses)
+
 
 export default router

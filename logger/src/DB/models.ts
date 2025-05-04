@@ -20,7 +20,7 @@ const userLogSchema = new Schema<userLogs>({                    // this is the l
 
     description : {type : String},
 
-    action : {},
+    action : {},              // 0 : sell   1: buy   3 : withdraw   4 : deposit   5 : transport    6: delete card   7: add card   8: login   9 : register
 
     date : { type : String , default : ''},
 

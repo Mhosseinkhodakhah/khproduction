@@ -31,7 +31,7 @@ export interface logs {
 
     time : string
 
-    title:string,
+    title : string,
 
     description : string
 

@@ -20,7 +20,7 @@ const adminLogSchema = new Schema<logs>({                    // this is the logs
 
     description : {type : String},
 
-    actionType : {type : String , default : ''},     
+    // actionType : {type : String , default : ''},     
 
     action : {},
 
