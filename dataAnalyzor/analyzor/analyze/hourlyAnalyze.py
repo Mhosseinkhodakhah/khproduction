@@ -45,15 +45,17 @@ class hourlyFilter():
                 day = int(i['date'].split('/')[2])
                 print('inner1' , year , month , day)
                 if (year == mainyear):
+                    print('first condition done >>> ')                    
                     if (month == mainmonth):
+                        print('second condition done >>> ')                    
                         if (day >= mainday):
+                            print('third conditions >>> ')
                             filter1.append(i)
-                        
                     elif(month > mainmonth):
+                        print('forth conditions')
                         filter1.append(i)
-                    else:
-                        pass
                 elif(year > mainyear):
+                    print('fifth conditions >>>> ')
                     filter1.append(i)
                 
         else:
@@ -77,8 +79,6 @@ class hourlyFilter():
                         
                     elif(month < mainmonth):
                         filter2.append(i)
-                    else:
-                        pass
                 elif(year < mainyear):
                     filter2.append(i)
         else:
