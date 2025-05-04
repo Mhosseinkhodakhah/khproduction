@@ -14,6 +14,7 @@ import profitService from "../services/makeProfit.service"
 import axios from "axios"
 import { Wallet } from "../entity/Wallet"
 import { createForFirstTime } from "../../analyzor"
+import { TradeType } from "../entity/enums/TradeType"
 
 
 export class UserController {
@@ -43,7 +44,7 @@ export class UserController {
 
     async getHourlyForDjango(req : Request , res : Response , next : NextFunction){
         // let allUsers = await this.userRepository.find({where : {isSystemUser : false} , relations : ['wallet' ,'bankAccounts', 'wallet.transactions' , 'sells' , 'buys']})
-        let transActions = await this.invoiceRepository.find({ relations : ['type'] , order : {createdAt : 'DESC'}})
+        let transActions = await this.invoiceRepository.find({ where : {tradeType : TradeType.ONLINE} , relations : ['type'] , order : {createdAt : 'DESC'}})
         // let invoices = await this.invoiceRepository.find({relations : ['type' , 'buyer' , 'seller'  ] , order : {createdAt : 'DESC'}})
         // console.log('allUsers' , allUsers)
         // console.log('transActions' , transActions)

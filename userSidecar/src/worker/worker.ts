@@ -13,7 +13,7 @@ export class analyzor {
         parentPort.postMessage({ appDashboard : priceChart , pannelCharts :  { barChart: analyzedData, lineChart: lineChart }})
     }
 
-
+    
     private async firstMonthesOrSecondMonthes(month: string) {
         let mainMonth = 0;
         let firstMonthes = ['01',
