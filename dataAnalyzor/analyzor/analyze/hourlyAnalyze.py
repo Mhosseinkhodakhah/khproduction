@@ -25,14 +25,11 @@ class hourlyFilter():
         df.to_excel(f'/etc/report/hourlyReport-{name}-{number}.xlsx')   
         return f'https://excell.khaneetala.ir/hourlyReport-{name}-{number}.xlsx'
     
-    
-    
-    
-    
 
     ###this private method is for filtering
     def __filter1(self , data , startDate , endDate , startTime , endTime):
-        print('inputs' , startDate , endDate , startTime , endTime)
+        print('inputs' , startDate , endDate , startTime , endTime)   
+        
         filter1 = []
         if (startDate!='all'):
             mainyear = int(startDate.split('/')[0])
@@ -57,7 +54,6 @@ class hourlyFilter():
                 elif(year > mainyear):
                     print('fifth conditions >>>> ')
                     filter1.append(i)
-                
         else:
             filter1=data
             
@@ -149,8 +145,9 @@ class hourlyFilter():
         finalData= []
         goldW = 0
         for j in filter4:
-            goldWeight = j['goldWeight']
+            # goldWeight = j['goldWeight']
             if (j['status'] == 'completed'):
+                print(j)
                 if (j['type']['title'] ==  'buy'):
                     goldW += float(j['goldWeight'])
                 elif(j['type']['title'] ==  'sell'):
@@ -279,7 +276,7 @@ class hourlyFilter():
         response = requests.get(self.url)
         # response2 = requests.get(self.oldUrl)
         data = response.json()
-        print(data['data']['wallet'])
+        # print(data['data']['wallet'])
         # data2 = response2.json()
         # data = data1['data'] + data2['data']
         typeFilter = self.__filter1(data['data']['wallet'] , startDate , endDate , startTime , endTime)
