@@ -134,6 +134,18 @@ export const Routes = [
         controller: interServiceController,
         middleware: [],
         action: "checkOldWithPhoneOrNatnialCode"                // here is for last service that check user in the oldUsers
+    },{
+        method: "post",
+        route: "/interservice/checkBySideCar/:phoneNumber/:nationalCode",
+        controller: interServiceController,
+        middleware: [],
+        action: "checkOldUserFromTrSideCar"                // here is for last service that check user in the oldUsers
+    },{
+        method: "post",
+        route: "/interservice/doneBySideCar/:phoneNumber/:nationalCode",
+        controller: interServiceController,
+        middleware: [],
+        action: "doneOldUserFromTrSideCar"                // here is for last service that check user in the oldUsers
     },
     {
         method: "get",

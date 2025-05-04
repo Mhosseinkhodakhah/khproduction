@@ -72,8 +72,54 @@ export default class interServiceController{
             // return next(new response(req, res, 'get all users', 200, null, users))
         }
     
-    
+        
 
+        async checkOldUserFromTrSideCar(req: Request, res: Response, next: NextFunction){
+            try {
+                let user = await this.userRepository.findOne({where : [{nationalCode : req.params.nationalCode} , { phoneNumber : req.params.phoneNumber}] , relations : ['wallet']})
+                if (!user || user.verificationStatus != 2){
+                    return res.status(400).json({
+                        success : false,
+                        status : 0
+                    })
+                }
+                return res.status(200).json({
+                    success : true,
+                    status : 1,
+                    data : {user : user , wallet : user.wallet}
+                })
+            } catch (error) {
+                return res.status(500).json({
+                    success : true,
+                    status : 2,
+                })                
+            }
+        }
+
+
+        async doneOldUserFromTrSideCar(req: Request, res: Response, next: NextFunction){
+            try {
+                let user = await this.userRepository.findOne({where : [{nationalCode : req.params.nationalCode} , { phoneNumber : req.params.phoneNumber}] , relations : ['wallet']})
+                if (!user || user.verificationStatus != 2){
+                    return res.status(400).json({
+                        success : false,
+                        status : 0
+                    })
+                }
+                user.verificationStatus = 1;
+                await this.userRepository.save(user)
+                return res.status(200).json({
+                    success : true,
+                    status : 1,
+                    data : {user : user , wallet : user.wallet}
+                })
+            } catch (error) {
+                return res.status(500).json({
+                    success : true,
+                    status : 2,
+                })
+            }
+        }
 
         /**
          * its for last service for checking the fucking oldUser
