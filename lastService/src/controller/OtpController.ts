@@ -206,13 +206,6 @@ export class OtpController {
                     status: 1,
                     error: null
                 })
-                let actions= `\u202Bکاربر با شماره تلفن ${phoneNumber} وارد اپلیکیشن شد\u202C`
-                await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'ورود کاربر' , actions , {type : 8} , 1) 
-                monitor.addStatus({
-                    scope: 'otp controller controller',
-                    status: 1,
-                    error: null
-                })
                 return response.status(200).json({ 
                     msg: 'با موفقیت وارد شدید', 
                     userVerificationStatus: "FAILED" 
@@ -265,6 +258,13 @@ export class OtpController {
             //         console.log(error)
             //     }
             // }
+            let actions= `\u202Bکاربر با شماره تلفن ${phoneNumber} وارد اپلیکیشن شد\u202C`
+            await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'ورود کاربر' , actions , {type : 8} , 1) 
+            monitor.addStatus({
+                scope: 'otp controller controller',
+                status: 1,
+                error: null
+            })
 
             return response.status(200).json({ 
                 token, 
