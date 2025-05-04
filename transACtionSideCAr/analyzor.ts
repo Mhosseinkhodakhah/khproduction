@@ -130,20 +130,20 @@ class transforGoldWeight {
                 try {
                     let user = await this.interService.checkingOldQeue(mainQeue.phoneNumber, mainQeue.nationalCode)   // check the oldUser database for checking the existance of user
                     if (user == 400) {                                                    // if (response of the oldDB checeker was 400) means that the user was not exist on oldUser databse
-                        console.log('user not exists in oldUser')
+                        console.log('user not exists in oldUser' , mainQeue.firstName , mainQeue.lastName)
                         mainQeue.oldUserCheck = true                                 // make the user checked in database
                         await queryRunner.manager.save(mainQeue)                        // save it
                         await queryRunner.commitTransaction()                        // commit transAction and done
                     }
                     else if (user == 500) {                                 // if (response of the oldDB checkere was 500) it means the interservice connection failed
-                        console.log('internal service failed to connect with 500')
+                        console.log('internal service failed to connect with 500', mainQeue.firstName , mainQeue.lastName)
                         return 'internal services error'
                     }
                     else if (user == 'unknown') {                          // if (resposne was 'unknown') it means the internal error occured and connection is not done
-                        console.log('internal connection has error in tr sideCar')
+                        console.log('internal connection has error in tr sideCar', mainQeue.firstName , mainQeue.lastName)
                         return 'internal services error occured >>>'
                     } else if (user.user) {                                  // if (user was exists)
-                        console.log('user found in oldUser >>>')
+                        console.log('user found in oldUser >>>', mainQeue.firstName , mainQeue.lastName)
                         mainQeue.wallet.goldWeight = +((+mainQeue.wallet.goldWeight) + (+user.Wallet.goldWeight)).toFixed(3)      // update the current goldWeight wallet of user
                         mainQeue.oldUserCheck = true                                                                    // make user oldUserChed true
                         await queryRunner.manager.save(mainQeue.wallet.goldWeight)                                       // save the current user wallet
@@ -179,6 +179,7 @@ class transforGoldWeight {
         } catch (error) {             // if some error occured in first layer
             console.log('error in transfor checking >>>>', error)
         } finally {
+            console.log('inprocess false done')
             this.transForInProcess = false                // and at the end make in process false for next task
         }
     }
