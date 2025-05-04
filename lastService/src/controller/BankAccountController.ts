@@ -16,7 +16,7 @@ export class BankAccountController {
     private userRepository = AppDataSource.getRepository(User);
     private shahkarController = new ShahkarController()
     private smsService = new SmsService()
-    private checkCard = new logger()
+    private loggerService = new logger()
 
     async all(request: Request, response: Response, next: NextFunction) {
         try {
@@ -173,6 +173,13 @@ export class BankAccountController {
                         status : 1,
                         error: null
                     })
+                    let actions = `\u202Bکاربر ${owner.firstName} ${owner.lastName} کارت بانکی خود با شماره ${cardNumber} را در اپلیکیشن ثبت کرد\u202C`
+                    await this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: owner.phoneNumber }, 'ثبت کارت بانکی', actions, {} , 1)
+                    monitor.addStatus({
+                        scope: 'otp controller controller',
+                        status: 1,
+                        error: null
+                    })
                     return response.status(200).json({bank: createBankAccount , msg : "کارت با موفقیت ایجاد شد"});
                 }
                 monitor.addStatus({
@@ -215,6 +222,13 @@ export class BankAccountController {
                     user.isHaveBank = false;
                     await this.userRepository.save(user)
                 }
+                let actions = `\u202Bکاربر ${card.owner.firstName} ${card.owner.lastName} کارت بانکی با شماره ${card.cardNumber} را حذف کرد\u202C`
+                await this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: card.owner.phoneNumber }, 'حذف کارت بانکی', actions, {}, 1)
+                monitor.addStatus({
+                    scope: 'otp controller controller',
+                    status: 1,
+                    error: null
+                })
                 return response.status(200).json({
                     msg : 'کارت بانکی مورد نظر حذف شد.'
                 })

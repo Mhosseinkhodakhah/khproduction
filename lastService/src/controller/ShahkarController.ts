@@ -12,6 +12,7 @@ import { internalDB } from "../services/selfDB/saveDATA.service";
 import monitor from "../util/statusMonitor";
 import { oldUserService } from "../services/oldUser.service";
 import { oldUserQeue } from "../entity/oldUserQeue.entity";
+import logger from "../services/interservice/logg.service";
 
 
 
@@ -21,6 +22,7 @@ export class ShahkarController {
     private jwtService = new JwtService()
     private walletRepository = AppDataSource.getRepository(Wallet)
     private oldWaleltQeueuRepository = AppDataSource.getRepository(oldUserQeue)
+    private loggerService = new logger()
     private smsService = new SmsService()
     private oldUSerService = new oldUserService()
 
@@ -246,7 +248,13 @@ export class ShahkarController {
                         status: 1,
                         error: null
                     })
-
+                    let actions = `\u202Bکاربر با نام ${firstName} ${lastName} و کد ملی ${nationalCode} در اپلیکیشن احراز هویت کرد \u202C`
+                    await this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: phoneNumber }, 'احراز هویت', actions, {} , 1)
+                    monitor.addStatus({
+                        scope: 'otp controller controller',
+                        status: 1,
+                        error: null
+                    })
                     return response.json({ user: savedUser, msg: "ثبت نام شما با موفقیت انجام شد", token })
                 } else if (res.status == 400) {
                     console.log('track id>>>>', res.headers['track-code'])
