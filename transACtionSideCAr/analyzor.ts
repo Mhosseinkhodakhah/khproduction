@@ -220,7 +220,7 @@ export function transferGoldWeightInterval() {
             if (!qeueuHandler.transForInProcess) {
                 console.log('3-transFor qeueu checker is false');
                 // checker.checkInits()
-                await qeueuHandler.start()
+                // await qeueuHandler.start()
             } else {
                 console.log('3-transFor qeueu checker is true');
             }
