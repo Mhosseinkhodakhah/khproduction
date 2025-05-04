@@ -7,6 +7,7 @@ import { transportInvoice } from "./src/entity/transport";
 import { User } from "./src/entity/User";
 import { Wallet } from "./src/entity/Wallet";
 import { WalletTransaction } from "./src/entity/WalletTransaction";
+import logger from "./src/services/interservice/logg.service";
 import { SmsService } from "./src/services/sms-service/message-service";
 
 import * as cron from 'node-cron'
@@ -48,7 +49,7 @@ class checkTransActions {
         this.checkInitQeueInProcess = true
         try {
             let date = new Date().toLocaleString('fa-IR').split(',')[1].split(':')
-            console.log('time>>' , date)
+            console.log('time>>', date)
             if ((date[0] == '23' && date[1] == '59') || (date[0] == '۲۳' && date[1] == '۵۹')) {
                 console.log('its a time for removing the inits transActions')
                 let today = `${new Date().toISOString().split('T')[0]}T00:00:00.645Z`
@@ -115,36 +116,70 @@ class checkTransActions {
 class transforGoldWeight {
     private oldQeue = AppDataSource.getRepository(oldUserQeue)
     private user = AppDataSource.getRepository(User)
+    private interService = new logger()
     transForInProcess = false;
     async start() {
-        this.transForInProcess = true
+        this.transForInProcess = true                // make inprocess true 
         try {
-            let all = await this.oldQeue.find()
-            if (all.length) {
-                let queryRunner = AppDataSource.createQueryRunner()
-                await queryRunner.connect()
-                await queryRunner.startTransaction()
-                let mainQeue = all[0]
+            let all = await this.user.find({ where: { oldUserCheck: false }, relations: ['wallet'] })        // get all user that the oldUsers checker is false
+            if (all.length) {                                                   // if the qeueu was not empty
+                let queryRunner = AppDataSource.createQueryRunner()          // start the transAction
+                await queryRunner.connect()                                             // connecting the transaction
+                await queryRunner.startTransaction()                            // strat the transAction
+                let mainQeue = all[0]                                       // select the first in to qeueu
                 try {
-                    let user = await this.user.findOne({ where: { nationalCode: mainQeue.user }, relations: ['wallet'] })
-                    user.wallet.goldWeight = +((+user.wallet.goldWeight) + (+mainQeue.oldGoldWeigth)).toFixed(3)
-                    await queryRunner.manager.save(user.wallet.goldWeight)
-                    await queryRunner.commitTransaction()
-                    console.log(`wallet updated for user ${mainQeue.user}`)
-                } catch (error) {
-                    console.log(`error in handling qeue for user ${mainQeue.user}`, error)
-                    await queryRunner.rollbackTransaction()
-                } finally {
+                    let user = await this.interService.checkingOldQeue(mainQeue.phoneNumber, mainQeue.nationalCode)   // check the oldUser database for checking the existance of user
+                    if (user == 400) {                                                    // if (response of the oldDB checeker was 400) means that the user was not exist on oldUser databse
+                        console.log('user not exists in oldUser')
+                        mainQeue.oldUserCheck = true                                 // make the user checked in database
+                        await queryRunner.manager.save(mainQeue)                        // save it
+                        await queryRunner.commitTransaction()                        // commit transAction and done
+                    }
+                    else if (user == 500) {                                 // if (response of the oldDB checkere was 500) it means the interservice connection failed
+                        console.log('internal service failed to connect with 500')
+                        return 'internal services error'
+                    }
+                    else if (user == 'unknown') {                          // if (resposne was 'unknown') it means the internal error occured and connection is not done
+                        console.log('internal connection has error in tr sideCar')
+                        return 'internal services error occured >>>'
+                    } else if (user.user) {                                  // if (user was exists)
+                        console.log('user found in oldUser >>>')
+                        mainQeue.wallet.goldWeight = +((+mainQeue.wallet.goldWeight) + (+user.Wallet.goldWeight)).toFixed(3)      // update the current goldWeight wallet of user
+                        mainQeue.oldUserCheck = true                                                                    // make user oldUserChed true
+                        await queryRunner.manager.save(mainQeue.wallet.goldWeight)                                       // save the current user wallet
+                        let removeOld = await this.interService.removeOldUser(mainQeue.phoneNumber, mainQeue.nationalCode)          // request to oldDB for remove the current user from oldUser for next time
+                        if (removeOld == 500) {                                          // if response of remove user was 500 it means the interservice connection failed so the wallet should not be done
+                            return 'internal service error'
+                        }
+                        if (removeOld == 400) {         // if response was 400 it means the current user not found in old user db so the wallet should not be update
+                            return 'user not found for removing >>> '
+                        }
+                        if (removeOld == 'unknown') {              // if response was uknown it means the internal service error occured and the connection is intrupt
+                            return 'internal service error occured in sideCar'
+                        }
+                        if (removeOld == 200) {                     // if response was 200 it means the olduserdata removed successfully and the wallet should update
+                            await queryRunner.commitTransaction()           // commit the transaction
+                            console.log(`wallet updated for user ${mainQeue.firstName}`)
+                            return 'task done'
+                        }
+                    } else {                                  // if response of check oldUser db was unknown
+                        console.log('something  went wrong >>> ', user)
+                        return 'unknown answer'
+                    }
+                } catch (error) {              // if some error occured in process
+                    console.log(`error in handling qeue for user ${mainQeue.firstName}`, error)
+                    await queryRunner.rollbackTransaction()      // rolle back the change
+                } finally {                 // after all
                     console.log('transaction released>>>>')
-                    await queryRunner.release()
+                    await queryRunner.release()             // release the tranasAction
                 }
-            } else {
+            } else {          // if the qeueu was empty that means we dont have new registered user
                 console.log('old wallet qeueu is empty')
             }
-        } catch (error) {
+        } catch (error) {             // if some error occured in first layer
             console.log('error in transfor checking >>>>', error)
         } finally {
-            this.transForInProcess = false
+            this.transForInProcess = false                // and at the end make in process false for next task
         }
     }
 }
@@ -166,14 +201,15 @@ export function transActionDoer() {
 
 
 export function initChecker() {
-    cron.schedule('*/15 * * * * *', async () => {
-        if (!checker.checkInitQeueInProcess) {
-            console.log('2-check init is false >> ');
-            await checker.checkInits()
-        } else {
-            console.log('2-check init is true >> ');
-        }
-    });
+    console.log('satrt the init checker')
+    // cron.schedule('*/15 * * * * *', async () => {
+    //     if (!checker.checkInitQeueInProcess) {
+    //         console.log('2-check init is false >> ');
+    //         // await checker.checkInits()
+    //     } else {
+    //         console.log('2-check init is true >> ');
+    //     }
+    // });
 }
 
 

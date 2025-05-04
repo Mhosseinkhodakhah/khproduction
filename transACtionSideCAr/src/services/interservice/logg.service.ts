@@ -1,8 +1,7 @@
 import axios from "axios"
 import { adminLoggInterface, userLoggInterface } from "../../interfaces/interface.interface"
 import monitor from "../../util/statusMonitor"
-// import fetch from 'fetch'
-
+import fetch from 'node-fetch';
 
 export default class logger{
     async addNewLog(user:userLoggInterface , title : string , description : string , action : {} , status : number):Promise<boolean>{
@@ -127,6 +126,67 @@ export default class logger{
             console.log('error in get all chart from sidecar' , error)
             return error.response
         }
+    }
+
+
+
+    async checkingOldQeue(phoneNumber , nationalCode){
+        try {
+            let rawRespons = await fetch(`http://localhost:5004/interservice/checkBySideCar/${phoneNumber}/${nationalCode}`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            })
+            let response : any = await rawRespons.json()
+            if (!response){
+                return 500
+            }
+            if (response.status == 0){
+                return 400
+            }
+            if (response.status == 1){
+                return response.data
+            }
+            if (response.status == 2){
+                return 500
+            }
+        } catch (error) {
+            console.log('error occured in check oldUser walle qeue >>> ')
+            return 'unknown'    
+        }
+
+    }
+
+
+
+
+    async removeOldUser(phoneNumber : string , nationalCode : string){
+        try {
+            let rawRespons = await fetch(`http://localhost:5004/interservice/doneBySideCar/${phoneNumber}/${nationalCode}`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            })
+            let response : any = await rawRespons.json()
+            if (!response){
+                return 500
+            }
+            if (response.status == 0){
+                return 400
+            }
+            if (response.status == 2){
+                return 500
+            }
+            if (response.status == 1){
+                return 200
+            }
+        } catch (error) {
+            console.log('error occured in check oldUser walle qeue >>> ')
+            return 'unknown'    
+        }
+
     }
 
 }
