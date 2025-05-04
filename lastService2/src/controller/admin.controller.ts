@@ -482,9 +482,10 @@ export default class adminController {
             console.log('wallet', walletUpdated)
             console.log('transaction', transaction)
             await queryRunner.commitTransaction()
+            let actions = `\u202B${req.user.firstName} برداشت کاربر را تایید کرد\u202C`
             await this.smsService.sendGeneralMessage(transACtion.wallet.user.phoneNumber,"approveWithdrawal" ,transACtion.wallet.user.firstName,transACtion.amount ,transACtion.wallet.user.bankAccounts[0].cardNumber)
             await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
-                 'تایید برداشت' , ` ${req.user.firstName} برداشت کاربر را تایید کرد` , {
+                 'تایید برداشت' , actions , {
                 userName : transACtion.wallet.user.firstName,
                 lastName : transACtion.wallet.user.lastName,
                 amount : transACtion.amount,
@@ -752,7 +753,13 @@ export default class adminController {
         }
     }
 
-
+    /**
+     * this function is for active or deactive handle gold price by admnin
+     * @param req 
+     * @param res 
+     * @param next 
+     * @returns 
+     */
     async deActiveHandleGoldPrice(req: Request, res: Response, next: NextFunction){
         let admin = `${req.user.firstName} ${req.user.lastName}`
         let validAdmins = [3,4,8,1,5]
@@ -791,7 +798,6 @@ export default class adminController {
 
 
 
-
     /**
      * first step for transport the gold by user
      * @param req 
@@ -807,16 +813,29 @@ export default class adminController {
         let user = await this.userRepository.findOne({where : {
             nationalCode : userId
         } , relations : ['wallet']})
-
+        
         let recieverUser = await this.userRepository.findOne({where : {
             nationalCode : reciever
         }})
         if (!recieverUser){
             return res.status(400).json({ msg: "کد ملی مقصد در اپلیکیشن ثبت نشده است." });
         }
-
+        let isFromOldUser ;
         if (!user){
-            return res.status(400).json({ msg: "کد ملی مبدا در اپلیکیشن ثبت نشده است." });
+            let oldUserChecker = await this.interservice.checkingOldQeue('' , userId)
+            console.log('after check oldUSer' , oldUserChecker)
+            if (oldUserChecker == 400){
+                return res.status(400).json({ msg: "کد ملی مبدا در اپلیکیشن ثبت نشده است." });
+            }
+            if (oldUserChecker == 500 ){
+                return res.status(400).json({ msg: "سرویس انتقال طلا در حال حاظر در دسترس نمیباشد." });
+            }
+            if (oldUserChecker == 'unknown'){
+                return res.status(400).json({ msg: "سرویس انتقال طلا در حال حاظر در دسترس نمیباشد." });
+            }
+            if (oldUserChecker.user){
+                user = {...oldUserChecker.user , wallet : oldUserChecker.walle}
+            }
         }
 
 
