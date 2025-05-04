@@ -140,20 +140,8 @@ export class OtpController {
                     let saved =  await this.otpRepository.save(createdOtp);
                     console.log('saved transActions2222' , saved)
                 }
-                let actions= `\u202Bکاربر با شماره تلفن ${phoneNumber} وارد اپلیکیشن شد\u202C`
-                await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , actions , otpExist , 1) 
-                monitor.addStatus({
-                    scope: 'otp controller controller',
-                    status: 1,
-                    error: null
-                })
                 response.status(200).json({ msg: res.msg });
             } else {
-                await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , `getting otp code failed for user : ${phoneNumber}` , {
-                    statusCode : 500,
-                    error : 'kavenegar error . . .',
-                    msg : res.msg
-                } , 0) 
                 monitor.addStatus({
                     scope: 'otp  controller',
                     status: 0,
