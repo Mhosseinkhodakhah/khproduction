@@ -190,7 +190,7 @@ export class ShahkarController {
                         identificationSeri,
                         officeName,
                     } = info
-
+                    
                     // check the oldUser existance
                     // const oldUserData = await this.oldUSerService.checkExistAndGetGoldWallet(phoneNumber, nationalCode, info)
                     // if (oldUserData == 500) {
