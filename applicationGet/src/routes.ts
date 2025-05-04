@@ -398,18 +398,25 @@ export const Routes = [
         controller: interServiceController,
         action: "getAllBuyInvoices",
         middlwares: []
-    }, {
-        method: "get",
-        route: "/checkmyfuckedups",
-        controller: UserController,
-        action: "userAndOld",
-        middlwares: []
-    },
+    }, 
+    // {
+    //     method: "get",
+    //     route: "/checkmyfuckedups",
+    //     controller: UserController,
+    //     action: "userAndOld",
+    //     middlwares: []
+    // },
     {
         method: "get",
         route: "/admin/inquiry/:nationalCode",
         controller: adminController,
         action: "getWallet",
+        middlwares: [adminMiddleware]
+    },{
+        method: "get",
+        route: "/admin/transport/all",
+        controller: adminController,
+        action: "getAllTransport",
         middlwares: [adminMiddleware]
     },
 ]

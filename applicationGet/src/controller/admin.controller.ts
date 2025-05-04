@@ -15,6 +15,7 @@ import logger from "../services/interservice/logg.service";
 import { EstimateTransactions } from "../entity/EstimateTransactions";
 import cacher from "../services/cacher";
 import instance from "../util/tradePerision";
+import { transportInvoice } from "../entity/transport";
 
 
 
@@ -25,6 +26,7 @@ export default class adminController {
     private walletTransActions = AppDataSource.getRepository(WalletTransaction)
     private walletTransactionRepository = AppDataSource.getRepository(WalletTransaction);
     private paymentInfoRepository = AppDataSource.getRepository(PaymentInfo);
+    private transportRepository = AppDataSource.getRepository(transportInvoice);
     private zpService = new ZarinPalService()
     private interservice = new logger()
     private smsService = new SmsService()
@@ -699,6 +701,23 @@ export default class adminController {
             return next(new responseModel(req, res, 'استعلام کاربر با موفقیت انجام شد.', 'admin service', 200, null, data))
         } catch (error) {
             return next(new responseModel(req, res, 'استعللام کاربر با خطا مواجه شد.', 'admin service', 500, null, null))
+        }
+    }
+
+
+    async getAllTransport(req: Request, res: Response, next: any) {
+        try {
+            let status = req.query.status
+
+            let transports = await this.transportRepository.createQueryBuilder('transport')
+                .leftJoinAndSelect('transport.sender', 'sender')
+                .leftJoinAndSelect('transport.reciever', 'reciever')
+                .where('transport.status = :satatus', { status: status })
+                .getMany()
+            return next(new responseModel(req, res, 'استعلام کاربر با موفقیت انجام شد.', 'admin service', 200, null, transports))
+        } catch (error) {
+            console.log('error occured in getting all transports >>> ', error)
+            return next(new responseModel(req, res, 'خطای داخلی سرورلطفا دقایقی دیگر مجددا تلاش کنید.', 'admin service', 500, null, null))
         }
     }
 }
