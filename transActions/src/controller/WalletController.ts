@@ -144,7 +144,6 @@ export class WalletController {
     }   
 
 
-
     /**
         * its for checking otp and verifing user in the trangport gold
         * @param req 
@@ -194,61 +193,60 @@ export class WalletController {
             }
     }
 
+    // /**
+    //  * its for confirm the transport for user to another user
+    //  * @param req 
+    //  * @param res 
+    //  * @param next 
+    //  * @returns 
+    //  */
+    // async confirmTransport(req : Request , res : Response , next : any){
+    //     const {otp , transportId} = req.body;
+    //     const userId = req['user_id']
+        
+    //     const sender = await this.userRepository.findOne({where : {
+    //         id : +userId
+    //     } , relations : ['wallet']})
+        
+    //     let transport = await this.transportInvoices.findOne({where : {
+    //         id : +transportId,
+    //         sender :  sender
+    //     } , relations : ['sender' , 'reciever' , 'reciever.wallet']})
 
-    /**
-     * its for confirm the transport for user to another user
-     * @param req 
-     * @param res 
-     * @param next 
-     * @returns 
-     */
-    async confirmTransport(req : Request , res : Response , next : any){
-        const {otp , transportId} = req.body;
-        const userId = req['user_id']
+    //     let now = new Date().getTime()
         
-        const sender = await this.userRepository.findOne({where : {
-            id : +userId
-        } , relations : ['wallet']})
+    //     if (+otp != +transport.otpCode){
+    //         return res.status(403).json({ msg: "کد وارد شده نادرست است" });
+    //     }
         
-        let transport = await this.transportInvoices.findOne({where : {
-            id : +transportId,
-            sender :  sender
-        } , relations : ['sender' , 'reciever' , 'reciever.wallet']})
+    //     if ((now - (+transport.otptime)) >= 2.1 * 60 * 1000) {
+    //         return res.status(403).json({ msg: "زمان استفاده از کد به اتمام رسیده است." });
+    //     }
 
-        let now = new Date().getTime()
-        
-        if (+otp != +transport.otpCode){
-            return res.status(403).json({ msg: "کد وارد شده نادرست است" });
-        }
-        
-        if ((now - (+transport.otptime)) >= 2.1 * 60 * 1000) {
-            return res.status(403).json({ msg: "زمان استفاده از کد به اتمام رسیده است." });
-        }
-
-        let queryRunner = AppDataSource.createQueryRunner()
-        await queryRunner.connect()
-        await queryRunner.startTransaction()
-        try {
-            let senderGoldWeight = ((+sender.wallet.goldWeight) - (+transport.goldWeight)).toFixed(3)
-            let recieverGoldWeight = ((+transport.reciever.wallet.goldWeight) + (+transport.goldWeight)).toFixed(3)
-            console.log('sender goldWe' , senderGoldWeight , typeof(senderGoldWeight))
-            console.log('reciever goldWe' , recieverGoldWeight , typeof(recieverGoldWeight))
-            sender.wallet.goldWeight = +senderGoldWeight;
-            transport.reciever.wallet.goldWeight = +recieverGoldWeight;
-            transport.otpApproved = true
-            transport.otptime = null
-            transport.status = 'completed'
-            await queryRunner.manager.save([sender.wallet , transport.reciever.wallet])
-            let savedTransACtion = await queryRunner.manager.save(transport)
-            await queryRunner.commitTransaction()
-            return res.status(200).json({ msg: "طلای شما با موفقیت منتقل شد" , data : savedTransACtion});
-        } catch (error) {
-            await queryRunner.rollbackTransaction()
-            return res.status(500).json({ msg: "انتقال طلا موفقیت آمیز نبود" });
-        }finally{
-            await queryRunner.release()
-        }
-    }
+    //     let queryRunner = AppDataSource.createQueryRunner()
+    //     await queryRunner.connect()
+    //     await queryRunner.startTransaction()
+    //     try {
+    //         let senderGoldWeight = ((+sender.wallet.goldWeight) - (+transport.goldWeight)).toFixed(3)
+    //         let recieverGoldWeight = ((+transport.reciever.wallet.goldWeight) + (+transport.goldWeight)).toFixed(3)
+    //         console.log('sender goldWe' , senderGoldWeight , typeof(senderGoldWeight))
+    //         console.log('reciever goldWe' , recieverGoldWeight , typeof(recieverGoldWeight))
+    //         sender.wallet.goldWeight = +senderGoldWeight;
+    //         transport.reciever.wallet.goldWeight = +recieverGoldWeight;
+    //         transport.otpApproved = true
+    //         transport.otptime = null
+    //         transport.status = 'completed'
+    //         await queryRunner.manager.save([sender.wallet , transport.reciever.wallet])
+    //         let savedTransACtion = await queryRunner.manager.save(transport)
+    //         await queryRunner.commitTransaction()
+    //         return res.status(200).json({ msg: "طلای شما با موفقیت منتقل شد" , data : savedTransACtion});
+    //     } catch (error) {
+    //         await queryRunner.rollbackTransaction()
+    //         return res.status(500).json({ msg: "انتقال طلا موفقیت آمیز نبود" });
+    //     }finally{
+    //         await queryRunner.release()
+    //     }
+    // }
 
     async getWallet(request: Request, response: Response) {
         try {

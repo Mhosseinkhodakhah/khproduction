@@ -22,6 +22,7 @@ import { systemSetting } from "../entity/systemSetting";
 import { BankAccount } from "../entity/BankAccount";
 import { handleGoldPrice } from "../entity/handleGoldPrice.entity";
 import { transActionQeue } from "../entity/transActionQueue.entity";
+import logger from "../services/interservice/logg.service";
 
 
 export class InvoiceController {
@@ -39,7 +40,8 @@ export class InvoiceController {
     private estimate = AppDataSource.getRepository(EstimateTransactions)
     private systemSetting  = AppDataSource.getRepository(systemSetting)
     private remmitanceService=new RemmitanceService()
-
+    private loggerService=new logger()
+    
     validateRequiredFields(fields: Record<string, any>): string | null {
         const missingFields = Object.keys(fields).filter(key => fields[key] === undefined || fields[key] === null);
         if (missingFields.length > 0) {
@@ -324,6 +326,15 @@ export class InvoiceController {
                     status :  1,
                     error : null
                 })
+                if (type == 'sell'){
+                    let actions = `\u202Bکاربر ${user.firstName} ${user.lastName} تراکنش فروش با حجم ${goldWeight} را ایجاد کرد\u202C`
+                    this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: savedTransaction.buyer.phoneNumber }, 'ایجاد تراکنش فروش', actions, {}, 1)
+                }
+                if (type == 'buy'){
+                    let actions = `\u202Bکاربر ${user.firstName} ${user.lastName} تراکنش خرید با حجم ${goldWeight} را ایجاد کرد\u202C`
+                    this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: savedTransaction.buyer.phoneNumber }, 'ایجاد تراکنش خرید', actions, {}, 1)
+                    
+                }
                 return response.status(201).json({
                     msg: "Transaction created successfully",
                     transactionId: savedTransaction.id,
