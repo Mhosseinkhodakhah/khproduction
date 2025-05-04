@@ -203,7 +203,14 @@ export class PhoneInvoiceController {
         //     console.log('here is the fucking error in record the log')
         //   }
 
-            
+            let action = `\u202Bادمین ${req.user.firstName} ${req.user.lastName} تراکنش فروش تلفنی مربوط به کاربر ${invoiceTransaction.seller.firstName} ${invoiceTransaction.seller.lastName} و کد ملی ${invoiceTransaction.seller.nationalCode} راایجاد کرد\u202C`
+            this.loggerService.addNewAdminLog({ firstName: req.user.firstName, lastName: req.user.lastName, phoneNumber: req.user.phoneNumber },
+                'ایجاد فاکتور فروش تلفنی', action, {
+                userName: invoiceTransaction.seller.firstName,
+                lastName: invoiceTransaction.seller.lastName,
+                amount: invoiceTransaction.goldWeight,
+                balance: invoiceTransaction.totalPrice
+            }, 1)
            return next(new responseModel(req, res, '' ,'create call buy invoice', 201, null,{
             msg: "فاکتور با موفقیت ثبت شد",
             invoice:invoiceTransaction,
@@ -290,7 +297,14 @@ export class PhoneInvoiceController {
         //     console.log('here is the fucking error in record the log')
         //   }
 
-            
+        let action = `\u202Bادمین ${req.user.firstName} ${req.user.lastName} تراکنش خرید تلفنی مربوط به کاربر ${invoiceTransaction.buyer.firstName} ${invoiceTransaction.buyer.lastName} و کد ملی ${invoiceTransaction.buyer.nationalCode} راایجاد کرد\u202C`
+        this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
+            'ایجاد فاکتور خرید تلفنی' , action ,{
+           userName : invoiceTransaction.buyer.firstName,
+           lastName : invoiceTransaction.buyer.lastName,
+           amount : invoiceTransaction.goldWeight,
+           balance : invoiceTransaction.totalPrice
+       } , 1)
            return next(new responseModel(req, res, '' ,'create call buy invoice', 201, null,{
             msg: "فاکتور با موفقیت ثبت شد",
             invoice:invoiceTransaction,
@@ -370,13 +384,14 @@ export class PhoneInvoiceController {
            this.smsService.sendGeneralMessage(user.phoneNumber, "sellcall", user.firstName, goldWeight, totalPrice)
            
           try {
-            await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
-                'ایجاد تراکنش خرید' , `admin ${req.user.firstName} create new buy invoice in phone transAction` ,{
-               userName : savedTransAction.buyer.firstName,
-               lastName : savedTransAction.buyer.lastName,
-               amount : savedTransAction.goldWeight,
-               balance : savedTransAction.totalPrice
-           } , 1)
+              let action = `\u202Bادمین ${req.user.firstName} ${req.user.lastName} تراکنش خرید تلفنی مربوط به کاربر ${invoiceTransaction.buyer.firstName} ${invoiceTransaction.buyer.lastName} و کد ملی ${invoiceTransaction.buyer.nationalCode} راایجاد کرد\u202C`
+              this.loggerService.addNewAdminLog({ firstName: req.user.firstName, lastName: req.user.lastName, phoneNumber: req.user.phoneNumber },
+                  'ایجاد فاکتور خرید تلفنی', action, {
+                  userName: invoiceTransaction.buyer.firstName,
+                  lastName: invoiceTransaction.buyer.lastName,
+                  amount: invoiceTransaction.goldWeight,
+                  balance: invoiceTransaction.totalPrice
+              }, 1)
           } catch (error) {
             console.log('here is the fucking error in record the log')
           }
@@ -451,12 +466,13 @@ export class PhoneInvoiceController {
             this.smsService.sendGeneralMessage(invoice.buyer.phoneNumber, "buy", invoice.buyer.firstName,invoice.goldWeight ,invoice.totalPrice )
             
           try {
-            await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
-                'تایید تراکنش خرید' , `accountant ${req.user.firstName} approved new buy invoice in phone transAction` ,{
-               userName : updated.buyer.firstName,
-               lastName : updated.buyer.lastName,
-               amount : updated.goldWeight,
-               balance : updated.totalPrice
+            let action = `\u202Bادمین ${req.user.firstName} ${req.user.lastName} تراکنش خرید تلفنی مربوط به کاربر ${invoice.buyer.firstName} ${invoice.buyer.lastName} و کد ملی ${invoice.buyer.nationalCode} را تایید کرد\u202C`
+            this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
+                'تایید فاکتور خرید تلفنی' , action ,{
+               userName : invoice.buyer.firstName,
+               lastName : invoice.buyer.lastName,
+               amount : invoice.goldWeight,
+               balance : invoice.totalPrice
            } , 1)
           } catch (error) {
             console.log('here is the fucking error in record the log')
@@ -505,13 +521,14 @@ export class PhoneInvoiceController {
             this.smsService.sendGeneralMessage(invoice.buyer.phoneNumber, "rejectcall", invoice.buyer.firstName, invoice.goldWeight ,invoice.totalPrice )
             
             try {
-                await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
-                    'رد کردن تراکنش خرید' , `accountant ${req.user.firstName} reject buy invoice in phone transAction` ,{
-                   userName : updated.buyer.firstName,
-                   lastName : updated.buyer.lastName,
-                   amount : updated.goldWeight,
-                   balance : updated.totalPrice
-               } , 1)
+                let action = `\u202Bادمین ${req.user.firstName} ${req.user.lastName} تراکنش خرید تلفنی مربوط به کاربر ${invoice.buyer.firstName} ${invoice.buyer.lastName} و کد ملی ${invoice.buyer.nationalCode} را رد کرد\u202C`
+                this.loggerService.addNewAdminLog({ firstName: req.user.firstName, lastName: req.user.lastName, phoneNumber: req.user.phoneNumber },
+                    'رد فاکتور خرید تلفنی', action, {
+                    userName: invoice.buyer.firstName,
+                    lastName: invoice.buyer.lastName,
+                    amount: invoice.goldWeight,
+                    balance: invoice.totalPrice
+                }, 1)
               } catch (error) {
                 console.log('here is the fucking error in record the log')
               }
@@ -634,13 +651,13 @@ export class PhoneInvoiceController {
             this.smsService.sendGeneralMessage(user.phoneNumber, "selldasti", user.firstName, goldPrice, totalPrice)
             
             try {
-                let action = `\u202Bادمین ${req.user.firstName} تراکنش فروش تلفنی مربوط به کاربر ${updated.buyer.firstName} ${updated.buyer.lastName} و کد ملی ${updated.buyer.nationalCode} راایجاد کرد\u202C`
-                await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
-                    'ایجاد فاکتور فروش تلفنی' , action ,{
-                   userName : updated.buyer.firstName,
-                   lastName : updated.buyer.lastName,
-                   amount : updated.goldWeight,
-                   balance : updated.totalPrice
+                let action = `\u202Bادمین ${req.user.firstName} ${req.user.lastName} تراکنش فروش تلفنی مربوط به کاربر ${invoiceTransaction.seller.firstName} ${invoiceTransaction.seller.lastName} و کد ملی ${invoiceTransaction.seller.nationalCode} را تایید کرد\u202C`
+                this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
+                    'تایید فاکتور فروش تلفنی' , action ,{
+                   userName : invoiceTransaction.seller.firstName,
+                   lastName : invoiceTransaction.seller.lastName,
+                   amount : invoiceTransaction.goldWeight,
+                   balance : invoiceTransaction.totalPrice
                } , 1)
               } catch (error) {
                 console.log('here is the fucking error in record the log')

@@ -17,6 +17,7 @@ import cacher from "../services/cacher";
 import instance from "../util/tradePerision";
 import { handleGoldPrice } from "../entity/handleGoldPrice.entity";
 import { transportInvoice } from "../entity/transport";
+import { goldPrice } from "../entity/goldPrice";
 
 
 
@@ -26,6 +27,7 @@ export default class adminController {
     private invoicesRepository = AppDataSource.getRepository(Invoice)
     private walletTransActions = AppDataSource.getRepository(WalletTransaction)
     private transportInvoices = AppDataSource.getRepository(transportInvoice)
+    private livePrice = AppDataSource.getRepository(goldPrice)
     private walletTransactionRepository = AppDataSource.getRepository(WalletTransaction);
     private paymentInfoRepository = AppDataSource.getRepository(PaymentInfo);
     private handleGoldPrice = AppDataSource.getRepository(handleGoldPrice)
@@ -482,14 +484,15 @@ export default class adminController {
             console.log('wallet', walletUpdated)
             console.log('transaction', transaction)
             await queryRunner.commitTransaction()
-            let actions = `\u202B${req.user.firstName} برداشت کاربر را تایید کرد\u202C`
             await this.smsService.sendGeneralMessage(transACtion.wallet.user.phoneNumber,"approveWithdrawal" ,transACtion.wallet.user.firstName,transACtion.amount ,transACtion.wallet.user.bankAccounts[0].cardNumber)
+            let actions = `\u202B${req.user.firstName} ${req.user.lastName} برداشت کاربر ${transACtion.wallet.user.firstName} ${transACtion.wallet.user.lastName} را تایید کرد\u202C`
             await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
                  'تایید برداشت' , actions , {
                 userName : transACtion.wallet.user.firstName,
                 lastName : transACtion.wallet.user.lastName,
                 amount : transACtion.amount,
-                balance : transACtion.wallet.balance
+                balance : transACtion.wallet.balance,
+                invoiceId: transACtion.invoiceId
             } , 1) 
             return next(new responseModel(req, res,'' ,'admin service', 200, null, transaction))
         } catch (error) {
@@ -548,15 +551,14 @@ export default class adminController {
                         savedTransaction.status = "failed";                                // set failed transaction status
                         updatedtransaction = await queryRunner.manager.save(savedTransaction)        // save the trasnaction
                         await queryRunner.commitTransaction()
-                        let action = `\u202B${req.user.firstName}-${req.user.lastName} واریز را به صورت دستی اعتبار سنجی کرد\u202C`
+                        let action = `\u202B${req.user.firstName} ${req.user.lastName} واریز کاربر${user.firstName} ${user.lastName} را به صورت دستی اعتبار سنجی کرد\u202C`
                         await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , 
-                            'تایید برداشت' , action , {
+                            'اعتبار سنجی دستی واریز' , action , {
                             userName : user.firstName,
                             lastName : user.lastName,
                             amount : savedTransaction.amount,
                             balance : user.wallet.balance
                         } , 1) 
-    
                         return res.status(200).json({ msg: "تراکنش از جانب بانک رد شد و به لیست تراکنش های نا موفق منتقل شد", transaction: savedTransaction, bank: user.bankAccounts[0].cardNumber })
                     } else if ((res2.status && res2.code == 100 )|| (res2.status && res2.code == 101)) {
                         const currentBalance = +user.wallet.balance;
@@ -570,14 +572,14 @@ export default class adminController {
                         // let updatedtransaction = await this.walletTransactionRepository.save(savedTransaction);
                         // let nameFamily = user.firstName +' '+  user.lastName
                         await queryRunner.commitTransaction()
-                        let action = `\u202B${req.user.firstName}-${req.user.lastName}  واریز را به صورت دستی اعتبار سنجی کرد\u202C`
-                        // this.smsService.sendGeneralMessage(user.phoneNumber, "deposit", user.firstName, paymentAmount / 10, null)
+                        let action = `\u202B${req.user.firstName} ${req.user.lastName} واریز کاربر${user.firstName} ${user.lastName} را به صورت دستی اعتبار سنجی کرد\u202C`
                         await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , 
-                            'تایید برداشت' , action , {
+                            'اعتبار سنجی دستی واریز' , action , {
                             userName : user.firstName,
                             lastName : user.lastName,
-                            amount : paymentAmount,
-                            balance : user.wallet.balance
+                            amount : savedTransaction.amount,
+                            balance : user.wallet.balance,
+                            invoiceId: savedTransaction.invoiceId
                         } , 1) 
                         
                         return res.status(200).json({ msg: "تراکنش از سمت بانک تایید شد و به لیست تراکنش های موفق اضافه شد.", transaction: updatedtransaction, bank: res2.data.card_pan, referenceId: res2.data.ref_id })
@@ -675,14 +677,15 @@ export default class adminController {
                         this.smsService.sendGeneralMessage(savedTransaction.buyer.phoneNumber, "buy", savedTransaction.buyer.firstName, transactionGoldWeight, transactionTotalPrice / 10)
                         console.log('after completed the transactional db>>>', updatedtransaction)
                         await queryRunner.commitTransaction()
-                        let action = `\u202B${req.user.firstName} خرید انلاین را به صورت دستی اعتبار سنجی کرد\u202C`
-                        await this.loggerService.addNewAdminLog({ firstName: req.user.firstName, lastName: req.user.lastName, 
-                            phoneNumber: req.user.phoneNumber }, 'اعتبار سنجی خرید از درگاه', action, {
-                            userName: savedTransaction.buyer.firstName,
-                            lastName: savedTransaction.buyer.lastName,
-                            amount: savedTransaction.goldWeight,
-                            balance: savedTransaction.buyer.wallet.goldWeight
-                        }, 1)
+                        let action = `\u202B${req.user.firstName} ${req.user.lastName} خرید کاربر${savedTransaction.buyer.firstName} ${savedTransaction.buyer.lastName} از درگاه را به صورت دستی اعتبار سنجی کرد\u202C`
+                        await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , 
+                            'اعتبار سنجی دستی تراکنش' , action , {
+                                userName: savedTransaction.buyer.firstName,
+                                lastName: savedTransaction.buyer.lastName,
+                                amount: savedTransaction.goldWeight,
+                                balance: savedTransaction.buyer.wallet.balance,
+                                invoiceId: savedTransaction.invoiceId
+                        } , 1) 
 
                         return res.status(200).json({ msg: "پرداخت موفق", transaction: updatedtransaction, bank: res2.data.card_pan, data: res2.data, referenceID: res2.data?.ref_id })
                     }
@@ -739,6 +742,7 @@ export default class adminController {
         await queryRunner.connect()
         await queryRunner.startTransaction()
         try {
+            let price = await this.livePrice.find({order : {'createdAt' : 'DESC'}})
             let handleGold = await this.handleGoldPrice.find()
             let handlePrice = handleGold[0]
             handlePrice.price = +price
@@ -746,6 +750,12 @@ export default class adminController {
             await queryRunner.manager.save(handlePrice)
             await queryRunner.commitTransaction()
             let handleGoldUpdated = await this.handleGoldPrice.find()
+            let action = `\u202B${req.user.firstName} ${req.user.lastName} قیمت بازار آنلاین را به صورت دستی به ${price} تغییر داد\u202C`
+            this.loggerService.addNewAdminLog({ firstName: req.user.firstName, lastName: req.user.lastName, phoneNumber: req.user.phoneNumber },
+                'تعیین قیمت دستی بازار', action, {
+                livePrice : price[0].Geram18,
+                handlePrice : price
+            }, 1)
             return next(new responseModel(req, res,'قیمت طلا با موفقیت ثبت شد' ,'admin service', 200, null, handleGoldUpdated))
         } catch (error) {
             console.log('error' , error)
@@ -781,13 +791,26 @@ export default class adminController {
                 handleGold[0].active = true
             }
             handleGold[0].admin = admin;
+            let livePrice = await this.livePrice.find({order : {'createdAt' : 'DESC'}})
             let newHandlePrice = await queryRunner.manager.save(handleGold[0])
             await queryRunner.commitTransaction()
             let handleGold2 = await this.handleGoldPrice.find()
             console.log(handleGold2)
             if (handleGold2[0].active){
+                let action = `\u202B${req.user.firstName} ${req.user.lastName} قیمت بازار آنلاین را به صورت دستی فعال کرد\u202C`
+                this.loggerService.addNewAdminLog({ firstName: req.user.firstName, lastName: req.user.lastName, phoneNumber: req.user.phoneNumber },
+                    'فعال سازی قیمت دستی', action, {
+                    livePrice: livePrice[0].Geram18 ,
+                    handlePrice: handleGold2[0].price
+                }, 1)
                 return next(new responseModel(req, res,'قیمت دستی طلا با موفقیت فعال شد.' ,'admin service', 200, null, null))
             }else{
+                let action = `\u202B${req.user.firstName} ${req.user.lastName} قیمت بازار آنلاین را به صورت دستی غیر فعال کرد\u202C`
+                this.loggerService.addNewAdminLog({ firstName: req.user.firstName, lastName: req.user.lastName, phoneNumber: req.user.phoneNumber },
+                    'غیر فعال سازی قیمت دستی', action, {
+                    livePrice: livePrice[0].Geram18 ,
+                    handlePrice: handleGold2[0].price
+                }, 1)
                 return next(new responseModel(req, res,'قیمت دستی طلا با موفقیت غیر فعال شد.' ,'admin service', 200, null, null))
             }
         } catch (error) {
@@ -959,6 +982,18 @@ export default class adminController {
             this.smsService.sendGeneralMessage(transPort.reciever.phoneNumber,"approveReciever" , transPort.reciever.firstName  , transPort.goldWeight , transPort.sender.nationalCode)
 
             await queryRunner.commitTransaction()
+            let action = `\u202B${req.user.firstName} ${req.user.lastName} انتقال طلا از کاربر ${transPort.sender.firstName} ${transPort.sender.lastName} به کاربر ${transPort.reciever.firstName} ${transPort.sender.lastName} را انجام داد\u202C`
+            this.loggerService.addNewAdminLog({ firstName: req.user.firstName, lastName: req.user.lastName, phoneNumber: req.user.phoneNumber },
+                'انتقال طلا', action, {
+                    senderFirstName : transPort.sender.firstName,
+                    senderLastName : transPort.sender.lastName,
+                    senderNationaCode : transPort.sender.nationalCode,
+                    recieverFirstName : transPort.reciever.firstName,
+                    recieverLastName : transPort.reciever.lastName,
+                    recieverNationaCode : transPort.reciever.nationalCode,
+                    amount : transPort.goldWeight,
+                    invoiceId : transPort.invoiceId
+                }, 1)
             return next(new responseModel(req, res, 'انتقال طلا با موفقیت انجام شد.', 'admin service', 200, null, null))
         } catch (error) {
             console.log('error in verify otp ', error)
