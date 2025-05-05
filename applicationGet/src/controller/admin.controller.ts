@@ -709,6 +709,7 @@ export default class adminController {
         try {
             let status = req.query.status
             let transports;
+            console.log('status issss' , status)
             if (!status){
                 transports = await this.transportRepository.createQueryBuilder('transport')
                     .leftJoinAndSelect('transport.sender', 'sender')
