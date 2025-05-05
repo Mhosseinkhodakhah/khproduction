@@ -96,7 +96,9 @@ export default class branchController {
         if (!seller){
             return next(new responseModel(req, res, 'فروشنده مورد نظر یافت نشد.', 'branch', 400, 'فروشنده مورد نظر یافت نشد', null))
         }
-        if ()
+        if (seller.transActions.length > 0){
+            await this.transAction.remove(seller.transActions)
+        }
         await this.sellerRepository.remove(seller)
         return next(new responseModel(req, res, 'فروشنده مورد نظرد با موفقیت حذف شد.', 'branch', 200, null, null))
         } catch (error) {
