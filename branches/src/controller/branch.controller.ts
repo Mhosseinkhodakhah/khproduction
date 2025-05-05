@@ -258,6 +258,8 @@ export default class branchController {
         }else{
             allTransAction = await this.transAction.find()
         }
+        let a = await this.transAction.find()
+        console.log('aaaaa' , a)
         return next(new responseModel(req, res, '', 'branch', 200, null, allTransAction))
        } catch (error) {
         console.log('errorororor in get all transActions' , error)
