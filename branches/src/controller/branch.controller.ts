@@ -66,7 +66,7 @@ export default class branchController {
             }
             let branch = await this.branchRepository.findOne({ where: { id: req.params.branchId } })
             let sellers = await this.sellerRepository.find({order : {'createdAt' : 'DESC'}})
-            let code = `${sellers[0].id}-${req.body.firstName.split('')[0]}.${req.body.lastName}`
+            let code = `${(sellers[0].id)+1}-${req.body.firstName.split('')[0]}.${req.body.lastName}`
             let selelrExistance = await this.sellerRepository.exists({where : {
                 firstName : req.body.firstName,
                 lastName : req.body.lastName,
