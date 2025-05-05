@@ -113,7 +113,7 @@ export default class branchController {
         
         try {
             let branchId = req.params.sellerId;
-        let branch : any = await this.branchRepository.findOne({where : {id : branchId} , relations : ['sellers' , 'seller.transActions']})
+        let branch : any = await this.branchRepository.findOne({where : {id : branchId} , relations : ['sellers' , 'sellers.transActions']})
         if (!branch){
             return next(new responseModel(req, res, 'شعبه مورد نظر یافت نشد.', 'branch', 400, 'شعبه مورد نظر یافت نشد', null))
         }
@@ -126,9 +126,7 @@ export default class branchController {
         } catch (error) {
             console.log('the selelr removing error >>> ' , error)
             return next(new responseModel(req, res, 'خطای داخلی سیستم.', 'branch', 500, 'خطای داخلی سیستم', null))
-
         }
-
     }
 
 
