@@ -15,11 +15,18 @@ export const Routes = [
     action: "createNewBranch"
 },
 {
-    method: "post",
-    route: "/seller/create/:branchId",
+    method: "delete",
+    route: "/seller/delete/:sellerId",
     controller: branchController,
     middlewares:[addSellerDto],
-    action: "addSeller"
+    action: "deleteSeller"
+},
+{
+    method: "delete",
+    route: "/delete/:branchId",
+    controller: branchController,
+    middlewares:[addSellerDto],
+    action: "deleteBranch"
 },
 {
     method: "get",

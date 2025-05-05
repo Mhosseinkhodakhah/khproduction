@@ -86,6 +86,51 @@ export default class branchController {
     }
 
 
+
+    async deleteSeller(req: Request, res: Response, next: NextFunction){
+        
+        try {
+            let sellerId = req.params.sellerId;
+
+        let seller = await this.sellerRepository.findOne({where : {id : sellerId}})
+        if (!seller){
+            return next(new responseModel(req, res, 'فروشنده مورد نظر یافت نشد.', 'branch', 400, 'فروشنده مورد نظر یافت نشد', null))
+        }
+
+        await this.sellerRepository.remove(seller)
+        return next(new responseModel(req, res, 'فروشنده مورد نظرد با موفقیت حذف شد.', 'branch', 200, null, null))
+        } catch (error) {
+            console.log('the selelr removing error >>> ' , error)
+            return next(new responseModel(req, res, 'خطای داخلی سیستم.', 'branch', 500, 'خطای داخلی سیستم', null))
+
+        }
+
+    }
+
+
+
+    async deleteBranch(req: Request, res: Response, next: NextFunction){
+        
+        try {
+            let branchId = req.params.sellerId;
+        let branch = await this.branchRepository.findOne({where : {id : branchId} , relations : ['sellers']})
+        if (!branch){
+            return next(new responseModel(req, res, 'شعبه مورد نظر یافت نشد.', 'branch', 400, 'شعبه مورد نظر یافت نشد', null))
+        }
+
+        await this.sellerRepository.remove(branch.sellers)
+        await this.branchRepository.remove(branch)
+        return next(new responseModel(req, res, 'شعبه مورد نظرد با موفقیت حذف شد.', 'branch', 200, null, null))
+        } catch (error) {
+            console.log('the selelr removing error >>> ' , error)
+            return next(new responseModel(req, res, 'خطای داخلی سیستم.', 'branch', 500, 'خطای داخلی سیستم', null))
+
+        }
+
+    }
+
+
+
     /**
      * its for get all branches by users
      * @param req 
