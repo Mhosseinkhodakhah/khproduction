@@ -4,6 +4,7 @@ import { UserController } from "./controller/UserController"
 import { createBranchDto } from "./entity/dto/branchDto.dto"
 import { addSellerDto } from "./entity/dto/createSellerDto"
 import { approveDataDto, approveOtpDataDto, createTransActionDto } from "./entity/dto/transAction.dto"
+import { adminMiddleware } from "./middleware/auth"
 import { authenticate } from "./middleware/authenticate"
 
 export const Routes = [
@@ -11,27 +12,27 @@ export const Routes = [
     method: "post",
     route: "/create",
     controller: branchController,
-    middlewares:[createBranchDto],
+    middlewares:[adminMiddleware , createBranchDto],
     action: "createNewBranch"
 },{
     method: "post",
     route: "/seller/create/:branchId",
     controller: branchController,
-    middlewares:[addSellerDto],
+    middlewares:[adminMiddleware , addSellerDto],
     action: "addSeller"
 },
 {
     method: "delete",
     route: "/seller/delete/:sellerId",
     controller: branchController,
-    middlewares:[],
+    middlewares:[adminMiddleware],
     action: "deleteSeller"
 },
 {
     method: "delete",
     route: "/delete/:branchId",
     controller: branchController,
-    middlewares:[],
+    middlewares:[adminMiddleware],
     action: "deleteBranch"
 },
 {

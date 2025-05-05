@@ -6,6 +6,7 @@ import { branche } from "../entity/branche"
 import { responseModel } from "../util/response.model"
 import { query, validationResult } from "express-validator"
 import { transAction } from "../entity/transAction.entity"
+import logger from "../services/logg.service"
 
 
 export default class branchController {
@@ -13,6 +14,10 @@ export default class branchController {
     private sellerRepository = AppDataSource.getRepository(sellers)
     private branchRepository = AppDataSource.getRepository(branche)
     private transAction = AppDataSource.getRepository(transAction)
+    private loggerService = new logger()
+
+
+
     /**
      * its for creating new branch by admin . . .
      * @param req 
@@ -28,8 +33,16 @@ export default class branchController {
                 return next(new responseModel(req, res, '' , 'admin', 400, bodyValidation['errors'][0].msg, null))
             }
             console.log('its innnnn create branch')
-            let newBranch = this.branchRepository.create(req.body)
+            let newBranch = this.branchRepository.create({
+                name : req.body.name , 
+                code : req.body.code,
+                manager : req.body.manager
+            })
             let newData = await this.branchRepository.save(newBranch)
+
+            let actions = `\u202Bادمین ${req.user.firstName} ${req.user.lastName} یک شعبه جدید با نام ${newData.name} و کد ${newData.code} و مدیریت ${newData.manager} ایجاد کرد\u202C`
+            await this.loggerService.addNewAdminLog({ firstName: req.user.firstName, lastName: req.user.lastName, phoneNumber: req.user.phoneNumber },
+                'اضاف کردن شعبه جدید', actions, newData , 1) 
             return next(new responseModel(req, res, 'ایجاد شعبه جدید با موفقیت انجام شد', 'branch', 200, null, newData))
         } catch (error) {
             console.log('error in create branch', error)
@@ -67,21 +80,22 @@ export default class branchController {
             let newSeller = this.sellerRepository.create({ 
                 firstName : req.body.firstName,
                 lastName : req.body.lastName,
-                nationalCode : req.body.nationalCode,
                 phoneNumber : req.body.phoneNumber,
                 branch : branch
              })
-             console.log( 'after entity >>>>> ', newSeller)
-            await this.sellerRepository.save(newSeller)
-            return next(new responseModel(req, res, 'ایجاد فروشنده با موفقیت انجام شد.', 'branch', 200, null, newSeller))
+
+             await this.sellerRepository.save(newSeller)
+             let actions = `\u202Bادمین ${req.user.firstName} ${req.user.lastName} یک فروشنده جدید با نام ${req.body.firstName} ${req.body.lastName} و مدیریت شعبه ی  ${branch.name} ایجاد کرد\u202C`
+             await this.loggerService.addNewAdminLog({ firstName: req.user.firstName, lastName: req.user.lastName, phoneNumber: req.user.phoneNumber },
+                 'اضاف کردن فروشنده جدید', actions, newSeller , 1) 
+             return next(new responseModel(req, res, 'ایجاد فروشنده با موفقیت انجام شد.', 'branch', 200, null, newSeller))
         } catch (error) {
             console.log('eror in add seller', error)
             return next(new responseModel(req, res, 'ایجاد فروشنده موفق نبود.خطای داخلی سیستم.', 'branch', 500, 'خطای داخلی سیستم', null))
         }
     }
-
-
-
+    
+    
     async deleteSeller(req: Request, res: Response, next: NextFunction){
         
         try {
@@ -107,7 +121,6 @@ export default class branchController {
 
 
     async deleteBranch(req: Request, res: Response, next: NextFunction){
-        
         try {
         let branchId = req.params.sellerId;
         let branch : any = await this.branchRepository.findOne({where : {id : branchId} , relations : ['sellers' , 'sellers.transActions']})
