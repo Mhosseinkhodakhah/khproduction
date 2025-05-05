@@ -1,5 +1,5 @@
 
-const {fetch} =require('node-fetch')
+import * as fetch from 'node-fetch';
 
 
 export default class interConnections{
