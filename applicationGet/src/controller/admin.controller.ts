@@ -708,12 +708,19 @@ export default class adminController {
     async getAllTransport(req: Request, res: Response, next: any) {
         try {
             let status = req.query.status
-
-            let transports = await this.transportRepository.createQueryBuilder('transport')
+            let transports;
+            if (!status){
+                transports = await this.transportRepository.createQueryBuilder('transport')
+                    .leftJoinAndSelect('transport.sender', 'sender')
+                    .leftJoinAndSelect('transport.reciever', 'reciever')
+                    .getMany()
+            }else {
+                transports = await this.transportRepository.createQueryBuilder('transport')
                 .leftJoinAndSelect('transport.sender', 'sender')
                 .leftJoinAndSelect('transport.reciever', 'reciever')
                 .where('transport.status = :satatus', { status: status })
                 .getMany()
+            }
             return next(new responseModel(req, res, '.', 'admin service', 200, null, transports))
         } catch (error) {
             console.log('error occured in getting all transports >>> ', error)
