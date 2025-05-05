@@ -13,6 +13,12 @@ export const Routes = [
     controller: branchController,
     middlewares:[createBranchDto],
     action: "createNewBranch"
+},{
+    method: "post",
+    route: "/seller/create",
+    controller: branchController,
+    middlewares:[addSellerDto],
+    action: "addSeller"
 },
 {
     method: "delete",
