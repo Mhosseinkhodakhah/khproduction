@@ -64,8 +64,8 @@ export default class branchController {
             if (!bodyValidation.isEmpty()){
                 return next(new responseModel(req, res, '' , 'admin', 400, bodyValidation['errors'][0].msg, null))
             }
-            let branch = await this.branchRepository.findOne({ where: { id: req.params.branchId } })
-            let sellers = await this.sellerRepository.find({order : {'createdAt' : 'DESC'}})
+            let branch = await this.branchRepository.findOne({ where: { id: req.params.branchId } ,relations : ['sellers']})
+            let sellers = branch.sellers
             // let code = `${sellers.length+1}-${req.body.firstName.split('')[0]}.${req.body.lastName}`
             let selelrExistance = await this.sellerRepository.exists({where : {
                 firstName : req.body.firstName,
