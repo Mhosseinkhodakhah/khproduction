@@ -241,12 +241,21 @@ export default class branchController {
        try {
         let type = req.query.type;
         let allTransAction ;
-        if (!!type){
+        if (type){
+            if (type == 'pending'){
+                allTransAction = await this.transAction.find({
+                    where : {
+                        status : 'waitForOtp'
+                    }
+                })                    
+            }
             allTransAction = await this.transAction.find({
                 where : {
                     status : type
                 }
             })
+        }else{
+            allTransAction = await this.transAction.find()
         }
         return next(new responseModel(req, res, '', 'branch', 200, null, allTransAction))
        } catch (error) {
