@@ -1,5 +1,5 @@
 
-import fetch from 'node-fetch';
+const {fetch} =require('node-fetch')
 
 
 export default class interConnections{
@@ -24,7 +24,6 @@ export default class interConnections{
             return 'unknown'
         }
     }
-
 
 
     async updateWallet(id : number , amount){
