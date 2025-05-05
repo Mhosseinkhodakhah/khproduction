@@ -15,7 +15,7 @@ export const Routes = [
     action: "createNewBranch"
 },{
     method: "post",
-    route: "/seller/create",
+    route: "/seller/create/:branchId",
     controller: branchController,
     middlewares:[addSellerDto],
     action: "addSeller"
