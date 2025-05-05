@@ -129,20 +129,14 @@ export class OtpController {
                     let saved =  await this.otpRepository.save(createdOtp);
                     console.log('saved transActions2222' , saved)
                 }
-                await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , `getting otp code succeed for user : ${phoneNumber}` , otpExist , 1) 
-                monitor.addStatus({
-                    scope: 'otp controller controller',
-                    status: 1,
-                    error: null
-                })
                 
                 response.status(200).json({ msg: res.msg });
             } else {
-                await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , `getting otp code failed for user : ${phoneNumber}` , {
-                    statusCode : 500,
-                    error : 'kavenegar error . . .',
-                    msg : res.msg
-                } , 0) 
+                // await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , `getting otp code failed for user : ${phoneNumber}` , {
+                //     statusCode : 500,
+                //     error : 'kavenegar error . . .',
+                //     msg : res.msg
+                // } , 0) 
                 monitor.addStatus({
                     scope: 'otp  controller',
                     status: 0,
@@ -158,11 +152,11 @@ export class OtpController {
                 status: 0,
                 error: `${error}`
             })
-            await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , `getting otp code failed for user : ${phoneNumber}` , {
-                statusCode : 500,
-                error : 'internal error . . .',
-                msg : `${error}`
-            } , 0) 
+            // await this.loggerService.addNewLog({firstName : '' , lastName : '' , phoneNumber : phoneNumber} , 'otp sms' , `getting otp code failed for user : ${phoneNumber}` , {
+            //     statusCode : 500,
+            //     error : 'internal error . . .',
+            //     msg : `${error}`
+            // } , 0) 
             return response.status(500).json({ msg: "خطای داخلی سیستم" });
         }
     }
@@ -170,11 +164,11 @@ export class OtpController {
     async checkOtpVerification(request: Request, response: Response, next: NextFunction) {
         const { phoneNumber, otp } = request.body;
             if (!phoneNumber || !otp) {
-                await this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: phoneNumber }, 'otp sms', `getting otp code failed for user : ${phoneNumber}`, {
-                    statusCode: 400,
-                    error: 'bad request',
-                    msg: `Phone number and OTP are required`
-                }, 0) 
+                // await this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: phoneNumber }, 'otp sms', `getting otp code failed for user : ${phoneNumber}`, {
+                //     statusCode: 400,
+                //     error: 'bad request',
+                //     msg: `Phone number and OTP are required`
+                // }, 0) 
                 monitor.addStatus({
                     scope: 'otp controller',
                     status: 0,
