@@ -113,11 +113,13 @@ export default class branchController {
         
         try {
             let branchId = req.params.sellerId;
-        let branch = await this.branchRepository.findOne({where : {id : branchId} , relations : ['sellers']})
+        let branch : any = await this.branchRepository.findOne({where : {id : branchId} , relations : ['sellers' , 'seller.transActions']})
         if (!branch){
             return next(new responseModel(req, res, 'شعبه مورد نظر یافت نشد.', 'branch', 400, 'شعبه مورد نظر یافت نشد', null))
         }
-
+        if (branch.sellers.transActions){
+            await this.transAction.remove(branch.sellers.transActions)
+        }
         await this.sellerRepository.remove(branch.sellers)
         await this.branchRepository.remove(branch)
         return next(new responseModel(req, res, 'شعبه مورد نظرد با موفقیت حذف شد.', 'branch', 200, null, null))

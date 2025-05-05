@@ -28,7 +28,6 @@ export class sellers {
     @JoinColumn()
     transActions : transAction[]
 
-
     @CreateDateColumn()
     createdAt : Date;
 
