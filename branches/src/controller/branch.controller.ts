@@ -70,7 +70,7 @@ export default class branchController {
             let selelrExistance = await this.sellerRepository.exists({where : {
                 firstName : req.body.firstName,
                 lastName : req.body.lastName,
-                code : code
+                
             }
         })
         if (selelrExistance){
@@ -84,7 +84,8 @@ export default class branchController {
                 firstName : req.body.firstName,
                 lastName : req.body.lastName,
                 phoneNumber : req.body.phoneNumber,
-                branch : branch
+                branch : branch,
+                code : code
              })
 
              await this.sellerRepository.save(newSeller)
