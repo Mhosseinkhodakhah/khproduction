@@ -1,5 +1,5 @@
 
-import * as fetch from 'node-fetch';
+import fetch from 'node-fetch';
 
 
 export default class interConnections{
