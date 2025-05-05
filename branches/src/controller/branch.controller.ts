@@ -52,16 +52,11 @@ export default class branchController {
                 return next(new responseModel(req, res, '' , 'admin', 400, bodyValidation['errors'][0].msg, null))
             }
             let branch = await this.branchRepository.findOne({ where: { id: req.params.branchId } })
-            let selelrExistance = await this.sellerRepository.exists({where : [{
-             nationalCode : req.body.nationalCode,   
-            },
-            {
-                phoneNumber : req.body.phoneNumber
-            },{
+            let selelrExistance = await this.sellerRepository.exists({where : {
                 firstName : req.body.firstName,
                 lastName : req.body.lastName
             }
-        ]})
+        })
         if (selelrExistance){
             return next(new responseModel(req, res, 'این فروشنده قبلا در سیستم ثبت شده است', 'branch', 400, 'این فروشنده قبلا در سیستم ثبت شده است', null))
         }
