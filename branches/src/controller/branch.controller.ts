@@ -65,9 +65,12 @@ export default class branchController {
                 return next(new responseModel(req, res, '' , 'admin', 400, bodyValidation['errors'][0].msg, null))
             }
             let branch = await this.branchRepository.findOne({ where: { id: req.params.branchId } })
+            let sellers = await this.sellerRepository.find({order : {'createdAt' : 'DESC'}})
+            let code = `${sellers[0].id}-${req.body.firstName.split('')[0]}.${req.body.lastName}`
             let selelrExistance = await this.sellerRepository.exists({where : {
                 firstName : req.body.firstName,
-                lastName : req.body.lastName
+                lastName : req.body.lastName,
+                code : code
             }
         })
         if (selelrExistance){
@@ -94,7 +97,7 @@ export default class branchController {
             return next(new responseModel(req, res, 'ایجاد فروشنده موفق نبود.خطای داخلی سیستم.', 'branch', 500, 'خطای داخلی سیستم', null))
         }
     }
-    
+
     
     async deleteSeller(req: Request, res: Response, next: NextFunction){
         
