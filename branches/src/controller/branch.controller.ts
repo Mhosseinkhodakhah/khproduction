@@ -126,7 +126,7 @@ export default class branchController {
             }
             await this.sellerRepository.remove(branch.sellers)
         }
-        await this.branchRepository.softDelete(branch)
+        await this.branchRepository.remove(branch)
         return next(new responseModel(req, res, 'شعبه مورد نظرد با موفقیت حذف شد.', 'branch', 200, null, null))
         } catch (error) {
             console.log('the selelr removing error >>> ' , error)
