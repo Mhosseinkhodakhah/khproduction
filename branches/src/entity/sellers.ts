@@ -17,6 +17,9 @@ export class sellers {
     
     @Column({type : 'varchar' , nullable : true})
     lastName : string;
+    
+    @Column({type : 'varchar' , nullable : true})
+    code : string
 
     @Column({type : 'varchar' , nullable : true})
     phoneNumber : string;

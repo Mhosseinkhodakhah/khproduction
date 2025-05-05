@@ -718,7 +718,7 @@ export default class adminController {
                 transports = await this.transportRepository.createQueryBuilder('transport')
                 .leftJoinAndSelect('transport.sender', 'sender')
                 .leftJoinAndSelect('transport.reciever', 'reciever')
-                .where('transport.status = :satatus', { status: status })
+                .where('transport.status = :status', { status: status })
                 .getMany()
             }
             return next(new responseModel(req, res, '.', 'admin service', 200, null, transports))

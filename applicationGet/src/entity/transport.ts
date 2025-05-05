@@ -27,11 +27,10 @@ export class transportInvoice {
     @Column()
     date : string
 
-
     @Column()
     time : string
 
-
+    
     @Column({type : 'varchar'})
     type : string;                           // transport
     
