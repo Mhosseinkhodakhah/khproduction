@@ -18,14 +18,14 @@ export const Routes = [
     method: "delete",
     route: "/seller/delete/:sellerId",
     controller: branchController,
-    middlewares:[addSellerDto],
+    middlewares:[],
     action: "deleteSeller"
 },
 {
     method: "delete",
     route: "/delete/:branchId",
     controller: branchController,
-    middlewares:[addSellerDto],
+    middlewares:[],
     action: "deleteBranch"
 },
 {
