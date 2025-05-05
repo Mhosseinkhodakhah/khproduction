@@ -183,6 +183,10 @@ export default class branchController {
             if (!branch) {
                 return next(new responseModel(req, res, 'شعبه مورد نظر در سیستم ثبت نشده است', 'branch', 500, 'شعبه مورد نظر در سیستم ثبت نشده است', null))
             }
+            for (let i= 0 ; i < branch.sellers.length ; i ++){
+                let elem = branch.sellers[i]
+                branch.sellers[i].code = `کد ${branch.sellers[i].code}-${branch.sellers[i].firstName[0]}.${branch.sellers[i].lastName}`
+            }
             return next(new responseModel(req, res, '', 'branch', 200, null, branch.sellers))
         } catch (error) {
             console.log('error >>> ', error)
