@@ -240,9 +240,9 @@ export default class branchController {
     async getAllTransACtions(req: Request, res: Response, next: NextFunction){
        try {
         let type = req.query.type;
-        console.log('tttt' , type)
         let allTransAction ;
         if (type){
+            console.log('tttt' , type)
             if (type == 'pending'){
                 allTransAction = await this.transAction.find({
                     where : {
