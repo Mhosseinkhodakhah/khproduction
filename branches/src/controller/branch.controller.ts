@@ -117,11 +117,15 @@ export default class branchController {
         if (!branch){
             return next(new responseModel(req, res, 'شعبه مورد نظر یافت نشد.', 'branch', 400, 'شعبه مورد نظر یافت نشد', null))
         }
-        console.log('branch is  >>>>' , branch)
-        // if (branch.sellers.transActions){
-        //     await this.transAction.remove(branch.sellers.transActions)
-        // }
-        // await this.sellerRepository.remove(branch.sellers)
+        // console.log('branch is  >>>>' , branch)
+        if (branch.sellers.length > 0){
+            for (let i =0 ; i <branch.sellers.length ; i ++){
+                if (branch.sellers[i].transActions.length>0){
+                    await this.transAction.remove(branch.sellers[i].transActions)
+                }
+            }
+            await this.sellerRepository.remove(branch.sellers)
+        }
         await this.branchRepository.softDelete(branch)
         return next(new responseModel(req, res, 'شعبه مورد نظرد با موفقیت حذف شد.', 'branch', 200, null, null))
         } catch (error) {
