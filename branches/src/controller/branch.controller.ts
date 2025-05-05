@@ -247,16 +247,16 @@ export default class branchController {
                 allTransAction = await this.transAction.find({
                     where : {
                         status : 'waitForOtp'
-                    }
+                    },relations : ['seller' , 'user']
                 })                    
             }
             allTransAction = await this.transAction.find({
                 where : {
                     status : type
-                }
+                },relations : ['seller' , 'user']
             })
         }else{
-            allTransAction = await this.transAction.find()
+            allTransAction = await this.transAction.find({relations : ['seller' , 'user']})
         }
         let a = await this.transAction.find()
         console.log('aaaaa' , a)
