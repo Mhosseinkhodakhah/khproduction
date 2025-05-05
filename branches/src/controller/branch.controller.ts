@@ -112,16 +112,16 @@ export default class branchController {
     async deleteBranch(req: Request, res: Response, next: NextFunction){
         
         try {
-            let branchId = req.params.sellerId;
+        let branchId = req.params.sellerId;
         let branch : any = await this.branchRepository.findOne({where : {id : branchId} , relations : ['sellers' , 'sellers.transActions']})
-        if (!branch){
-            return next(new responseModel(req, res, 'شعبه مورد نظر یافت نشد.', 'branch', 400, 'شعبه مورد نظر یافت نشد', null))
-        }
-        if (branch.sellers.transActions){
-            await this.transAction.remove(branch.sellers.transActions)
-        }
-        await this.sellerRepository.remove(branch.sellers)
-        await this.branchRepository.remove(branch)
+        // if (!branch){
+        //     return next(new responseModel(req, res, 'شعبه مورد نظر یافت نشد.', 'branch', 400, 'شعبه مورد نظر یافت نشد', null))
+        // }
+        // if (branch.sellers.transActions){
+        //     await this.transAction.remove(branch.sellers.transActions)
+        // }
+        // await this.sellerRepository.remove(branch.sellers)
+        await this.branchRepository.softDelete(branch)
         return next(new responseModel(req, res, 'شعبه مورد نظرد با موفقیت حذف شد.', 'branch', 200, null, null))
         } catch (error) {
             console.log('the selelr removing error >>> ' , error)
