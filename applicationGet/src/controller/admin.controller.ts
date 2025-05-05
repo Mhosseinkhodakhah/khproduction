@@ -714,7 +714,7 @@ export default class adminController {
                 .leftJoinAndSelect('transport.reciever', 'reciever')
                 .where('transport.status = :satatus', { status: status })
                 .getMany()
-            return next(new responseModel(req, res, 'استعلام کاربر با موفقیت انجام شد.', 'admin service', 200, null, transports))
+            return next(new responseModel(req, res, '.', 'admin service', 200, null, transports))
         } catch (error) {
             console.log('error occured in getting all transports >>> ', error)
             return next(new responseModel(req, res, 'خطای داخلی سرورلطفا دقایقی دیگر مجددا تلاش کنید.', 'admin service', 500, null, null))

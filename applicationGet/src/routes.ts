@@ -412,7 +412,7 @@ export const Routes = [
         controller: adminController,
         action: "getWallet",
         middlwares: [adminMiddleware]
-    },{
+    },{  
         method: "get",
         route: "/admin/transport/all",
         controller: adminController,
