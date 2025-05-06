@@ -66,8 +66,8 @@ export const Routes = [{
     method: "post",
     route: "/active",
     controller: UserController,
-    middleware: [],
-    action: ""
+    middleware: [authMiddleware],
+    action: "deActiveAdmin"
 },
 {
     method: "get",
