@@ -20,7 +20,6 @@ import { transportInvoice } from "../entity/transport";
 import { goldPrice } from "../entity/goldPrice";
 
 
-
 export default class adminController {
     private userRepository = AppDataSource.getRepository(User)
     private walletRepository = AppDataSource.getRepository(Wallet)

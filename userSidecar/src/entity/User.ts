@@ -12,7 +12,7 @@ export class User {
 
     @PrimaryGeneratedColumn()
     id: number
-
+    
     @Column({type : 'varchar',  nullable : true})
     Referral : string;
 
@@ -27,7 +27,7 @@ export class User {
     lastName: string
 
     @Column({nullable : true})
-    age: number 
+    age: number
 
     @Column({nullable : true})
     fatherName : string
@@ -113,7 +113,5 @@ export class User {
         
     @DeleteDateColumn()
     deletedAt : Date
-    
-    
 }
 

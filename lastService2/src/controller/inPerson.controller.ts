@@ -564,7 +564,7 @@ export default class inPersonController {
         if (!error.isEmpty()) {
             return next(new responseModel(req, res, error['errors'][0].msg , 'admin service', 400, error['errors'][0].msg, null))
         }
-        let { goldPrice, goldWeight, invoiceId, totalPrice, nationalCode, description } = req.body;
+        let { goldPrice, goldWeight, invoiceId, totalPrice, nationalCode, description , destCardPan} = req.body;
         if (!goldPrice || !goldWeight || !invoiceId || !totalPrice || !nationalCode) {
             return next(new responseModel(req, res, '' ,'admin service', 400, 'لطفا ورودی هارا با دقت پر کنید', null))
         }

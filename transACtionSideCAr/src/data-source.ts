@@ -33,7 +33,9 @@ export const AppDataSource = new DataSource({
     database: 'gold_home', // Database name
     synchronize: true,
     logging: false,
-    entities: [User,Otp,Invoice,InvoiceType,Wallet,PaymentInfo,NotMatch,BankAccount,oldUserQeue,WalletTransaction, transPortQueue ,goldPrice , handleGoldPrice , EstimateTransactions , transportInvoice , productList , convertTradeInvoice , systemSetting , transActionQeue],
+    entities: [User,Otp,Invoice,InvoiceType,Wallet,PaymentInfo,NotMatch,BankAccount,oldUserQeue,WalletTransaction, 
+        transPortQueue ,goldPrice , handleGoldPrice , EstimateTransactions , transportInvoice , productList , 
+        systemSetting,convertTradeInvoice , systemSetting , transActionQeue],
     migrations: [],
     subscribers: [],
 })

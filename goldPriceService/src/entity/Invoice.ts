@@ -56,8 +56,8 @@ export class Invoice {
     @Column({nullable:true,default:""})
     accounterId:string
 
-    // @Column({nullable:true,default:null})
-    // paymentMethod :  number           //0 : gateway   1 :transport   2 :inperson   3 : cash   4 : phisicalGold         
+    @Column({ nullable: true, default: 0 })
+    paymentMethod :  number           //0 : gateway   1 :transport   2 :inperson   3 : cash   4 : phisicalGold         
 
     @Column({  default: "", type: "varchar" })
     originCardPan: string
