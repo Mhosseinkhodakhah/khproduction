@@ -335,9 +335,11 @@ export class InvoiceController {
                     this.loggerService.addNewLog({ firstName: '', lastName: '', phoneNumber: savedTransaction.buyer.phoneNumber }, 'ایجاد تراکنش خرید', actions, {type : 1}, 1)
                     
                 }
+                let data = {goldPrice : savedTransaction.goldPrice , goldWeight : savedTransaction.goldWeight , totalPrice : savedTransaction.totalPrice}
                 return response.status(201).json({
                     msg: "Transaction created successfully",
                     transactionId: savedTransaction.id,
+                    data : data,
                     wallet: user.wallet,
                 });
             } catch (error) {
