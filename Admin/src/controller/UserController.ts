@@ -331,9 +331,9 @@ export class UserController {
                 admin.isBlocked = false;
                 await this.adminRepository.save(admin)
                 let mainAdmin = await this.adminRepository.findOne({where : {id : +req.user.userId}})
-                let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} ادمین ${admin.firstName} ${admin.lastName} را غیر فعال کرد\u202C`
+                let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} ادمین ${admin.firstName} ${admin.lastName} را  فعال کرد\u202C`
                 this.InterService.addNewAdminLog({ firstName: mainAdmin.firstName, lastName: mainAdmin.lastName, phoneNumber: mainAdmin.phoneNumber },
-                    'غیر فعال کردن ادمین', actions, {
+                    ' فعال کردن ادمین', actions, {
                     
                 }, 1) 
                 return next(new response(req, res, 'admin service', 200, null, null))
@@ -341,9 +341,9 @@ export class UserController {
                 admin.isBlocked = true;
                 await this.adminRepository.save(admin)
                 let mainAdmin = await this.adminRepository.findOne({where : {id : +req.user.userId}})
-                let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} ادمین ${admin.firstName} ${admin.lastName} را فعال کرد\u202C`
+                let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} ادمین ${admin.firstName} ${admin.lastName} را غیر فعال کرد\u202C`
                 this.InterService.addNewAdminLog({ firstName: mainAdmin.firstName, lastName: mainAdmin.lastName, phoneNumber: mainAdmin.phoneNumber },
-                    ' فعال کردن ادمین', actions, {
+                    'غیر فعال کردن ادمین', actions, {
                     
                 }, 1) 
                 return next(new response(req, res, 'admin service', 200, null, null))
