@@ -20,6 +20,18 @@ export const Routes = [
     controller: branchController,
     middlewares:[adminMiddleware , addSellerDto],
     action: "addSeller"
+},{
+    method: "post",
+    route: "/active",
+    controller: branchController,
+    middlewares:[adminMiddleware],
+    action: "deActiveBranch"
+},{
+    method: "post",
+    route: "/seller/active/:branchId",
+    controller: branchController,
+    middlewares:[adminMiddleware],
+    action: "deActiveSeller"
 },
 {
     method: "delete",
