@@ -182,7 +182,7 @@ export default class branchController {
     async deActiveSeller(req: Request, res: Response, next: NextFunction){
         try {
         let sellerId = req.params.sellerId;
-        let seller : any = await this.sellerRepository.findOne({where : {id : sellerId} , relations : ['sellers' , 'sellers.transActions']})
+        let seller : any = await this.sellerRepository.findOne({where : {id : sellerId}})
         if (!seller){
             return next(new responseModel(req, res, 'شعبه مورد نظر یافت نشد.', 'seller', 400, 'شعبه مورد نظر یافت نشد', null))
         }
