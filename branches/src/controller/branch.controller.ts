@@ -151,7 +151,7 @@ export default class branchController {
 
     async deActiveBranch(req: Request, res: Response, next: NextFunction){
         try {
-        let branchId = req.params.sellerId;
+        let branchId = req.params.branchId;
         let branch : any = await this.branchRepository.findOne({where : {id : branchId} , relations : ['sellers' , 'sellers.transActions']})
         if (!branch){
             return next(new responseModel(req, res, 'شعبه مورد نظر یافت نشد.', 'branch', 400, 'شعبه مورد نظر یافت نشد', null))
