@@ -18,7 +18,7 @@ export const Routes = [{
     route: "/menu/create/:menuId",
     controller: UserController,
     action: "creatNewSubMenu",
-    middleware: [ menuValidation]
+    middleware: [menuValidation]
 },
 {
     method: "get",
@@ -26,11 +26,11 @@ export const Routes = [{
     controller: UserController,
     middleware: [authMiddleware],
     action: "getAllMenu"
-},{
+}, {
     method: "post",
     route: "/create",
     controller: UserController,
-    middleware: [authMiddleware,addAdmin],
+    middleware: [authMiddleware, addAdmin],
     action: "addNewAdmin"
 }, {
     method: "post",
@@ -62,12 +62,18 @@ export const Routes = [{
     controller: UserController,
     middleware: [],
     action: "login"
-},{
+}, {
     method: "post",
-    route: "/active",
+    route: "/active/:adminId",
     controller: UserController,
     middleware: [authMiddleware],
     action: "deActiveAdmin"
+}, {
+    method: "delete",
+    route: "/delete/:adminId",
+    controller: UserController,
+    middleware: [authMiddleware],
+    action: "deleteAdmin"
 },
 {
     method: "get",
@@ -83,7 +89,7 @@ export const Routes = [{
     controller: UserController,
     middleware: [createCooprationRequests],
     action: "createCooprationRequests"
-},{
+}, {
     method: "get",
     route: "/coorporation/all",
     controller: UserController,

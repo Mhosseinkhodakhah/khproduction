@@ -2,6 +2,15 @@ export interface responseInterface {
 
 }
 
+
+
+export interface adminLoggInterface {
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+}
+
+
 export interface monitorInterface {
     scope: string,
     status: number,
