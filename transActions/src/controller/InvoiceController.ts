@@ -292,6 +292,8 @@ export class InvoiceController {
                 }
             }
             if (type == 'sell'){
+                console.log('wallet weight' , +user.wallet.goldWeight)
+                console.log('wallet weight' , +goldWeight)
                 if (+user.wallet.goldWeight < +goldWeight){
                     monitor.error.push('تلاش برای ثبت معامله در اپ با قیمتی متفاوت از حجم طلای ورودی')
                     return response.status(400).json({ msg: "موجودی صندوق طلا کافی نمی باشد" });
