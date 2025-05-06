@@ -306,20 +306,23 @@ export class UserController {
     }
 
 
-    async deActiveAdmin(req: Request, res: Response, next: NextFunction){
-
-        let admin = await this.adminRepository.findOne({where : {id : +req.params.adminId}})
-
-        if (admin.isBlocked){
-            admin.isBlocked = false;
-            await this.adminRepository.save(admin)
-            return next(new response(req, res , 'admin service', 200, null , null ))    
-        }else {
-            admin.isBlocked = true;
-            await this.adminRepository.save(admin)
-            return next(new response(req, res , 'admin service', 200, null , null))
-        }
-
+        async deActiveAdmin(req: Request, res: Response, next: NextFunction){
+       
+            try {
+                let admin = await this.adminRepository.findOne({where : {id : +req.params.adminId}})
+                if (admin.isBlocked){
+                    admin.isBlocked = false;
+                    await this.adminRepository.save(admin)
+                    return next(new response(req, res , 'admin service', 200, null , null ))    
+                }else {
+                    admin.isBlocked = true;
+                    await this.adminRepository.save(admin)
+                    return next(new response(req, res , 'admin service', 200, null , null))
+                }
+            } catch (error) {
+                console.log('error in de activation of admins' , error)
+                return next(new response(req, res , 'admin service', 500, 'خطای داخلی سیستم' , null))
+            }
 
     }
 
