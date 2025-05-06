@@ -13,6 +13,7 @@ import { cooperation } from "../entity/cooperation"
 
 
 
+
 export class UserController {
 
     private userRepository = AppDataSource.getRepository(Admin)
@@ -302,6 +303,24 @@ export class UserController {
             console.log('error>>>' , error)
             return next(new response(req, res , 'admin service', 200, `${error}` , null))    
         }
+    }
+
+
+    async deActiveAdmin(req: Request, res: Response, next: NextFunction){
+
+        let admin = await this.adminRepository.findOne({where : {id : +req.params.adminId}})
+
+        if (admin.isBlocked){
+            admin.isBlocked = false;
+            await this.adminRepository.save(admin)
+            return next(new response(req, res , 'admin service', 200, null , null ))    
+        }else {
+            admin.isBlocked = true;
+            await this.adminRepository.save(admin)
+            return next(new response(req, res , 'admin service', 200, null , null))
+        }
+
+
     }
 
 
