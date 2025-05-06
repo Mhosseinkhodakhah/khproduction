@@ -149,6 +149,55 @@ export default class branchController {
 
 
 
+    async deActiveBranch(req: Request, res: Response, next: NextFunction){
+        try {
+        let branchId = req.params.sellerId;
+        let branch : any = await this.branchRepository.findOne({where : {id : branchId} , relations : ['sellers' , 'sellers.transActions']})
+        if (!branch){
+            return next(new responseModel(req, res, 'شعبه مورد نظر یافت نشد.', 'branch', 400, 'شعبه مورد نظر یافت نشد', null))
+        }
+        if (branch.isActive){
+            branch.isActive = false;
+            await this.branchRepository.save(branch)
+            return next(new responseModel(req, res, 'شعبه مورد نظر با موفقیت غیر فعال شد.', 'branch', 200, null, null))
+        }else{
+            branch.isActive = true;
+            await this.branchRepository.save(branch)
+            return next(new responseModel(req, res, 'شعبه مورد نظر با موفقیت فعال شد.', 'branch', 200, null, null))            
+        }
+        } catch (error) {
+            console.log('the seller removing error >>> ' , error)
+            return next(new responseModel(req, res, 'خطای داخلی سیستم.', 'branch', 500, 'خطای داخلی سیستم', null))
+        }
+    }
+
+
+
+    async deActiveSeller(req: Request, res: Response, next: NextFunction){
+        try {
+        let sellerId = req.params.sellerId;
+        let seller : any = await this.sellerRepository.findOne({where : {id : sellerId} , relations : ['sellers' , 'sellers.transActions']})
+        if (!seller){
+            return next(new responseModel(req, res, 'شعبه مورد نظر یافت نشد.', 'seller', 400, 'شعبه مورد نظر یافت نشد', null))
+        }
+        if (seller.isActive){
+            seller.isActive = false;
+            await this.sellerRepository.save(seller)
+            return next(new responseModel(req, res, 'فروشنده مورد نظر با موفقیت غیر فعال شد.', 'seller', 200, null, null))
+        }else {
+            seller.isActive = true;
+            await this.sellerRepository.save(seller)
+            return next(new responseModel(req, res, 'فروشنده مورد نظر با موفقیت فعال شد.', 'seller', 200, null, null))            
+        }
+        } catch (error) {
+            console.log('the seller removing error >>> ' , error)
+            return next(new responseModel(req, res, 'خطای داخلی سیستم.', 'seller', 500, 'خطای داخلی سیستم', null))
+        }
+    }
+
+
+
+
     /**
      * its for get all branches by users
      * @param req 
@@ -158,7 +207,7 @@ export default class branchController {
      */
     async getAllBranches(req: Request, res: Response, next: NextFunction) {
         try {
-            let branches = await this.branchRepository.find()
+            let branches = await this.branchRepository.find({where : {isActive : true}})
             return next(new responseModel(req, res, '', 'branch', 200, null, branches))
         } catch (error) {
             console.log('get all branches hass error >>> ', error)
@@ -178,7 +227,11 @@ export default class branchController {
     async getSellers(req: Request, res: Response, next: NextFunction) {
         try {
             let branchId = req.params.branchId;
-            let branch = await this.branchRepository.findOne({ where: { id: +branchId }, relations: ['sellers'] })
+            // let branch = await this.branchRepository.findOne({ where: { id: +branchId }, relations: ['sellers'] })
+            let branch = await this.branchRepository.createQueryBuilder('branch')
+            .where('branch.id = :id' , {id : +branchId})
+            .leftJoinAndSelect('branch.sellers' , 'sellers')
+            .andWhere('sellers.isActive = :isActive' , {isActive : true}).getOne()
             if (!branch) {
                 return next(new responseModel(req, res, 'شعبه مورد نظر در سیستم ثبت نشده است', 'branch', 500, 'شعبه مورد نظر در سیستم ثبت نشده است', null))
             }
