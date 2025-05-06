@@ -22,13 +22,13 @@ export const Routes = [
     action: "addSeller"
 },{
     method: "post",
-    route: "/active",
+    route: "/active/:branchId",
     controller: branchController,
     middlewares:[adminMiddleware],
     action: "deActiveBranch"
 },{
     method: "post",
-    route: "/seller/active/:branchId",
+    route: "/seller/active/:sellerId",
     controller: branchController,
     middlewares:[adminMiddleware],
     action: "deActiveSeller"
