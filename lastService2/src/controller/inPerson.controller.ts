@@ -564,7 +564,7 @@ export default class inPersonController {
         if (!error.isEmpty()) {
             return next(new responseModel(req, res, error['errors'][0].msg , 'admin service', 400, error['errors'][0].msg, null))
         }
-        let { goldPrice, goldWeight, invoiceId, totalPrice, nationalCode, description , destCardPan} = req.body;
+        let { goldPrice, goldWeight, invoiceId, totalPrice, nationalCode, description , destCardPan , paymentMethod} = req.body;
         if (!goldPrice || !goldWeight || !invoiceId || !totalPrice || !nationalCode) {
             return next(new responseModel(req, res, '' ,'admin service', 400, 'لطفا ورودی هارا با دقت پر کنید', null))
         }
@@ -592,8 +592,9 @@ export default class inPersonController {
                 goldWeight: goldWeight,
                 totalPrice: totalPrice,
                 invoiceId: invoiceId,
+                destCardPan : destCardPan,
                 tradeType:2,
-                // paymentMethod : paymentMethod,
+                paymentMethod : paymentMethod,
                 description: description,
                 status: 'pending',
                 date: new Date().toLocaleString('fa-IR').split(',')[0],

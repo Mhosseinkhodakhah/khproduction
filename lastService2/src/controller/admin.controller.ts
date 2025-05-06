@@ -485,7 +485,7 @@ export default class adminController {
             await queryRunner.commitTransaction()
             await this.smsService.sendGeneralMessage(transACtion.wallet.user.phoneNumber,"approveWithdrawal" ,transACtion.wallet.user.firstName,transACtion.amount ,transACtion.wallet.user.bankAccounts[0].cardNumber)
             let actions = `\u202B${req.user.firstName} ${req.user.lastName} برداشت کاربر ${transACtion.wallet.user.firstName} ${transACtion.wallet.user.lastName} را تایید کرد\u202C`
-            await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
+            this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
                  'تایید برداشت' , actions , {
                 userName : transACtion.wallet.user.firstName,
                 lastName : transACtion.wallet.user.lastName,
