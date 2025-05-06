@@ -31,6 +31,11 @@ export class sellers {
     @JoinColumn()
     transActions : transAction[]
 
+
+    @Column({type : 'bool' , default : true})
+    isActive : boolean
+
+
     @CreateDateColumn()
     createdAt : Date;
 

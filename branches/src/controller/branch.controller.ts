@@ -17,7 +17,6 @@ export default class branchController {
     private loggerService = new logger()
 
 
-
     /**
      * its for creating new branch by admin . . .
      * @param req 

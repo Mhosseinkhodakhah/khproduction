@@ -20,5 +20,7 @@ export class branche {
     @JoinColumn()
     sellers : sellers[]
 
+    @Column({type : 'bool' , default : true})
+    isActive : boolean
 
 }
