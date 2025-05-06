@@ -54,6 +54,7 @@ def analyze(request):
         if (body['report'] == 3):
             # print('users')
             res = userMaker.getData(body['auth'] , body['startDate'] , body['endDate'] , body['startTime'] , body['endTime'])
+            print('respons is fuckingggg' , res)
             print(f'user {decoded['firstName']} {decoded['lastName']} create new report in کاربران')
 
         if (body['report'] == 4):
