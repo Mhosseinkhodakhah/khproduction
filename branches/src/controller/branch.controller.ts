@@ -172,7 +172,13 @@ export default class branchController {
     }
 
 
-
+    /**
+     * this end point is for deactivation of selelr
+     * @param req 
+     * @param res 
+     * @param next 
+     * @returns 
+     */
     async deActiveSeller(req: Request, res: Response, next: NextFunction){
         try {
         let sellerId = req.params.sellerId;
@@ -207,7 +213,7 @@ export default class branchController {
      */
     async getAllBranches(req: Request, res: Response, next: NextFunction) {
         try {
-            let branches = await this.branchRepository.find({where : {isActive : true}})
+            let branches = await this.branchRepository.find({ where: { isActive: true } })
             return next(new responseModel(req, res, '', 'branch', 200, null, branches))
         } catch (error) {
             console.log('get all branches hass error >>> ', error)
@@ -229,13 +235,13 @@ export default class branchController {
             let branchId = req.params.branchId;
             // let branch = await this.branchRepository.findOne({ where: { id: +branchId }, relations: ['sellers'] })
             let branch = await this.branchRepository.createQueryBuilder('branch')
-            .where('branch.id = :id' , {id : +branchId})
-            .leftJoinAndSelect('branch.sellers' , 'sellers')
-            .andWhere('sellers.isActive = :isActive' , {isActive : true}).getOne()
+                .where('branch.id = :id', { id: +branchId })
+                .leftJoinAndSelect('branch.sellers', 'sellers')
+                .andWhere('sellers.isActive = :isActive', { isActive: true }).getOne()
             if (!branch) {
                 return next(new responseModel(req, res, 'شعبه مورد نظر در سیستم ثبت نشده است', 'branch', 500, 'شعبه مورد نظر در سیستم ثبت نشده است', null))
             }
-            for (let i= 0 ; i < branch.sellers.length ; i ++){
+            for (let i = 0; i < branch.sellers.length; i++) {
                 let elem = branch.sellers[i]
                 branch.sellers[i].code = `کد ${branch.sellers[i].code}-${branch.sellers[i].firstName[0]}.${branch.sellers[i].lastName}`
             }

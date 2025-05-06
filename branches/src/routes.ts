@@ -39,14 +39,14 @@ export const Routes = [
     method: "get",
     route: "/all",
     controller: branchController,
-    middlewares:[],
+    middlewares:[authenticate],
     action: "getAllBranches"
 },
 {
     method: "get",
     route: "/seller/all/:branchId",
     controller: branchController,
-    middlewares:[],
+    middlewares:[authenticate],
     action: "getSellers"
 },
 {
@@ -95,5 +95,4 @@ export const Routes = [
     middlewares:[],
     action: "getAllTransACtions"
 }
-
 ]
