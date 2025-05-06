@@ -241,6 +241,7 @@ export class UserController {
         console.log('after update accessPoints', finalAccess)
         admin.accessPoints = finalAccess
         await this.adminRepository.save(admin)
+        console.log(req.user.userId)
         let mainAdmin = await this.adminRepository.findOne({where : {id : +req.user.userId}})
         let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} سطح دسترسی مربوط به ادمین ${admin.firstName} ${admin.lastName} را تغییر داد\u202C`
         this.InterService.addNewAdminLog({firstName : mainAdmin.firstName , lastName : mainAdmin.lastName , phoneNumber : mainAdmin.phoneNumber} ,
