@@ -736,5 +736,17 @@ export default class adminController {
         return next(new responseModel(req, res, '', 'admin service', 200, null, all))
     }
 
-    
+
+    async getSpecificGlance(req: Request, res: Response, next: any){
+        if (!req.params.id || req.params.id == ''){
+            return next(new responseModel(req, res, 'ای دیی کاربر نا معتبر', 'admin service', 400, 'کاربر نا معتبر', null))
+        }
+        let all = await this.userRepository.findOne({where : {id : +req.params.id} , relations : ['wallet' , 'sells' , 'buys' , 'bankAccounts']})
+        if (!all){
+            return next(new responseModel(req, res, 'کاربر یافت نشد', 'admin service', 400, 'کاربر یافت نشد', null))
+        }
+        return next(new responseModel(req, res, '', 'admin service', 200, null, all))
+    }
+
+
 }
