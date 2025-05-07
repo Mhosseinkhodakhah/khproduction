@@ -801,6 +801,12 @@ export const Routes = [
     action: "transport",
     middlwares: [adminMiddleware]
 },
-
+{
+    method: "post",
+    route: "/admin/transPort",
+    controller: adminController,
+    action: "transferUserGoldWeight",
+    middlwares: [adminMiddleware]
+},
 ]
 

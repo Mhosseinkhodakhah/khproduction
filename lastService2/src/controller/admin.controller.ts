@@ -1002,4 +1002,12 @@ export default class adminController {
             await queryRunner.release()
         }
     }
+
+
+
+    async transferUserGoldWeight(req: Request, res: Response, next: NextFunction){
+
+        return next(new responseModel(req, res, 'این کاربر در لیست کاربران قدیمی یافت نشد.', 'admin service', 200, null, null))
+
+    }
 }
