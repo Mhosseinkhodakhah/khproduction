@@ -732,7 +732,11 @@ export default class adminController {
 
 
     async getUsersForGlance(req: Request, res: Response, next: any){
-        let all = await this.userRepository.find({where : {isSystemUser : false} , relations : ['wallet'] , order : {'createdAt' : 'DESC'}})
+        // let all = await this.userRepository.find({where : {isSystemUser : false} , relations : ['wallet'] , order : {'createdAt' : 'DESC'}})
+        let all = await this.userRepository.createQueryBuilder('user')
+        .leftJoinAndSelect('user.wallet' , 'wallet')
+        .orderBy('wallet.balance' , 'ASC')
+        .getMany()
         return next(new responseModel(req, res, '', 'admin service', 200, null, all))
     }
 
