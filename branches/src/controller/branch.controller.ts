@@ -49,6 +49,7 @@ export default class branchController {
         }
     }
 
+
     /**
      * its for add new seller for specific branch by admin
      * @param req 
@@ -99,6 +100,7 @@ export default class branchController {
     }
 
     
+
     async deleteSeller(req: Request, res: Response, next: NextFunction){
         
         try {
@@ -120,7 +122,6 @@ export default class branchController {
         }
 
     }
-
 
 
     async deleteBranch(req: Request, res: Response, next: NextFunction){
@@ -237,7 +238,7 @@ export default class branchController {
             let branch = await this.branchRepository.createQueryBuilder('branch')
                 .where('branch.id = :id', { id: +branchId })
                 .leftJoinAndSelect('branch.sellers', 'sellers')
-                .andWhere('sellers.isActive = :isActive', { isActive: true }).getOne()
+                .andWhere('sellers.isActive = :isActive', { isActive: true }).orderBy('sellers.code').getOne()
             if (!branch) {
                 return next(new responseModel(req, res, 'شعبه مورد نظر در سیستم ثبت نشده است', 'branch', 500, 'شعبه مورد نظر در سیستم ثبت نشده است', null))
             }
