@@ -24,7 +24,7 @@ import { estimatier } from "../util/estimate.util"
 
 
 export default class inPersonController {
-
+    
     private userRepository = AppDataSource.getRepository(User)
     private walletRepository = AppDataSource.getRepository(Wallet)
     private invoicesRepository = AppDataSource.getRepository(Invoice)
@@ -240,7 +240,7 @@ export default class inPersonController {
         return (new Date().getTime()).toString()
     }
 
-
+    
     private async generateOtp() {
         let firstRandomoe = Math.floor(1000 + Math.random() * 9000)
         return firstRandomoe
@@ -783,9 +783,6 @@ export default class inPersonController {
         // })
         return next(new responseModel(req, res, '' ,'admin service', 200, null, transActions))
     }
-
-
-
 
 
     /**

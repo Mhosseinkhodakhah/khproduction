@@ -104,7 +104,7 @@ export class UserController {
             if (!seller) {
                 return next(new responseModel(req, res, 'فروشنده مورد نظر در لیست فروشندگان این شعبه وجود ندارد', 'branch', 400, 'فروشنده مورد نظر در لیست فروشندگان این شعبه وجود ندارد', null))
             }
-            
+            console.log(seller)
             let data = await this.interService.getWalletData(+userId)
             if (!data || data == 400 || data == 500 || data == 'unknown') {
                 return next(new responseModel(req, res, 'در حال حاظر امکان استفاده از سرویس استفاده از صندوق طلا وجود ندارد', 'branch', 500, 'در حال حاظر امکان استفاده از سرویس استفاده از صندوق طلا وجود ندارد', null))
@@ -149,8 +149,7 @@ export class UserController {
                 time: new Date().toLocaleString('fa-IR').split(',')[1],
                 seller: seller,
             })
-
-
+            
             let createdTransAction = await queryRunner.manager.save(TrnasAction)
             await queryRunner.commitTransaction()
             return next(new responseModel(req, res, 'تراکنش با موفقیت ایجاد شد', 'branch', 200, null, createdTransAction))

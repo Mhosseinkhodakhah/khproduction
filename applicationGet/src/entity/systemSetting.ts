@@ -11,6 +11,14 @@ export class systemSetting{
     @Column({type : 'int' , default : 1})
     tradePermision : number;
 
+    @Column({type : 'int' , default : 1})
+    registerPermision : number;
+
+    @Column({type : 'int' , default : 1})
+    depositPermision : number;
+
+    @Column({type : 'int' , default : 1})
+    withdrawPermision : number;
 
     @Column({type : 'varchar' , default : 'default admin'})
     admin : string
