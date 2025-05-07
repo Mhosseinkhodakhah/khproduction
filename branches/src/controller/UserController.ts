@@ -86,21 +86,25 @@ export class UserController {
         await queryRunner.connect()
         await queryRunner.startTransaction()
         try {
-            let branch = await this.branchRepository.findOne({ where: { id: branchId } })
+            let branch = await this.branchRepository.findOne({ where: { id: +branchId } })
+            // let branch = await this.branchRepository.createQueryBuilder('branch')
+            // .where('branch.id = :id' , {id : +branchId})
+            // .leftJoinAndSelect('branch.sellers' , 'seller')
+
             if (!branch) {
                 return next(new responseModel(req, res, 'شعبه مورد نظر در سامانه ثبت نشده است', 'branch', 400, 'شعبه مورد نظر در سامانه ثبت نشده است', null))
             }
 
             let seller = await this.sellerRepository.findOne({
                 where: {
-                    branch: branch
+                    id : +sellerId
                 }
             })
 
             if (!seller) {
                 return next(new responseModel(req, res, 'فروشنده مورد نظر در لیست فروشندگان این شعبه وجود ندارد', 'branch', 400, 'فروشنده مورد نظر در لیست فروشندگان این شعبه وجود ندارد', null))
             }
-
+            
             let data = await this.interService.getWalletData(+userId)
             if (!data || data == 400 || data == 500 || data == 'unknown') {
                 return next(new responseModel(req, res, 'در حال حاظر امکان استفاده از سرویس استفاده از صندوق طلا وجود ندارد', 'branch', 500, 'در حال حاظر امکان استفاده از سرویس استفاده از صندوق طلا وجود ندارد', null))

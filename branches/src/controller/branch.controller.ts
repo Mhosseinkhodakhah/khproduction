@@ -49,7 +49,7 @@ export default class branchController {
         }
     }
 
-
+    
     /**
      * its for add new seller for specific branch by admin
      * @param req 
@@ -70,7 +70,6 @@ export default class branchController {
             let selelrExistance = await this.sellerRepository.exists({where : {
                 firstName : req.body.firstName,
                 lastName : req.body.lastName,
-                
             }
         })
         if (selelrExistance){
@@ -87,7 +86,7 @@ export default class branchController {
                 branch : branch,
                 code : (sellers.length+1).toString()
              })
-
+             
              await this.sellerRepository.save(newSeller)
              let actions = `\u202Bادمین ${req.user.firstName} ${req.user.lastName} یک فروشنده جدید با نام ${req.body.firstName} ${req.body.lastName} و مدیریت شعبه ی  ${branch.name} ایجاد کرد\u202C`
              await this.loggerService.addNewAdminLog({ firstName: req.user.firstName, lastName: req.user.lastName, phoneNumber: req.user.phoneNumber },
