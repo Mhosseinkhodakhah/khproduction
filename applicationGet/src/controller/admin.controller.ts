@@ -733,13 +733,14 @@ export default class adminController {
 
     async getUsersForGlance(req: Request, res: Response, next: any){
         // let all = await this.userRepository.find({where : {isSystemUser : false} , relations : ['wallet'] , order : {'createdAt' : 'DESC'}})
-        let recharge = await this.userRepository.findOne({where : {isSystemUser : true} , relations : ['wallet']})
-        recharge.wallet.goldWeight = 439.559;
-        recharge.wallet.balance = 0
-        await this.walletRepository.save(recharge.wallet)
+        // let recharge = await this.userRepository.findOne({where : {isSystemUser : true} , relations : ['wallet']})
+        // recharge.wallet.goldWeight = 439.559;
+        // recharge.wallet.balance = 0
+        // await this.walletRepository.save(recharge.wallet)
         let all = await this.userRepository.createQueryBuilder('user')
         .leftJoinAndSelect('user.wallet' , 'wallet')
-        .orderBy('wallet.balance' , 'ASC')
+        .where('user.isSystemUser = :isSystem' , {isSystem : false})
+        .orderBy('wallet.balance' , 'DESC')
         .getMany()
         return next(new responseModel(req, res, '', 'admin service', 200, null, all))
     }
