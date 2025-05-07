@@ -732,7 +732,7 @@ export default class adminController {
 
 
     async getUsersForGlance(req: Request, res: Response, next: any){
-        let all = await this.userRepository.find({relations : ['wallet']})
+        let all = await this.userRepository.find({where : {isSystemUser : false} , relations : ['wallet']})
         return next(new responseModel(req, res, '', 'admin service', 200, null, all))
     }
 
@@ -741,7 +741,7 @@ export default class adminController {
         if (!req.params.id || req.params.id == ''){
             return next(new responseModel(req, res, 'ای دیی کاربر نا معتبر', 'admin service', 400, 'کاربر نا معتبر', null))
         }
-        let all = await this.userRepository.findOne({where : {id : +req.params.id} , relations : ['wallet' , 'sells' , 'buys' , 'bankAccounts']})
+        let all = await this.userRepository.findOne({where : {id : +req.params.id , isSystemUser : false} , relations : ['wallet' , 'sells' , 'buys' , 'bankAccounts']})
         if (!all){
             return next(new responseModel(req, res, 'کاربر یافت نشد', 'admin service', 400, 'کاربر یافت نشد', null))
         }
