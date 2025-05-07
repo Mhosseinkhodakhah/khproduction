@@ -123,7 +123,13 @@ export default class branchController {
 
     }
 
-
+    /**
+     * this function is for deleting branches
+     * @param req 
+     * @param res 
+     * @param next 
+     * @returns 
+     */
     async deleteBranch(req: Request, res: Response, next: NextFunction){
         try {
         let branchId = req.params.sellerId;
@@ -149,7 +155,13 @@ export default class branchController {
     }
 
 
-
+    /**
+     * this function is for deactivation of branches
+     * @param req 
+     * @param res 
+     * @param next 
+     * @returns 
+     */
     async deActiveBranch(req: Request, res: Response, next: NextFunction){
         try {
         let branchId = req.params.branchId;
@@ -234,17 +246,18 @@ export default class branchController {
     async getSellers(req: Request, res: Response, next: NextFunction) {
         try {
             let branchId = req.params.branchId;
-            // let branch = await this.branchRepository.findOne({ where: { id: +branchId }, relations: ['sellers'] })
-            let branch = await this.branchRepository.createQueryBuilder('branch')
-                .where('branch.id = :id', { id: +branchId })
-                .leftJoinAndSelect('branch.sellers', 'sellers')
-                .andWhere('sellers.isActive = :isActive', { isActive: true }).orderBy('sellers.code').getOne()
+            let branch = await this.branchRepository.findOne({ where: { id: +branchId }, relations: ['sellers'] })
+            // let branch = await this.branchRepository.createQueryBuilder('branch')
+            //     .where('branch.id = :id', { id: +branchId })
+            //     .leftJoinAndSelect('branch.sellers', 'sellers')
+            //     .andWhere('sellers.isActive = :isActive', { isActive: true }).orderBy('sellers.code').getOne()
             if (!branch) {
                 return next(new responseModel(req, res, 'شعبه مورد نظر در سیستم ثبت نشده است', 'branch', 500, 'شعبه مورد نظر در سیستم ثبت نشده است', null))
             }
-            for (let i = 0; i < branch.sellers.length; i++) {
-                let elem = branch.sellers[i]
-                branch.sellers[i].code = `کد ${branch.sellers[i].code}-${branch.sellers[i].firstName[0]}.${branch.sellers[i].lastName}`
+            let sellers = await this.sellerRepository.find({where : {branch : branch} , order : {'code' : 'ASC'}})
+            for (let i = 0; i < sellers.length; i++) {
+                let elem = sellers[i]
+                sellers[i].code = `کد ${sellers[i].code}-${sellers[i].firstName[0]}.${sellers[i].lastName}`
             }
             return next(new responseModel(req, res, '', 'branch', 200, null, branch.sellers))
         } catch (error) {
@@ -252,8 +265,6 @@ export default class branchController {
             return next(new responseModel(req, res, 'خطای داخلی سیستم', 'branch', 500, 'خطای داخلی سیستم', null))
         }
     }
-
-
 
 
      /**
@@ -296,6 +307,15 @@ export default class branchController {
         }
     }
 
+
+
+    /**
+     * this function is for get all transActions
+     * @param req 
+     * @param res 
+     * @param next 
+     * @returns 
+     */
     async getAllTransACtions(req: Request, res: Response, next: NextFunction){
        try {
         let type = req.query.type;
@@ -325,7 +345,5 @@ export default class branchController {
         return next(new responseModel(req, res, 'خطای داخلی سیستم', 'branch', 500, 'خطای داخلی سیستم', null))
        }
     }
-
-
 
 }
