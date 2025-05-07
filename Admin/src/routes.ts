@@ -11,7 +11,7 @@ export const Routes = [{
     method: "post",
     route: "/menu/create",
     controller: UserController,
-    middleware: [],
+    middleware: [authMiddleware],
     action: "createNewMenu",
 }, {
     method: "post",
