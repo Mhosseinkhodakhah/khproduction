@@ -250,7 +250,7 @@ export default class branchController {
             let branch = await this.branchRepository.createQueryBuilder('branch')
                 .where('branch.id = :id', { id: +branchId })
                 .leftJoinAndSelect('branch.sellers', 'sellers')
-                .andWhere('sellers.isActive = :isActive', { isActive: true }).orderBy('createdAt').getOne()
+                .andWhere('sellers.isActive = :isActive', { isActive: true }).orderBy('sellers.createdAt').getOne()
             if (!branch) {
                 return next(new responseModel(req, res, 'شعبه مورد نظر در سیستم ثبت نشده است', 'branch', 500, 'شعبه مورد نظر در سیستم ثبت نشده است', null))
             }
