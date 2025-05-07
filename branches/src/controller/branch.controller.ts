@@ -254,12 +254,12 @@ export default class branchController {
             if (!branch) {
                 return next(new responseModel(req, res, 'شعبه مورد نظر در سیستم ثبت نشده است', 'branch', 500, 'شعبه مورد نظر در سیستم ثبت نشده است', null))
             }
-            let sellers = await this.sellerRepository.find({where : {branch : branch} , order : {'code' : 'ASC'}})
+            let sellers = await this.sellerRepository.find({where : {branch : branch} , order : {'createdAt' : 'ASC'}})
             for (let i = 0; i < sellers.length; i++) {
                 let elem = sellers[i]
                 sellers[i].code = `کد ${sellers[i].code}-${sellers[i].firstName[0]}.${sellers[i].lastName}`
             }
-            return next(new responseModel(req, res, '', 'branch', 200, null, branch.sellers))
+            return next(new responseModel(req, res, '', 'branch', 200, null, sellers))
         } catch (error) {
             console.log('error >>> ', error)
             return next(new responseModel(req, res, 'خطای داخلی سیستم', 'branch', 500, 'خطای داخلی سیستم', null))
