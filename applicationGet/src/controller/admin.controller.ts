@@ -739,7 +739,7 @@ export default class adminController {
         // await this.walletRepository.save(recharge.wallet)
         let all = await this.userRepository.createQueryBuilder('user')
         .leftJoinAndSelect('user.wallet' , 'wallet')
-        .where('user.isSystemUser = :isSystem' , {isSystem : false})
+        // .where('user.isSystemUser = :isSystem' , {isSystem : false})
         .orderBy('wallet.balance' , 'DESC')
         .getMany()
         return next(new responseModel(req, res, '', 'admin service', 200, null, all))
