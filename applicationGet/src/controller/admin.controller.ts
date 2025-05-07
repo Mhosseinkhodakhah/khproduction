@@ -732,7 +732,7 @@ export default class adminController {
 
 
     async getUsersForGlance(req: Request, res: Response, next: any){
-        let all = await this.userRepository.find({where : {isSystemUser : false} , relations : ['wallet']})
+        let all = await this.userRepository.find({where : {isSystemUser : false} , relations : ['wallet'] , order : {'createdAt' : 'DESC'}})
         return next(new responseModel(req, res, '', 'admin service', 200, null, all))
     }
 
@@ -747,6 +747,4 @@ export default class adminController {
         }
         return next(new responseModel(req, res, '', 'admin service', 200, null, all))
     }
-
-
 }
