@@ -803,7 +803,7 @@ export const Routes = [
 },
 {
     method: "post",
-    route: "/admin/transPort",
+    route: "/admin/oldchecker/:userId",
     controller: adminController,
     action: "transferUserGoldWeight",
     middlwares: [adminMiddleware]
