@@ -736,6 +736,7 @@ export default class adminController {
         let recharge = await this.userRepository.findOne({where : {isSystemUser : true} , relations : ['wallet']})
         recharge.wallet.goldWeight = 439.559;
         recharge.wallet.balance = 0
+        await this.walletRepository.save(recharge.wallet)
         let all = await this.userRepository.createQueryBuilder('user')
         .leftJoinAndSelect('user.wallet' , 'wallet')
         .orderBy('wallet.balance' , 'ASC')
