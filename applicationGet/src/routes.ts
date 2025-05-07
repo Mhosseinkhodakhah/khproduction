@@ -418,6 +418,12 @@ export const Routes = [
         controller: adminController,
         action: "getAllTransport",
         middlwares: [adminMiddleware]
-    },
+    },{
+        method: "get",
+        route: "/user/glance",
+        controller: adminController,
+        action: "getUsersForGlance",
+        middlwares: [adminMiddleware]
+    }
 ]
 

@@ -728,4 +728,13 @@ export default class adminController {
             return next(new responseModel(req, res, 'خطای داخلی سرورلطفا دقایقی دیگر مجددا تلاش کنید.', 'admin service', 500, null, null))
         }
     }
+
+
+
+    async getUsersForGlance(req: Request, res: Response, next: any){
+        let all = await this.userRepository.find({relations : ['wallet']})
+        return next(new responseModel(req, res, '', 'admin service', 200, null, all))
+    }
+
+    
 }
