@@ -774,7 +774,6 @@ export default class adminController {
 
 
     async getUsersForGlance(req: Request, res: Response, next: any){
-        
         const page = parseInt(req.query.page) || 1;
         const pageSize = parseInt(req.query.size) || 100;
         let searchWord = req.query.search
@@ -786,11 +785,6 @@ export default class adminController {
             console.log('its hereeeee1111')
             let users = await this.userRepository.createQueryBuilder('user')
                 .where('(user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { search: reg })
-                .leftJoinAndSelect('user.wallet' , 'wallet')
-                .leftJoinAndSelect('user.sells' , 'sells')
-                .leftJoinAndSelect('wallet.transactions' , 'walletTransActions')
-                .leftJoinAndSelect('user.buys' , 'buys')
-                .leftJoinAndSelect('user.bankAccounts' , 'bankAccounts')
                 .andWhere('user.isSystemUser = :bool' , {bool : false})
                 .take(+pageSize)
                 .skip(+((+page - 1) * +pageSize))
@@ -800,7 +794,7 @@ export default class adminController {
                 .where(' (user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { search: reg })
                 .getCount()
             console.log('total items >>> ', totalItem)
-            
+
             return next(new responseModel(req, res, '', 'get all users', 200, null, { users , totalItem }))
         } else if (searchWord === '') {
             console.log('its hereeeee1111')
@@ -834,4 +828,5 @@ export default class adminController {
         }
         return next(new responseModel(req, res, '', 'admin service', 200, null, all))
     }
+
 }
