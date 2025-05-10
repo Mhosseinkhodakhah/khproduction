@@ -775,11 +775,12 @@ export default class adminController {
 
     async getUsersForGlance(req: Request, res: Response, next: any){
         const page = parseInt(req.query.page) || 1;
-        const pageSize = parseInt(req.query.size) || 100;
+        const pageSize = parseInt(req.query.perPage) || 50;
+
         let searchWord = req.query.search
         let reg = `%${searchWord}%`
-
         console.log('params', page, pageSize, searchWord)
+
         let totalItem = await this.userRepository.count()
         if (!!searchWord) {
             console.log('its hereeeee1111')
