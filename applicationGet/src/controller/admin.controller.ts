@@ -785,7 +785,7 @@ export default class adminController {
         if (searchWord != '') {
             console.log('its hereeeee1111')
             let users = await this.userRepository.createQueryBuilder('user')
-                .where(' (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { search: reg })
+                .where(' (user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { search: reg })
                 .leftJoinAndSelect('user.wallet' , 'wallet')
                 .leftJoinAndSelect('user.sells' , 'sells')
                 .leftJoinAndSelect('user.buys' , 'buys')
@@ -795,7 +795,7 @@ export default class adminController {
                 .getMany()
 
             totalItem = await this.userRepository.createQueryBuilder('user')
-                .where(' (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { search: reg })
+                .where(' (user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { search: reg })
                 .getCount()
             console.log('total items >>> ', totalItem)
             return next(new responseModel(req, res, '', 'get all users', 200, null, { users , totalItem }))
