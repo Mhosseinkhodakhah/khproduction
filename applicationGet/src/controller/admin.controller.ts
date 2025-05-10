@@ -783,8 +783,13 @@ export default class adminController {
         console.log('params', page, pageSize, searchWord)
         let totalItem = await this.userRepository.count()
         if (searchWord != '') {
+            console.log('its hereeeee1111')
             let users = await this.userRepository.createQueryBuilder('user')
                 .where(' (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { search: reg })
+                .leftJoinAndSelect('user.wallet' , 'wallet')
+                .leftJoinAndSelect('user.sells' , 'sells')
+                .leftJoinAndSelect('user.buys' , 'buys')
+                .leftJoinAndSelect('user.bankAccounts' , 'bankAccounts')
                 .take(+pageSize)
                 .skip(+((+page - 1) * +pageSize))
                 .getMany()
@@ -793,18 +798,16 @@ export default class adminController {
                 .where(' (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { search: reg })
                 .getCount()
             console.log('total items >>> ', totalItem)
-            return next(new responseModel(req, res, '', 'get all users', 200, null, { users, totalItem }))
+            return next(new responseModel(req, res, '', 'get all users', 200, null, { users , totalItem }))
         } else if (searchWord === '') {
+            console.log('its hereeeee1111')
             const users = await this.userRepository.find({
-                where: {
-                    verificationStatus: 2
-                },
-                relations: ['wallet', 'sells', 'buys'],
+                relations: ['wallet', 'sells', 'buys' , 'bankAccounts'],
                 take: pageSize,
                 skip: (page - 1) * pageSize
             });
             console.log('tedad users', users.length)
-            return next(new responseModel(req, res, '', 'get all users', 200, null, { users, totalItem }))
+            return next(new responseModel(req, res, '', 'get all users', 200, null, { users , totalItem }))
         } else {
             return next(new responseModel(req, res, '', 'get all users', 400, 'bad request', null))
         }

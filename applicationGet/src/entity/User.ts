@@ -99,7 +99,7 @@ export class User {
 
     @Column({ default: false })
     isSystemUser : boolean
-
+    
     @Column({ default: false })
     isHaveBank : boolean
 
