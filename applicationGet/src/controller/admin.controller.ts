@@ -800,6 +800,7 @@ export default class adminController {
         } else {
             console.log('its hereeeee2222')
             const users = await this.userRepository.find({
+                where : {isSystemUser : false},
                 relations: ['wallet', 'sells', 'buys' , 'bankAccounts'],
                 take: pageSize,
                 skip: (page - 1) * pageSize
