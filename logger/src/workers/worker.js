@@ -110,6 +110,24 @@ class interConnection {
                     console.log(error)
                 }
                 break;
+            case 'transAction':
+                try {
+                    let rawRespons = await fetch('http://localhost:3011/monitor/all', { method: 'GET' })
+                    response = await rawRespons.json()
+                    console.log('response from product status . . .', response)
+                } catch (error) {
+                    console.log(error)
+                }
+                break;
+                case 'trSideCar':
+                    try {
+                        let rawRespons = await fetch('http://localhost:3012/monitor/all', { method: 'GET' })
+                        response = await rawRespons.json()
+                        console.log('response from product status . . .', response)
+                    } catch (error) {
+                        console.log(error)
+                    }
+                    break;
             case 'userSideCar':
                 try {
                     let rawRespons = await fetch('http://localhost:3001/monitor/all', { method: 'GET' })
@@ -157,6 +175,8 @@ setInterval(async () => {
     let goldPriceService = await interConnectionService.getStatus('goldPriceService')
     let queryServiceResponse = await interConnectionService.getStatus('queryService')
     let userResponse = await interConnectionService.getStatus('user')
+    let transActionResponse = await interConnectionService.getStatus('transAction')
+    let trSideCarResponse = await interConnectionService.getStatus('trSideCar')
     let branchResponse = await interConnectionService.getStatus('branch')
     let adminResponse = await interConnectionService.getStatus('admin')
     let oldUserResponse = await interConnectionService.getStatus('oldUser')
@@ -169,20 +189,32 @@ setInterval(async () => {
         console.log('gateway service seems like is down . . .')
         result.push({ status: 0, service: 'gateway' })
     } else {
-        result.push({  status: 1,  total : gatewayResponse, service: 'gateway' })
+        result.push({ status: 1, total: gatewayResponse, service: 'gateway' })
     }
     if (!userResponse) {
         console.log('user service seems like is down . . .')
         result.push({ status: 0, service: 'user' })
     } else {
-        result.push({  status: 1,  total : userResponse, service: 'user' })
-    } 
+        result.push({ status: 1, total: userResponse, service: 'user' })
+    }
+    if (!transActionResponse) {
+        console.log('transAction service seems like is down . . .')
+        result.push({ status: 0, service: 'transAction' })
+    } else {
+        result.push({ status: 1, total: transActionResponse, service: 'transAction' })
+    }
+    if (!trSideCarResponse) {
+        console.log('transAction sideCar service seems like is down . . .')
+        result.push({ status: 0, service: 'transAction sideCar' })
+    } else {
+        result.push({ status: 1, total: trSideCarResponse, service: 'transAction sideCar' })
+    }
     if (!goldPriceService) {
         console.log('goldPrice service service seems like is down . . .')
         result.push({ status: 0, service: 'goldPrice service' })
     } else {
-        result.push({  status: 1,  total : goldPriceService, service: 'goldPrice service' })
-    } 
+        result.push({ status: 1, total: goldPriceService, service: 'goldPrice service' })
+    }
     if (!adminNodeResponse) {
         console.log('adminNode service seems like is down . . .')
         result.push({ status: 0, service: 'adminNode' })
