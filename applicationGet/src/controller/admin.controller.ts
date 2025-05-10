@@ -797,7 +797,7 @@ export default class adminController {
 
             return next(new responseModel(req, res, '', 'get all users', 200, null, { users , totalItem }))
         } else if (searchWord === '') {
-            console.log('its hereeeee1111')
+            console.log('its hereeeee2222')
             const users = await this.userRepository.find({
                 relations: ['wallet', 'sells', 'buys' , 'bankAccounts'],
                 take: pageSize,
