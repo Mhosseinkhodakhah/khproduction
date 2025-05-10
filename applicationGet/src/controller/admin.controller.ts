@@ -785,11 +785,13 @@ export default class adminController {
         if (searchWord != '') {
             console.log('its hereeeee1111')
             let users = await this.userRepository.createQueryBuilder('user')
-                .where(' (user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { search: reg })
+                .where('(user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { search: reg })
                 .leftJoinAndSelect('user.wallet' , 'wallet')
                 .leftJoinAndSelect('user.sells' , 'sells')
+                .leftJoinAndSelect('wallet.transactions' , 'walletTransActions')
                 .leftJoinAndSelect('user.buys' , 'buys')
                 .leftJoinAndSelect('user.bankAccounts' , 'bankAccounts')
+                .andWhere('user.isSystemUser = :bool' , {bool : false})
                 .take(+pageSize)
                 .skip(+((+page - 1) * +pageSize))
                 .getMany()
@@ -798,6 +800,7 @@ export default class adminController {
                 .where(' (user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { search: reg })
                 .getCount()
             console.log('total items >>> ', totalItem)
+            
             return next(new responseModel(req, res, '', 'get all users', 200, null, { users , totalItem }))
         } else if (searchWord === '') {
             console.log('its hereeeee1111')
@@ -825,7 +828,7 @@ export default class adminController {
         if (!req.params.id || req.params.id == ''){
             return next(new responseModel(req, res, 'ای دیی کاربر نا معتبر', 'admin service', 400, 'کاربر نا معتبر', null))
         }
-        let all = await this.userRepository.findOne({where : {id : +req.params.id , isSystemUser : false} , relations : ['wallet' , 'sells' , 'buys' , 'bankAccounts']})
+        let all = await this.userRepository.findOneOrFail({where : {id : +req.params.id , isSystemUser : false} , relations : ['wallet' , 'wallet.transactions' , 'sells' , 'buys' , 'bankAccounts']})
         if (!all){
             return next(new responseModel(req, res, 'کاربر یافت نشد', 'admin service', 400, 'کاربر یافت نشد', null))
         }
