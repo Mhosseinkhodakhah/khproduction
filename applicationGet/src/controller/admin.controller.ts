@@ -781,7 +781,7 @@ export default class adminController {
 
         console.log('params', page, pageSize, searchWord)
         let totalItem = await this.userRepository.count()
-        if (searchWord != '') {
+        if (!searchWord) {
             console.log('its hereeeee1111')
             let users = await this.userRepository.createQueryBuilder('user')
                 .where('(user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { search: reg })
@@ -796,7 +796,7 @@ export default class adminController {
             console.log('total items >>> ', totalItem)
 
             return next(new responseModel(req, res, '', 'get all users', 200, null, { users , totalItem }))
-        } else if (searchWord === '') {
+        } else {
             console.log('its hereeeee2222')
             const users = await this.userRepository.find({
                 relations: ['wallet', 'sells', 'buys' , 'bankAccounts'],
@@ -805,9 +805,7 @@ export default class adminController {
             });
             console.log('tedad users', users.length)
             return next(new responseModel(req, res, '', 'get all users', 200, null, { users , totalItem }))
-        } else {
-            return next(new responseModel(req, res, '', 'get all users', 400, 'bad request', null))
-        }
+        } 
 
 
         // let all = await this.userRepository.createQueryBuilder('user')
