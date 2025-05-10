@@ -781,7 +781,7 @@ export default class adminController {
 
         console.log('params', page, pageSize, searchWord)
         let totalItem = await this.userRepository.count()
-        if (!searchWord) {
+        if (!!searchWord) {
             console.log('its hereeeee1111')
             let users = await this.userRepository.createQueryBuilder('user')
                 .where('(user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { search: reg })
@@ -791,7 +791,7 @@ export default class adminController {
                 .getMany()
 
             totalItem = await this.userRepository.createQueryBuilder('user')
-                .where(' (user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { search: reg })
+                .where('(user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { search: reg })
                 .getCount()
             console.log('total items >>> ', totalItem)
 
