@@ -786,6 +786,7 @@ export default class adminController {
             let users = await this.userRepository.createQueryBuilder('user')
                 .where('(user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { search: reg })
                 .andWhere('user.isSystemUser = :bool' , {bool : false})
+                .leftJoinAndSelect('user.wallet' , 'wallet')
                 .take(+pageSize)
                 .skip(+((+page - 1) * +pageSize))
                 .getMany()
