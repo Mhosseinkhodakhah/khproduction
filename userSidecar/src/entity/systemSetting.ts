@@ -1,7 +1,6 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 
-
 @Entity()
 export class systemSetting{
 
@@ -22,7 +21,6 @@ export class systemSetting{
 
     @Column({type : 'varchar' , default : 'default admin'})
     admin : string
-
 
     @CreateDateColumn()
     craetedAt : Date;

@@ -731,18 +731,90 @@ export default class adminController {
 
 
 
+    // try {
+    //     console.log('its here for innnnnnnnn')
+    //     const page = parseInt(req.params.page) || 1;
+    //     const pageSize = parseInt(req.params.size) || 100;
+    //     let searchWord = req.query.search
+    //     let reg = `%${searchWord}%`
+    //     console.log('params', page, pageSize, searchWord)
+    //     let totalItem = await this.userRepository.count({
+    //         where: {
+    //             verificationStatus: 2
+    //         }
+    //     })
+    //     if (searchWord != '') {
+    //         let users = await this.userRepository.createQueryBuilder('user')
+    //             .where(' (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { status: 2, search: reg })
+    //             .take(+pageSize)
+    //             .skip(+((+page - 1) * +pageSize))
+    //             .getMany()
+
+    //         totalItem = await this.userRepository.createQueryBuilder('user')
+    //             .where(' (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { status: 2, search: reg })
+    //             .getCount()
+    //         console.log('total items >>> ', totalItem)
+    //         return next(new response(req, res, 'get all users', 200, null, { users, totalItem }))
+    //     } else if (searchWord === '') {
+    //         const users = await this.userRepository.find({
+    //             where: {
+    //                 verificationStatus: 2
+    //             },
+    //             relations: ['wallet', 'sells', 'buys'],
+    //             take: pageSize,
+    //             skip: (page - 1) * pageSize
+    //         });
+    //         console.log('tedad users', users.length)
+    //         return next(new response(req, res, 'get all users', 200, null, { users, totalItem }))
+    //     } else {
+    //         return next(new response(req, res, 'get all users', 400, 'bad request', null))
+    //     }
+
+
+
+
     async getUsersForGlance(req: Request, res: Response, next: any){
-        // let all = await this.userRepository.find({where : {isSystemUser : false} , relations : ['wallet'] , order : {'createdAt' : 'DESC'}})
-        // let recharge = await this.userRepository.findOne({where : {isSystemUser : true} , relations : ['wallet']})
-        // recharge.wallet.goldWeight = 439.559;
-        // recharge.wallet.balance = 0
-        // await this.walletRepository.save(recharge.wallet)
-        let all = await this.userRepository.createQueryBuilder('user')
-        .leftJoinAndSelect('user.wallet' , 'wallet')
-        .where('user.isSystemUser = :isSystem' , {isSystem : false})
-        .orderBy('wallet.balance' , 'DESC')
-        .getMany()
-        return next(new responseModel(req, res, '', 'admin service', 200, null, all))
+        
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.size) || 100;
+        let searchWord = req.query.search
+        let reg = `%${searchWord}%`
+
+        console.log('params', page, pageSize, searchWord)
+        let totalItem = await this.userRepository.count()
+        if (searchWord != '') {
+            let users = await this.userRepository.createQueryBuilder('user')
+                .where(' (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { search: reg })
+                .take(+pageSize)
+                .skip(+((+page - 1) * +pageSize))
+                .getMany()
+
+            totalItem = await this.userRepository.createQueryBuilder('user')
+                .where(' (user.firstName LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { search: reg })
+                .getCount()
+            console.log('total items >>> ', totalItem)
+            return next(new responseModel(req, res, '', 'get all users', 200, null, { users, totalItem }))
+        } else if (searchWord === '') {
+            const users = await this.userRepository.find({
+                where: {
+                    verificationStatus: 2
+                },
+                relations: ['wallet', 'sells', 'buys'],
+                take: pageSize,
+                skip: (page - 1) * pageSize
+            });
+            console.log('tedad users', users.length)
+            return next(new responseModel(req, res, '', 'get all users', 200, null, { users, totalItem }))
+        } else {
+            return next(new responseModel(req, res, '', 'get all users', 400, 'bad request', null))
+        }
+
+
+        // let all = await this.userRepository.createQueryBuilder('user')
+        // .leftJoinAndSelect('user.wallet' , 'wallet')
+        // .where('user.isSystemUser = :isSystem' , {isSystem : false})
+        // .orderBy('wallet.balance' , 'DESC')
+        // .getMany()
     }
 
 
