@@ -823,7 +823,7 @@ export default class adminController {
         if (!req.params.id || req.params.id == ''){
             return next(new responseModel(req, res, 'ای دیی کاربر نا معتبر', 'admin service', 400, 'کاربر نا معتبر', null))
         }
-        let all = await this.userRepository.findOneOrFail({where : {id : +req.params.id , isSystemUser : false} , relations : ['wallet' , 'wallet.transactions' , 'sells' , 'buys' , 'bankAccounts' , 'type']})
+        let all = await this.userRepository.findOneOrFail({where : {id : +req.params.id , isSystemUser : false} , relations : ['wallet' , 'wallet.transactions' , 'sells' , 'buys' , 'sells.type' , 'buys.type' , 'bankAccounts']})
         if (!all){
             return next(new responseModel(req, res, 'کاربر یافت نشد', 'admin service', 400, 'کاربر یافت نشد', null))
         }
