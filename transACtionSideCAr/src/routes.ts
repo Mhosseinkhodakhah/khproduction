@@ -28,6 +28,12 @@ export const Routes = [
     controller: InvoiceTypeController,
     action: "test",
     middlwares: []
+},{
+    method: "get",
+    route: "/monitor/all",
+    controller: interServiceController,
+    action: "getStatus",                     // get status by logger service
+    middlwares: []
 },
 
 ]
