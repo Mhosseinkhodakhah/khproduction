@@ -654,7 +654,7 @@ export class PhoneInvoiceController {
             let updated = await queryRunner.manager.save(invoiceTransaction)
             await this.estimateWeight.estimateWeight(goldWeight,0)
             await queryRunner.commitTransaction()
-            this.smsService.sendGeneralMessage(user.phoneNumber, "selldasti", user.firstName, goldPrice, totalPrice)
+            this.smsService.sendGeneralMessage(user.phoneNumber, "selldasti", user.firstName, goldWeight, totalPrice)
             
             try {
                 let action = `\u202Bادمین ${req.user.firstName} ${req.user.lastName} تراکنش فروش تلفنی مربوط به کاربر ${invoiceTransaction.seller.firstName} ${invoiceTransaction.seller.lastName} و کد ملی ${invoiceTransaction.seller.nationalCode} را تایید کرد\u202C`
