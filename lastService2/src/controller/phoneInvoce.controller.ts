@@ -152,12 +152,17 @@ export class PhoneInvoiceController {
         const adminId=`${req.user.id}-${req.user.firstName}-${req.user.lastName}`;
 
         const { user, systemUser } = await this.fetchUsers(this.userRepository, userId);
+        let user2 = await this.userRepository.findOne({where : {id : +userId} , relations : ['wallet']})
         await this.ensureWalletsExist(this.walletRepository, user, systemUser);
         // let limitError = await this.checkDailyLimits(this.invoiceRepository, userId, goldWeight);
         // if (limitError) {
         //     return next(new responseModel(req, res, 'create call buy invoce', 400 ,limitError, null))
         // }
         goldWeight = formatGoldWeight(goldWeight)
+
+        if(user2.wallet.goldWeight  <  +goldWeight ){
+            return next(new responseModel(req, res, 'موجودی صندوق طلای کاربر کافی نمی باشد','create sell Invoice call',400,"موجودی صندوق طلای کاربر کافی نمی باشد", null))
+        }
 
         try {
             const invoiceType = await this.invoiceTypeRepository.findOneBy({ title: "sell" });
@@ -609,6 +614,7 @@ export class PhoneInvoiceController {
 
         goldWeight = formatGoldWeight(goldWeight)
         console.log('start the transaction')
+        // let wallet = await this.walletRepository.findOne({where : {id : }})
         const queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
