@@ -685,7 +685,7 @@ export default class inPersonController {
             let action = `\u202Bادمین ${req.user.firstName} ${req.user.lastName} تراکنش فروش حضوری مربوط به کاربر ${user.firstName} ${user.lastName} را ایجاد کرد\u202C`
             let logRespons = await this.interservice.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , ' ایجاد تراکنش فروش حضوری' , action , {
             } , 1)
-            this.smsService.sendGeneralMessage(user.phoneNumber, "selldasti", user.firstName, goldPrice, totalPrice)
+            this.smsService.sendGeneralMessage(user.phoneNumber, "selldasti", user.firstName, goldWeight, totalPrice)
             return next(new responseModel(req, res, '' ,'admin service', 200, null, { ...finalInvoice, wallet: finalInvoice.seller.wallet }))
         } catch (error) {
             console.log('error>>>>>' , `${error}`)
