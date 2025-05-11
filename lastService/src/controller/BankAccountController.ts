@@ -167,7 +167,7 @@ export class BankAccountController {
                     owner.isHaveBank = true;
                     await this.userRepository.save(owner)
                     const createBankAccount = await this.bankAccountRepository.save(bankAccount);
-                    await this.smsService.sendGeneralMessage(owner.phoneNumber,"verifyCart" , bankAccount.cardNumber,null,null)
+                    await this.smsService.sendGeneralMessage(owner.phoneNumber,"verifyCart" , owner.firstName ,bankAccount.cardNumber , null)
                     monitor.addStatus({
                         scope : 'bank account controller',
                         status : 1,

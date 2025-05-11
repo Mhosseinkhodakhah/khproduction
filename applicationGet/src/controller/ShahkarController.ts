@@ -98,16 +98,16 @@ export class ShahkarController {
         let isMatch = await this.checkMatchOfPhoneAndNationalCode({ phoneNumber, nationalCode })
         // console.log(isMatch)
 
-        if (isMatch == 'noToken'){
+        if (isMatch == 'noToken') {
             console.log('111')
             return response.status(400).json({ msg: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
         }
 
-        if (isMatch == 'unknown'){
+        if (isMatch == 'unknown') {
             console.log('222')
             return response.status(400).json({ msg: 'مشکلی در در احراز هویت بوجود آمده است.لطفا دقایقی دیگر مجددا تلاش کنید.' })
         }
-        if (isMatch == 500){
+        if (isMatch == 500) {
             console.log('333')
             return response.status(400).json({ msg: 'سیستم احراز هویت موقتا در دسترس نمیباشد.لطفا دقایقی دیگر مجددا تلاش کنید.' })
         }
@@ -173,14 +173,14 @@ export class ShahkarController {
                     } = info
 
                     // check the oldUser existance
-                    const oldUserData = await this.oldUSerService.checkExistAndGetGoldWallet(phoneNumber, nationalCode, info)  
-                    if (oldUserData ==500){
-                        return response.status(500).json({ msg: 'کاربر گرامی مجددا سیستم احراز هویت در دسترس نمی باشد.' })
-                    }
-                    console.log("oldUserData", oldUserData);
+                    // const oldUserData = await this.oldUSerService.checkExistAndGetGoldWallet(phoneNumber, nationalCode, info)  
+                    // if (oldUserData ==500){
+                    //     return response.status(500).json({ msg: 'کاربر گرامی مجددا سیستم احراز هویت در دسترس نمی باشد.' })
+                    // }
+                    // console.log("oldUserData", oldUserData);
                     // setting date and time
-                    const time= new Date().toLocaleString('fa-IR').split(',')[1]
-                    const date= new Date().toLocaleString('fa-IR').split(',')[0]
+                    const time = new Date().toLocaleString('fa-IR').split(',')[1]
+                    const date = new Date().toLocaleString('fa-IR').split(',')[0]
 
                     let user = this.userRepository.create({
                         fatherName,
@@ -188,8 +188,8 @@ export class ShahkarController {
                         gender: (gender == 0) ? false : true
                         , officeName,
                         birthDate,
-                        time : time,
-                        date : date,
+                        time: time,
+                        date: date,
                         identityNumber: identificationNo,
                         identitySeri: identificationSeri,
                         identitySerial: identificationSerial,
@@ -200,7 +200,7 @@ export class ShahkarController {
                     console.log(savedUser)
                     const wallet = this.walletRepository.create({
                         balance: 0,
-                        goldWeight: oldUserData.isExist ? oldUserData.updatedUser.wallet.goldWeight : 0,
+                        goldWeight: 0,
                         user: savedUser,
                     });
                     // await this.walletRepository.save(wallet)

@@ -265,7 +265,7 @@ export class UserController {
             let branchName = (TrnasAction.seller.branch.name).replaceAll(' ' , '')
             await queryRunner.commitTransaction()
             this.smsService.sendGeneralMessage(TrnasAction.seller.phoneNumber, "approveForAdmin", TrnasAction.seller.lastName, TrnasAction.user.nationalCode, TrnasAction.goldWeight)
-            this.smsService.sendGeneralMessage(TrnasAction.user.phoneNumber, "tellToUserForUseGildBox", TrnasAction.user.firstName, TrnasAction.goldWeight, branchName)
+            this.smsService.sendGeneralMessage(TrnasAction.user.phoneNumber, "tellToUserForUseGildBox", TrnasAction.seller.firstName, TrnasAction.goldWeight, branchName)
             return next(new responseModel(req, res, 'طلای مورد نظر با موفقیت کسر شد.', 'branch', 200, null, finalInvoice))
         } catch (error) {
             console.log('error in fucking approve transAction>>>', error)

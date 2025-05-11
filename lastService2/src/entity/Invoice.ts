@@ -3,6 +3,7 @@ import { User } from "./User"
 import { InvoiceType } from "./InvoiceType"
 import {TradeType} from "./enums/TradeType"
 
+
 @Entity()
 export class Invoice {
     @PrimaryGeneratedColumn()
