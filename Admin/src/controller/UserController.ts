@@ -122,7 +122,7 @@ export class UserController {
     async addNewAdmin(req: Request, res: Response, next: NextFunction) {
 
         console.log(req.body)
-        if (req.body.firstName || !req.body.lastName || !req.body.phoneNumber || !req.body.password) {
+        if (!req.body.firstName || !req.body.lastName || !req.body.phoneNumber || !req.body.password) {
             console.log('its fucking innnnnnn')
             return next(new response(req, res, 'admin', 400, 'مقادیر را وارد کنید', null))
         }
