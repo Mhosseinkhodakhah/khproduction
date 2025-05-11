@@ -836,9 +836,23 @@ export default class adminController {
         if (!user) {
             return next(new responseModel(req, res, 'کاربر یافت نشد', 'admin service', 400, 'کاربر یافت نشد', null))
         }
-        let walletsTr = await this.walletRepository.find({where : {user : user}})
-        let allTr = await this.invoicesRepository.find({where :[{buyer : user} , {seller : user}] , relations : ['type']})
+        // let walletsTr = await this.walletRepository.find({where : {user : user}})
+        let walletsTr = await this.walletRepository.createQueryBuilder('wallet')
+        .leftJoinAndSelect('wallet.user' , 'user')
+        .where('user.id = :id' , {id : +user.id})
+        .take(50)
+        .getMany()
 
+        let allTr = await this.invoicesRepository.createQueryBuilder('invoice')
+        .leftJoinAndSelect('invoice.buyer' , 'buyer')
+        .leftJoinAndSelect('invoice.seller' , 'seller')
+        .where('buyer.id = :id OR seller.id = :id' , {id : +user.id})
+        .take(50)
+        .getMany()
+
+
+        // let allTr = await this.invoicesRepository.find({where :[{buyer : user} , {seller : user}] , relations : ['type']})
+        // console.log(walletsTr.length , allTr.length)
         let all = {...user , buys : {...walletsTr , ...allTr}}
 
         // let all = await this.userRepository.findOne({ where: { id: +req.params.id , isSystemUser: false }, relations: ['wallet', 'wallet.transactions', 'sells', 'buys', 'sells.type', 'buys.type', 'bankAccounts'] })
