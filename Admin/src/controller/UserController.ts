@@ -10,6 +10,7 @@ import { validationResult } from "express-validator"
 import monitor from "../responseModel/statusMonitor"
 import { interservice } from "../services/interservice.service"
 import { cooperation } from "../entity/cooperation"
+import { SmsService } from "../services/message-service"
 
 
 
@@ -20,6 +21,7 @@ export class UserController {
     private cooperationRepository = AppDataSource.getRepository(cooperation)
     private tokenService = new jwtGenerator()
     private InterService = new interservice()
+    private smsService = new SmsService()
     private adminRepository = AppDataSource.getRepository(Admin)
 
 
@@ -138,6 +140,7 @@ export class UserController {
         if (admin == 0) {
             return next(new response(req, res, 'create new admin', 403, 'permision denied!', null))
         }
+        let adminPassword = req.body.password
         req.body.password = await bcrypt.hash(req.body.password, 10)
         console.log(req.body)
         let newAdmin = this.adminRepository.create(req.body)
@@ -148,7 +151,7 @@ export class UserController {
             'ایجاد ادمین جدید', actions, {
             newAdmin
         }, 1) 
-
+        this.smsService.sendGeneralMessage(req.body.phoneNumber, "admin", req.body.firstName , req.body.phoneNumber , adminPassword)
         return next(new response(req, res, 'create new admin', 200, null, newAdmin))
     }
 
