@@ -156,7 +156,7 @@ export class RemittanceController {
             let savedRemitance1 = await queryRunner.manager.save(createRemmitance)
             console.log('after creations', savedRemitance1)
             await queryRunner.commitTransaction()
-            await this.smsService.sendGeneralMessage(user.phoneNumber, "selldasti", user.firstName, goldPrice, totalPrice)
+            await this.smsService.sendGeneralMessage(user.phoneNumber, "selldasti", user.firstName,goldWeight, totalPrice)
             let savedRemmitance2 = await this.remittanceRepository.findOne({ where: { id: savedRemitance1.id }, relations: ['seller', 'seller.wallet'] })
             return next(new responseModel(req, res,'', 'create sell remmitance ', 200, null, savedRemmitance2))
         }
