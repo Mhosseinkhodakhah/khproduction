@@ -853,7 +853,7 @@ export default class adminController {
 
         // let allTr = await this.invoicesRepository.find({where :[{buyer : user} , {seller : user}] , relations : ['type']})
         // console.log(walletsTr.length , allTr.length)
-        let all = {...user , buys : {...walletsTr , ...allTr}}
+        let all = {...user , buys : [...walletsTr , ...allTr]}
 
         // let all = await this.userRepository.findOne({ where: { id: +req.params.id , isSystemUser: false }, relations: ['wallet', 'wallet.transactions', 'sells', 'buys', 'sells.type', 'buys.type', 'bankAccounts'] })
         return next(new responseModel(req, res, '', 'admin service', 200, null, all))
