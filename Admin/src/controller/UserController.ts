@@ -24,7 +24,6 @@ export class UserController {
     private smsService = new SmsService()
     private adminRepository = AppDataSource.getRepository(Admin)
 
-
     async createNewAdmin(req: Request, res: Response, next: NextFunction) {
         const newAdmin = new Admin()
         newAdmin.firstName = 'hossein';
@@ -42,18 +41,18 @@ export class UserController {
         //     error : null,
         //     msg : `creating new menu successfully done.`},
         //     1)
-        let mainAdmin = await this.adminRepository.findOne({where : {id : +req.user.userId}})
+        let mainAdmin = await this.adminRepository.findOne({ where: { id: +req.user.userId } })
         let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} یک منوی جدید با نام ${data.englishName} و نام فارسی ${data.persianName} ایجاد کرد\u202C`
-        this.InterService.addNewAdminLog({firstName : mainAdmin.firstName , lastName : mainAdmin.lastName , phoneNumber : mainAdmin.phoneNumber} ,
-             'ایجاد منوی جدید' , actions , {
-                data
-        } , 1) 
+        this.InterService.addNewAdminLog({ firstName: mainAdmin.firstName, lastName: mainAdmin.lastName, phoneNumber: mainAdmin.phoneNumber },
+            'ایجاد منوی جدید', actions, {
+            data
+        }, 1)
         return next(new response(req, res, 'create new menu', 200, null, data))
     }
 
     async creatNewSubMenu(req: Request, res: Response, next: NextFunction) {
         let menuId: string = req.params.menuId;
-        let mainAdmin = await this.adminRepository.findOne({where : {id : +req.user.userId}})
+        let mainAdmin = await this.adminRepository.findOne({ where: { id: +req.user.userId } })
         console.log(menuId)
         let Menu = await this.accessPointRepository.findOne({ where: { id: +menuId } })
         console.log(Menu)
@@ -122,7 +121,7 @@ export class UserController {
 
     async addNewAdmin(req: Request, res: Response, next: NextFunction) {
 
-        if (!!!req.body.firstName || !!!req.body.lasatName || !!!req.body.phoneNumber || !!!req.body.password) {
+        if (!req.body.firstName || !req.body.lasatName || !req.body.phoneNumber || !req.body.password) {
             console.log('its fucking innnnnnn')
             return next(new response(req, res, 'admin', 400, 'مقادیر را وارد کنید', null))
         }
@@ -145,13 +144,13 @@ export class UserController {
         console.log(req.body)
         let newAdmin = this.adminRepository.create(req.body)
         await this.adminRepository.save(newAdmin)
-        let mainAdmin = await this.adminRepository.findOne({where : {id : +req.user.userId}})
+        let mainAdmin = await this.adminRepository.findOne({ where: { id: +req.user.userId } })
         let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} ادمین جدید با مشخصات ${req.body.firstName} ${req.body.lastName} ایجاد کرد\u202C`
         this.InterService.addNewAdminLog({ firstName: mainAdmin.firstName, lastName: mainAdmin.lastName, phoneNumber: mainAdmin.phoneNumber },
             'ایجاد ادمین جدید', actions, {
             newAdmin
-        }, 1) 
-        this.smsService.sendGeneralMessage(req.body.phoneNumber, "admin", req.body.firstName , req.body.phoneNumber , adminPassword)
+        }, 1)
+        this.smsService.sendGeneralMessage(req.body.phoneNumber, "admin", req.body.firstName, req.body.phoneNumber, adminPassword)
         return next(new response(req, res, 'create new admin', 200, null, newAdmin))
     }
 
@@ -201,8 +200,8 @@ export class UserController {
         let actions = `\u202B${admin.firstName} ${admin.lastName} وارد پنل شد\u202C`
         this.InterService.addNewAdminLog({ firstName: admin.firstName, lastName: admin.lastName, phoneNumber: admin.phoneNumber },
             ' ورود ادمین', actions, {
-            
-        }, 1) 
+
+        }, 1)
         return next(new response(req, res, 'login admin', 200, null, responseData))
     }
 
@@ -214,9 +213,9 @@ export class UserController {
             return next(new response(req, res, 'update accessPoints admin', 400, bodyValidation['errors'][0].msg, null))
         }
         let adminRole = req.user.role;
-        if (adminRole == 0){
-            return next(new response(req, res, 'update accessPoints admin', 403, 'شما اجازه تغییرات دسترسی کارشناسان را ندارید' , null))
-        } 
+        if (adminRole == 0) {
+            return next(new response(req, res, 'update accessPoints admin', 403, 'شما اجازه تغییرات دسترسی کارشناسان را ندارید', null))
+        }
         let admin = await this.adminRepository.findOne({
             where: {
                 id: +req.params.userId
@@ -244,12 +243,12 @@ export class UserController {
         admin.accessPoints = finalAccess
         await this.adminRepository.save(admin)
         console.log(req.user.userId)
-        let mainAdmin = await this.adminRepository.findOne({where : {id : +req.user.userId}})
+        let mainAdmin = await this.adminRepository.findOne({ where: { id: +req.user.userId } })
         let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} سطح دسترسی مربوط به ادمین ${admin.firstName} ${admin.lastName} را تغییر داد\u202C`
-        this.InterService.addNewAdminLog({firstName : mainAdmin.firstName , lastName : mainAdmin.lastName , phoneNumber : mainAdmin.phoneNumber} ,
-             'تغییر سطح دسترسی' , actions , {
-                finalAccess
-        } , 1) 
+        this.InterService.addNewAdminLog({ firstName: mainAdmin.firstName, lastName: mainAdmin.lastName, phoneNumber: mainAdmin.phoneNumber },
+            'تغییر سطح دسترسی', actions, {
+            finalAccess
+        }, 1)
         return next(new response(req, res, 'update accessPoints admin', 200, null, admin))
     }
 
@@ -332,22 +331,22 @@ export class UserController {
             if (admin.isBlocked) {
                 admin.isBlocked = false;
                 await this.adminRepository.save(admin)
-                let mainAdmin = await this.adminRepository.findOne({where : {id : +req.user.userId}})
+                let mainAdmin = await this.adminRepository.findOne({ where: { id: +req.user.userId } })
                 let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} ادمین ${admin.firstName} ${admin.lastName} را  فعال کرد\u202C`
                 this.InterService.addNewAdminLog({ firstName: mainAdmin.firstName, lastName: mainAdmin.lastName, phoneNumber: mainAdmin.phoneNumber },
                     ' فعال کردن ادمین', actions, {
-                    
-                }, 1) 
+
+                }, 1)
                 return next(new response(req, res, 'admin service', 200, null, null))
             } else {
                 admin.isBlocked = true;
                 await this.adminRepository.save(admin)
-                let mainAdmin = await this.adminRepository.findOne({where : {id : +req.user.userId}})
+                let mainAdmin = await this.adminRepository.findOne({ where: { id: +req.user.userId } })
                 let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} ادمین ${admin.firstName} ${admin.lastName} را غیر فعال کرد\u202C`
                 this.InterService.addNewAdminLog({ firstName: mainAdmin.firstName, lastName: mainAdmin.lastName, phoneNumber: mainAdmin.phoneNumber },
                     'غیر فعال کردن ادمین', actions, {
-                    
-                }, 1) 
+
+                }, 1)
                 return next(new response(req, res, 'admin service', 200, null, null))
             }
         } catch (error) {
@@ -366,19 +365,16 @@ export class UserController {
                 return next(new response(req, res, 'admin service', 400, 'ادمین مورد نظر یافت نشد', null))
             }
             await this.adminRepository.remove(admin)
-            let mainAdmin = await this.adminRepository.findOne({where : {id : +req.user.userId}})
-                let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} ادمین ${admin.firstName} ${admin.lastName} را حذف کرد\u202C`
-                this.InterService.addNewAdminLog({ firstName: mainAdmin.firstName, lastName: mainAdmin.lastName, phoneNumber: mainAdmin.phoneNumber },
-                    '  حذف ادمین', actions, {
-                    
-                }, 1) 
+            let mainAdmin = await this.adminRepository.findOne({ where: { id: +req.user.userId } })
+            let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} ادمین ${admin.firstName} ${admin.lastName} را حذف کرد\u202C`
+            this.InterService.addNewAdminLog({ firstName: mainAdmin.firstName, lastName: mainAdmin.lastName, phoneNumber: mainAdmin.phoneNumber },
+                '  حذف ادمین', actions, {
+
+            }, 1)
             return next(new response(req, res, 'admin service', 200, null, null))
         } catch (error) {
             console.log('error occured in removing admin >>>> ', error)
             return next(new response(req, res, 'admin service', 500, 'خطای داخلی سیستم', null))
         }
     }
-
-
-
 }
