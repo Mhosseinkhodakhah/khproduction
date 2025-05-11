@@ -845,6 +845,7 @@ export default class adminController {
 
         let allTr = await this.invoicesRepository.createQueryBuilder('invoice')
         .leftJoinAndSelect('invoice.buyer' , 'buyer')
+        .leftJoinAndSelect('invoice.type' , 'type')
         .leftJoinAndSelect('invoice.seller' , 'seller')
         .where('buyer.id = :id OR seller.id = :id' , {id : +user.id})
         .take(50)
