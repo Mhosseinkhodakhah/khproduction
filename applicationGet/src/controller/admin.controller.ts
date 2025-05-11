@@ -46,27 +46,27 @@ export default class adminController {
         let queryBuilder = this.userRepository.createQueryBuilder('user')
             .leftJoinAndSelect('user.bankAccounts', 'bankAccounts')
             .leftJoinAndSelect('user.wallet', 'wallet')
-            .orderBy('user.id' , 'ASC')
+            .orderBy('user.id', 'ASC')
             .where('user.isSystemUser = :bool', { bool: false })
         let users = await queryBuilder.getMany()
-        return next(new responseModel(req, res,'' ,'admin service', 200, null, users))
+        return next(new responseModel(req, res, '', 'admin service', 200, null, users))
     }
 
 
-    async getTradePermision(req: Request, res: Response, next: NextFunction){
+    async getTradePermision(req: Request, res: Response, next: NextFunction) {
         // let tradePerimision = await cacher.getter('tradePermision')
         let tradePerimision = await instance.getter()
-        console.log( 'trade permision is >>>>', tradePerimision)
-        return next(new responseModel(req, res,'' ,'admin service', 200, null, tradePerimision))
+        console.log('trade permision is >>>>', tradePerimision)
+        return next(new responseModel(req, res, '', 'admin service', 200, null, tradePerimision))
     }
-        
-    async tradePermision(req: Request, res: Response, next: NextFunction){
+
+    async tradePermision(req: Request, res: Response, next: NextFunction) {
         // let tradePerimision = await cacher.getter('tradePermision')
         // let tradePerimision = await instance.getter()
         await instance.setter()
         let tradePerimision = await instance.getter()
         console.log(tradePerimision)
-        return next(new responseModel(req, res,'' ,'admin service', 200, null, tradePerimision))
+        return next(new responseModel(req, res, '', 'admin service', 200, null, tradePerimision))
     }
 
 
@@ -81,7 +81,7 @@ export default class adminController {
     async getUserInfo(req: Request, res: Response, next: NextFunction) {
         let userId = +req.params.userId;
         let queryBuilder = await this.userRepository.createQueryBuilder('user')
-            .leftJoinAndSelect('user.bankAccounts' , 'bankAccounts')
+            .leftJoinAndSelect('user.bankAccounts', 'bankAccounts')
             .leftJoinAndSelect('user.wallet', 'wallet')
             .leftJoinAndSelect('wallet.transactions', 'transactions')
             .leftJoinAndSelect('user.sells', 'sells')
@@ -92,7 +92,7 @@ export default class adminController {
         //     id : userId,            
         // } , relations : ['wallet' , 'wallet.transactions' ,'wallet.transactions.seller' , 'wallet.transactions.buyer' , 'wallet.transactions.type']})
         console.log('returned data', queryBuilder)
-        return next(new responseModel(req, res,'' ,'admin service', 200, null, queryBuilder))
+        return next(new responseModel(req, res, '', 'admin service', 200, null, queryBuilder))
     }
 
 
@@ -107,12 +107,12 @@ export default class adminController {
     async getAllWallet(req: Request, res: Response, next: NextFunction) {
         // let wallet = await this.walletRepository.find({ relations: ['user', 'transactions'] })
         let wallet = await this.walletRepository.createQueryBuilder('wallet')
-        .leftJoinAndSelect('wallet.user' , 'user')
-        .leftJoinAndSelect('user.bankAccounts' , 'bankAccounts')
-        .leftJoinAndSelect('wallet.transactions' , 'transactions')
-        .orderBy('wallet.updatedAt' , 'DESC')
-        .andWhere('user.isSystemUser = :bool' , {bool : false}).getMany()
-        return next(new responseModel(req, res,'' ,'admin service', 200, null, wallet))
+            .leftJoinAndSelect('wallet.user', 'user')
+            .leftJoinAndSelect('user.bankAccounts', 'bankAccounts')
+            .leftJoinAndSelect('wallet.transactions', 'transactions')
+            .orderBy('wallet.updatedAt', 'DESC')
+            .andWhere('user.isSystemUser = :bool', { bool: false }).getMany()
+        return next(new responseModel(req, res, '', 'admin service', 200, null, wallet))
     }
 
 
@@ -136,10 +136,10 @@ export default class adminController {
         let failed = (await queryBuilder.where('invoice.status = :status', { status: 'failed' }).getMany()).reverse()
         let completed = (await queryBuilder.where('invoice.status = :status', { status: 'completed' }).getMany()).reverse()
 
-        return next(new responseModel(req, res,'' ,'admin service', 200, null, { inits, pendings, failed, completed }))
+        return next(new responseModel(req, res, '', 'admin service', 200, null, { inits, pendings, failed, completed }))
     }
 
-    
+
 
     /**
      * its for getting all  buy transActions
@@ -147,30 +147,30 @@ export default class adminController {
      * @param res 
      * @param next 
      */
-    async getBuyTransAction(req: Request, res: Response, next: NextFunction){
+    async getBuyTransAction(req: Request, res: Response, next: NextFunction) {
         let type = req.query.type;
         let queryBuilder = this.invoicesRepository.createQueryBuilder('invoice')
             .leftJoinAndSelect('invoice.seller', 'seller')
             .leftJoinAndSelect('invoice.buyer', 'buyer')
-            .leftJoinAndSelect('buyer.bankAccounts' , 'bankAccounts')
+            .leftJoinAndSelect('buyer.bankAccounts', 'bankAccounts')
             .leftJoinAndSelect('invoice.type', 'type')
             .orderBy('invoice.updatedAt', 'DESC')
-            .where('invoice.fromPhone = :boolean' , {boolean : false})
-            // .where('invoice.status = :status AND type.title = :title' , {status : 'completed' , title : 'buy'})
+            .where('invoice.fromPhone = :boolean', { boolean: false })
+        // .where('invoice.status = :status AND type.title = :title' , {status : 'completed' , title : 'buy'})
 
         let transActions;
         if (type == 0) {
-            transActions = await queryBuilder.where('invoice.status = :status AND type.title = :title AND invoice.fromPhone = :boolean AND invoice.tradeType = :trade', { status: 'failed', title: 'buy' , boolean : false , trade : 0}).getMany()
+            transActions = await queryBuilder.where('invoice.status = :status AND type.title = :title AND invoice.fromPhone = :boolean AND invoice.tradeType = :trade', { status: 'failed', title: 'buy', boolean: false, trade: 0 }).getMany()
         } else if (type == 1) {
-            transActions = await queryBuilder.where('invoice.status = :status AND type.title = :title AND invoice.fromPhone = :boolean AND invoice.tradeType = :trade', { status: 'completed', title: 'buy' , boolean : false , trade : 0}).getMany()
+            transActions = await queryBuilder.where('invoice.status = :status AND type.title = :title AND invoice.fromPhone = :boolean AND invoice.tradeType = :trade', { status: 'completed', title: 'buy', boolean: false, trade: 0 }).getMany()
         } else if (type == 2) {
-            transActions = await queryBuilder.where('invoice.status = :status AND type.title = :title AND invoice.fromPhone = :boolean AND invoice.tradeType = :trade', { status: 'pending', title: 'buy' , boolean :  false, trade : 0}).getMany()
-        }else if(type == 3){
-            transActions = await queryBuilder.where('invoice.status = :status AND type.title = :title AND invoice.fromPhone = :boolean AND invoice.tradeType = :trade', { status: 'init', title: 'buy' , boolean : false , trade : 0}).getMany()
-        }else{
-            return next(new responseModel(req, res,'' ,'admin service', 400 , 'bad request', null))
+            transActions = await queryBuilder.where('invoice.status = :status AND type.title = :title AND invoice.fromPhone = :boolean AND invoice.tradeType = :trade', { status: 'pending', title: 'buy', boolean: false, trade: 0 }).getMany()
+        } else if (type == 3) {
+            transActions = await queryBuilder.where('invoice.status = :status AND type.title = :title AND invoice.fromPhone = :boolean AND invoice.tradeType = :trade', { status: 'init', title: 'buy', boolean: false, trade: 0 }).getMany()
+        } else {
+            return next(new responseModel(req, res, '', 'admin service', 400, 'bad request', null))
         }
-        return next(new responseModel(req, res,'' ,'admin service', 200, null, transActions))
+        return next(new responseModel(req, res, '', 'admin service', 200, null, transActions))
     }
 
 
@@ -181,23 +181,23 @@ export default class adminController {
      * @param next 
      * @returns 
      */
-    async getUserForInitTransactions(req: Request, res: Response, next: NextFunction){
+    async getUserForInitTransactions(req: Request, res: Response, next: NextFunction) {
         let queryBuilder = this.userRepository.createQueryBuilder('user')
-        .leftJoinAndSelect('user.buys' , 'buys')
-        .leftJoinAndSelect('user.bankAccounts' , 'bankAccounts')
-        .leftJoinAndSelect('user.sells' , 'sells')
-        .where('buys.status = :Bstatus OR sells.status = :Bstatus' , {Bstatus : 'init'})
+            .leftJoinAndSelect('user.buys', 'buys')
+            .leftJoinAndSelect('user.bankAccounts', 'bankAccounts')
+            .leftJoinAndSelect('user.sells', 'sells')
+            .where('buys.status = :Bstatus OR sells.status = :Bstatus', { Bstatus: 'init' })
 
         let users = await queryBuilder.getMany()
 
-        return next(new responseModel(req, res,'' ,'admin service', 200, null, users))
+        return next(new responseModel(req, res, '', 'admin service', 200, null, users))
     }
 
 
-    async getSpecificUserTransAction(req: Request, res: Response, next: NextFunction){
+    async getSpecificUserTransAction(req: Request, res: Response, next: NextFunction) {
         let userId = req.params.userId;
 
-        let invoices = await this.userRepository.findOne({where : {id : userId} , relations : ['buys' , 'sells' , 'bankAccounts']})
+        let invoices = await this.userRepository.findOne({ where: { id: userId }, relations: ['buys', 'sells', 'bankAccounts'] })
 
     }
 
@@ -211,11 +211,11 @@ export default class adminController {
      * @param next 
      * @returns 
      */
-    async getSellTransAction(req: Request, res: Response, next: NextFunction){
+    async getSellTransAction(req: Request, res: Response, next: NextFunction) {
         let type = req.query.type;
         let queryBuilder = this.invoicesRepository.createQueryBuilder('invoice')
             .leftJoinAndSelect('invoice.seller', 'seller')
-            .leftJoinAndSelect('seller.bankAccounts' , 'bankAccounts')
+            .leftJoinAndSelect('seller.bankAccounts', 'bankAccounts')
             .leftJoinAndSelect('invoice.buyer', 'buyer')
             .leftJoinAndSelect('invoice.type', 'type')
             .orderBy('invoice.updatedAt', 'DESC')
@@ -227,10 +227,10 @@ export default class adminController {
             transActions = await queryBuilder.where('invoice.status = :status AND type.title = :title', { status: 'completed', title: 'sell' }).getMany()
         } else if (type == 2) {
             transActions = await queryBuilder.where('invoice.status = :status AND type.title = :title', { status: 'pending', title: 'sell' }).getMany()
-        }else{
-            return next(new responseModel(req, res,'' ,'admin service', 400, 'bad request', null))
+        } else {
+            return next(new responseModel(req, res, '', 'admin service', 400, 'bad request', null))
         }
-        return next(new responseModel(req, res,'' ,'admin service', 200, null, transActions))
+        return next(new responseModel(req, res, '', 'admin service', 200, null, transActions))
     }
 
 
@@ -250,44 +250,46 @@ export default class adminController {
         let successUsers = await this.userRepository.count({
             where: {
                 verificationStatus: 0,
-                isSystemUser : false
+                isSystemUser: false
             },
         })
 
         let failedUsers = await this.userRepository.count({
             where: {
                 verificationStatus: 1,
-                isSystemUser : false
+                isSystemUser: false
             }
         })
 
         let oldUser = await this.interservice.getAllOldUser()
-        console.log('ssss' , oldUser)
+        console.log('ssss', oldUser)
         failedUsers += oldUser;
-        let allUsers = await this.userRepository.count({where :{
-            isSystemUser : false
-        }})
+        let allUsers = await this.userRepository.count({
+            where: {
+                isSystemUser: false
+            }
+        })
 
         allUsers += oldUser;
 
         let chart = await this.interservice.getChartData()
-        console.log('chartData' , chart.data)
+        console.log('chartData', chart.data)
         let barChart = chart.data.barChart;
 
         let lineChart = chart.data.lineChart;
 
         let pieChart = {
-            label :['کاربران احراز شده' , 'کاربران احراز نشده'],
-            data : [successUsers , failedUsers]
+            label: ['کاربران احراز شده', 'کاربران احراز نشده'],
+            data: [successUsers, failedUsers]
         }
 
-        let allBuy ;
+        let allBuy;
 
-        let allSell ;
+        let allSell;
 
-        let weights = await this.esitmate.findOne({where : {date : 'localDate'}})
-        console.log('all weights' , weights)
-        if (!weights){
+        let weights = await this.esitmate.findOne({ where: { date: 'localDate' } })
+        console.log('all weights', weights)
+        if (!weights) {
             allBuy = 0;
             allSell = 0;
         }
@@ -318,7 +320,7 @@ export default class adminController {
             pieChart,
             lineChart
         }
-        return next(new responseModel(req, res,'' ,'admin service', 200, null, data))
+        return next(new responseModel(req, res, '', 'admin service', 200, null, data))
     }
 
 
@@ -335,10 +337,11 @@ export default class adminController {
             where: {
                 status: 'pending',
                 type: "withdraw"
-            },relations : ['wallet' , 'wallet.user' , 'wallet.user.bankAccounts']
-        ,order : {updatedAt : 'DESC'}})
+            }, relations: ['wallet', 'wallet.user', 'wallet.user.bankAccounts']
+            , order: { updatedAt: 'DESC' }
+        })
 
-        return next(new responseModel(req, res,'' ,'admin service', 200, null, withdrawalRequests))
+        return next(new responseModel(req, res, '', 'admin service', 200, null, withdrawalRequests))
     }
 
 
@@ -354,9 +357,10 @@ export default class adminController {
             where: {
                 status: 'pending',
                 type: 'deposit'
-            },relations : ['wallet' , 'wallet.user' , 'wallet.user.bankAccounts']
-        ,order : {updatedAt : 'DESC'}})
-        return next(new responseModel(req, res,'' ,'admin service', 200, null, pendingsDeposits))
+            }, relations: ['wallet', 'wallet.user', 'wallet.user.bankAccounts']
+            , order: { updatedAt: 'DESC' }
+        })
+        return next(new responseModel(req, res, '', 'admin service', 200, null, pendingsDeposits))
     }
 
 
@@ -368,14 +372,16 @@ export default class adminController {
      * @param next 
      * @returns 
      */
-    async getAllSucceedDeposit(req: Request, res: Response, next: NextFunction){
-        let succeedDposit = await this.walletTransActions.find({where : {
-            status : 'completed',
-            type : 'deposit' 
-        },relations : ['wallet' , 'wallet.user' , 'wallet.user.bankAccounts'],order : {updatedAt : 'DESC'}})
+    async getAllSucceedDeposit(req: Request, res: Response, next: NextFunction) {
+        let succeedDposit = await this.walletTransActions.find({
+            where: {
+                status: 'completed',
+                type: 'deposit'
+            }, relations: ['wallet', 'wallet.user', 'wallet.user.bankAccounts'], order: { updatedAt: 'DESC' }
+        })
         // let sss = await this.walletTransActions.find()
         // console.log(sss)
-        return next(new responseModel(req, res,'' ,'admin service', 200, null, succeedDposit))
+        return next(new responseModel(req, res, '', 'admin service', 200, null, succeedDposit))
     }
 
 
@@ -391,11 +397,11 @@ export default class adminController {
         let succeedTransActions = await this.walletTransActions.find({
             where: {
                 status: 'completed',
-                type : 'withdraw'
-            },relations : ['wallet' , 'wallet.user' , 'wallet.user.bankAccounts'],order : {updatedAt : 'DESC'}
+                type: 'withdraw'
+            }, relations: ['wallet', 'wallet.user', 'wallet.user.bankAccounts'], order: { updatedAt: 'DESC' }
         })
 
-        return next(new responseModel(req, res,'' ,'admin service', 200, null, succeedTransActions))
+        return next(new responseModel(req, res, '', 'admin service', 200, null, succeedTransActions))
     }
 
 
@@ -408,20 +414,20 @@ export default class adminController {
      * @returns 
      */
     async approveWithdrawal(req: Request, res: Response, next: NextFunction) {
-        let {withdrawalId} = req.body;
+        let { withdrawalId } = req.body;
         const error = validationResult(req)
         if (!error.isEmpty()) {
-            return next(new responseModel(req, res,'' ,'admin service', 400, error['errors'][0].msg, null))
+            return next(new responseModel(req, res, '', 'admin service', 400, error['errors'][0].msg, null))
         }
 
         let transACtion = await this.walletTransActions.findOne({
             where: {
                 id: req.params.transActionId
-            }, relations: ['wallet' , 'wallet.user']
+            }, relations: ['wallet', 'wallet.user']
         })
 
         if (!transACtion) {
-            return next(new responseModel(req, res,'' ,'admin service', 400, `the withdraw request not found!`, null))
+            return next(new responseModel(req, res, '', 'admin service', 400, `the withdraw request not found!`, null))
         }
         const queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
@@ -429,12 +435,12 @@ export default class adminController {
         try {
             transACtion.status = 'completed';
             transACtion.withdrawalId = withdrawalId;
-            console.log('amountssssssssssss' , transACtion.wallet.blocked , transACtion.amount)
+            console.log('amountssssssssssss', transACtion.wallet.blocked, transACtion.amount)
             // if (transACtion.wallet.blocked > transACtion.amount){
-                // }else{
-                //     await queryRunner.rollbackTransaction()
-                //     await queryRunner.release()
-                //     return next(new responseModel(req, res,'' ,'admin service', 200, 'این تراکنش معتبر نمیباشد', null))
+            // }else{
+            //     await queryRunner.rollbackTransaction()
+            //     await queryRunner.release()
+            //     return next(new responseModel(req, res,'' ,'admin service', 200, 'این تراکنش معتبر نمیباشد', null))
             // }
             transACtion.wallet.blocked -= transACtion.amount;
             transACtion.date = new Date().toLocaleString('fa-IR').split(',')[0]
@@ -445,18 +451,18 @@ export default class adminController {
             console.log('transaction', transaction)
             await queryRunner.commitTransaction()
             // await this.smsService.sendGeneralMessage(transACtion.wallet.user.phoneNumber,"withdraw" ,transACtion.amount/10 ,transACtion.wallet.user.bankAccounts[0].cardNumber ,transACtion.wallet.balance)
-            await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} ,
-                 'تایید برداشت' , ` ${req.user.firstName} برداشت کاربر را تایید کرد` , {
-                userName : transACtion.wallet.user.firstName,
-                lastName : transACtion.wallet.user.lastName,
-                amount : transACtion.amount,
-                balance : transACtion.wallet.balance
-            } , 1) 
-            return next(new responseModel(req, res,'' ,'admin service', 200, null, transaction))
+            await this.loggerService.addNewAdminLog({ firstName: req.user.firstName, lastName: req.user.lastName, phoneNumber: req.user.phoneNumber },
+                'تایید برداشت', ` ${req.user.firstName} برداشت کاربر را تایید کرد`, {
+                userName: transACtion.wallet.user.firstName,
+                lastName: transACtion.wallet.user.lastName,
+                amount: transACtion.amount,
+                balance: transACtion.wallet.balance
+            }, 1)
+            return next(new responseModel(req, res, '', 'admin service', 200, null, transaction))
         } catch (error) {
             console.log('error occured while trying to approved withdraw', error)
             await queryRunner.rollbackTransaction()
-            return next(new responseModel(req, res,'' ,'admin service', 503, `${error}`, null))
+            return next(new responseModel(req, res, '', 'admin service', 503, `${error}`, null))
         } finally {
             await queryRunner.release()
         }
@@ -469,14 +475,14 @@ export default class adminController {
      * @param response 
      * @returns 
      */
-    async handleVerifyDeposit(req: Request, res: Response , next : NextFunction) {
+    async handleVerifyDeposit(req: Request, res: Response, next: NextFunction) {
         try {
             let { authority
             } = req.body
             const error = validationResult(req)
             if (!error.isEmpty()) {
                 console.log(error)
-                return next(new responseModel(req, res ,'' ,'admin service', 400, error['errors'][0].msg, null))
+                return next(new responseModel(req, res, '', 'admin service', 400, error['errors'][0].msg, null))
             }
             let statusOfTransAction = await this.zpService.getTransActionStatus(authority)
             if (statusOfTransAction.status == 'IN_BANK') {
@@ -487,8 +493,8 @@ export default class adminController {
             } else if (statusOfTransAction.status == 'REVERSED') {
                 return next(new responseModel(req, res, 'تراکنش از سمت درگاه برگشت خورده است', 'admin service', 400, 'تراکنش از سمت درگاه برگشت خورده است', null))
             } else if (statusOfTransAction.status == 'PAID' || statusOfTransAction.status == 'FAILED') {
-                console.log('its first entry . . .' , authority)
-                let info = { status : 'OK', authority }
+                console.log('its first entry . . .', authority)
+                let info = { status: 'OK', authority }
                 let res2 = await this.zpService.verifyPayment(info)
                 const paymentInfo = await this.paymentInfoRepository.findOneByOrFail({ authority: info.authority })
                 let queryRunner = AppDataSource.createQueryRunner()
@@ -499,8 +505,8 @@ export default class adminController {
                     await queryRunner.release()
                     return res.status(400).json({ msg: "تراکنش قبلا اعتبارسنجی شده است" })
                 }
-                if (res2.status == 'unknown'){
-                    return res.status(400).json({msg : 'سیستم قادر به اعتبار سنجی تراکنش نمیباشد'})
+                if (res2.status == 'unknown') {
+                    return res.status(400).json({ msg: 'سیستم قادر به اعتبار سنجی تراکنش نمیباشد' })
                 }
                 let updatedtransaction;
                 try {
@@ -509,16 +515,16 @@ export default class adminController {
                         savedTransaction.status = "failed";                                // set failed transaction status
                         updatedtransaction = await queryRunner.manager.save(savedTransaction)        // save the trasnaction
                         await queryRunner.commitTransaction()
-                        await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , 
-                            'تایید برداشت' , ` ${req.user.firstName} واریز را به صورت دستی اعتبار سنجی کرد` , {
-                            userName : user.firstName,
-                            lastName : user.lastName,
-                            amount : savedTransaction.amount,
-                            balance : user.wallet.balance
-                        } , 1) 
-    
+                        await this.loggerService.addNewAdminLog({ firstName: req.user.firstName, lastName: req.user.lastName, phoneNumber: req.user.phoneNumber },
+                            'تایید برداشت', ` ${req.user.firstName} واریز را به صورت دستی اعتبار سنجی کرد`, {
+                            userName: user.firstName,
+                            lastName: user.lastName,
+                            amount: savedTransaction.amount,
+                            balance: user.wallet.balance
+                        }, 1)
+
                         return res.status(200).json({ msg: "تراکنش از جانب بانک رد شد و به لیست تراکنش های نا موفق منتقل شد", transaction: savedTransaction, bank: user.bankAccounts[0].cardNumber })
-                    } else if ((res2.status && res2.code == 100 )|| (res2.status && res2.code == 101)) {
+                    } else if ((res2.status && res2.code == 100) || (res2.status && res2.code == 101)) {
                         const currentBalance = +user.wallet.balance;
                         const paymentAmount = +paymentInfo.amount;
                         user.wallet.balance = Math.round(currentBalance + paymentAmount);
@@ -531,14 +537,14 @@ export default class adminController {
                         // let nameFamily = user.firstName +' '+  user.lastName
                         await queryRunner.commitTransaction()
                         // this.smsService.sendGeneralMessage(user.phoneNumber, "deposit", user.firstName, paymentAmount / 10, null)
-                        await this.loggerService.addNewAdminLog({firstName : req.user.firstName , lastName : req.user.lastName , phoneNumber : req.user.phoneNumber} , 
-                            'تایید برداشت' , ` ${req.user.firstName} واریز را به صورت دستی اعتبار سنجی کرد` , {
-                            userName : user.firstName,
-                            lastName : user.lastName,
-                            amount : paymentAmount,
-                            balance : user.wallet.balance
-                        } , 1) 
-                        
+                        await this.loggerService.addNewAdminLog({ firstName: req.user.firstName, lastName: req.user.lastName, phoneNumber: req.user.phoneNumber },
+                            'تایید برداشت', ` ${req.user.firstName} واریز را به صورت دستی اعتبار سنجی کرد`, {
+                            userName: user.firstName,
+                            lastName: user.lastName,
+                            amount: paymentAmount,
+                            balance: user.wallet.balance
+                        }, 1)
+
                         return res.status(200).json({ msg: "تراکنش از سمت بانک تایید شد و به لیست تراکنش های موفق اضافه شد.", transaction: updatedtransaction, bank: res2.data.card_pan, referenceId: res2.data.ref_id })
                     }
                 } catch (error) {
@@ -548,7 +554,7 @@ export default class adminController {
                 } finally {
                     await queryRunner.release()
                 }
-            }else{
+            } else {
                 return next(new responseModel(req, res, 'سیستم قادر به تعیین وضعیت تراکنش نیست', 'admin service', 400, 'سیستم قادر به تعیین وضعیت تراکنش نیست', null))
             }
         } catch (error) {
@@ -596,7 +602,7 @@ export default class adminController {
                         // await queryRunner.release()
                         return res.status(400).json({ msg: "تراکنش قبلا اعتبارسنجی شده است" })
                     }
-                    if (res2.status == 'unknown'){
+                    if (res2.status == 'unknown') {
                         return res.status(400).json({ msg: "سیستم قادر به اعتبار سنجی تراکنش نمیباشد." })
                     }
                     if (!res2.status) {                                              //!!! if the zarinpal failed the transActions !!!//
@@ -671,14 +677,16 @@ export default class adminController {
 
 
 
-    async allFailedDeposit(req: Request, res: Response, next: NextFunction){
-        let failedDposit = await this.walletTransActions.find({where : {
-            status : 'failed',
-            type : 'deposit'
-        },relations : ['wallet' , 'wallet.user'] , order : {
-            updatedAt : 'DESC'
-        }})
-        return next(new responseModel(req, res,'' ,'admin service', 200, null, failedDposit))
+    async allFailedDeposit(req: Request, res: Response, next: NextFunction) {
+        let failedDposit = await this.walletTransActions.find({
+            where: {
+                status: 'failed',
+                type: 'deposit'
+            }, relations: ['wallet', 'wallet.user'], order: {
+                updatedAt: 'DESC'
+            }
+        })
+        return next(new responseModel(req, res, '', 'admin service', 200, null, failedDposit))
     }
 
 
@@ -687,7 +695,7 @@ export default class adminController {
         let nationalCode = req.params.nationalCode
         try {
             let user = await this.userRepository.findOne({ where: { nationalCode: nationalCode }, relations: ['wallet'] })
-            if (!user){
+            if (!user) {
                 return next(new responseModel(req, res, 'کاربر یافت نشد.', 'admin service', 400, null, null))
             }
             let data = {
@@ -709,18 +717,18 @@ export default class adminController {
         try {
             let status = req.query.status
             let transports;
-            console.log('status issss' , status)
-            if (!status){
+            console.log('status issss', status)
+            if (!status) {
                 transports = await this.transportRepository.createQueryBuilder('transport')
                     .leftJoinAndSelect('transport.sender', 'sender')
                     .leftJoinAndSelect('transport.reciever', 'reciever')
                     .getMany()
-            }else {
+            } else {
                 transports = await this.transportRepository.createQueryBuilder('transport')
-                .leftJoinAndSelect('transport.sender', 'sender')
-                .leftJoinAndSelect('transport.reciever', 'reciever')
-                .where('transport.status = :status', { status: status })
-                .getMany()
+                    .leftJoinAndSelect('transport.sender', 'sender')
+                    .leftJoinAndSelect('transport.reciever', 'reciever')
+                    .where('transport.status = :status', { status: status })
+                    .getMany()
             }
             return next(new responseModel(req, res, '.', 'admin service', 200, null, transports))
         } catch (error) {
@@ -773,7 +781,7 @@ export default class adminController {
 
 
 
-    async getUsersForGlance(req: Request, res: Response, next: any){
+    async getUsersForGlance(req: Request, res: Response, next: any) {
         const page = parseInt(req.query.page) || 1;
         const pageSize = parseInt(req.query.perPage) || 50;
 
@@ -786,8 +794,8 @@ export default class adminController {
             console.log('its hereeeee1111')
             let users = await this.userRepository.createQueryBuilder('user')
                 .where('(user.firstName LIKE :search OR user.lastName LIKE :search OR user.phoneNumber LIKE :search OR user.nationalCode LIKE :search)', { search: reg })
-                .andWhere('user.isSystemUser = :bool' , {bool : false})
-                .leftJoinAndSelect('user.wallet' , 'wallet')
+                .andWhere('user.isSystemUser = :bool', { bool: false })
+                .leftJoinAndSelect('user.wallet', 'wallet')
                 .take(+pageSize)
                 .skip(+((+page - 1) * +pageSize))
                 .getMany()
@@ -797,18 +805,18 @@ export default class adminController {
                 .getCount()
             console.log('total items >>> ', totalItem)
 
-            return next(new responseModel(req, res, '', 'get all users', 200, null, { users , totalItem }))
+            return next(new responseModel(req, res, '', 'get all users', 200, null, { users, totalItem }))
         } else {
             console.log('its hereeeee2222')
             const users = await this.userRepository.find({
-                where : {isSystemUser : false},
-                relations: ['wallet', 'sells', 'buys' , 'bankAccounts'],
+                where: { isSystemUser: false },
+                relations: ['wallet', 'sells', 'buys', 'bankAccounts'],
                 take: pageSize,
                 skip: (page - 1) * pageSize
             });
             console.log('tedad users', users.length)
-            return next(new responseModel(req, res, '', 'get all users', 200, null, { users , totalItem }))
-        } 
+            return next(new responseModel(req, res, '', 'get all users', 200, null, { users, totalItem }))
+        }
 
 
         // let all = await this.userRepository.createQueryBuilder('user')
@@ -819,15 +827,21 @@ export default class adminController {
     }
 
 
-    async getSpecificGlance(req: Request, res: Response, next: any){
-        if (!req.params.id || req.params.id == ''){
+    async getSpecificGlance(req: Request, res: Response, next: any) {
+        if (!req.params.id || req.params.id == '') {
             return next(new responseModel(req, res, 'ای دیی کاربر نا معتبر', 'admin service', 400, 'کاربر نا معتبر', null))
         }
-        let all = await this.userRepository.findOneOrFail({where : {id : +req.params.id , isSystemUser : false} , relations : ['wallet' , 'wallet.transactions' , 'sells' , 'buys' , 'sells.type' , 'buys.type' , 'bankAccounts']})
-        if (!all){
+
+        let user = await this.userRepository.findOne({where : {id : +req.params.id}})
+        if (!user) {
             return next(new responseModel(req, res, 'کاربر یافت نشد', 'admin service', 400, 'کاربر یافت نشد', null))
         }
+        let walletsTr = await this.walletRepository.find({where : {user : user}})
+        let allTr = await this.invoicesRepository.find({where :[{buyer : user} , {seller : user}] , relations : ['type']})
+
+        let all = {...user , buys : {...walletsTr , ...allTr}}
+
+        // let all = await this.userRepository.findOne({ where: { id: +req.params.id , isSystemUser: false }, relations: ['wallet', 'wallet.transactions', 'sells', 'buys', 'sells.type', 'buys.type', 'bankAccounts'] })
         return next(new responseModel(req, res, '', 'admin service', 200, null, all))
     }
-
 }
