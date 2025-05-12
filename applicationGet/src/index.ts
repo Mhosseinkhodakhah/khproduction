@@ -11,6 +11,7 @@ import { createLogger, format, transports } from 'winston'
 import workerRunner from "./workers/workerRunner"
 import monitor from "./util/statusMonitor"
 import { ShahkarController } from "./controller/ShahkarController"
+import { connectRedis, redisCache } from "./services/redis.service"
 const { combine, timestamp, label, prettyPrint } = format;
 
 AppDataSource.initialize().then(async () => {
@@ -92,3 +93,11 @@ AppDataSource.initialize().then(async () => {
     console.log("Express server has started on port 3003. Open http://localhost:3003/users to see results")
 
 }).catch(error => console.log(error))
+
+
+
+
+connectRedis()
+
+let a = new redisCache()
+
