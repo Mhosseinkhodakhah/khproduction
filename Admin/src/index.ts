@@ -19,6 +19,7 @@ import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import axios from 'axios'
 import monitor from "./responseModel/statusMonitor"
+import { connectRedis, redisCache } from "./services/redis.service"
 
 AppDataSource.initialize().then(async () => {
 
@@ -86,3 +87,10 @@ AppDataSource.initialize().then(async () => {
     console.log("Express server has started on port 3000. Open http://localhost:5005 to see results")
 
 }).catch(error => console.log(error))
+
+
+
+connectRedis()
+
+let a = new redisCache()
+

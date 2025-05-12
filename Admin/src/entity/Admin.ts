@@ -20,10 +20,12 @@ export class Admin {
     @Column({type : 'varchar' , nullable : false})
     phoneNumber: string;
 
-
     @Column({type : 'varchar' , nullable : false})
     password : string;
 
+    @Column({ type: 'varchar', nullable: false })
+    userName : string;
+    
     @Column({type : 'int' , default : 0})
     role : number                                    // 0 : admin  // 1 : super admin 
 
