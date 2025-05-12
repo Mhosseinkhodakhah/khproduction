@@ -29,6 +29,7 @@
     "@types/joi": "^17.2.3",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/mongoose": "^5.11.97",
+    "@types/redis": "^4.0.11",
     "@types/response-time": "^2.3.8",
     "@types/winston": "^2.4.4",
     "cookie-parser": "^1.4.7",
@@ -45,6 +46,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.2",
     "nodemon": "^3.1.7",
+    "redis": "^5.0.1",
     "response-time": "^2.3.3",
     "winston": "^3.17.0"
   }

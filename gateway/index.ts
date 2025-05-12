@@ -95,21 +95,23 @@ const routing = new router()
 import ratelimit from './ratelimit'
 import monitor from './service/statusMonitor'
 import { adminMiddleware } from './auth/auth.middleware'
+import { blackListMiddleWare } from './blackList.middleware'
+import { connectRedis, redisCache } from './service/redis.service'
 
 
 //proxeing
 // app.use('/' , routing.proxy(`http://localhost:3000`))     // proxing to product service
-app.use('/v1/main' , routing.proxy(`http://localhost:3000`))     // proxing to django for report service
-app.use('/v1/query' , routing.proxy(`http://localhost:3003`))     // roxy to query service
-app.use('/v1/secondmain' , routing.proxy(`http://localhost:3002`))     // proxing to django for report service
-app.use('/v1/trade' , routing.proxy(`http://localhost:3011`))     // proxing to transaction and wallet
-app.use('/v1/admin' , routing.proxy(`http://localhost:5005`))     // proxing to admin service
-app.use('/v1/logger' , routing.proxy(`http://localhost:5010`))     // proxing to admin service
-app.use('/v1/old' , routing.proxy(`http://localhost:5004`))     // proxing to oldusers service
-app.use('/v1/installment' , routing.proxy(`http://localhost:5008`))     // proxing to installments service
-app.use('/v1/report'  ,routing.proxy(`http://localhost:8000`))     // proxing to django for report service
-app.use('/v1/remmitance' , routing.proxy(`http://localhost:5007`))     // proxing to django for report service
-app.use('/v1/branch' , routing.proxy(`http://localhost:3006`))     // proxing to django for report service
+app.use('/v1/main' ,blackListMiddleWare ,routing.proxy(`http://localhost:3000`))     // proxing to django for report service
+app.use('/v1/query' , blackListMiddleWare,routing.proxy(`http://localhost:3003`))     // roxy to query service
+app.use('/v1/secondmain' , blackListMiddleWare,routing.proxy(`http://localhost:3002`))     // proxing to django for report service
+app.use('/v1/trade' , blackListMiddleWare,routing.proxy(`http://localhost:3011`))     // proxing to transaction and wallet
+app.use('/v1/admin' , blackListMiddleWare,routing.proxy(`http://localhost:5005`))     // proxing to admin service
+app.use('/v1/logger' , blackListMiddleWare,routing.proxy(`http://localhost:5010`))     // proxing to admin service
+app.use('/v1/old' , blackListMiddleWare,routing.proxy(`http://localhost:5004`))     // proxing to oldusers service
+app.use('/v1/installment' , blackListMiddleWare,routing.proxy(`http://localhost:5008`))     // proxing to installments service
+app.use('/v1/report'  ,blackListMiddleWare,routing.proxy(`http://localhost:8000`))     // proxing to django for report service
+app.use('/v1/remmitance' , blackListMiddleWare,routing.proxy(`http://localhost:5007`))     // proxing to django for report service
+app.use('/v1/branch' , blackListMiddleWare,routing.proxy(`http://localhost:3006`))     // proxing to django for report service
 
 
 
@@ -118,4 +120,8 @@ app.get('/monitor/all' , async(req :any , res:any , next : any) =>{
     return res.status(200).json(data)
 })
 
+
+connectRedis()
+
+let a = new redisCache()
 
