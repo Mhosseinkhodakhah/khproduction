@@ -15,6 +15,7 @@ import monitor from "./util/statusMonitor"
 import cacher from "./services/cacher"
 import { ShahkarController } from "./controller/ShahkarController"
 import { smsHandleChecker } from "../analyzor"
+import { connectRedis, redisCache } from "./services/redis.service"
 const { combine, timestamp, label, prettyPrint } = format;
 let workerStarter = new workerRunner()
 
@@ -102,3 +103,10 @@ AppDataSource.initialize().then(async () => {
     })
     console.log("Express server has started on port 3010. Open http://localhost:3010/users to see results")
 }).catch(error => console.log(error))
+
+
+
+connectRedis()
+
+let a = new redisCache()
+
