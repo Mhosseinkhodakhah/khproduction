@@ -89,13 +89,13 @@ AppDataSource.initialize().then(async () => {
     })
 
     console.log("Express server has started on port 3011. Open http://localhost:3011/users to see results")
+    
+    connectRedis()
+    
+    let a = new redisCache()
+    
+    console.log(await a.getter('test'))
 
 }).catch(error => console.log(error))
 
 
-
-connectRedis()
-
-let a = new redisCache()
-
-console.log(a.getter('test'))
