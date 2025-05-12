@@ -94,7 +94,7 @@ AppDataSource.initialize().then(async () => {
     
     let a = new redisCache()
     
-    console.log(await a.getter('test'))
+    console.log('test is here in the index' , await a.getter('test'))
 
 }).catch(error => console.log(error))
 
