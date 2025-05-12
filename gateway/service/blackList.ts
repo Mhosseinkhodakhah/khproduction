@@ -17,8 +17,9 @@ class blackListClass{
     // }
 
     async checker(token:string){
-        let blackList = await this.list.getter('blackList')
-        if (blackList){
+        let data = await this.list.getter('blackList')
+        if (data){
+            let blackList = JSON.parse(data)
             if (blackList.includes(token)){
                 return true
             }else{
