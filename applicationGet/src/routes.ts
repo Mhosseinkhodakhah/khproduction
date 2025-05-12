@@ -430,6 +430,12 @@ export const Routes = [
         controller: adminController,
         action: "getSpecificGlance",
         middlwares: [adminMiddleware]
+    },{
+        method: "get",
+        route: "/user/transports",
+        controller: WalletController,
+        action: "getTransports",
+        middlwares: [authenticate]
     }
 ]
 

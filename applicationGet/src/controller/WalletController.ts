@@ -502,6 +502,38 @@ export class WalletController {
         }
     }
 
+
+
+
+    async getTransports(req: Request, res: Response, next: any) {
+        const userId = req['user_id']
+        let user = await this.userRepository.findOne({ where: { id: userId } })
+
+        let status = req.query.status
+        let invoices;
+        if (status) {
+            invoices = await this.transportInvoices.createQueryBuilder('transport')
+                .leftJoinAndSelect('transport.sender', 'sender')
+                .leftJoinAndSelect('transport.reciever', 'reciever')
+                .where('sender.id = :id OR reciever.id = :id', { id: userId })
+                .andWhere('transport.status = :status', { status: status })
+                .getMany()
+        } else {
+            invoices = await this.transportInvoices.createQueryBuilder('transport')
+                .leftJoinAndSelect('transport.sender', 'sender')
+                .leftJoinAndSelect('transport.reciever', 'reciever')
+                .where('sender.id = :id OR reciever.id = :id', { id: userId })
+                .getMany()
+        }
+        return res.status(200).json({
+            message : 'success',
+            data : invoices
+        })
+    }
+
+
+
+
     // async completeWithdraw(request: Request, response: Response){
     //     try {
     //         let {invoiceId,status} = request.body

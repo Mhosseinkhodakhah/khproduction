@@ -827,6 +827,7 @@ export default class adminController {
     }
 
 
+
     async getSpecificGlance(req: Request, res: Response, next: any) {
         if (!req.params.id || req.params.id == '') {
             return next(new responseModel(req, res, 'ای دیی کاربر نا معتبر', 'admin service', 400, 'کاربر نا معتبر', null))

@@ -10,11 +10,10 @@ export class transportInvoice {
 
     @ManyToOne(()=> User , (user)=> user.sells)
     sender : User
-   
+    
     @ManyToOne(()=> User , (user)=> user.buys)
     reciever : User
     
-
     @Column({ type: "numeric", precision: 10, scale: 3, default: 0 })
     goldWeight : number
 
@@ -30,11 +29,9 @@ export class transportInvoice {
     @Column()
     time : string
 
-    
     @Column({type : 'varchar'})
     type : string;                           // transport
     
-
     @Column({nullable:true,default:false , type : 'bool'})
     otpApproved : boolean
 
@@ -52,6 +49,5 @@ export class transportInvoice {
            
     @DeleteDateColumn()
     deletedAt : Date
-
 
 }
