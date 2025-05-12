@@ -414,6 +414,14 @@ export class WalletController {
                 })
                 return response.status(400).json({msg : "مبلغ وارد شده از حداقل مبلغ واریز کمتر است"})
             }
+            if (+amount > 200000000){
+                 monitor.addStatus({
+                    scope : 'wallet controller',
+                    status :  0,
+                    error : 'مبلغ وارد شده بیش از حداکثر سقف مجاز.'
+                })
+                return response.status(400).json({msg : "مبلغ وارد شده از حداکثر مبلغ مجاز بیشتر است"})
+            }
             let bankAccount = await this.bankAccountRepository.findOne({where : {id : +cartId} , relations : ['owner']})
                 
             if (+bankAccount.owner.id != userId){
