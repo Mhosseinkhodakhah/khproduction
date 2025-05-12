@@ -23,7 +23,7 @@
       "express-winston": "^4.2.0",
       "jsonwebtoken": "^9.0.2",
       "kavenegar": "^1.1.4",
-      "node-fetch": "^3.3.2",
+      "node-fetch": "^2.3.2",
       "pg": "^8.4.0",
       "redis": "^4.7.1",
       "reflect-metadata": "^0.1.13",
