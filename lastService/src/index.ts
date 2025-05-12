@@ -14,6 +14,7 @@ import workerRunner from "./workers/workerRunner"
 import monitor from "./util/statusMonitor"
 import cacher from "./services/cacher"
 import { ShahkarController } from "./controller/ShahkarController"
+import { connectRedis } from "./services/redis.service"
 const { combine, timestamp, label, prettyPrint } = format;
 let workerStarter = new workerRunner()
 
@@ -85,9 +86,9 @@ AppDataSource.initialize().then(async () => {
     let handleGoldPrice = await systemService.createHanldeGoldPrice()
     let createNewSystemSetting = await systemService.createdTradePermision()
     
-    console.log(handleGoldPrice)
+    // console.log(handleGoldPrice)
     
-    console.log(createNewSystemSetting)
+    // console.log(createNewSystemSetting)
     
     app.listen(3000)
 
@@ -111,5 +112,5 @@ AppDataSource.initialize().then(async () => {
 }).catch(error => console.log(error))
 
 
-// connectRedis()
+connectRedis()
 

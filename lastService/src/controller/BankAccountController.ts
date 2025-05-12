@@ -42,7 +42,6 @@ export class BankAccountController {
 
     async one(request: Request, response: Response, next: NextFunction) {
         const id = parseInt(request.params.id);
-
         if (isNaN(id)) {
             monitor.addStatus({
                 scope : 'bank account controller',
@@ -51,7 +50,7 @@ export class BankAccountController {
             })
             return response.status(400).json({ error: "Invalid bank account ID" }); 
         }
-
+        
         try {
             const bankAccount = await this.bankAccountRepository.findOne({
                 where: { id },
