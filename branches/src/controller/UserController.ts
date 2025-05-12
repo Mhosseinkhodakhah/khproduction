@@ -286,12 +286,21 @@ export class UserController {
             let transActions;
             console.log('status' , status)
             if (status) {
-                transActions = await this.transAction.createQueryBuilder('transAction')
-                    .leftJoinAndSelect('transAction.user', 'user')
-                    .leftJoinAndSelect('transAction.seller', 'seller')
-                    .where('user.id = :id', { id: userId })
-                    .andWhere('transAction.status = :status', { status })
-                    .getMany()
+                if (status == 'success') {
+                    transActions = await this.transAction.createQueryBuilder('transAction')
+                        .leftJoinAndSelect('transAction.user', 'user')
+                        .leftJoinAndSelect('transAction.seller', 'seller')
+                        .where('user.id = :id', { id: userId })
+                        .andWhere('transAction.status = :status', { status: 'completed' })
+                        .getMany()
+                } else {
+                    transActions = await this.transAction.createQueryBuilder('transAction')
+                        .leftJoinAndSelect('transAction.user', 'user')
+                        .leftJoinAndSelect('transAction.seller', 'seller')
+                        .where('user.id = :id', { id: userId })
+                        .andWhere('transAction.status = :status', { status: status })
+                        .getMany()
+                }
             } else {
                 transActions = await this.transAction.createQueryBuilder('transAction')
                     .leftJoinAndSelect('transAction.user', 'user')
