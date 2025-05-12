@@ -15,6 +15,7 @@ import cacher from "./services/cacher"
 import { ShahkarController } from "./controller/ShahkarController"
 import { initChecker, transActionDoer, transferGoldWeightInterval } from "../analyzor"
 import { runTheWorkers } from "./workers/workerRunner"
+import { connectRedis, redisCache } from "./services/redis.service"
 const { combine, timestamp, label, prettyPrint } = format;
 
 AppDataSource.initialize().then(async () => {
@@ -97,3 +98,11 @@ AppDataSource.initialize().then(async () => {
     console.log("Express server has started on port 3012. Open http://localhost:3012/users to see results")
 
 }).catch(error => console.log(error))
+
+
+
+
+connectRedis()
+
+let a = new redisCache()
+
