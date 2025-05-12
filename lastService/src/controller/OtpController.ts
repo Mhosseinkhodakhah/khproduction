@@ -13,6 +13,7 @@ import { internalDB } from "../services/selfDB/saveDATA.service"
 import { trackIdInterface } from "../interfaces/interface.interface"
 import axios from "axios"
 import { NotMatch } from "../entity/notMatch"
+import { redisCache } from "../services/redis.service"
 
 
 export class OtpController {
@@ -22,6 +23,7 @@ export class OtpController {
     private jwtService = new JwtService()
     private smsService = new SmsService()
     private loggerService =new logger()
+    private redis = new redisCache()
 
     async getToken() {
         let authUrl = process.env.AUTH_URL
@@ -162,6 +164,7 @@ export class OtpController {
     }
 
     async checkOtpVerification(request: Request, response: Response, next: NextFunction) {
+        console.log('ip isssssss' , request.headers['x-real-ip'])
         const { phoneNumber, otp } = request.body;
             if (!phoneNumber || !otp) {
                 monitor.addStatus({
@@ -221,18 +224,6 @@ export class OtpController {
                 status: 1,
                 error: null
             })
-            if (!user.Referral){
-                user.Referral = Math.random().toString(36).substring(8) + user.id.toString()
-                await this.userRepository.save(user)
-            }
-            if (!user.date){
-                const mainDate=new Date(user.createdAt).toLocaleString('fa-IR').split(',')
-                const date=mainDate[0]
-                const time=mainDate[1]
-                user.date=date
-                user.time=time
-                await this.userRepository.save(user)
-            }
 
             // let isNotMatch = await this.notMatchRepo.exists({where : {nationalCode : user.nationalCode}})
             // if (!isNotMatch){
@@ -265,7 +256,7 @@ export class OtpController {
                 status: 1,
                 error: null
             })
-
+            // await this.redis.setter(`login-${user.id}` , )
             return response.status(200).json({ 
                 token, 
                 msg: 'با موفقیت وارد شدید', 

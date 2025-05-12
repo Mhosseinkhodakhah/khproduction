@@ -114,10 +114,4 @@ AppDataSource.initialize().then(async () => {
 
 connectRedis()
 
-
-
 let a = new redisCache()
-
-a.setter('test' , 'its a fucking test >>>> ')
-
-console.log(a.getter('test'))
