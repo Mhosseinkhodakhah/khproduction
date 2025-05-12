@@ -524,6 +524,7 @@ export class WalletController {
                 .leftJoinAndSelect('transport.sender', 'sender')
                 .leftJoinAndSelect('transport.reciever', 'reciever')
                 .where('sender.id = :id OR reciever.id = :id', { id: userId })
+                .andWhere('transport.status != :status', { status: 'init' })
                 .getMany()
         }
         return res.status(200).json({
