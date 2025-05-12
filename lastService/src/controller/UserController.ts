@@ -353,6 +353,7 @@ export class UserController {
         if (!blackList){
             await this.redis.setter('blackList' , [request.headers.authorization])    
         }else {
+            await this.redis.deleter('blackList')
             blackList.push(request.headers.authorization)
             await this.redis.setter('blackList' , blackList)
         }
