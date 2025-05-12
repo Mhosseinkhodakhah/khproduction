@@ -106,5 +106,11 @@ export const Routes = [
     controller: branchController,
     middlewares:[],
     action: "getAllTransACtions"
+},{
+    method: "get",
+    route: "/user/transactions",
+    controller: branchController,
+    middlewares:[authenticate],
+    action: "getUseGold"
 }
 ]

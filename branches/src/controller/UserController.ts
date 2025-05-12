@@ -275,4 +275,37 @@ export class UserController {
             await queryRunner.release()
         }
     }
+
+
+
+    async getUseGold(req: Request, res: Response, next: NextFunction) {
+
+        try {
+                    let userId = req.user_id;
+        let user = await this.userRepository.findOne({ where: { id: userId } })
+        let status = req.query.status;
+        let transActions;
+        if (status) {
+            transActions = await this.transAction.createQueryBuilder('transAction')
+                .leftJoinAndSelect('transAction.user', 'user')
+                .leftJoinAndSelect('transAction.seller', 'seller')
+                .where('user.id = :id', { id: userId })
+                .andWhere('transAction.status = :status', { status })
+                .getMany()
+        } else {
+            transActions = await this.transAction.createQueryBuilder('transAction')
+                .leftJoinAndSelect('transAction.user', 'user')
+                .leftJoinAndSelect('transAction.seller', 'seller')
+                .where('user.id = :id', { id: userId })
+                .getMany()
+        }
+        return next(new responseModel(req, res, 'موفق.', 'branch', 200, null, transActions))
+
+        } catch (error) {
+            return next(new responseModel(req, res, 'خطای داخلی', 'branch', 500, 'خطای داخلی سرور', null))
+            
+        }
+
+    }
+
 }
