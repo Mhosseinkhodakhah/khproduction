@@ -351,13 +351,13 @@ export class UserController {
     async logOut(request: Request, response: Response, next: NextFunction) {
         let blackList : any = await this.redis.getter('blackList')
         if (!blackList){
-            let data = []
-            data.push(request.headers.authorization)
-            await this.redis.setter('blackList' , data)    
+            let data = [request.headers.authorization]
+
+            await this.redis.setter('blackList' , JSON.stringify(data))    
         }else {
-            await this.redis.deleter('blackList')
-            blackList.push(request.headers.authorization)
-            await this.redis.setter('blackList' , blackList)
+            let parsData = JSON.parse(blackList)
+            parsData.push(request.headers.authorization)
+            await this.redis.setter('blackList' , JSON.stringify(parsData))
         }
 
         return response.status(200).json({
