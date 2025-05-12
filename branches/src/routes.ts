@@ -109,7 +109,7 @@ export const Routes = [
 },{
     method: "get",
     route: "/user/transactions",
-    controller: branchController,
+    controller: UserController,
     middlewares:[authenticate],
     action: "getUseGold"
 }
