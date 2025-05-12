@@ -293,7 +293,15 @@ export class UserController {
                         .where('user.id = :id', { id: userId })
                         .andWhere('transAction.status = :status', { status: 'completed' })
                         .getMany()
-                } else {
+                }else if(status == 'pending'){
+                     transActions = await this.transAction.createQueryBuilder('transAction')
+                        .leftJoinAndSelect('transAction.user', 'user')
+                        .leftJoinAndSelect('transAction.seller', 'seller')
+                        .where('user.id = :id', { id: userId })
+                        .andWhere('transAction.status = :status', { status: 'waitForOtp' })
+                        .getMany()
+                } 
+                else {
                     transActions = await this.transAction.createQueryBuilder('transAction')
                         .leftJoinAndSelect('transAction.user', 'user')
                         .leftJoinAndSelect('transAction.seller', 'seller')
