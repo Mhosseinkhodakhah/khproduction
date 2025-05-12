@@ -510,6 +510,7 @@ export class WalletController {
         let user = await this.userRepository.findOne({ where: { id: userId } })
 
         let status = req.query.status
+        console.log('status is >>>' , status)
         let invoices;
         if (status) {
             invoices = await this.transportInvoices.createQueryBuilder('transport')
