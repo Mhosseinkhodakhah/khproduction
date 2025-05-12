@@ -258,7 +258,7 @@ export class OtpController {
 
             /// its for setting loging user
             process.nextTick(async() => {
-                this.redis.setter(`login-${user.id}`, request.headers['x-real-ip'])
+                this.redis.setter(`login-${user.phoneNumber}`, request.headers['x-real-ip'])
                 let xx = await this.redis.getter(`login-${user.id}`)
                 console.log('after getting cache in redis' , xx)
             })
