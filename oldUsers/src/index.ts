@@ -13,6 +13,7 @@ import fs from 'fs'
 import analyzor from "../data.analyze"
 import monitor from "./responseModel/statusMonitor"
 import { UserController } from "./controller/UserController"
+import { connectRedis, redisCache } from "./services/redis.service"
 
 config()
 
@@ -73,3 +74,11 @@ AppDataSource.initialize().then(async () => {
     console.log("Express server has started on port 5004. Open http://localhost:5004/users to see results")
 
 }).catch(error => console.log(error))
+
+
+
+
+connectRedis()
+
+let a = new redisCache()
+
