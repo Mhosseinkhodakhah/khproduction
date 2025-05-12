@@ -1,22 +1,24 @@
+import { redisCache } from "../services/redis.service";
 
 
 
 
 
 class blackListClass{
-    private list = [];
+    private list = new redisCache();
 
     getter(){
         return this.list
     }
 
 
-    setter(newToken : string){
-        this.list.push(newToken)
-    }
+    // setter(newToken : string){
+    //     this.list.push(newToken)
+    // }
 
-    checker(token:string){
-        if (this.list.includes(token)){
+    async checker(token:string){
+        let blackList = await this.list.getter('blackList')
+        if (blackList.includes(token)){
             return true
         }else{
             return false

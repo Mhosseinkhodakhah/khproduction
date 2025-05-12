@@ -15,6 +15,7 @@ import { convertTradeInvoice } from "../entity/inpersonConvertTrade.entity"
 import { productList } from "../entity/producList.entity"
 import blackList from "../util/blackList"
 import { oldUserService } from "../services/oldUser.service"
+import { redisCache } from "../services/redis.service"
 
 
 export class UserController {
@@ -22,6 +23,7 @@ export class UserController {
     private invoiceRepository = AppDataSource.getRepository(Invoice)
     private walletRepository=AppDataSource.getRepository(Wallet)
     private productLists = AppDataSource.getRepository(productList)
+    private redis = new redisCache()
     private oldUSerService = new oldUserService()
     
     private goldPrice = AppDataSource.getRepository(goldPrice)
@@ -347,9 +349,7 @@ export class UserController {
     // }
 
     async logOut(request: Request, response: Response, next: NextFunction) {
-        console.log(request.headers.authorization)
-        blackList.setter(request.headers.authorization)
-        console.log(blackList.getter())
+        await this.redis.setter('blackList' , request.headers.authorization)
         return response.status(200).json({
             token: request.headers.authorization
         })

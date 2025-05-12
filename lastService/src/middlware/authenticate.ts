@@ -1,9 +1,9 @@
-
 import * as jwt from "jsonwebtoken";
 import monitor from "../util/statusMonitor";
 import blackList from "../util/blackList";
 
-export function authenticate(req, res, next) {
+
+export async function authenticate(req, res, next) {
   {
     try {
       if (blackList.checker(req.headers.authorization)) {
