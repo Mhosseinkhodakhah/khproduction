@@ -513,12 +513,21 @@ export class WalletController {
         console.log('status is >>>' , status)
         let invoices;
         if (status) {
-            invoices = await this.transportInvoices.createQueryBuilder('transport')
-                .leftJoinAndSelect('transport.sender', 'sender')
-                .leftJoinAndSelect('transport.reciever', 'reciever')
-                .where('sender.id = :id OR reciever.id = :id', { id: userId })
-                .andWhere('transport.status = :status', { status: status })
-                .getMany()
+            if (status == 'success') {
+                invoices = await this.transportInvoices.createQueryBuilder('transport')
+                    .leftJoinAndSelect('transport.sender', 'sender')
+                    .leftJoinAndSelect('transport.reciever', 'reciever')
+                    .where('sender.id = :id OR reciever.id = :id', { id: userId })
+                    .andWhere('transport.status = :status', { status: 'completed' })
+                    .getMany()
+            }else {
+                invoices = await this.transportInvoices.createQueryBuilder('transport')
+                    .leftJoinAndSelect('transport.sender', 'sender')
+                    .leftJoinAndSelect('transport.reciever', 'reciever')
+                    .where('sender.id = :id OR reciever.id = :id', { id: userId })
+                    .andWhere('transport.status = :status', { status: status })
+                    .getMany()
+            }
         } else {
             invoices = await this.transportInvoices.createQueryBuilder('transport')
                 .leftJoinAndSelect('transport.sender', 'sender')
