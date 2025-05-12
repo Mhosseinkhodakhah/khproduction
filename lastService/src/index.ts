@@ -14,7 +14,7 @@ import workerRunner from "./workers/workerRunner"
 import monitor from "./util/statusMonitor"
 import cacher from "./services/cacher"
 import { ShahkarController } from "./controller/ShahkarController"
-import { connectRedis } from "./services/redis.service"
+import { connectRedis, redisCache } from "./services/redis.service"
 const { combine, timestamp, label, prettyPrint } = format;
 let workerStarter = new workerRunner()
 
@@ -114,3 +114,10 @@ AppDataSource.initialize().then(async () => {
 
 connectRedis()
 
+
+
+let a = new redisCache()
+
+a.setter('test' , 'its a fucking test >>>> ')
+
+console.log(a.getter('test'))

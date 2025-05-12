@@ -18,7 +18,7 @@ const client: RedisClientType = createClient({
 
 
 
-export class cacher {
+export class redisCache {
 
     async setter( key : string, msg : string){
         await client.set(key , msg);
