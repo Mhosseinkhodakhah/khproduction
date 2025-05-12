@@ -360,6 +360,7 @@ export class UserController {
             await this.redis.setter('blackList' , JSON.stringify(parsData))
         }
 
+        
         return response.status(200).json({
             token: request.headers.authorization
         })
