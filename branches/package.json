@@ -13,6 +13,7 @@
       "@types/cors": "^2.8.17",
       "@types/express-validator": "^3.0.2",
       "@types/node-fetch": "^2.6.12",
+      "@types/redis": "^4.0.11",
       "axios": "^1.9.0",
       "body-parser": "^1.19.1",
       "cors": "^2.8.5",
@@ -24,6 +25,7 @@
       "kavenegar": "^1.1.4",
       "node-fetch": "^3.3.2",
       "pg": "^8.4.0",
+      "redis": "^4.7.1",
       "reflect-metadata": "^0.1.13",
       "typeorm": "0.3.20",
       "winston": "^3.17.0"

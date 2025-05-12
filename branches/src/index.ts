@@ -7,6 +7,7 @@ import winston from 'winston'
 import expressWinston from 'express-winston'
 import { createLogger, format, transports } from 'winston'
 import cors from 'cors'
+import { connectRedis, redisCache } from "./services/redis.service"
 const { combine, timestamp, label, prettyPrint } = format;
 
 
@@ -73,3 +74,12 @@ AppDataSource.initialize().then(async () => {
     console.log("Express server has started on port 3006. Open http://localhost:3006/users to see results")
 
 }).catch(error => console.log(error))
+
+
+
+
+
+connectRedis()
+
+let a = new redisCache()
+
