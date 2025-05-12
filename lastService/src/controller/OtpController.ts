@@ -164,7 +164,6 @@ export class OtpController {
     }
 
     async checkOtpVerification(request: Request, response: Response, next: NextFunction) {
-        console.log('ip isssssss' , request.headers['x-real-ip'])
         const { phoneNumber, otp } = request.body;
             if (!phoneNumber || !otp) {
                 monitor.addStatus({
@@ -256,7 +255,14 @@ export class OtpController {
                 status: 1,
                 error: null
             })
-            // await this.redis.setter(`login-${user.id}` , )
+
+            /// its for setting loging user
+            process.nextTick(async() => {
+                this.redis.setter(`login-${user.id}`, request.headers['x-real-ip'])
+                // its done after next tick for user
+                let xx = await this.redis.getter(`login-${user.id}`)
+                console.log(xx)
+            })
             return response.status(200).json({ 
                 token, 
                 msg: 'با موفقیت وارد شدید', 
