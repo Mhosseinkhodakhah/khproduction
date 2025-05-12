@@ -351,7 +351,9 @@ export class UserController {
     async logOut(request: Request, response: Response, next: NextFunction) {
         let blackList : any = await this.redis.getter('blackList')
         if (!blackList){
-            await this.redis.setter('blackList' , [request.headers.authorization])    
+            let data = []
+            data.push(request.headers.authorization)
+            await this.redis.setter('blackList' , data)    
         }else {
             await this.redis.deleter('blackList')
             blackList.push(request.headers.authorization)
