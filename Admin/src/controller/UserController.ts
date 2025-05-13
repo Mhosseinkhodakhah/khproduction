@@ -158,9 +158,9 @@ export class UserController {
 
     async login(req: any, res: any, next: any) {
         console.log('body', req.body)
-        if (!req.body.userName || !req.body.password){
-            return next(new response(req, res, 'login admin', 403, 'اطلاعات ورود نا درست', null))
-        }
+        // if (!req.body.userName || !req.body.password){
+        //     return next(new response(req, res, 'login admin', 403, 'اطلاعات ورود نا درست', null))
+        // }
         let admin = await this.adminRepository.findOne({
             where: {
                 phoneNumber: req.body.phoneNumber
