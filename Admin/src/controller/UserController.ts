@@ -406,6 +406,7 @@ export class UserController {
                     process.nextTick(async()=>{
                         this.lockService.disablor(admin.id)
                     })
+                    await queryRunner.commitTransaction()
                     return next(new response(req, res, 'admin service', 200, null, null))
                 } else {
                     admin.isBlocked = true;
@@ -419,6 +420,7 @@ export class UserController {
                     process.nextTick(async()=>{
                         this.lockService.disablor(admin.id)
                     })
+                    await queryRunner.commitTransaction()
                     return next(new response(req, res, 'admin service', 200, null, null))
                 }
             } catch (error) {
