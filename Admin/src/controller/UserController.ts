@@ -388,7 +388,7 @@ export class UserController {
             }
 
             // await this.lockService.disablor(admin.id)
-            await this.redisService.deleteAll()
+            // await this.redisService.deleteAll()
             let lock = await this.lockService.check(admin.id)
             if (lock) {
                 return next(new response(req, res, 'update accessPoints admin', 400, 'در حال حاظر امکان آپدیت این ادمین وجود ندارد لطفا دقایقی دیگر تلاش کنید', null))
