@@ -256,16 +256,16 @@ export class UserController {
 
     async updateAdmin(req: Request, res: Response, next: NextFunction) {
         let adminId = req.params.adminId;
-        // if (req.user.role == 0){
-        //     return next(new response(req, res, 'update admin', 403, 'permision denied', null))
-        // }
+        if (req.user.role == 0){
+            return next(new response(req, res, 'update admin', 403, 'permision denied', null))
+        }
         let admin = await this.adminRepository.findOne({ where: { id: +adminId } })
-        // req.body.password = await bcrypt.hash(req.body.password, 10)
-        // // admin = {...admin , ...req.body}
+        req.body.password = await bcrypt.hash(req.body.password, 10)
+        admin = {...admin , ...req.body}
         // admin.password = req.body.password;
-        // await this.adminRepository.save(admin)
+        await this.adminRepository.save(admin)
         // await this.adminRepository.remove(admin)
-        admin.role = 1;
+        // admin.role = 1;
         await this.adminRepository.save(admin)
         return next(new response(req, res, 'update admin', 200, null, admin))
     }
