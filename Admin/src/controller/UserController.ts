@@ -384,7 +384,7 @@ export class UserController {
                 return next(new response(req, res, 'admin service', 400, 'ادمین مورد نظر یافت نشد', null))
             }
 
-            await this.lockService.disablor(admin.id)
+            // await this.lockService.disablor(admin.id)
             let lock = await this.lockService.check(admin.id)
             if (lock) {
                 return next(new response(req, res, 'update accessPoints admin', 400, 'در حال حاظر امکان آپدیت این ادمین وجود ندارد لطفا دقایقی دیگر تلاش کنید', null))
