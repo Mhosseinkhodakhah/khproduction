@@ -388,6 +388,8 @@ export class UserController {
             if (lock) {
                 return next(new response(req, res, 'update accessPoints admin', 400, 'در حال حاظر امکان آپدیت این ادمین وجود ندارد لطفا دقایقی دیگر تلاش کنید', null))
             }
+
+            await this.lockService.disablor(admin.id)
             let queryRunner = AppDataSource.createQueryRunner()
             await queryRunner.connect()
             await queryRunner.startTransaction()
