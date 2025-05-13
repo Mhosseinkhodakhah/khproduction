@@ -808,5 +808,28 @@ export const Routes = [
     action: "transferUserGoldWeight",
     middlwares: [adminMiddleware]
 },
+{
+    method: "post",
+    route: "/permision/register",
+    controller: adminController,
+    action: "closeregisteration",
+    middlwares: [adminMiddleware]
+},{
+    method: "post",
+    route: "/permision/deposit",
+    controller: adminController,
+    action: "closedeposit",
+    middlwares: [adminMiddleware]
+},{
+    method: "post",
+    route: "/permision/withdraw",
+    controller: adminController,
+    action: "closewithdraw",
+    middlwares: [adminMiddleware]
+},
 ]
+
+
+
+
 

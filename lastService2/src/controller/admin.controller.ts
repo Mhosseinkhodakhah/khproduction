@@ -18,6 +18,7 @@ import instance from "../util/tradePerision";
 import { handleGoldPrice } from "../entity/handleGoldPrice.entity";
 import { transportInvoice } from "../entity/transport";
 import { goldPrice } from "../entity/goldPrice";
+import { systemSetting } from "../entity/systemSetting";
 
 
 export default class adminController {
@@ -30,6 +31,7 @@ export default class adminController {
     private walletTransactionRepository = AppDataSource.getRepository(WalletTransaction);
     private paymentInfoRepository = AppDataSource.getRepository(PaymentInfo);
     private handleGoldPrice = AppDataSource.getRepository(handleGoldPrice)
+    private systemSetting = AppDataSource.getRepository(systemSetting)
     private zpService = new ZarinPalService()
     private interservice = new logger()
     private smsService = new SmsService()
@@ -1006,8 +1008,63 @@ export default class adminController {
 
 
     async transferUserGoldWeight(req: Request, res: Response, next: NextFunction){
-
         return next(new responseModel(req, res, 'این کاربر در لیست کاربران قدیمی یافت نشد.', 'admin service', 200, null, null))
-
     }
+
+
+    async closeregisteration(req: Request, res: Response, next: NextFunction) {
+        try {
+            let setting = await this.systemSetting.find()
+            let register = setting[0].registerPermision
+            if (register == 1) {
+                setting[0].registerPermision = 0
+            } else {
+                setting[0].registerPermision = 1
+            }
+            await this.systemSetting.save(setting)
+            return next(new responseModel(req, res, '.', 'admin service', 200, null, null))
+        } catch (error) {
+            console.log('error in close withdraw', error)
+            return next(new responseModel(req, res, 'خطای داخلی سیستم.', 'admin service', 500, null, null))
+        }
+    }
+
+
+
+    async closedeposit(req: Request, res: Response, next: NextFunction) {
+        try {
+            let setting = await this.systemSetting.find()
+            let register = setting[0].depositPermision
+            if (register == 1) {
+                setting[0].depositPermision = 0
+            } else {
+                setting[0].depositPermision = 1
+            }
+            await this.systemSetting.save(setting)
+            return next(new responseModel(req, res, '.', 'admin service', 200, null, null))
+        } catch (error) {
+            console.log('error in close withdraw', error)
+            return next(new responseModel(req, res, 'خطای داخلی سیستم.', 'admin service', 500, null, null))
+        }
+    }
+
+
+    async closewithdraw(req: Request, res: Response, next: NextFunction) {
+        try {
+            let setting = await this.systemSetting.find()
+            let register = setting[0].withdrawPermision
+            if (register == 1) {
+                setting[0].withdrawPermision = 0
+            } else {
+                setting[0].withdrawPermision = 1
+            }
+            await this.systemSetting.save(setting)
+            return next(new responseModel(req, res, '.', 'admin service', 200, null, null))
+        } catch (error) {
+            console.log('error in close withdraw', error)
+            return next(new responseModel(req, res, 'خطای داخلی سیستم.', 'admin service', 500, null, null))
+        }
+    }
+
+
 }
