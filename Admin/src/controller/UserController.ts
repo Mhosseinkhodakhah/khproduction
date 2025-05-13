@@ -11,6 +11,8 @@ import monitor from "../responseModel/statusMonitor"
 import { interservice } from "../services/interservice.service"
 import { cooperation } from "../entity/cooperation"
 import { SmsService } from "../services/message-service"
+import { redisCache } from "../services/redis.service"
+import { lockService } from "../services/lockService.service"
 
 
 
@@ -21,6 +23,8 @@ export class UserController {
     private cooperationRepository = AppDataSource.getRepository(cooperation)
     private tokenService = new jwtGenerator()
     private InterService = new interservice()
+    private redisService = new redisCache()
+    private lockService = new lockService()
     private smsService = new SmsService()
     private adminRepository = AppDataSource.getRepository(Admin)
 
@@ -226,33 +230,45 @@ export class UserController {
             relations: ['accessPoints']
         })
         if (!admin) {
-            return next(new response(req, res, 'update accessPoints admin', 404, null, admin))
+            return next(new response(req, res, 'update accessPoints admin', 400, 'ادمین مورد نظر یافت نشد', null))
         }
-        // for (let i of req.body.accessPoints){
-        //     let id = i.id;
-        //     let menu = await this.accessPointRepository.findOne({where : {id : id}})
-        //     menu.Admin.push(admin)
-        //     // admin.accessPoints.push(menu)
-        // }
-        let finalAccess = []
-        console.log('befor update the accessPoints >>>> ', req.body.accessPoints)
-        for (let i of req.body.accessPoints) {
-            if (i.isAccess == true) {
-                delete i.isAccess
-                finalAccess.push(i)
+        let queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        try {
+            // checking locked of admin
+            let lock = await this.lockService.check(admin.id)
+            if (lock){
+                return next(new response(req, res, 'update accessPoints admin', 400, 'در حال حاظر امکان آپدیت این ادمین وجود ندارد لطفا دقایقی دیگر تلاش کنید', null))
             }
+            // locking admin
+            let finalAccess = []
+            console.log('befor update the accessPoints >>>> ', req.body.accessPoints)
+            for (let i of req.body.accessPoints) {
+                if (i.isAccess == true) {
+                    delete i.isAccess
+                    finalAccess.push(i)
+                }
+            }
+            console.log('after update accessPoints', finalAccess)
+            admin.accessPoints = finalAccess
+            await queryRunner.manager.save(admin)
+            console.log(req.user.userId)
+            let mainAdmin = await this.adminRepository.findOne({ where: { id: +req.user.userId } })
+            let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} سطح دسترسی مربوط به ادمین ${admin.firstName} ${admin.lastName} را تغییر داد\u202C`
+            this.InterService.addNewAdminLog({ firstName: mainAdmin.firstName, lastName: mainAdmin.lastName, phoneNumber: mainAdmin.phoneNumber },
+                'تغییر سطح دسترسی', actions, {
+                finalAccess
+            }, 1)
+            await this.lockService.disablor(admin.id)
+            await queryRunner.commitTransaction()
+            return next(new response(req, res, 'update accessPoints admin', 200, null, admin))
+        } catch (error) {
+            console.log('updating accesspoints successfully done . . .' , error)
+            await queryRunner.rollbackTransaction()
+        }finally{
+            await queryRunner.release()
         }
-        console.log('after update accessPoints', finalAccess)
-        admin.accessPoints = finalAccess
-        await this.adminRepository.save(admin)
-        console.log(req.user.userId)
-        let mainAdmin = await this.adminRepository.findOne({ where: { id: +req.user.userId } })
-        let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} سطح دسترسی مربوط به ادمین ${admin.firstName} ${admin.lastName} را تغییر داد\u202C`
-        this.InterService.addNewAdminLog({ firstName: mainAdmin.firstName, lastName: mainAdmin.lastName, phoneNumber: mainAdmin.phoneNumber },
-            'تغییر سطح دسترسی', actions, {
-            finalAccess
-        }, 1)
-        return next(new response(req, res, 'update accessPoints admin', 200, null, admin))
     }
 
     /**
@@ -264,20 +280,46 @@ export class UserController {
      */
     async updateAdmin(req: Request, res: Response, next: NextFunction) {
         let adminId = req.params.adminId;
-        if (req.user.role == 0){
+        if (!adminId) {
+            return next(new response(req, res, 'update admin', 400, 'مقدار ورودی نادرست', null))
+        }
+        if (req.user.role == 0) {
             return next(new response(req, res, 'update admin', 403, 'permision denied', null))
         }
         let admin = await this.adminRepository.findOne({ where: { id: +adminId } })
-        if  (req.body.password){
-            req.body.password = await bcrypt.hash(req.body.password, 10)
+        if (!admin) {
+            return next(new response(req, res, 'update accessPoints admin', 400, 'ادمین مورد نظر یافت نشد', null))
         }
-        admin = {...admin , ...req.body}
-        // admin.password = req.body.password;
-        await this.adminRepository.save(admin)
-        // await this.adminRepository.remove(admin)
-        // admin.role = 1;
-        await this.adminRepository.save(admin)
-        return next(new response(req, res, 'update admin', 200, null, admin))
+        let queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        try {
+            // checking locking admin
+            let lock = await this.lockService.check(admin.id)
+            if (lock) {
+                return next(new response(req, res, 'update accessPoints admin', 400, 'در حال حاظر امکان آپدیت این ادمین وجود ندارد لطفا دقایقی دیگر تلاش کنید', null))
+            }
+
+            if (req.body.password) {
+                req.body.password = await bcrypt.hash(req.body.password, 10)
+            }
+            
+            admin = { ...admin, ...req.body }
+            // admin.password = req.body.password;
+            // await this.adminRepository.save(admin)
+            // await this.adminRepository.remove(admin)
+            // admin.role = 1;
+            await queryRunner.manager.save(admin)
+            await this.lockService.disablor(admin.id)
+            await queryRunner.commitTransaction()
+            return next(new response(req, res, 'update admin', 200, null, admin))
+        } catch (error) {
+            console.log('error occured in updating admin >>>>> ', error)
+            await queryRunner.rollbackTransaction()
+        } finally {
+            await queryRunner.release()
+            console.log('transaction released successfully . . . . ')
+        }
     }
 
     async getAllAdmins(req: Request, res: Response, next: NextFunction) {
@@ -296,7 +338,6 @@ export class UserController {
         })
         return next(new response(req, res, 'get specific admin', 200, null, admin))
     }
-
 
 
     async createCooprationRequests(req: Request, res: Response, next: NextFunction) {
@@ -338,27 +379,48 @@ export class UserController {
     async deActiveAdmin(req: Request, res: Response, next: NextFunction) {
 
         try {
-            let admin = await this.adminRepository.findOne({ where: { id: +req.params.adminId } })
-            if (admin.isBlocked) {
-                admin.isBlocked = false;
-                await this.adminRepository.save(admin)
-                let mainAdmin = await this.adminRepository.findOne({ where: { id: +req.user.userId } })
-                let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} ادمین ${admin.firstName} ${admin.lastName} را  فعال کرد\u202C`
-                this.InterService.addNewAdminLog({ firstName: mainAdmin.firstName, lastName: mainAdmin.lastName, phoneNumber: mainAdmin.phoneNumber },
-                    ' فعال کردن ادمین', actions, {
+            let admin = await this.adminRepository.findOneOrFail({ where: { id: +req.params.adminId } })
+            if (!admin){
+                return next(new response(req, res, 'admin service', 400, 'ادمین مورد نظر یافت نشد', null))
+            }
 
-                }, 1)
-                return next(new response(req, res, 'admin service', 200, null, null))
-            } else {
-                admin.isBlocked = true;
-                await this.adminRepository.save(admin)
-                let mainAdmin = await this.adminRepository.findOne({ where: { id: +req.user.userId } })
-                let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} ادمین ${admin.firstName} ${admin.lastName} را غیر فعال کرد\u202C`
-                this.InterService.addNewAdminLog({ firstName: mainAdmin.firstName, lastName: mainAdmin.lastName, phoneNumber: mainAdmin.phoneNumber },
-                    'غیر فعال کردن ادمین', actions, {
-
-                }, 1)
-                return next(new response(req, res, 'admin service', 200, null, null))
+            let lock = await this.lockService.check(admin.id)
+            if (lock) {
+                return next(new response(req, res, 'update accessPoints admin', 400, 'در حال حاظر امکان آپدیت این ادمین وجود ندارد لطفا دقایقی دیگر تلاش کنید', null))
+            }
+            let queryRunner = AppDataSource.createQueryRunner()
+            await queryRunner.connect()
+            await queryRunner.startTransaction()
+            try {
+                if (admin.isBlocked) {
+                    admin.isBlocked = false;
+                    await this.adminRepository.save(admin)
+                    let mainAdmin = await this.adminRepository.findOne({ where: { id: +req.user.userId } })
+                    let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} ادمین ${admin.firstName} ${admin.lastName} را  فعال کرد\u202C`
+                    this.InterService.addNewAdminLog({ firstName: mainAdmin.firstName, lastName: mainAdmin.lastName, phoneNumber: mainAdmin.phoneNumber },
+                        ' فعال کردن ادمین', actions, {
+    
+                    }, 1)
+                    return next(new response(req, res, 'admin service', 200, null, null))
+                } else {
+                    admin.isBlocked = true;
+                    await this.adminRepository.save(admin)
+                    let mainAdmin = await this.adminRepository.findOne({ where: { id: +req.user.userId } })
+                    let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} ادمین ${admin.firstName} ${admin.lastName} را غیر فعال کرد\u202C`
+                    this.InterService.addNewAdminLog({ firstName: mainAdmin.firstName, lastName: mainAdmin.lastName, phoneNumber: mainAdmin.phoneNumber },
+                        'غیر فعال کردن ادمین', actions, {
+    
+                    }, 1)
+                    process.nextTick(async()=>{
+                        this.lockService.disablor(admin.id)
+                    })
+                    return next(new response(req, res, 'admin service', 200, null, null))
+                }
+            } catch (error) {
+                console.log('error in deactivation admin ' , error)
+                await queryRunner.rollbackTransaction()
+            }finally{
+                await queryRunner.release()
             }
         } catch (error) {
             console.log('error in de activation of admins', error)

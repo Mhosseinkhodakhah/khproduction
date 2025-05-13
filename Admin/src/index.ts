@@ -92,5 +92,4 @@ AppDataSource.initialize().then(async () => {
 
 connectRedis()
 
-let a = new redisCache()
 
