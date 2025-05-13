@@ -97,5 +97,4 @@ export const Routes = [{
     controller: UserController,
     middleware: [authMiddleware],
     action: "getAllCoorporation"
-}
-]
+}]

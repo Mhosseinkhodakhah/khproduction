@@ -122,7 +122,7 @@ export class UserController {
     async addNewAdmin(req: Request, res: Response, next: NextFunction) {
 
         console.log(req.body)
-        if (!req.body.firstName || !req.body.lastName || !req.body.phoneNumber || !req.body.password) {
+        if (!req.body.firstName || !req.body.lastName || !req.body.phoneNumber || !req.body.password || !req.body.userName) {
             console.log('its fucking innnnnnn')
             return next(new response(req, res, 'admin', 400, 'مقادیر را وارد کنید', null))
         }
@@ -151,13 +151,16 @@ export class UserController {
             'ایجاد ادمین جدید', actions, {
             newAdmin
         }, 1)
-        this.smsService.sendGeneralMessage(req.body.phoneNumber, "admin", req.body.firstName, req.body.phoneNumber, adminPassword)
+        this.smsService.sendGeneralMessage(req.body.phoneNumber, "admin", req.body.firstName, req.body.userName, adminPassword)
         return next(new response(req, res, 'create new admin', 200, null, newAdmin))
     }
 
 
     async login(req: any, res: any, next: any) {
         console.log('body', req.body)
+        if (!req.body.userName || !req.body.password){
+            return next(new response(req, res, 'login admin', 403, 'اطلاعات ورود نا درست', null))
+        }
         let admin = await this.adminRepository.findOne({
             where: {
                 phoneNumber: req.body.phoneNumber
@@ -201,7 +204,6 @@ export class UserController {
         let actions = `\u202B${admin.firstName} ${admin.lastName} وارد پنل شد\u202C`
         this.InterService.addNewAdminLog({ firstName: admin.firstName, lastName: admin.lastName, phoneNumber: admin.phoneNumber },
             ' ورود ادمین', actions, {
-
         }, 1)
         return next(new response(req, res, 'login admin', 200, null, responseData))
     }
@@ -253,7 +255,13 @@ export class UserController {
         return next(new response(req, res, 'update accessPoints admin', 200, null, admin))
     }
 
-
+    /**
+     * this endpoint is for updating admin by super admin
+     * @param req 
+     * @param res 
+     * @param next 
+     * @returns 
+     */
     async updateAdmin(req: Request, res: Response, next: NextFunction) {
         let adminId = req.params.adminId;
         if (req.user.role == 0){
@@ -356,7 +364,6 @@ export class UserController {
             console.log('error in de activation of admins', error)
             return next(new response(req, res, 'admin service', 500, 'خطای داخلی سیستم', null))
         }
-
     }
 
 
