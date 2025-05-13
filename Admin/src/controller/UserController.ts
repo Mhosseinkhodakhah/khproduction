@@ -411,9 +411,9 @@ export class UserController {
                         'غیر فعال کردن ادمین', actions, {
     
                     }, 1)
-                    process.nextTick(async()=>{
-                        this.lockService.disablor(admin.id)
-                    })
+                    // process.nextTick(async()=>{
+                    this.lockService.disablor(admin.id)
+                    // })
                     return next(new response(req, res, 'admin service', 200, null, null))
                 }
             } catch (error) {
