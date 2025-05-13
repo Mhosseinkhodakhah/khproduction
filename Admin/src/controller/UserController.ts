@@ -260,9 +260,9 @@ export class UserController {
                 'تغییر سطح دسترسی', actions, {
                 finalAccess
             }, 1)
-            process.nextTick(async () => {
+            // process.nextTick(async () => {
                 this.lockService.disablor(admin.id)
-            })
+            // })
             await queryRunner.commitTransaction()
             return next(new response(req, res, 'update accessPoints admin', 200, null, admin))
         } catch (error) {
@@ -312,9 +312,9 @@ export class UserController {
             // await this.adminRepository.remove(admin)
             // admin.role = 1;
             await queryRunner.manager.save(admin)
-            process.nextTick(async () => {
-                this.lockService.disablor(admin.id)
-            })
+            // process.nextTick(async () => {
+            this.lockService.disablor(admin.id)
+            // })
             await queryRunner.commitTransaction()
             return next(new response(req, res, 'update admin', 200, null, admin))
         } catch (error) {
@@ -387,7 +387,7 @@ export class UserController {
                 return next(new response(req, res, 'admin service', 400, 'ادمین مورد نظر یافت نشد', null))
             }
 
-            // await this.lockService.disablor(admin.id)
+            await this.lockService.disablor(admin.id)
             let lock = await this.lockService.check(admin.id)
             if (lock) {
                 return next(new response(req, res, 'update accessPoints admin', 400, 'در حال حاظر امکان آپدیت این ادمین وجود ندارد لطفا دقایقی دیگر تلاش کنید', null))
@@ -406,9 +406,9 @@ export class UserController {
                         ' فعال کردن ادمین', actions, {
     
                     }, 1)
-                    process.nextTick(async()=>{
+                    // process.nextTick(async()=>{
                         this.lockService.disablor(admin.id)
-                    })
+                    // })
                     await queryRunner.commitTransaction()
                     return next(new response(req, res, 'admin service', 200, null, null))
                 } else {
@@ -420,9 +420,9 @@ export class UserController {
                         'غیر فعال کردن ادمین', actions, {
     
                     }, 1)
-                    process.nextTick(async()=>{
+                    // process.nextTick(async()=>{
                         this.lockService.disablor(admin.id)
-                    })
+                    // })
                     await queryRunner.commitTransaction()
                     return next(new response(req, res, 'admin service', 200, null, null))
                 }
