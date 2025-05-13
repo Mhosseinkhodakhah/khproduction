@@ -162,12 +162,12 @@ export class UserController {
 
     async login(req: any, res: any, next: any) {
         console.log('body', req.body)
-        // if (!req.body.userName || !req.body.password){
-        //     return next(new response(req, res, 'login admin', 403, 'اطلاعات ورود نا درست', null))
-        // }
+        if (!req.body.userName || !req.body.password){
+            return next(new response(req, res, 'login admin', 403, 'اطلاعات ورود نا درست', null))
+        }
         let admin = await this.adminRepository.findOne({
             where: {
-                phoneNumber: req.body.phoneNumber
+                phoneNumber: req.body.userName
             }, relations: ['accessPoints']
         })
         if (!admin) {
@@ -310,8 +310,6 @@ export class UserController {
             admin.lastName = req.body.lastName
             admin.role = req.body.role;
             await queryRunner.manager.save(admin)
-            // process.nextTick(async () => {
-                // })
             await queryRunner.commitTransaction()
             return next(new response(req, res, 'update admin', 200, null, admin))
         } catch (error) {
@@ -403,10 +401,9 @@ export class UserController {
                     let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} ادمین ${admin.firstName} ${admin.lastName} را  فعال کرد\u202C`
                     this.InterService.addNewAdminLog({ firstName: mainAdmin.firstName, lastName: mainAdmin.lastName, phoneNumber: mainAdmin.phoneNumber },
                         ' فعال کردن ادمین', actions, {
-
                     }, 1)
                     await queryRunner.commitTransaction()
-                    return next(new response(req, res, 'admin service', 200, null, null))
+                    return next(new response(req, res, 'admin service' , 200, null, null))
                 } else {
                     admin.isBlocked = true;
                     await this.adminRepository.save(admin)
