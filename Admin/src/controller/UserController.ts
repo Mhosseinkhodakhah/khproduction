@@ -260,7 +260,9 @@ export class UserController {
             return next(new response(req, res, 'update admin', 403, 'permision denied', null))
         }
         let admin = await this.adminRepository.findOne({ where: { id: +adminId } })
-        req.body.password = await bcrypt.hash(req.body.password, 10)
+        if  (req.body.password){
+            req.body.password = await bcrypt.hash(req.body.password, 10)
+        }
         admin = {...admin , ...req.body}
         // admin.password = req.body.password;
         await this.adminRepository.save(admin)
