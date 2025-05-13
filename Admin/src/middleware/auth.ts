@@ -25,12 +25,13 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     try {
         const secretKey = process.env.JWT_SECRET_KEY || '69b9381954141365ff7be95516f16c252edcb37eb39c7a42eaaf6184d93bccb2'; 
         const decoded = jwt.verify(token, secretKey) as JwtPayload;
-        req.user = { userId: decoded.id , phone:decoded.phone , role : decoded.role , isBlocked : decoded.isBlocked};
-        console.log('rest for req.user',req.user)
+        req.user = { userId: decoded.id, phone: decoded.phone, role: decoded.role, isBlocked: decoded.isBlocked };
+        console.log('rest for req.user', req.user)
         if (decoded.isBlocked) {
             return res.status(401).json({ message: 'شما اجازه دستسرسی به پنل را ندارید' });
+        } else {
+            next();
         }
-        next();
     } catch (error) {
         console.error(error);
         return res.status(401).json({ message: 'Invalid token' }); 
