@@ -16,6 +16,7 @@ import { EstimateTransactions } from "../entity/EstimateTransactions";
 import cacher from "../services/cacher";
 import instance from "../util/tradePerision";
 import { transportInvoice } from "../entity/transport";
+import { systemSetting } from "../entity/systemSetting";
 
 
 
@@ -27,6 +28,7 @@ export default class adminController {
     private walletTransactionRepository = AppDataSource.getRepository(WalletTransaction);
     private paymentInfoRepository = AppDataSource.getRepository(PaymentInfo);
     private transportRepository = AppDataSource.getRepository(transportInvoice);
+    private systemSetting = AppDataSource.getRepository(systemSetting);
     private zpService = new ZarinPalService()
     private interservice = new logger()
     private smsService = new SmsService()
@@ -859,4 +861,14 @@ export default class adminController {
         let all = {...user , buys : [...walletsTr , ...allTr]}
         return next(new responseModel(req, res, '', 'admin service', 200, null, all))
     }
+
+
+    async getPermisions(req: Request, res: Response, next: any){
+
+        let permisions = await this.systemSetting.find()
+        return next(new responseModel(req, res, '', 'admin service', 200, null, permisions[0]))
+
+    }
+
+
 }
