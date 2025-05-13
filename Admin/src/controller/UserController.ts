@@ -165,10 +165,12 @@ export class UserController {
         if (!req.body.userName || !req.body.password){
             return next(new response(req, res, 'login admin', 403, 'اطلاعات ورود نا درست', null))
         }
-        let admin = await this.adminRepository.findOne({
-            where: {
+        let admin = await this.adminRepository.findOneOrFail({
+            where: [{
                 phoneNumber: req.body.userName
-            }, relations: ['accessPoints']
+            },{
+                userName : req.body.userName
+            }], relations: ['accessPoints']
         })
         if (!admin) {
             console.log('its here')
