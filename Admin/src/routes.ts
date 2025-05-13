@@ -41,7 +41,7 @@ export const Routes = [{
     middleware: [authMiddleware, accessPointsValidation],
     action: "updateAccessPoints"
 }, {
-    method: "patch",
+    method: "post",
     route: "/update/:adminId",
     controller: UserController,
     middleware: [authMiddleware],
