@@ -28,10 +28,13 @@ export class redisCache {
     }
 
     async deleter(key : string){
-      await client.flushDb()
       await client.del(key)
     }
-}
+   
+    async deleteAll(){
+      await client.flushDb()
+    }
+  }
 
 
 
