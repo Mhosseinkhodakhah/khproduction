@@ -260,7 +260,9 @@ export class UserController {
                 'تغییر سطح دسترسی', actions, {
                 finalAccess
             }, 1)
-            await this.lockService.disablor(admin.id)
+            process.nextTick(async () => {
+                this.lockService.disablor(admin.id)
+            })
             await queryRunner.commitTransaction()
             return next(new response(req, res, 'update accessPoints admin', 200, null, admin))
         } catch (error) {
@@ -310,7 +312,9 @@ export class UserController {
             // await this.adminRepository.remove(admin)
             // admin.role = 1;
             await queryRunner.manager.save(admin)
-            await this.lockService.disablor(admin.id)
+            process.nextTick(async () => {
+                this.lockService.disablor(admin.id)
+            })
             await queryRunner.commitTransaction()
             return next(new response(req, res, 'update admin', 200, null, admin))
         } catch (error) {
@@ -377,7 +381,6 @@ export class UserController {
 
 
     async deActiveAdmin(req: Request, res: Response, next: NextFunction) {
-
         try {
             let admin = await this.adminRepository.findOneOrFail({ where: { id: +req.params.adminId } })
             if (!admin){
