@@ -261,14 +261,14 @@ export class UserController {
                 finalAccess
             }, 1)
             // process.nextTick(async () => {
-                this.lockService.disablor(admin.id)
             // })
             await queryRunner.commitTransaction()
             return next(new response(req, res, 'update accessPoints admin', 200, null, admin))
         } catch (error) {
-            console.log('updating accesspoints successfully done . . .' , error)
+            console.log('updating accesspoints successfully done . . .', error)
             await queryRunner.rollbackTransaction()
-        }finally{
+        } finally {
+            this.lockService.disablor(admin.id)
             await queryRunner.release()
         }
     }
@@ -303,25 +303,23 @@ export class UserController {
             }
 
             if (req.body.password) {
-                req.body.password = await bcrypt.hash(req.body.password, 10)
+                admin.password = await bcrypt.hash(req.body.password, 10)
             }
-            
-            admin = { ...admin, ...req.body }
-            // admin.password = req.body.password;
-            // await this.adminRepository.save(admin)
-            // await this.adminRepository.remove(admin)
-            // admin.role = 1;
+            admin.userName = req.body.userName;
+            admin.firstName = req.body.firstName;
+            admin.lastName = req.body.lastName
+            admin.role = req.body.role;
             await queryRunner.manager.save(admin)
             // process.nextTick(async () => {
-            this.lockService.disablor(admin.id)
-            // })
+                // })
             await queryRunner.commitTransaction()
             return next(new response(req, res, 'update admin', 200, null, admin))
         } catch (error) {
             console.log('error occured in updating admin >>>>> ', error)
             await queryRunner.rollbackTransaction()
         } finally {
-            await queryRunner.release()
+            this.lockService.disablor(admin.id)
+            // await queryRunner.release()
             console.log('transaction released successfully . . . . ')
         }
     }
@@ -381,14 +379,14 @@ export class UserController {
 
 
     async deActiveAdmin(req: Request, res: Response, next: NextFunction) {
+        let admin = await this.adminRepository.findOneOrFail({ where: { id: +req.params.adminId } })
+        if (!admin){
+            return next(new response(req, res, 'admin service', 400, 'ادمین مورد نظر یافت نشد', null))
+        }
         try {
-            let admin = await this.adminRepository.findOneOrFail({ where: { id: +req.params.adminId } })
-            if (!admin){
-                return next(new response(req, res, 'admin service', 400, 'ادمین مورد نظر یافت نشد', null))
-            }
 
             // await this.lockService.disablor(admin.id)
-            // await this.redisService.deleteAll()
+            await this.redisService.deleteAll()
             let lock = await this.lockService.check(admin.id)
             if (lock) {
                 return next(new response(req, res, 'update accessPoints admin', 400, 'در حال حاظر امکان آپدیت این ادمین وجود ندارد لطفا دقایقی دیگر تلاش کنید', null))
@@ -405,11 +403,8 @@ export class UserController {
                     let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} ادمین ${admin.firstName} ${admin.lastName} را  فعال کرد\u202C`
                     this.InterService.addNewAdminLog({ firstName: mainAdmin.firstName, lastName: mainAdmin.lastName, phoneNumber: mainAdmin.phoneNumber },
                         ' فعال کردن ادمین', actions, {
-    
+
                     }, 1)
-                    // process.nextTick(async()=>{
-                        this.lockService.disablor(admin.id)
-                    // })
                     await queryRunner.commitTransaction()
                     return next(new response(req, res, 'admin service', 200, null, null))
                 } else {
@@ -419,18 +414,16 @@ export class UserController {
                     let actions = `\u202B${mainAdmin.firstName} ${mainAdmin.lastName} ادمین ${admin.firstName} ${admin.lastName} را غیر فعال کرد\u202C`
                     this.InterService.addNewAdminLog({ firstName: mainAdmin.firstName, lastName: mainAdmin.lastName, phoneNumber: mainAdmin.phoneNumber },
                         'غیر فعال کردن ادمین', actions, {
-    
+
                     }, 1)
-                    // process.nextTick(async()=>{
-                        this.lockService.disablor(admin.id)
-                    // })
                     await queryRunner.commitTransaction()
                     return next(new response(req, res, 'admin service', 200, null, null))
                 }
             } catch (error) {
-                console.log('error in deactivation admin ' , error)
+                console.log('error in deactivation admin ', error)
                 await queryRunner.rollbackTransaction()
-            }finally{
+            } finally {
+                this.lockService.disablor(admin.id)
                 await queryRunner.release()
             }
         } catch (error) {
