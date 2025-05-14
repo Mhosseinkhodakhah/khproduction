@@ -21,7 +21,7 @@ class analyzor:
         goldPrice = []
         if (filter['goldPrice'] != 'all'):    
             for i in tradeType:
-                if (+i['goldPrice'] == +filter['goldPrice']):
+                if (int(i['goldPrice']) == int(filter['goldPrice'])):
                     goldPrice.append(i)
         else:
             goldPrice = tradeType
@@ -31,7 +31,7 @@ class analyzor:
         goldWeight = []
         if (filter['goldWeight'] != 'all'):
             for i in goldPrice:
-                if (+i['goldWeight'] == +filter['goldWeight']):
+                if (float(i['goldWeight']) == float(filter['goldWeight'])):
                     goldWeight.append(i)
                     
         else:
