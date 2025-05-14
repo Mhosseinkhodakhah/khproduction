@@ -11,7 +11,7 @@ import { goldPrice } from "../entity/goldPrice"
 
 
 
-export default class interServiceController{
+export default class interServiceController {
 
     private userRepository = AppDataSource.getRepository(User)
     private walletRepository = AppDataSource.getRepository(Wallet)
@@ -19,137 +19,178 @@ export default class interServiceController{
     private estimate = AppDataSource.getRepository(EstimateTransactions)
     private goldPrice = AppDataSource.getRepository(goldPrice)
 
-    async getStatus(req : Request , res : Response , next : NextFunction){
+    async getStatus(req: Request, res: Response, next: NextFunction) {
         try {
             let data = {
-                all :  monitor.requestCount,
-                statusCount : monitor.status,
-                error : monitor.error
+                all: monitor.requestCount,
+                statusCount: monitor.status,
+                error: monitor.error
             }
-            console.log('status data till here . . .' , data)
+            console.log('status data till here . . .', data)
             monitor.addStatus({
-                scope : 'interservice controller',
-                status :  1,
-                error : null
+                scope: 'interservice controller',
+                status: 1,
+                error: null
             })
             return res.status(200).json(data)
         } catch (error) {
             monitor.addStatus({
-                scope : 'interservice controller',
-                status :  0,
-                error : `${error}`
+                scope: 'interservice controller',
+                status: 0,
+                error: `${error}`
             })
             console.log(error)
-            return res.status(500).json({success : false})
+            return res.status(500).json({ success: false })
         }
     }
 
 
-    async updateWallet(req : Request , res : Response , next : NextFunction){
-        let user = await this.userRepository.findOne({where : {phoneNumber : req.params.phoneNumber} , relations : ['wallet']})
-        console.log('bodyyyyyyyyy' , req.body)
+    async updateWallet(req: Request, res: Response, next: NextFunction) {
+        let user = await this.userRepository.findOne({ where: { phoneNumber: req.params.phoneNumber }, relations: ['wallet'] })
+        console.log('bodyyyyyyyyy', req.body)
         let queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
         try {
-            if (req.body.state == 0){
+            if (req.body.state == 0) {
                 user.wallet.goldWeight = +(((+user.wallet.goldWeight) - (+req.body.goldWeight)).toFixed(3))
             }
-            
-            if (req.body.state == 1){
+
+            if (req.body.state == 1) {
                 user.wallet.goldWeight = +(((+user.wallet.goldWeight) + (+req.body.goldWeight)).toFixed(3))
             }
-            console.log('updated wallet' , user.wallet)
+            console.log('updated wallet', user.wallet)
             await queryRunner.manager.save(user.wallet)
             let wallet = await queryRunner.manager.save(user)
             await queryRunner.commitTransaction()
             monitor.addStatus({
-                scope : 'interservice controller',
-                status :  1,
-                error : null
+                scope: 'interservice controller',
+                status: 1,
+                error: null
             })
-            return next(new responseModel(req, res, '' ,'internal service', 200, null, wallet))
+            return next(new responseModel(req, res, '', 'internal service', 200, null, wallet))
         } catch (error) {
             monitor.addStatus({
-                scope : 'interservice controller',
-                status :  0,
-                error : `${error}`
+                scope: 'interservice controller',
+                status: 0,
+                error: `${error}`
             })
-            console.log('error in erroooooooor' , `${error}`)
+            console.log('error in erroooooooor', `${error}`)
             await queryRunner.rollbackTransaction()
-            return next(new responseModel(req, res, '' ,'internal service', 500, `${error}`, null))
+            return next(new responseModel(req, res, '', 'internal service', 500, `${error}`, null))
 
-        }finally {
+        } finally {
             await queryRunner.release()
         }
     }
 
 
-    async addNewUser(req : Request , res : Response , next : NextFunction){
+    async addNewUser(req: Request, res: Response, next: NextFunction) {
         try {
-            let userBody  = req.body.user;
+            let userBody = req.body.user;
             delete userBody.verificationType;
             console.log(userBody)
-            let phoneExist = await this.userRepository.find({where : {
-                phoneNumber : userBody.phoneNumber
-            }})
-            let nationalExist = await this.userRepository.find({where : {
-                nationalCode : userBody.nationalCode
-            }})
-            
-            if (phoneExist.length || nationalExist.length){
+            let phoneExist = await this.userRepository.find({
+                where: {
+                    phoneNumber: userBody.phoneNumber
+                }
+            })
+            let nationalExist = await this.userRepository.find({
+                where: {
+                    nationalCode: userBody.nationalCode
+                }
+            })
+
+            if (phoneExist.length || nationalExist.length) {
                 console.log('t2')
-                return next(new responseModel(req, res,  '' ,'internal service', 429 , 'این کاربر در لیست کاربران جدید موجود است', null))
+                return next(new responseModel(req, res, '', 'internal service', 429, 'این کاربر در لیست کاربران جدید موجود است', null))
             }
-            let newUser = this.userRepository.create({...userBody , verificationStatus : 0})
+            let newUser = this.userRepository.create({ ...userBody, verificationStatus: 0 })
             let savedUser = await this.userRepository.save(newUser)
-            return next(new responseModel(req, res, '' ,'internal service', 200, null, savedUser))
+            return next(new responseModel(req, res, '', 'internal service', 200, null, savedUser))
         } catch (error) {
-            console.log('error>>>' , `${error}`)
-            return next(new responseModel(req, res, '' ,'internal service', 500, null, null))
+            console.log('error>>>', `${error}`)
+            return next(new responseModel(req, res, '', 'internal service', 500, null, null))
         }
     }
 
 
     async getWallet(req: Request, res: Response, next: NextFunction) {
         let id = req.params.id
-        try{
+        try {
 
-        let user = await this.userRepository.findOne({where : {id : +id} , relations : ['wallet']})
-        let prices = await this.goldPrice.find({order : {'createdAt' : 'DESC'}})
-        
-        if (!user){ 
-            return res.status(400).json ({
-                success : false,
-                stataus : 0,
-                error : 'user not found'
+            let user = await this.userRepository.findOne({ where: { id: +id }, relations: ['wallet'] })
+            let prices = await this.goldPrice.find({ order: { 'createdAt': 'DESC' } })
+
+            if (!user) {
+                return res.status(400).json({
+                    success: false,
+                    stataus: 0,
+                    error: 'user not found'
+                })
+            }
+
+            return res.status(200).json({
+                success: true,
+                stataus: 1,
+                data: { user: user, goldPrice: prices[0] }
             })
-        }
 
-        return res.status(200).json({
-            success : true,
-            stataus: 1,
-            data : {user : user ,  goldPrice : prices[0]}
-        })
-
-        }catch (error) {
-            console.log('error in getting data from brancg service >>>> ' , error)
+        } catch (error) {
+            console.log('error in getting data from brancg service >>>> ', error)
             return res.status(500).json({
-                success : false,
+                success: false,
                 stataus: 2,
-                error : 'internal service error'
+                error: 'internal service error'
             })
         }
 
 
     }
 
-    // async getAllUsersData(req : Request , res : Response , next : NextFunction){
-    //     let users = await this.userRepository.find({relations : ['buys' , 'sells' , 'wallet' , 'wallet.transactions']})
-    //     let invoices = await this.invoiceRepository.find()
-    //     let estimates = await this.estimate.find()
-    //     let prices = await this.goldPrice.find()
-    //     return next(new response(req, res, 'internal service', 200, null, {users , invoices , estimates , prices}))
-    // }
 
+    async getAllInvoicesForDjango(req: Request, res: Response, next: NextFunction) {
+        try {
+            if (!req.query.title) {
+                monitor.addStatus({
+                    scope: 'interservice controller',
+                    status: 0,
+                    error: `تایپ تراکنش ها از سمت انالیزگر داده ارسای نمی شود`
+                })
+                return next(new responseModel(req, res, '', 'internal service', 200, null, null))
+            }
+            let invoices = this.invoiceRepository.createQueryBuilder('invoice')
+                .leftJoinAndSelect('invoice.type', 'type')
+                .where('invoice.tradeType = :tradeType AND type.title = :title', { tradeType: req.query.tradeType, title: req.query.title })
+                .leftJoinAndSelect('invoice.buyer', 'buyer')
+                .leftJoinAndSelect('invoice.seller', 'seller')
+                .leftJoinAndSelect('buyer.wallet', 'wallet')
+                .leftJoinAndSelect('seller.wallet', 'wallet2')
+            let all;
+            if (req.query.firstName) {
+                all = invoices.andWhere('buyer.firstName = :firstName OR seller.firstName = :firstName', { firstName: req.query.firstName }).getMany()
+            }
+            else if (req.query.lastName) {
+                all = invoices.andWhere('buyer.lastName = :lastName OR seller.lastName = :lastName', { lastName: req.query.lastName }).getMany()
+            }
+            else if (req.query.nationalCode) {
+                all = invoices.andWhere('buyer.nationalCode = :nationalCode OR seller.nationalCode = :nationalCode', { nationalCode: req.query.nationalCode }).getMany()
+            }
+            else if (req.query.phoneNumber) {
+                all = invoices.andWhere('buyer.phoneNumber = :phoneNumber OR seller.phoneNumber = :phoneNumber', { phoneNumber: req.query.phoneNumber }).getMany()
+            }
+            else {
+                all = invoices.getMany()
+            }
+            return next(new responseModel(req, res, '', 'internal service', 200, null, all))
+        } catch (error) {
+            console.log('error in geting data from data analyzor >>> ', error)
+            monitor.addStatus({
+                scope: 'interservice controller',
+                status: 0,
+                error: `${error}`
+            })
+            return next(new responseModel(req, res, '', 'internal service', 200, 'internal service error', null))
+        }
+    }
 }

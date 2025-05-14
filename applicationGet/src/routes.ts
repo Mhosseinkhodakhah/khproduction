@@ -443,6 +443,12 @@ export const Routes = [
         controller: WalletController,
         action: "getTransports",
         middlwares: [authenticate]
-    }
+    },{
+    method: "get",
+    route: "/interservice/invoice/all",
+    controller: interServiceController,
+    action: "getAllInvoicesForDjango",                   // this rout is for get all invoices for django service
+    middlwares: []
+},
 ]
 

@@ -27,22 +27,7 @@ const { combine, timestamp, label, prettyPrint } = format;
 
 AppDataSource.initialize().then(async () => {
 
-
-    //   let all = await axios.get("https://gateway.khaneetala.ir/v1/query/test/09123460671")
-    //   console.log(all.data[0])
-    //     let goldPrice2 = AppDataSource.getRepository(goldPrice)
-    //     let dataMaker = []  
-    //     all.data.forEach((elem)=>{
-    //         delete elem.id
-    //         // console.log(elem)
-    //         dataMaker.push(elem)
-    //         // console.log(data)
-    //     })
-    //     console.log(dataMaker[10])
-        // let datas1 = goldPrice2.create(dataMaker)
-        // let datas2 = await goldPrice2.save(datas)
-        // console.log(datas2)
-        
+    
     // create express app
     const app = express()
     app.use(bodyParser.json())
