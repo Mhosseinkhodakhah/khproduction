@@ -201,7 +201,7 @@ export default class interServiceController {
 
      async getAllWalletTransAction(req: Request, res: Response, next: NextFunction) {
         try {
-            console.log(req.query.tradeType , req.query.title , req.query.nationalCode)
+            console.log(req.query.status , req.query.type)
             if (!req.query.title || !req.query.status) {
                 monitor.addStatus({
                     scope: 'interservice controller',
@@ -218,16 +218,16 @@ export default class interServiceController {
             .leftJoinAndSelect('wallet.user', 'user')
             let all;
             if (req.query.firstName) {
-                all = await invoices.andWhere('user.firstName = :firstName' , {firstName : req.query.firstName})
+                all = await invoices.andWhere('user.firstName = :firstName' , {firstName : req.query.firstName}).getMany()
             }
             else if (req.query.lastName) {
-                all = await invoices.andWhere('user.lastName = :lastName' , {lastName : req.query.lastName})
+                all = await invoices.andWhere('user.lastName = :lastName' , {lastName : req.query.lastName}).getMany()
             }
             else if (req.query.nationalCode) {
-                all = await invoices.andWhere('user.nationalCode = :nationalCode' , {nationalCode : req.query.nationalCode})
+                all = await invoices.andWhere('user.nationalCode = :nationalCode' , {nationalCode : req.query.nationalCode}).getMany()
             }
             else if (req.query.phoneNumber) {
-                all = await invoices.andWhere('user.phoneNumber = :phoneNumber' , {phoneNumber : req.query.phoneNumber})
+                all = await invoices.andWhere('user.phoneNumber = :phoneNumber' , {phoneNumber : req.query.phoneNumber}).getMany()
             }else {
                 all = await invoices.getMany()
             }
