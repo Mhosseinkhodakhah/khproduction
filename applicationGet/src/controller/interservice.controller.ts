@@ -202,7 +202,7 @@ export default class interServiceController {
      async getAllWalletTransAction(req: Request, res: Response, next: NextFunction) {
         try {
             console.log(req.query.status , req.query.type)
-            if (!req.query.title || !req.query.status) {
+            if (!req.query.type || !req.query.status) {
                 monitor.addStatus({
                     scope: 'interservice controller',
                     status: 0,
