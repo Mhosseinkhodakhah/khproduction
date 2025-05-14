@@ -449,6 +449,12 @@ export const Routes = [
         controller: interServiceController,
         action: "getAllInvoicesForDjango",                   // this rout is for get all invoices for django service
         middlwares: []
+    },{
+        method: "get",
+        route: "/interservice/wallettransactions/all",
+        controller: interServiceController,
+        action: "getAllWalletTransAction",                   // this rout is for get all invoices for django service
+        middlwares: []
     },
 ]
 

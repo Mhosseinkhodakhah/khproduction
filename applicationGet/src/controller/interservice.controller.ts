@@ -9,6 +9,7 @@ import { Invoice } from "../entity/Invoice"
 import { EstimateTransactions } from "../entity/EstimateTransactions"
 import { goldPrice } from "../entity/goldPrice"
 import { TradeType } from "../entity/enums/TradeType"
+import { WalletTransaction } from "../entity/WalletTransaction"
 
 
 
@@ -16,6 +17,7 @@ export default class interServiceController {
 
     private userRepository = AppDataSource.getRepository(User)
     private walletRepository = AppDataSource.getRepository(Wallet)
+    private walletTransAction = AppDataSource.getRepository(WalletTransaction)
     private invoiceRepository = AppDataSource.getRepository(Invoice)
     private estimate = AppDataSource.getRepository(EstimateTransactions)
     private goldPrice = AppDataSource.getRepository(goldPrice)
@@ -181,6 +183,51 @@ export default class interServiceController {
             }
             else if (req.query.phoneNumber) {
                 all = await invoices.andWhere('buyer.phoneNumber = :phoneNumber OR seller.phoneNumber = :phoneNumber', { phoneNumber: req.query.phoneNumber }).getMany()
+            }else {
+                all = await invoices.getMany()
+            }
+            return next(new responseModel(req, res, '', 'internal service', 200, null, all))
+        } catch (error) {
+            console.log('error in geting data from data analyzor >>> ', error)
+            monitor.addStatus({
+                scope: 'interservice controller',
+                status: 0,
+                error: `${error}`
+            })
+            return next(new responseModel(req, res, '', 'internal service', 200, 'internal service error', null))
+        }
+    }
+
+
+     async getAllWalletTransAction(req: Request, res: Response, next: NextFunction) {
+        try {
+            console.log(req.query.tradeType , req.query.title , req.query.nationalCode)
+            if (!req.query.title || !req.query.status) {
+                monitor.addStatus({
+                    scope: 'interservice controller',
+                    status: 0,
+                    error: `تایپ تراکنش ها از سمت انالیزگر داده ارسای نمی شود`
+                })
+                return next(new responseModel(req, res, '', 'internal service', 200, null, null))
+            }
+
+            let invoices = this.walletTransAction.createQueryBuilder('invoice')
+            .where('invoice.status = :status', {status : req.query.status })
+            .andWhere('invoice.type = :title', { title: req.query.title })
+            .leftJoinAndSelect('invoice.wallet', 'wallet')
+            .leftJoinAndSelect('wallet.user', 'user')
+            let all;
+            if (req.query.firstName) {
+                all = await invoices.andWhere('user.firstName = :firstName' , {firstName : req.query.firstName})
+            }
+            else if (req.query.lastName) {
+                all = await invoices.andWhere('user.lastName = :lastName' , {lastName : req.query.lastName})
+            }
+            else if (req.query.nationalCode) {
+                all = await invoices.andWhere('user.nationalCode = :nationalCode' , {nationalCode : req.query.nationalCode})
+            }
+            else if (req.query.phoneNumber) {
+                all = await invoices.andWhere('user.phoneNumber = :phoneNumber' , {phoneNumber : req.query.phoneNumber})
             }else {
                 all = await invoices.getMany()
             }
