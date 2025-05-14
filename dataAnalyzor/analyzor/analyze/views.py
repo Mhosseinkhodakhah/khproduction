@@ -162,6 +162,19 @@ def getReporstHistory(request):
 @csrf_exempt 
 def profInvoiceFilter(request):
     if request.method == 'POST':
+        
+        try:
+            token = request.headers['Authorization']
+            token = token.split(' ')[1]
+            decoded = jwt.decode(token , '69b9381954141365ff7be95516f16c252edcb37eb39c7a42eaaf6184d93bccb2')
+            if (decoded == False):
+                return JsonResponse({"error" : "token expired!"}, status=401 , safe=False)
+            print('decoded token' , decoded)
+        except Exception as e:
+            print(e)
+            return JsonResponse({"msg" : "token expired!"},status=401 , safe=False)
+        
+        
         body = json.loads(request.body.decode('utf-8'))
         for i in body.keys():
             if (body[i] == ''):
@@ -178,6 +191,19 @@ def profInvoiceFilter(request):
 @csrf_exempt 
 def profWalletInvoiceFilter(request):
     if request.method == 'POST':
+        
+        try:
+            token = request.headers['Authorization']
+            token = token.split(' ')[1]
+            decoded = jwt.decode(token , '69b9381954141365ff7be95516f16c252edcb37eb39c7a42eaaf6184d93bccb2')
+            if (decoded == False):
+                return JsonResponse({"error" : "token expired!"}, status=401 , safe=False)
+            print('decoded token' , decoded)
+        except Exception as e:
+            print(e)
+            return JsonResponse({"msg" : "token expired!"},status=401 , safe=False)
+        
+        
         body = json.loads(request.body.decode('utf-8'))
         for i in body.keys():
             if (body[i] == ''):

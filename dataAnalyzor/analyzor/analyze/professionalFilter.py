@@ -103,7 +103,6 @@ class analyzor:
                     startDate.append(i)
         else:
             startDate = accountant
-        
         ################# 6 #######################  
         
         
@@ -128,7 +127,6 @@ class analyzor:
                     endDate.append(i)
         else:
             endDate = startDate
-        
         ################## 7 ######################      
         
         
@@ -287,7 +285,6 @@ class analyzor:
                     startDate.append(i)
         else:
             startDate = description
-        
         ################# 7 #######################  
         
         
@@ -313,7 +310,6 @@ class analyzor:
                     endDate.append(i)
         else:
             endDate = startDate
-        
         ################## 8 ###################### 
         
         
@@ -377,7 +373,7 @@ class analyzor:
         return endTime
         
         
-
+        
 
 urls = {
     "invoices" : 'http://localhost:3003/interservice/invoice/all',
@@ -413,12 +409,10 @@ class professionalFilter :
         
         
     def wallet(self , filter):
-        
         pass
 
 
     def users(self):
-        
         pass
         
         
@@ -438,4 +432,3 @@ class professionalFilter :
         # print(filter)
         finalData = analyz.walletTransActionMaker(data['data'] , filter)
         return finalData
-        
