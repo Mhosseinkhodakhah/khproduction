@@ -169,23 +169,17 @@ export default class interServiceController {
                 .leftJoinAndSelect('seller.wallet', 'wallet2')
             let all;
             if (req.query.firstName) {
-                console.log('1')
                 all = await invoices.andWhere('buyer.firstName = :firstName OR seller.firstName = :firstName', { firstName: req.query.firstName }).getMany()
             }
             else if (req.query.lastName) {
-                console.log('2')
                 all = await invoices.andWhere('buyer.lastName = :lastName OR seller.lastName = :lastName', { lastName: req.query.lastName }).getMany()
             }
             else if (req.query.nationalCode) {
-                console.log('3')
-                console.log('invoices >>> ' , invoices)
                 all = await invoices.andWhere('buyer.nationalCode = :nationalCode OR seller.nationalCode = :nationalCode', { nationalCode: req.query.nationalCode }).getMany()
             }
             else if (req.query.phoneNumber) {
-                console.log('4')
                 all = await invoices.andWhere('buyer.phoneNumber = :phoneNumber OR seller.phoneNumber = :phoneNumber', { phoneNumber: req.query.phoneNumber }).getMany()
             }else {
-                console.log('5')
                 all = await invoices.getMany()
             }
             return next(new responseModel(req, res, '', 'internal service', 200, null, all))
