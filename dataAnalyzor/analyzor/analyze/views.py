@@ -13,7 +13,7 @@ import simplejson as json
 from django.core import serializers
 from django.core.serializers import serialize
 from .withdrawal import getWithdrawal
-from professionalFilter import professionalFilter
+from .professionalFilter import professionalFilter
 
 withdrawal1 = getWithdrawal()
 datamaker = datamaker2()

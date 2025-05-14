@@ -26,7 +26,6 @@ class professionalFilter :
     def __init__(self , type):
         self.url = urls[type]
     
-        
     def invoice(self , filter):
         
         if(filter['nationalCode'] != 'all'):
