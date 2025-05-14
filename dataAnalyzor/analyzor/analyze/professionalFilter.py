@@ -13,10 +13,11 @@ class analyzor:
         
         tradeType = []
         for i in data:
-            if (i['tradeType'] == filter['tradeType']):
+            if (int(i['tradeType']) == int(filter['tradeType'])):
                 tradeType.append(i)
                 
         
+        print(len(tradeType))
         
         goldPrice = []
         if (filter['goldPrice'] != 'all'):    
@@ -26,6 +27,7 @@ class analyzor:
         else:
             goldPrice = tradeType
             
+        print(len(goldPrice))
             
         
         goldWeight = []
@@ -37,6 +39,7 @@ class analyzor:
         else:
             goldWeight = goldPrice
             
+        print(len(goldWeight))
         
         
         admin = []
@@ -49,6 +52,7 @@ class analyzor:
         else:
             admin = goldWeight
             
+        print(len(admin))
         
         
         accountant = []
@@ -60,6 +64,7 @@ class analyzor:
         else:
             accountant = admin    
             
+        print(len(accountant))
         
         
         
