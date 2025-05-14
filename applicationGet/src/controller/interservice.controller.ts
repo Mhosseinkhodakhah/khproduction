@@ -162,7 +162,7 @@ export default class interServiceController {
             }
             let invoices = this.invoiceRepository.createQueryBuilder('invoice')
                 .leftJoinAndSelect('invoice.type', 'type')
-                .where('invoice.tradeType = :tradeType AND type.title = :title', { tradeType: req.query.tradeType, title: req.query.title })
+                .where('invoice.tradeType = :tradeType AND type.title = :title', { tradeType: +req.query.tradeType, title: req.query.title })
                 .leftJoinAndSelect('invoice.buyer', 'buyer')
                 .leftJoinAndSelect('invoice.seller', 'seller')
                 .leftJoinAndSelect('buyer.wallet', 'wallet')
