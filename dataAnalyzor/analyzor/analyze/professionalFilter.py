@@ -32,7 +32,7 @@ class professionalFilter :
             response = requests.get(f'{self.url}?nationalCode={filter['nationalCode']}&tradeType={filter['tradeType']}&title={filter['type']}')
         elif(filter['phoneNumber'] != 'all'):
             response = requests.get(f'{self.url}?phoneNumber={filter['phoneNumber']}&tradeType={filter['tradeType']}&title={filter['type']}')
-        elif (filter['firsName'] != 'all'):
+        elif (filter['firstName'] != 'all'):
             response = requests.get(f'{self.url}?firstName={filter['firstName']}&tradeType={filter['tradeType']}&title={filter['type']}')
         elif(filter['lastName'] != 'all'):
             response = requests.get(f'{self.url}?lastName={filter['lastName']}&tradeType={filter['tradeType']}&title={filter['type']}')
