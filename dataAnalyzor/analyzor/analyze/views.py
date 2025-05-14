@@ -13,13 +13,14 @@ import simplejson as json
 from django.core import serializers
 from django.core.serializers import serialize
 from .withdrawal import getWithdrawal
-
+from professionalFilter import professionalFilter
 
 withdrawal1 = getWithdrawal()
 datamaker = datamaker2()
 userMaker = userFilter()
 walletFiltering = walletTransActionsFilter()
 hourly = hourlyFilter()
+
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
@@ -153,6 +154,24 @@ def getReporstHistory(request):
         return HttpResponse('not allowed method')
     
     
+
+
+
+
+
+@csrf_exempt 
+def profFilter(request):
+    if request.method == 'POST':
+        body = json.loads(request.body.decode('utf-8'))
+        for i in body.keys():
+            if (body[i] == ''):
+                body[i] = 'all'
+        print('body after maked >>>>> ' , body)
+        profesional = professionalFilter('invoices')
+        profesional.invoice(body)
+        return JsonResponse({"msg" : 'data recieved done' , "scope" : "report service"},status=200 , safe=False)
+    else : 
+         return JsonResponse({"msg" : 'message not allowed' , "scope" : "report service"},status=400 , safe=False)
 
 
 

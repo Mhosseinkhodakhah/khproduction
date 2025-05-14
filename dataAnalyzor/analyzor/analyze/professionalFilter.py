@@ -6,37 +6,7 @@ import requests
 class analyzor:
     
     def invoiceMaker(data,filter):
-        
-        #first filter
-        firstName = []
-        if (filter['firstName'] != 'all'):
-            for i in data:    
-                if (filter['firstName'] in i):
-                    firstName.append(i)
-        elif (filter['firstName'] == 'all'):
-            firstName = data
-        
-        #seecondFilter
-        lastName = []
-        if (filter['lastName'] != 'all'):
-            for i in firstName:
-                if (filter['lasatName'] in i):
-                    lastName.append(i)
-        elif (filter['lastName'] == 'all'):
-            lastName = firstName
-            
-            
-        #thirdFilter
-        nationalCode = []
-        if (filter['nationalCode'] != 'all'):
-            for i in lastName:
-                if (filter['nationalCode'] in i):
-                    nationalCode.append(i)
-        elif (filter['nationalCode'] == 'all'):
-            nationalCode = lastName
-            
-            
-        #forthFilter
+        pass
         
         
 
@@ -44,10 +14,10 @@ class analyzor:
 
 
 urls = {
-    "invoices" : 'http://localhost:3001/interservice/invoice/all',
-    "wallets" :  'http://localhost:3001/interservice/invoice/all',
-    "users" : 'http://localhost:3001/interservice/invoice/all',
-    "walletTransActions" : "http://localhost:3001/interservice/invoice/all",
+    "invoices" : 'http://localhost:3003/interservice/invoice/all',
+    "wallets" :  'http://localhost:3003/interservice/invoice/all',
+    "users" : 'http://localhost:3003/interservice/invoice/all',
+    "walletTransActions" : "http://localhost:3003/interservice/invoice/all",
 }
 
 
@@ -55,11 +25,25 @@ urls = {
 class professionalFilter :
     def __init__(self , type):
         self.url = urls[type]
-        self.response = requests.get(self.url).json()
-        
+    
         
     def invoice(self , filter):
-        data = self.response.json()
+        
+        if(filter['nationalCode'] != 'all'):
+            response = requests.get(f'{self.url}?nationalCode={filter['nationalCode']}&tradeType={filter['tradeType']}&title={filter['type']}')
+        elif(filter['phoneNumber'] != 'all'):
+            response = requests.get(f'{self.url}?phoneNumber={filter['phoneNumber']}&tradeType={filter['tradeType']}&title={filter['type']}')
+        elif (filter['firsName'] != 'all'):
+            response = requests.get(f'{self.url}?firstName={filter['firstName']}&tradeType={filter['tradeType']}&title={filter['type']}')
+        elif(filter['lastName'] != 'all'):
+            response = requests.get(f'{self.url}?lastName={filter['lastName']}&tradeType={filter['tradeType']}&title={filter['type']}')
+        else:
+            response = requests.get(f'{self.url}?title={filter['type']}')
+        
+        
+        data = response.json()
+        
+        print('data returned is >>>> ' , len(data))
         
         pass
         
