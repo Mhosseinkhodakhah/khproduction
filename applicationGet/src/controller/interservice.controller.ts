@@ -178,6 +178,7 @@ export default class interServiceController {
             }
             else if (req.query.nationalCode) {
                 console.log('3')
+                console.log('invoices >>> ' , invoices)
                 all = invoices.andWhere('buyer.nationalCode = :nationalCode OR seller.nationalCode = :nationalCode', { nationalCode: req.query.nationalCode }).getMany()
             }
             else if (req.query.phoneNumber) {
