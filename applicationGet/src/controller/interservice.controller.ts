@@ -229,7 +229,9 @@ export default class interServiceController {
             else if (req.query.phoneNumber) {
                 all = await invoices.andWhere('user.phoneNumber = :phoneNumber' , {phoneNumber : req.query.phoneNumber}).getMany()
             }else {
+                console.log('hhhhh')
                 all = await invoices.getMany()
+                console.log(all)
             }
             return next(new responseModel(req, res, '', 'internal service', 200, null, all))
         } catch (error) {
