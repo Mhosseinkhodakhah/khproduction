@@ -189,10 +189,76 @@ class analyzor:
         else:
             endTime = startTime
         ################## 9 ######################
-        
-        
-        
         return endTime
+    
+    
+    
+
+    
+    
+    def walletTransActionMaker(self , data , filter):
+        ################## 1 ######################
+        cardPan = []
+        if (filter['cardPan'] != 'all'):
+            for i in data:
+                if(filter['cardPan'] in i['cardPan']):
+                    cardPan.append(i)
+                    
+        else:
+            cardPan = data
+        ################## 1 ######################
+        
+        ################## 2 ######################
+        shebaNumber = []
+        if (filter['shebaNumber'] != 'all'):
+            for i in cardPan:
+                if (filter['shebaNumber'] in i['shebaNumber']):
+                    shebaNumber.append(i)
+        else:
+            shebaNumber = cardPan
+        ################## 2 ######################
+    
+        ################## 3 ######################
+        invoiceId = []
+        if (filter['invoiceId'] != 'all'):
+            for i in shebaNumber:
+                if (filter['invoiceId'] in i['invoiceId']):
+                    invoiceId.append(i)
+        else:
+            invoiceId = shebaNumber
+        ################## 3 ######################
+        
+        ################## 4 ######################
+        withdrawalId = []
+        if (filter['withdrawalId'] != 'all'):
+            for i in invoiceId:
+                if (filter['withdrawalId'] in i['withdrawalId']):
+                    withdrawalId.append(i)
+        else:
+            withdrawalId = invoiceId
+        ################## 4 ######################
+        
+        ################## 5 ######################
+        amount = []
+        if (filter['amount'] != 'all'):
+            for i in withdrawalId:
+                if (int(filter['amount']) == int(i['amount'])):
+                    amount.append(i)
+        else:
+            amount = withdrawalId
+        ################## 5 ######################
+        
+        ################## 6 ######################
+        description = []
+        if (filter['description'] != 'all'):
+            for i in amount:
+                if (filter['description'] in i['description']):
+                    description.append(i)
+        else:
+            description = amount
+        ################## 6 ######################
+
+        return description
         
         
 
@@ -201,7 +267,7 @@ urls = {
     "invoices" : 'http://localhost:3003/interservice/invoice/all',
     "wallets" :  'http://localhost:3003/interservice/invoice/all',
     "users" : 'http://localhost:3003/interservice/invoice/all',
-    "walletTransActions" : "http://localhost:3003/interservice/walletstransactions/all",
+    "walletTransActions" : "http://localhost:3003/interservice/wallettransactions/all",
 }
 
 
@@ -235,8 +301,6 @@ class professionalFilter :
         pass
 
 
-        
-        
     def users(self):
         
         pass
@@ -253,9 +317,10 @@ class professionalFilter :
             response = requests.get(f'{self.url}?lastName={filter['lastName']}&type={filter['type']}&status={filter['status']}')
         else:
             response = requests.get(f'{self.url}?type={filter['type']}&status={filter['status']}')
+        
         data = response.json()
-        print(len(data['data']))
-        print(filter)
-        finalData = analyz.invoiceMaker(data['data'] , filter)
+        # print(len(data['data']))
+        # print(filter)
+        finalData = analyz.walletTransActionMaker(data['data'] , filter)
         return finalData
         

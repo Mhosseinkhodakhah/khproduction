@@ -160,7 +160,7 @@ def getReporstHistory(request):
 
 
 @csrf_exempt 
-def profFilter(request):
+def profInvoiceFilter(request):
     if request.method == 'POST':
         body = json.loads(request.body.decode('utf-8'))
         for i in body.keys():
@@ -169,6 +169,22 @@ def profFilter(request):
         print('body after maked >>>>> ' , body)
         profesional = professionalFilter('invoices')
         response = profesional.invoice(body)
+        return JsonResponse({"data" : response , "msg" : 'data recieved done' , "scope" : "report service" , "link" : ""},status=200 , safe=False)
+    else : 
+         return JsonResponse({"msg" : 'message not allowed' , "scope" : "report service"},status=400 , safe=False)
+
+
+
+@csrf_exempt 
+def profWalletInvoiceFilter(request):
+    if request.method == 'POST':
+        body = json.loads(request.body.decode('utf-8'))
+        for i in body.keys():
+            if (body[i] == ''):
+                body[i] = 'all'
+        print('body after maked >>>>> ' , body)
+        profesional = professionalFilter('walletTransActions')
+        response = profesional.walletInvoices(body)
         return JsonResponse({"data" : response , "msg" : 'data recieved done' , "scope" : "report service" , "link" : ""},status=200 , safe=False)
     else : 
          return JsonResponse({"msg" : 'message not allowed' , "scope" : "report service"},status=400 , safe=False)
