@@ -8,6 +8,7 @@ import { responseModel } from "../util/response.model"
 import { Invoice } from "../entity/Invoice"
 import { EstimateTransactions } from "../entity/EstimateTransactions"
 import { goldPrice } from "../entity/goldPrice"
+import { TradeType } from "../entity/enums/TradeType"
 
 
 
@@ -160,9 +161,10 @@ export default class interServiceController {
                 })
                 return next(new responseModel(req, res, '', 'internal service', 200, null, null))
             }
+            console.log('ttttt' , TradeType[+req.query.tradeType])
             let invoices = this.invoiceRepository.createQueryBuilder('invoice')
                 .leftJoinAndSelect('invoice.type', 'type')
-                .where('invoice.tradeType = :tradeType AND type.title = :title', { tradeType: +req.query.tradeType, title: req.query.title })
+                .where('invoice.tradeType = :tradeType AND type.title = :title', { tradeType: TradeType[+req.query.tradeType], title: req.query.title })
                 .leftJoinAndSelect('invoice.buyer', 'buyer')
                 .leftJoinAndSelect('invoice.seller', 'seller')
                 .leftJoinAndSelect('buyer.wallet', 'wallet')
