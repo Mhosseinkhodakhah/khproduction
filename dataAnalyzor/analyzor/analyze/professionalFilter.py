@@ -43,11 +43,11 @@ class professionalFilter :
             response = requests.get(f'{self.url}?title={filter['type']}')
         
         data = response.json()
-        print(data['data'])
-        print(filter)
+        # print(data['data'])
+        # print(filter)
         finalData = analyz.invoiceMaker(data['data'] , filter)
 
-        return finalData
+        return data['data']
         
         
     def wallet(self):
