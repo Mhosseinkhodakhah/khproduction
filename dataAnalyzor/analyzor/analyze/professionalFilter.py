@@ -201,7 +201,7 @@ urls = {
     "invoices" : 'http://localhost:3003/interservice/invoice/all',
     "wallets" :  'http://localhost:3003/interservice/invoice/all',
     "users" : 'http://localhost:3003/interservice/invoice/all',
-    "walletTransActions" : "http://localhost:3003/interservice/invoice/all",
+    "walletTransActions" : "http://localhost:3003/interservice/walletstransactions/all",
 }
 
 
@@ -214,15 +214,15 @@ class professionalFilter :
     
     def invoice(self , filter):
         if(filter['nationalCode'] != 'all'):
-            response = requests.get(f'{self.url}?nationalCode={filter['nationalCode']}&tradeType={filter['tradeType']}&title={filter['type']}')
+            response = requests.get(f'{self.url}?nationalCode={filter['nationalCode']}&tradeType={filter['tradeType']}&title={filter['type']}&status={filter['status']}')
         elif(filter['phoneNumber'] != 'all'):
-            response = requests.get(f'{self.url}?phoneNumber={filter['phoneNumber']}&tradeType={filter['tradeType']}&title={filter['type']}')
+            response = requests.get(f'{self.url}?phoneNumber={filter['phoneNumber']}&tradeType={filter['tradeType']}&title={filter['type']}&status={filter['status']}')
         elif (filter['firstName'] != 'all'):
-            response = requests.get(f'{self.url}?firstName={filter['firstName']}&tradeType={filter['tradeType']}&title={filter['type']}')
+            response = requests.get(f'{self.url}?firstName={filter['firstName']}&tradeType={filter['tradeType']}&title={filter['type']}&status={filter['status']}')
         elif(filter['lastName'] != 'all'):
-            response = requests.get(f'{self.url}?lastName={filter['lastName']}&tradeType={filter['tradeType']}&title={filter['type']}')
+            response = requests.get(f'{self.url}?lastName={filter['lastName']}&tradeType={filter['tradeType']}&title={filter['type']}&status={filter['status']}')
         else:
-            response = requests.get(f'{self.url}?title={filter['type']}')
+            response = requests.get(f'{self.url}?title={filter['type']}&status={filter['status']}')
         data = response.json()
         print(len(data['data']))
         print(filter)
@@ -242,7 +242,20 @@ class professionalFilter :
         pass
         
         
-    def walletInvoices(self):
-        
-        pass
+    def walletInvoices(self , filter):
+        if(filter['nationalCode'] != 'all'):
+            response = requests.get(f'{self.url}?nationalCode={filter['nationalCode']}&tradeType={filter['tradeType']}&type={filter['type']}&status={filter['status']}')
+        elif(filter['phoneNumber'] != 'all'):
+            response = requests.get(f'{self.url}?phoneNumber={filter['phoneNumber']}&tradeType={filter['tradeType']}&type={filter['type']}&status={filter['status']}')
+        elif (filter['firstName'] != 'all'):
+            response = requests.get(f'{self.url}?firstName={filter['firstName']}&tradeType={filter['tradeType']}&type={filter['type']}&status={filter['status']}')
+        elif(filter['lastName'] != 'all'):
+            response = requests.get(f'{self.url}?lastName={filter['lastName']}&tradeType={filter['tradeType']}&type={filter['type']}&status={filter['status']}')
+        else:
+            response = requests.get(f'{self.url}?type={filter['type']}&status={filter['status']}')
+        data = response.json()
+        print(len(data['data']))
+        print(filter)
+        finalData = analyz.invoiceMaker(data['data'] , filter)
+        return finalData
         
