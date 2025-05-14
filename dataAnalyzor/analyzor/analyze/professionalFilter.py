@@ -5,7 +5,8 @@ import requests
 
 class analyzor:
     
-    def invoiceMaker(data,filter):
+    def invoiceMaker(data,xx):
+        print(xx)
         return data
         
         
