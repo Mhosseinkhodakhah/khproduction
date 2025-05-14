@@ -151,6 +151,7 @@ export default class interServiceController {
 
     async getAllInvoicesForDjango(req: Request, res: Response, next: NextFunction) {
         try {
+            console.log(req.query.tradeType , req.query.title , req.query.nationalCode)
             if (!req.query.title) {
                 monitor.addStatus({
                     scope: 'interservice controller',

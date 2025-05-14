@@ -398,7 +398,7 @@ export const Routes = [
         controller: interServiceController,
         action: "getAllBuyInvoices",
         middlwares: []
-    }, 
+    },
     // {
     //     method: "get",
     //     route: "/checkmyfuckedups",
@@ -412,13 +412,13 @@ export const Routes = [
         controller: adminController,
         action: "getWallet",
         middlwares: [adminMiddleware]
-    },{  
+    }, {
         method: "get",
         route: "/admin/transport/all",
         controller: adminController,
         action: "getAllTransport",
         middlwares: [adminMiddleware]
-    },{  
+    }, {
         method: "get",
         route: "/permisions",
         controller: adminController,
@@ -431,24 +431,24 @@ export const Routes = [
         controller: adminController,
         action: "getUsersForGlance",
         middlwares: [adminMiddleware]
-    },{
+    }, {
         method: "get",
         route: "/user/glance/:id",
         controller: adminController,
         action: "getSpecificGlance",
         middlwares: [adminMiddleware]
-    },{
+    }, {
         method: "get",
         route: "/user/transports",
         controller: WalletController,
         action: "getTransports",
         middlwares: [authenticate]
-    },{
-    method: "get",
-    route: "/interservice/invoice/all",
-    controller: interServiceController,
-    action: "getAllInvoicesForDjango",                   // this rout is for get all invoices for django service
-    middlwares: []
-},
+    }, {
+        method: "get",
+        route: "/interservice/invoice/all",
+        controller: interServiceController,
+        action: "getAllInvoicesForDjango",                   // this rout is for get all invoices for django service
+        middlwares: []
+    },
 ]
 
