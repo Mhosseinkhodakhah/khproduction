@@ -5,7 +5,11 @@ import requests
 
 class analyzor:
     
-    def invoiceMaker(data,xx):
+    def __init__(self):
+        pass
+    
+    
+    def invoiceMaker(self , data , xx):
         print(xx)
         return data
         
@@ -44,10 +48,10 @@ class professionalFilter :
         
         data = response.json()
         # print(data['data'])
-        # print(filter)
+        print(filter)
         finalData = analyz.invoiceMaker(data['data'] , filter)
 
-        return data['data']
+        return finalData
         
         
     def wallet(self):
