@@ -9,13 +9,63 @@ class analyzor:
         pass
     
     
-    def invoiceMaker(self , data , xx):
-        print(xx)
-        return data
+    def invoiceMaker(self , data , filter):
+        
+        tradeType = []
+        for i in data:
+            if (i['tradeType'] == filter['tradeType']):
+                tradeType.append(i)
+                
         
         
-
-
+        goldPrice = []
+        if (filter['goldPrice'] != 'all'):    
+            for i in tradeType:
+                if (+i['goldPrice'] == +filter['goldPrice']):
+                    goldPrice.append(i)
+        else:
+            goldPrice = tradeType
+            
+            
+        
+        goldWeight = []
+        if (filter['goldWeight'] != 'all'):
+            for i in goldPrice:
+                if (+i['goldWeight'] == +filter['goldWeight']):
+                    goldWeight.append(i)
+                    
+        else:
+            goldWeight = goldPrice
+            
+        
+        
+        admin = []
+        if (filter['admin'] != 'all'):
+            for i in goldWeight:
+                if (filter['admin'] in i['adminId']):
+                    admin.append(i)
+                    
+                    
+        else:
+            admin = goldWeight
+            
+        
+        
+        accountant = []
+        if (filter['accounter'] != 'all'):
+            for i in admin:
+                if (filter['accounter'] in i['accounterId']):
+                    accountant.append(i)
+                    
+        else:
+            accountant = admin    
+            
+        
+        
+        
+        return accountant
+        
+        
 
 
 urls = {
@@ -26,7 +76,7 @@ urls = {
 }
 
 
-analyz = analyzor()
+analyz = analyzor() 
 
 
 class professionalFilter :
