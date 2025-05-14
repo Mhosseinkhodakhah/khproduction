@@ -213,7 +213,7 @@ export default class interServiceController {
 
             let invoices = this.walletTransAction.createQueryBuilder('invoice')
             .where('invoice.status = :status', {status : req.query.status })
-            .andWhere('invoice.type = :title', { title: req.query.title })
+            .andWhere('invoice.type = :title', { title: req.query.type })
             .leftJoinAndSelect('invoice.wallet', 'wallet')
             .leftJoinAndSelect('wallet.user', 'user')
             let all;
