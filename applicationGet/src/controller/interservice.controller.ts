@@ -165,31 +165,23 @@ export default class interServiceController {
             let all;
             if (req.query.firstName) {
                 console.log('1')
-                all = invoices.andWhere('buyer.firstName = :firstName OR seller.firstName = :firstName', { firstName: req.query.firstName }).getMany()
+                all = await invoices.andWhere('buyer.firstName = :firstName OR seller.firstName = :firstName', { firstName: req.query.firstName }).getMany()
             }
             else if (req.query.lastName) {
                 console.log('2')
-                all = invoices.andWhere('buyer.lastName = :lastName OR seller.lastName = :lastName', { lastName: req.query.lastName }).getMany()
+                all = await invoices.andWhere('buyer.lastName = :lastName OR seller.lastName = :lastName', { lastName: req.query.lastName }).getMany()
             }
             else if (req.query.nationalCode) {
                 console.log('3')
-                all = invoices
-                .leftJoinAndSelect('invoice.type', 'type')
-                .where('invoice.tradeType = :tradeType AND type.title = :title', { tradeType: req.query.tradeType, title: req.query.title })
-                .leftJoinAndSelect('invoice.buyer', 'buyer')
-                .leftJoinAndSelect('invoice.seller', 'seller')
-                .leftJoinAndSelect('buyer.wallet', 'wallet')
-                .leftJoinAndSelect('seller.wallet', 'wallet2')
-                .andWhere('buyer.nationalCode = :nationalCode OR seller.nationalCode = :nationalCode', { nationalCode: req.query.nationalCode })
-                .getMany()
-                console.log('invoices >>> ' , all)
+                console.log('invoices >>> ' , invoices)
+                all = await invoices.andWhere('buyer.nationalCode = :nationalCode OR seller.nationalCode = :nationalCode', { nationalCode: req.query.nationalCode }).getMany()
             }
             else if (req.query.phoneNumber) {
                 console.log('4')
-                all = invoices.andWhere('buyer.phoneNumber = :phoneNumber OR seller.phoneNumber = :phoneNumber', { phoneNumber: req.query.phoneNumber }).getMany()
+                all = await invoices.andWhere('buyer.phoneNumber = :phoneNumber OR seller.phoneNumber = :phoneNumber', { phoneNumber: req.query.phoneNumber }).getMany()
             }else {
                 console.log('5')
-                all = invoices.getMany()
+                all = await invoices.getMany()
             }
             return next(new responseModel(req, res, '', 'internal service', 200, null, all))
         } catch (error) {
