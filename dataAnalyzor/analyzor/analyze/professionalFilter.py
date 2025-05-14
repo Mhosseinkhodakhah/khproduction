@@ -47,7 +47,7 @@ class professionalFilter :
             response = requests.get(f'{self.url}?title={filter['type']}')
         
         data = response.json()
-        # print(data['data'])
+        print(len(data['data']))
         print(filter)
         finalData = analyz.invoiceMaker(data['data'] , filter)
 
