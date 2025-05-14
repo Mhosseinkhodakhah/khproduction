@@ -168,8 +168,8 @@ def profFilter(request):
                 body[i] = 'all'
         print('body after maked >>>>> ' , body)
         profesional = professionalFilter('invoices')
-        profesional.invoice(body)
-        return JsonResponse({"msg" : 'data recieved done' , "scope" : "report service"},status=200 , safe=False)
+        response = profesional.invoice(body)
+        return JsonResponse({"data" : response , "msg" : 'data recieved done' , "scope" : "report service" , "link" : ""},status=200 , safe=False)
     else : 
          return JsonResponse({"msg" : 'message not allowed' , "scope" : "report service"},status=400 , safe=False)
 

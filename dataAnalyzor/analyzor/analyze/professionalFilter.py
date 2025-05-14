@@ -6,7 +6,7 @@ import requests
 class analyzor:
     
     def invoiceMaker(data,filter):
-        pass
+        return data
         
         
 
@@ -20,6 +20,8 @@ urls = {
     "walletTransActions" : "http://localhost:3003/interservice/invoice/all",
 }
 
+
+analyz = analyzor()
 
 
 class professionalFilter :
@@ -39,12 +41,11 @@ class professionalFilter :
         else:
             response = requests.get(f'{self.url}?title={filter['type']}')
         
-        
         data = response.json()
         
-        print('data returned is >>>> ' , len(data))
-        
-        pass
+        finalData = analyz.invoiceMaker(data , filter)
+
+        return finalData
         
         
     def wallet(self):
