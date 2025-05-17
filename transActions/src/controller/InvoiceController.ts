@@ -406,7 +406,7 @@ export class InvoiceController {
                 })
                 return response.status(400).json({ err: "سند مورد نظر برای تایید غیر مجاز است." });
             }
-            
+
             if (!createdInvoice) {
                 monitor.addStatus({
                     scope : 'invoice controller',
@@ -616,6 +616,18 @@ export class InvoiceController {
                 where: { id: invoiceId },
                 relations: { seller: { wallet: true }, buyer: { wallet: true } },
             });
+
+            if(createdInvoice.status != 'init'){
+                console.log('its in the permision denied for init transActions')
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  0,
+                    error : 'مشکل اعتبار سنجی در اتمام تراکنش فروش'
+                })
+                return response.status(400).json({ msg: 'این سند مجاز به اعتبار سنجی فروش نمی باشد' });
+            }
+                console.log('its after the init checker transactions')
+
             const { user, systemUser } = await this.fetchUsers(this.userRepository, userId);
             console.log('wallet>>>>' , user.wallet.goldWeight , typeof(user.wallet.goldWeight))
             console.log('sellll>>>>' , createdInvoice.goldWeight , typeof(createdInvoice.goldWeight))
