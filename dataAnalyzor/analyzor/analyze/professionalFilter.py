@@ -22,16 +22,16 @@ class analyzor:
                 
         #################### 1 ################### 
                 
-        ################## new ######################        
-        status = []
-        if (filter['status'] != 'all'):    
-            for i in tradeType:
-                print('test>>>' , int(i['status']))
-                if (int(i['status']) == int(filter['status'])):
-                    status.append(i)
-        else:
-            status = tradeType
-        ################## new ######################     
+        # ################## new ######################        
+        # status = []
+        # if (filter['status'] != 'all'):    
+        #     for i in tradeType:
+        #         print('test>>>' , i['status'])
+        #         if (int(i['status']) == int(filter['status'])):
+        #             status.append(i)
+        # else:
+        #     status = tradeType
+        # ################## new ######################     
         
 
         ################## new ######################
