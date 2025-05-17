@@ -203,7 +203,6 @@ def profWalletInvoiceFilter(request):
             print(e)
             return JsonResponse({"msg" : "token expired!"},status=401 , safe=False)
         
-        
         body = json.loads(request.body.decode('utf-8'))
         for i in body.keys():
             if (body[i] == ''):
@@ -255,7 +254,7 @@ def getAllHistory(request):
         #     serialized_data = json.loads(serialized_data)
         #     dataS = []
         #     for i in range(len(serialized_data)):
-        #         dataS.append(serialized_data[i]['fields'])
+        #         dataS.append(serialized_data[i]['fields'])    
                 
         return JsonResponse({'data' : dataS , "msg" : 'get all report succeed' , "scope" : "report service"},status=200 , safe=False)
     else:

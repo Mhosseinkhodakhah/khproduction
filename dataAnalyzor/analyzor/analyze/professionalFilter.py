@@ -12,6 +12,7 @@ class analyzor:
     def invoiceMaker(self , data , filter):
         
         
+        
         #################### 1 ####################   
         #first filter for trade type
         tradeType = []
@@ -21,19 +22,41 @@ class analyzor:
                 
         #################### 1 ################### 
                 
+        ################## new ######################        
+        status = []
+        if (filter['status'] != 'all'):    
+            for i in tradeType:
+                print('test>>>' , int(i['status']))
+                if (int(i['status']) == int(filter['status'])):
+                    status.append(i)
+        else:
+            status = tradeType
+        ################## new ######################     
+        
+
+        ################## new ######################
+        invoiceId = []
+        if (filter['invoiceId'] != 'all'):
+            for i in status:
+                if (filter['invoiceId'] in i['invoiceId']):
+                    invoiceId.append(i)
+        else:
+            invoiceId = status
+        ################## new ######################
+
     
                 
         ################## 2 ######################        
         #filter for goldPrice 
         goldPrice = []
         if (filter['goldPrice'] != 'all'):    
-            for i in tradeType:
+            for i in invoiceId:
                 print('test>>>' , int(i['goldPrice']))
                 if (int(i['goldPrice']) == int(filter['goldPrice'])):
                     goldPrice.append(i)
         else:
-            goldPrice = tradeType
-        ################## 2 ######################        
+            goldPrice = invoiceId
+        ################## 2 ######################      
                         
                         
                         
