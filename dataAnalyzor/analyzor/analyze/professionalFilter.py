@@ -37,11 +37,11 @@ class analyzor:
         ################## new ######################
         invoiceId = []
         if (filter['invoiceId'] != 'all'):
-            for i in status:
+            for i in tradeType:
                 if (filter['invoiceId'] in i['invoiceId']):
                     invoiceId.append(i)
         else:
-            invoiceId = status
+            invoiceId = tradeType
         ################## new ######################
 
                 
