@@ -44,7 +44,6 @@ class analyzor:
             invoiceId = status
         ################## new ######################
 
-    
                 
         ################## 2 ######################        
         #filter for goldPrice 
@@ -425,6 +424,7 @@ class professionalFilter :
         else:
             response = requests.get(f'{self.url}?title={filter['type']}&status={filter['status']}')
         data = response.json()
+        print('data isss >>> ' , data)
         print(len(data['data']))
         print(filter)
         finalData = analyz.invoiceMaker(data['data'] , filter)
