@@ -147,14 +147,11 @@ export default class interServiceController {
                 error: 'internal service error'
             })
         }
-
-
     }
-
 
     async getAllInvoicesForDjango(req: Request, res: Response, next: NextFunction) {
         try {
-            console.log(req.query.tradeType , req.query.title , req.query.nationalCode)
+            console.log(req.query.tradeType, req.query.title, req.query.nationalCode , req.query.status)
             if (!req.query.title) {
                 monitor.addStatus({
                     scope: 'interservice controller',
@@ -164,13 +161,13 @@ export default class interServiceController {
                 return next(new responseModel(req, res, '', 'internal service', 200, null, null))
             }
             let invoices = this.invoiceRepository.createQueryBuilder('invoice')
-            .where('invoice.tradeType = :tt AND invoice.status = :status', { tt: +req.query.tradeType , status : req.query.status })
-            .leftJoinAndSelect('invoice.type', 'type')
-            .andWhere('type.title = :title', { tradeType : +req.query.tradeType, title: req.query.title })
-            .leftJoinAndSelect('invoice.buyer', 'buyer')
-            .leftJoinAndSelect('invoice.seller', 'seller')
-            .leftJoinAndSelect('buyer.wallet', 'wallet')
-            .leftJoinAndSelect('seller.wallet', 'wallet2')
+                .where('invoice.tradeType = :tt AND invoice.status = :status', { tt: +req.query.tradeType, status: req.query.status })
+                .leftJoinAndSelect('invoice.type', 'type')
+                .andWhere('type.title = :title', { tradeType: +req.query.tradeType, title: req.query.title })
+                .leftJoinAndSelect('invoice.buyer', 'buyer')
+                .leftJoinAndSelect('invoice.seller', 'seller')
+                .leftJoinAndSelect('buyer.wallet', 'wallet')
+                .leftJoinAndSelect('seller.wallet', 'wallet2')
             let all;
             if (req.query.firstName) {
                 all = await invoices.andWhere('buyer.firstName = :firstName OR seller.firstName = :firstName', { firstName: req.query.firstName }).getMany()
@@ -183,7 +180,7 @@ export default class interServiceController {
             }
             else if (req.query.phoneNumber) {
                 all = await invoices.andWhere('buyer.phoneNumber = :phoneNumber OR seller.phoneNumber = :phoneNumber', { phoneNumber: req.query.phoneNumber }).getMany()
-            }else {
+            } else {
                 all = await invoices.getMany()
             }
             return next(new responseModel(req, res, '', 'internal service', 200, null, all))
@@ -199,9 +196,9 @@ export default class interServiceController {
     }
 
 
-     async getAllWalletTransAction(req: Request, res: Response, next: NextFunction) {
+    async getAllWalletTransAction(req: Request, res: Response, next: NextFunction) {
         try {
-            console.log(req.query.status , req.query.type)
+            console.log(req.query.status, req.query.type)
             if (!req.query.type || !req.query.status) {
                 monitor.addStatus({
                     scope: 'interservice controller',
@@ -210,25 +207,24 @@ export default class interServiceController {
                 })
                 return next(new responseModel(req, res, '', 'internal service', 200, null, null))
             }
-
             let invoices = this.walletTransAction.createQueryBuilder('invoice')
-            .where('invoice.status = :status', {status : req.query.status })
-            .andWhere('invoice.type = :title', { title: req.query.type })
-            .leftJoinAndSelect('invoice.wallet', 'wallet')
-            .leftJoinAndSelect('wallet.user', 'user')
+                .where('invoice.status = :status', { status: req.query.status })
+                .andWhere('invoice.type = :title', { title: req.query.type })
+                .leftJoinAndSelect('invoice.wallet', 'wallet')
+                .leftJoinAndSelect('wallet.user', 'user')
             let all;
             if (req.query.firstName) {
-                all = await invoices.andWhere('user.firstName = :firstName' , {firstName : req.query.firstName}).getMany()
+                all = await invoices.andWhere('user.firstName = :firstName', { firstName: req.query.firstName }).getMany()
             }
             else if (req.query.lastName) {
-                all = await invoices.andWhere('user.lastName = :lastName' , {lastName : req.query.lastName}).getMany()
+                all = await invoices.andWhere('user.lastName = :lastName', { lastName: req.query.lastName }).getMany()
             }
             else if (req.query.nationalCode) {
-                all = await invoices.andWhere('user.nationalCode = :nationalCode' , {nationalCode : req.query.nationalCode}).getMany()
+                all = await invoices.andWhere('user.nationalCode = :nationalCode', { nationalCode: req.query.nationalCode }).getMany()
             }
             else if (req.query.phoneNumber) {
-                all = await invoices.andWhere('user.phoneNumber = :phoneNumber' , {phoneNumber : req.query.phoneNumber}).getMany()
-            }else {
+                all = await invoices.andWhere('user.phoneNumber = :phoneNumber', { phoneNumber: req.query.phoneNumber }).getMany()
+            } else {
                 console.log('hhhhh')
                 all = await invoices.getMany()
                 console.log(all)
