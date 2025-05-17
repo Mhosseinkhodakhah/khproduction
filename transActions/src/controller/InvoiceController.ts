@@ -397,6 +397,16 @@ export class InvoiceController {
                 where: { id: invoiceId },
                 relations: { seller: { wallet: true }, buyer: { wallet: true, bankAccounts: true } },
             });
+
+            if(createdInvoice.status != 'init'){
+                monitor.addStatus({
+                    scope : 'invoice controller',
+                    status :  0,
+                    error : 'سند مورد نظر برای تایید غیر مجاز است.'
+                })
+                return response.status(400).json({ err: "سند مورد نظر برای تایید غیر مجاز است." });
+            }
+            
             if (!createdInvoice) {
                 monitor.addStatus({
                     scope : 'invoice controller',

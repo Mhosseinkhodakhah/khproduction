@@ -7,14 +7,13 @@ import { User } from "./User"
 export class transportInvoice {
     @PrimaryGeneratedColumn()
     id : number
-
+    
     @ManyToOne(()=> User , (user)=> user.sells)
     sender : User
-   
+    
     @ManyToOne(()=> User , (user)=> user.buys)
     reciever : User
     
-
     @Column({ type: "numeric", precision: 10, scale: 3, default: 0 })
     goldWeight : number
 
