@@ -161,7 +161,7 @@ export default class interServiceController {
                 return next(new responseModel(req, res, '', 'internal service', 200, null, null))
             }
             let invoices = this.invoiceRepository.createQueryBuilder('invoice')
-                .where('invoice.tradeType = :tt AND invoice.status = :status', { tt: +req.query.tradeType, status: req.query.status })
+                .where('invoice.status = :status', { tt: +req.query.tradeType, status: req.query.status })
                 .leftJoinAndSelect('invoice.type', 'type')
                 .andWhere('type.title = :title', { tradeType: +req.query.tradeType, title: req.query.title })
                 .leftJoinAndSelect('invoice.buyer', 'buyer')
